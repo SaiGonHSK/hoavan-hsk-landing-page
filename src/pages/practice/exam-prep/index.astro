@@ -1,0 +1,23 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { examPrepResources } from "@/data/catalog";
+---
+
+<CatalogHub
+  title="Luyện thi HSK các cấp"
+  metaTitle="Luyện thi HSK 3, 4, 5, 6 — từ vựng, ngữ pháp, đề"
+  description="Bảng từ vựng đầy đủ, tổng hợp ngữ pháp trọng tâm và bộ đề luyện cho từng cấp HSK — dùng để tự ôn trước kỳ thi."
+  crumbs={[{ label: "Ôn tập & luyện thi", href: "/practice" }, { label: "Luyện thi HSK" }]}
+  glyph="考"
+  columns={4}
+  groups={[
+    {
+      title: "Chọn cấp độ cần luyện",
+      cards: examPrepResources.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/practice/exam-prep/${c.slug}`,
+      })),
+    },
+  ]}
+/>

@@ -1,0 +1,98 @@
+---
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Breadcrumb, không tính mục "Trang chủ" đã có sẵn. */
+  crumbs?: { label: string; href?: string }[];
+  /** Ký tự Hán làm hoa văn nền. */
+  glyph?: string;
+}
+
+const { title, description, crumbs = [], glyph = "华" } = Astro.props;
+
+/** BreadcrumbList giúp Google hiển thị đường dẫn phân cấp thay vì URL thô. */
+const origin = Astro.site?.origin ?? "";
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
+    ...crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 2,
+      name: c.label,
+      ...(c.href ? { item: `${origin}${c.href}` } : {}),
+    })),
+  ],
+};
+---
+
+<section class="relative overflow-hidden bg-background py-14 lg:py-20">
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-4 -top-6 select-none font-bricolage text-[11rem] font-black leading-none text-brand-red-900/[0.05] lg:text-[15rem] dark:text-white/[0.03]"
+    >{glyph}</span
+  >
+
+  <div class="container relative z-10 mx-auto px-6">
+    <nav aria-label="Breadcrumb" class="mb-6">
+      <ol class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <li>
+          <a href="/" class="transition-colors hover:text-brand-red-600">Trang chủ</a>
+        </li>
+        {
+          crumbs.map((c) => (
+            <>
+              <li
+                aria-hidden="true"
+                class="[&>svg]:size-3 [&>svg]:"
+                set:html={ICONS.chevron}
+              />
+              <li>
+                {c.href ? (
+                  <a href={c.href} class="transition-colors hover:text-brand-red-600">
+                    {c.label}
+                  </a>
+                ) : (
+                  <span class="text-foreground">{c.label}</span>
+                )}
+              </li>
+            </>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <h1
+      class="max-w-4xl font-bricolage text-[2.25rem] font-black leading-[1.02] tracking-tight text-balance text-brand-ink-900 md:text-6xl dark:text-white"
+    >
+      {title}
+    </h1>
+
+    {
+      description && (
+        <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+          {description}
+        </p>
+      )
+    }
+
+    <slot />
+  </div>
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+</section>
+
+<style>
+  /* Chevron trong breadcrumb hơi lệch baseline nếu không canh lại. */
+  nav[aria-label="Breadcrumb"] li[aria-hidden="true"] {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.6;
+  }
+</style>

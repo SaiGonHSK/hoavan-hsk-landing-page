@@ -1,0 +1,256 @@
+---
+/**
+ * Khung trang chi tiết dùng chung cho khóa học, khu ôn tập, luyện thi,
+ * kỹ năng, lớp học thử và các chuyên mục thư viện.
+ */
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { contact, site } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+import { clampDescription, courseFaqs, faqSchema } from "@/lib/seo";
+
+interface Props {
+  title: string;
+  summary: string;
+  intro: string;
+  facts?: { label: string; value: string }[];
+  content?: string[];
+  contentTitle?: string;
+  outcomes?: string[];
+  audience?: string[];
+  crumbs: { label: string; href?: string }[];
+  glyph?: string;
+  /** Các mục cùng nhóm để điều hướng qua lại. */
+  related?: { label: string; href: string }[];
+  relatedTitle?: string;
+  /** Bật schema Course cho các trang khoá học. */
+  courseSchema?: boolean;
+  /** Ghi đè tiêu đề SEO (mặc định: "<tên> — <thương hiệu>"). */
+  seoTitle?: string;
+  /** Ghi đè mô tả SEO. */
+  seoDescription?: string;
+}
+
+const {
+  title,
+  summary,
+  intro,
+  facts = [],
+  content = [],
+  contentTitle = "Nội dung",
+  outcomes = [],
+  audience = [],
+  crumbs,
+  glyph = "课",
+  related = [],
+  relatedTitle = "Xem thêm",
+  courseSchema = false,
+  seoTitle,
+  seoDescription,
+} = Astro.props;
+
+const origin = Astro.site?.origin ?? "";
+/** Schema Course — điều kiện để Google hiển thị rich result cho khoá học. */
+const faqs = courseSchema
+  ? courseFaqs({ title, facts, outcomes, phone: contact.phonePrimary })
+  : [];
+
+const schemas = courseSchema
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        name: title,
+        description: summary,
+        inLanguage: "vi-VN",
+        teaches: "Tiếng Trung Quốc",
+        url: `${origin}${Astro.url.pathname}`,
+        provider: {
+          "@type": "EducationalOrganization",
+          name: site.fullName,
+          url: origin,
+          "@id": `${origin}/#organization`,
+        },
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: ["Onsite", "Online"],
+          courseWorkload: facts.find((f) => f.label === "Thời lượng")?.value ?? "PT2H",
+          location: {
+            "@type": "Place",
+            name: site.fullName,
+            address: contact.address,
+          },
+        },
+      },
+      faqSchema(faqs),
+    ]
+  : [];
+---
+
+<Layout
+  title={seoTitle ?? `${title} tại TP.HCM | ${site.shortName}`}
+  description={clampDescription(seoDescription ?? `${intro}`)}
+  schemas={schemas}
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero title={title} description={intro} crumbs={crumbs} glyph={glyph}>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href="/register"
+          class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+        >
+          Đăng ký ngay
+          <span
+            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+            set:html={ICONS.arrow}
+          />
+        </a>
+        <a
+          href={`tel:${contact.phonePrimaryRaw}`}
+          class="inline-flex items-center gap-2 rounded-full bg-brand-ink-50 px-6 py-4 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+        >
+          <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
+          {contact.phonePrimary}
+        </a>
+      </div>
+    </PageHero>
+
+    {/* Thông số */}
+    {
+      facts.length > 0 && (
+        <section class="bg-background pt-14">
+          <div class="container mx-auto px-6">
+            <dl class="grid gap-px overflow-hidden rounded-3xl bg-brand-ink-100 sm:grid-cols-2 lg:grid-cols-3 dark:bg-white/10">
+              {facts.map((f) => (
+                <div class="bg-background p-6">
+                  <dt class="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-red-600 dark:text-brand-red-400">
+                    {f.label}
+                  </dt>
+                  <dd class="mt-2 text-sm font-semibold leading-relaxed text-foreground">
+                    {f.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )
+    }
+
+    {/* Nội dung / đối tượng / đầu ra */}
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-6 lg:grid-cols-3">
+          {
+            content.length > 0 && (
+              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-2 dark:bg-white/[0.04]">
+                <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+                  {contentTitle}
+                </h2>
+                <ul class="mt-5 space-y-3">
+                  {content.map((c) => (
+                    <li class="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+                      <span class="mt-[11px] h-px w-3 shrink-0 bg-brand-red-400" />
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            outcomes.length > 0 && (
+              <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
+                <h2 class="font-bricolage text-xl font-extrabold">Sau khoá học</h2>
+                <ul class="mt-5 space-y-3">
+                  {outcomes.map((o) => (
+                    <li class="flex items-start gap-3 text-sm leading-relaxed text-white/85">
+                      <span class="mt-[11px] h-px w-3 shrink-0 bg-white/50" />
+                      <span>{o}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            audience.length > 0 && (
+              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-3 dark:bg-white/[0.04]">
+                <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+                  Dành cho ai
+                </h2>
+                <ul class="mt-5 grid gap-3 md:grid-cols-2">
+                  {audience.map((a) => (
+                    <li class="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+                      <span class="mt-[11px] h-px w-3 shrink-0 bg-brand-red-400" />
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* Câu hỏi thường gặp */}
+    {
+      faqs.length > 0 && (
+        <section class="bg-background">
+          <div class="container mx-auto px-6">
+            <h2 class="font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+              Câu hỏi thường gặp về {title}
+            </h2>
+            <div class="mt-6 grid gap-4 md:grid-cols-2">
+              {faqs.map((f) => (
+                <div class="rounded-3xl bg-brand-ink-50 p-6 dark:bg-white/[0.04]">
+                  <h3 class="text-sm font-bold text-foreground">{f.question}</h3>
+                  <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                    {f.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {/* Liên quan */}
+    {
+      related.length > 0 && (
+        <section class="bg-background pb-14">
+          <div class="container mx-auto px-6">
+            <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+              {relatedTitle}
+            </h2>
+            <div class="mt-5 flex flex-wrap gap-3">
+              {related.map((r) => (
+                <a
+                  href={r.href}
+                  class="rounded-full bg-brand-ink-50 px-5 py-2.5 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+                >
+                  {r.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

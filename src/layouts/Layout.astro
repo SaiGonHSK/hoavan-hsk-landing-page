@@ -1,0 +1,170 @@
+---
+import "@/styles/global.css";
+import Lightbox from "@/components/Lightbox.astro";
+import { site, contact } from "@/data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Ảnh OG tuỳ chọn cho từng trang (đường dẫn tuyệt đối trong site). */
+  image?: string;
+  /** og:type — "website" cho trang chung, "article" cho bài viết. */
+  ogType?: string;
+  /** Chặn lập chỉ mục với các trang không muốn lên Google. */
+  noindex?: boolean;
+  /** JSON-LD riêng của trang (Course, ItemList, BreadcrumbList…). */
+  schemas?: Record<string, unknown>[];
+  /** Ảnh LCP của trang — preload để rút ngắn Largest Contentful Paint. */
+  preloadImage?: string;
+}
+
+const {
+  title = `Trung tâm tiếng Trung SaigonHSK — Luyện thi HSK, TOCFL tại TP.HCM`,
+  description = site.description,
+  image = "/images/classroom.webp",
+  ogType = "website",
+  noindex = false,
+  schemas = [],
+  preloadImage,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", Astro.site);
+const ogImage = new URL(image, Astro.site).href;
+
+/**
+ * Schema tổ chức đào tạo — khai báo một lần ở layout, kèm địa chỉ và giờ làm việc
+ * để đủ điều kiện hiển thị trong kết quả tìm kiếm địa phương.
+ */
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": ["EducationalOrganization", "LocalBusiness"],
+  "@id": `${canonical.origin}/#organization`,
+  name: site.fullName,
+  alternateName: [site.shortName, "Hoa văn SaigonHSK", "SaigonHSK"],
+  slogan: `${site.slogan} — ${site.sloganVi}`,
+  description: site.description,
+  url: canonical.origin,
+  logo: new URL("/favicon.png", Astro.site).href,
+  image: ogImage,
+  email: contact.email,
+  telephone: contact.phones,
+  foundingDate: String(site.foundedYear),
+  priceRange: "$$",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "384/8 Lý Thái Tổ, Phường Vườn Lài",
+    addressLocality: "Thành phố Hồ Chí Minh",
+    addressRegion: "TP.HCM",
+    addressCountry: "VN",
+  },
+  areaServed: { "@type": "City", name: "Thành phố Hồ Chí Minh" },
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
+      opens: "08:00",
+      closes: "21:00",
+    },
+  ],
+  knowsLanguage: ["vi", "zh-Hans"],
+  sameAs: [contact.facebook],
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${canonical.origin}/#website`,
+  url: canonical.origin,
+  name: site.fullName,
+  inLanguage: "vi-VN",
+  publisher: { "@id": `${canonical.origin}/#organization` },
+};
+
+const allSchemas = [organizationSchema, websiteSchema, ...schemas];
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {
+      preloadImage && (
+        <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
+      )
+    }
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={noindex
+        ? "noindex,nofollow"
+        : "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"}
+    />
+    <meta name="author" content={site.fullName} />
+    <meta name="geo.region" content="VN-SG" />
+    <meta name="geo.placename" content="Thành phố Hồ Chí Minh" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:site_name" content={site.fullName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={title} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {
+      allSchemas.map((schema) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+    }
+
+    <script is:inline>
+      const stored = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (stored === "dark" || (!stored && prefersDark)) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-lg focus:bg-brand-red-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+    >
+      Bỏ qua điều hướng, tới nội dung chính
+    </a>
+    <slot />
+    <Lightbox />
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

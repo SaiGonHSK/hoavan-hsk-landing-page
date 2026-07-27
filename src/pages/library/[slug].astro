@@ -1,0 +1,30 @@
+---
+import CatalogDetail from "@/components/CatalogDetail.astro";
+import { library } from "@/data/catalog";
+
+export function getStaticPaths() {
+  return library.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+const related = library
+  .filter((c) => c.slug !== item.slug)
+  .slice(0, 8)
+  .map((c) => ({ label: c.title, href: `/library/${c.slug}` }));
+---
+
+<CatalogDetail
+  title={item.title}
+  summary={item.summary}
+  intro={item.intro}
+  content={item.content}
+  contentTitle="Chuyên mục gồm"
+  glyph="文"
+  crumbs={[{ label: "Thư viện", href: "/library" }, { label: item.title }]}
+  related={related}
+  relatedTitle="Chuyên mục khác"
+/>

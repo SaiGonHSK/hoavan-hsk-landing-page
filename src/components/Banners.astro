@@ -1,0 +1,103 @@
+---
+/**
+ * Bộ poster giới thiệu của trung tâm — bố cục dán ảnh nghiêng như hero.
+ * Bấm vào ảnh để xem cỡ lớn (lightbox khai báo ở Layout).
+ */
+import Doodle from "@/components/Doodle.astro";
+import { banners } from "@/data/teachers";
+import { ICONS } from "@/lib/icons";
+
+const [featured, ...rest] = banners;
+---
+
+<section id="banners" class="relative overflow-hidden bg-background scroll-mt-24">
+  <Doodle
+    name="wave"
+    class="absolute right-[10%] top-10 hidden h-6 w-28 text-brand-red-300 lg:block"
+  />
+
+  <div class="container relative z-10 mx-auto px-6">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <h2
+          class="font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-brand-ink-900 md:text-5xl dark:text-white"
+        >
+          Lịch khai giảng
+          <span class="block text-brand-red-600 dark:text-brand-red-400">
+            &amp; thông tin trung tâm
+          </span>
+        </h2>
+        <p class="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+          Lớp offline và online mở liên tục hằng tháng theo chuẩn HSK 3.0. Bấm vào ảnh
+          để xem cỡ lớn.
+        </p>
+      </div>
+
+      <a
+        href="/schedule"
+        class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+      >
+        Xem lịch khai giảng
+        <span
+          class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+          set:html={ICONS.arrow}
+        />
+      </a>
+    </div>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+      {/* Poster chính */}
+      <button
+        type="button"
+        data-lightbox={featured.image}
+        data-caption={featured.title}
+        class="group block cursor-zoom-in text-left transition-transform duration-300 hover:-translate-y-1.5"
+      >
+        <img
+          src={featured.image}
+          alt={featured.title}
+          width="2560"
+          height="1852"
+          loading="eager"
+          decoding="async"
+          class="w-full rounded-3xl object-cover shadow-[0_30px_60px_-38px_rgba(15,23,42,0.5)]"
+        />
+        <p
+          class="mt-4 px-1 font-bricolage text-lg font-extrabold text-brand-ink-900 dark:text-white"
+        >
+          {featured.title}
+        </p>
+        <p class="mt-1 max-w-lg px-1 text-sm leading-relaxed text-muted-foreground">
+          {featured.desc}
+        </p>
+      </button>
+
+      {/* 4 poster giới thiệu */}
+      <div class="grid grid-cols-2 gap-6 self-start">
+        {
+          rest.map((b, i) => (
+            <button
+              type="button"
+              data-lightbox={b.image}
+              data-caption={b.title}
+              class={"group block cursor-zoom-in text-left transition-transform duration-300 hover:-translate-y-1.5"}
+            >
+              <img
+                src={b.image}
+                alt={b.title}
+                width="1080"
+                height="1080"
+                loading="lazy"
+                decoding="async"
+                class="aspect-square w-full rounded-2xl object-cover shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]"
+              />
+              <p class="mt-3 px-1 text-sm font-bold leading-snug text-brand-ink-900 dark:text-white">
+                {b.title}
+              </p>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

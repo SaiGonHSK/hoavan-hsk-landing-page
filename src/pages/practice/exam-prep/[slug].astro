@@ -1,0 +1,35 @@
+---
+import CatalogDetail from "@/components/CatalogDetail.astro";
+import { examPrepResources } from "@/data/catalog";
+
+export function getStaticPaths() {
+  return examPrepResources.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+const related = examPrepResources
+  .filter((c) => c.slug !== item.slug)
+  .map((c) => ({ label: c.title, href: `/practice/exam-prep/${c.slug}` }));
+---
+
+<CatalogDetail
+  title={item.title}
+  summary={item.summary}
+  intro={item.intro}
+  facts={item.facts}
+  content={item.content}
+  contentTitle="Tài liệu luyện thi"
+  outcomes={item.outcomes}
+  glyph="考"
+  crumbs={[
+    { label: "Ôn tập & luyện thi", href: "/practice" },
+    { label: "Luyện thi HSK", href: "/practice/exam-prep" },
+    { label: item.title },
+  ]}
+  related={related}
+  relatedTitle="Cấp độ khác"
+/>

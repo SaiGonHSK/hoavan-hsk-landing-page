@@ -1,0 +1,78 @@
+---
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+interface Props {
+  items: FaqItem[];
+  /** Groups the <details> so only one stays open at a time. Unique per page. */
+  name?: string;
+}
+const { items, name = "faq" } = Astro.props;
+---
+
+<div class="space-y-4">
+  {
+    items.map((faq, index) => (
+      <details
+        name={name}
+        class="faq-item rounded-2xl bg-brand-ink-50 transition-colors dark:bg-white/[0.04]"
+        style={`animation-delay: ${index * 0.05}s`}
+      >
+        <summary class="group relative flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 pr-14 text-left font-bold text-foreground">
+          <span class="transition-colors group-hover:text-brand-red-600 dark:group-hover:text-brand-red-400">
+            {faq.question}
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="faq-chevron absolute right-6 size-5 text-muted-foreground shrink-0 transition-transform duration-300"
+            aria-hidden="true"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <div class="px-6 pb-5 text-left text-muted-foreground leading-relaxed">
+          {faq.answer}
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hide default disclosure triangle (Safari/Firefox) */
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary::marker {
+    display: none;
+  }
+
+  /* Rotate chevron when open */
+  .faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+    color: var(--primary);
+  }
+
+  /* Highlight question text when open */
+  .faq-item[open] summary > span {
+    color: var(--primary);
+  }
+</style>

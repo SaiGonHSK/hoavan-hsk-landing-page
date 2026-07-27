@@ -1,0 +1,23 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { trialClasses } from "@/data/catalog";
+---
+
+<CatalogHub
+  title="Học thử trải nghiệm miễn phí"
+  metaTitle="Học thử tiếng Trung miễn phí tại TP.HCM"
+  description="Ngồi học một buổi cùng lớp đang mở, làm bài test trình độ và nhận tư vấn lộ trình — hoàn toàn miễn phí, không ràng buộc đăng ký."
+  crumbs={[{ label: "Học thử trải nghiệm" }]}
+  glyph="试"
+  columns={4}
+  groups={[
+    {
+      title: "Chọn cấp độ muốn học thử",
+      cards: trialClasses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/trial/${c.slug}`,
+      })),
+    },
+  ]}
+/>

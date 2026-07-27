@@ -1,0 +1,156 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { schedule } from "@/data/schedule";
+import { contact, site } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+---
+
+<Layout
+  title="Lịch khai giảng lớp tiếng Trung tại TP.HCM | SaigonHSK"
+  description="Lịch khai giảng các lớp tiếng Trung tại Hoa văn SaigonHSK: sơ cấp, trung cấp, luyện thi HSK, giao tiếp cấp tốc và lớp VIP 1 kèm 1. Khai giảng liên tục hằng tháng."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Lịch khai giảng các lớp tiếng Trung"
+      description="Trung tâm mở lớp liên tục hằng tháng cho cả hình thức offline và online. Bảng dưới đây là nhịp mở lớp của từng chương trình — gọi hotline để nhận ngày khai giảng gần nhất."
+      crumbs={[{ label: "Lịch khai giảng" }]}
+      glyph="开"
+    />
+
+    {/* Poster lịch khai giảng */}
+    <section>
+      <div class="container mx-auto px-6">
+        <figure
+          class="overflow-hidden rounded-3xl border border-border/80 bg-card p-4 md:p-6"
+        >
+          <img
+            src="/images/banners/class-schedule.webp"
+            alt="Poster lịch khai giảng các lớp tiếng Trung tại Hoa văn SaigonHSK"
+            class="mx-auto w-full rounded-xl object-contain"
+            loading="eager"
+          />
+          <figcaption class="mt-4 text-center text-xs text-muted-foreground">
+            Poster lịch khai giảng do trung tâm phát hành — gọi
+            <a
+              href={`tel:${contact.phonePrimaryRaw}`}
+              class="font-semibold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+            > để xác nhận lịch mới nhất.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    {/* Bảng nhịp mở lớp */}
+    <section>
+      <div class="container mx-auto px-6">
+        <div class="overflow-hidden rounded-3xl border border-border/80 bg-card">
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[46rem] border-collapse text-left text-sm">
+              <thead>
+                <tr class="bg-brand-red-600 text-white">
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Mã lớp
+                  </th>
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Khóa học
+                  </th>
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Lịch học
+                  </th>
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Thời lượng
+                  </th>
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Đầu ra
+                  </th>
+                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
+                    Khai giảng
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  schedule.map((row) => (
+                    <tr class="border-t border-border/70 transition-colors hover:bg-brand-red-50/60 dark:hover:bg-white/[0.03]">
+                      <td class="px-5 py-4">
+                        <span class="rounded-md bg-brand-red-600/10 px-2 py-1 font-mono text-[11px] font-bold text-brand-red-700 dark:bg-brand-red-500/15 dark:text-brand-red-300">
+                          {row.code}
+                        </span>
+                      </td>
+                      <td class="px-5 py-4">
+                        <a
+                          href={`/courses/programs/${row.courseSlug}`}
+                          class="font-semibold text-foreground hover:text-brand-red-600"
+                        >
+                          {row.className}
+                        </a>
+                      </td>
+                      <td class="px-5 py-4 text-muted-foreground">{row.cadence}</td>
+                      <td class="px-5 py-4 text-muted-foreground">{row.duration}</td>
+                      <td class="px-5 py-4 text-muted-foreground">{row.target}</td>
+                      <td class="px-5 py-4">
+                        {row.openDate ? (
+                          <span class="font-semibold text-brand-red-700 dark:text-brand-red-300">
+                            {row.openDate}
+                          </span>
+                        ) : (
+                          <a
+                            href={`tel:${contact.phonePrimaryRaw}`}
+                            class="inline-flex items-center gap-1.5 whitespace-nowrap font-semibold text-brand-red-600 hover:underline dark:text-brand-red-300"
+                          >
+                            <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
+                            Liên hệ nhận lịch
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+          {
+            [
+              {
+                title: "Test trình độ miễn phí",
+                desc: "Học viên đã học tiếng Trung trước đó được test năng lực để xếp đúng lớp, không học lại phần đã biết.",
+              },
+              {
+                title: "Lớp 10–15 học viên",
+                desc: "Sĩ số nhỏ để giảng viên theo sát từng học viên, có chế độ học bù và phụ đạo miễn phí.",
+              },
+              {
+                title: "Học lại miễn phí",
+                desc: "Không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí.",
+              },
+            ].map((c) => (
+              <div class="rounded-2xl border border-border/80 bg-card p-5">
+                <p class="font-bricolage text-base font-extrabold text-foreground">
+                  {c.title}
+                </p>
+                <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {c.desc}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

@@ -1,0 +1,103 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import Doodle from "@/components/Doodle.astro";
+import { teacher } from "@/data/site";
+import { teachers } from "@/data/teachers";
+
+const lead = teachers.find((t) => t.lead) ?? teachers[0];
+const rest = teachers.filter((t) => t !== lead);
+---
+
+<section id="teachers" class="relative overflow-hidden bg-background scroll-mt-24">
+  <Doodle
+    name="asterisk"
+    class="absolute right-[5%] top-1/3 hidden size-14 text-brand-red-300 lg:block"
+  />
+
+  <div class="container relative z-10 mx-auto px-6">
+    <SectionHeading
+      title="Đứng lớp bởi giảng viên"
+      highlight="Thạc sĩ, Tiến sĩ"
+      description="Giảng viên của trung tâm tốt nghiệp Thạc sĩ, Tiến sĩ tại các đại học lớn của Trung Quốc và đang giảng dạy tại nhiều trường đại học uy tín ở TP.HCM."
+    />
+
+    {/* Giảng viên phụ trách chuyên môn */}
+    <div class="mt-16 grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+        <div
+          data-lightbox={lead.image}
+          data-caption={`${lead.name} — ${lead.title}`}
+          class="cursor-zoom-in overflow-hidden rounded-3xl shadow-[0_30px_60px_-38px_rgba(15,23,42,0.5)]"
+        >
+          <img
+            src={lead.image}
+            alt={`${lead.name} — ${lead.title}`}
+            loading="lazy"
+            width="940"
+            height="788"
+            class="w-full object-cover"
+          />
+        </div>
+      </div>
+
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 dark:text-brand-red-400">
+          {teacher.role}
+        </p>
+        <h3
+          class="mt-1 font-bricolage text-3xl font-black text-brand-ink-900 md:text-4xl dark:text-white"
+        >
+          {lead.name}
+        </h3>
+        <p class="mt-2 text-sm font-semibold text-muted-foreground">{lead.title}</p>
+
+        <ul class="mt-7 space-y-3">
+          {
+            teacher.points.map((p) => (
+              <li class="rounded-2xl bg-brand-ink-50 px-5 py-3.5 text-sm leading-relaxed text-muted-foreground dark:bg-white/[0.04]">
+                {p}
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-7 rounded-2xl bg-brand-ink-50 px-5 py-4 text-sm leading-relaxed text-foreground/85 dark:bg-white/[0.04]">
+          {teacher.note}
+        </p>
+      </div>
+    </div>
+
+    {/* Các giảng viên khác */}
+    <p class="mt-20 text-center font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+      Giảng viên tại SaigonHSK
+    </p>
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        rest.map((t, i) => (
+          <button
+            type="button"
+            data-lightbox={t.image}
+            data-caption={`${t.name} — ${t.title}`}
+            class={"group block cursor-zoom-in text-left transition-transform duration-300 hover:-translate-y-1.5"}
+          >
+            <img
+              src={t.image}
+              alt={`${t.name} — ${t.title}`}
+              loading="lazy"
+              width="940"
+              height="788"
+              class="w-full rounded-3xl object-cover shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]"
+            />
+            <p class="mt-4 px-1 font-bricolage text-base font-extrabold leading-snug text-brand-ink-900 dark:text-white">
+              {t.name}
+            </p>
+            <p class="mt-1 px-1 text-xs leading-relaxed text-muted-foreground">
+              {t.title}
+            </p>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</section>

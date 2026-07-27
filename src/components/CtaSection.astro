@@ -1,0 +1,80 @@
+---
+import Doodle from "@/components/Doodle.astro";
+import { contact, site } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  title?: string;
+  highlight?: string;
+  description?: string;
+  primaryHref?: string;
+  primaryLabel?: string;
+}
+
+const {
+  title = "Bắt đầu lộ trình tiếng Hoa của bạn",
+  highlight = "ngay hôm nay",
+  description = "Test trình độ miễn phí, xếp lớp đúng sức học và nhận lộ trình HSK rõ ràng theo mục tiêu của bạn. Cam kết 100% đầu ra — không đạt, học lại miễn phí.",
+  primaryHref = "/register",
+  primaryLabel = "Đăng ký tư vấn miễn phí",
+} = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-background pb-16 lg:pb-24">
+  <div class="container mx-auto px-6">
+    <div
+      class="relative overflow-hidden rounded-[2rem] bg-brand-red-600 px-6 py-16 text-center md:px-16 md:py-20"
+    >
+      <Doodle
+        name="star"
+        class="absolute left-[8%] top-10 hidden size-12 text-white/25 lg:block"
+      />
+      <Doodle
+        name="spiral"
+        class="absolute right-[10%] bottom-12 hidden size-12 text-white/25 lg:block"
+      />
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -bottom-14 right-4 select-none font-bricolage text-[11rem] font-black leading-none text-white/[0.08]"
+        >成功</span
+      >
+
+      <div class="relative z-10 mx-auto max-w-3xl">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/75">
+          {site.slogan} — {site.sloganVi}
+        </p>
+
+        <h2
+          class="mt-5 font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-white md:text-5xl"
+        >
+          {title}
+          {highlight && <span class="block text-brand-red-100">{highlight}</span>}
+        </h2>
+
+        <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85">
+          {description}
+        </p>
+
+        <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a
+            href={primaryHref}
+            class="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-bold text-brand-red-700 transition-transform hover:-translate-y-0.5 sm:w-auto"
+          >
+            {primaryLabel}
+            <span
+              class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+              set:html={ICONS.arrow}
+            />
+          </a>
+          <a
+            href={`tel:${contact.phonePrimaryRaw}`}
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white/15 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 sm:w-auto"
+          >
+            <span class="[&>svg]:size-4" set:html={ICONS.phone} />
+            {contact.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

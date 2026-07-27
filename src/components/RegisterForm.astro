@@ -1,0 +1,247 @@
+---
+/**
+ * Form đăng ký tư vấn — Astro thuần, không cần React.
+ * Dùng validation sẵn có của trình duyệt, JS chỉ lo phần gửi đi.
+ * Có PUBLIC_REGISTER_ENDPOINT → POST JSON; chưa có → mở sẵn email cho trung tâm.
+ */
+import { contact } from "@/data/site";
+import { courses } from "@/data/courses";
+import { onlineOfflineCourses } from "@/data/catalog";
+
+const courseOptions = [
+  ...onlineOfflineCourses.map((c) => c.title),
+  ...courses.map((c) => c.title),
+  "Chưa biết, cần tư vấn",
+];
+
+const levels = [
+  "Chưa học bao giờ",
+  "Đã học cơ bản (HSK1–HSK2)",
+  "Tương đương HSK3–HSK4",
+  "Tương đương HSK5 trở lên",
+  "Không rõ, cần trung tâm test",
+];
+
+const endpoint = import.meta.env.PUBLIC_REGISTER_ENDPOINT ?? "";
+
+const field =
+  "h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-brand-red-500 focus:ring-2 focus:ring-brand-red-500/20";
+const label = "mb-1.5 block text-sm font-semibold text-foreground";
+---
+
+<div data-register-root>
+  <form
+    data-register-form
+    class="space-y-4"
+    data-endpoint={endpoint}
+    data-email={contact.email}
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class={label} for="rf-name">
+          Họ và tên <span class="text-brand-red-600">*</span>
+        </label>
+        <input
+          id="rf-name"
+          name="name"
+          required
+          minlength="2"
+          autocomplete="name"
+          placeholder="Nguyễn Văn A"
+          class={field}
+        />
+      </div>
+
+      <div>
+        <label class={label} for="rf-phone">
+          Số điện thoại <span class="text-brand-red-600">*</span>
+        </label>
+        <input
+          id="rf-phone"
+          name="phone"
+          type="tel"
+          inputmode="tel"
+          required
+          pattern="[0-9\s+().-]{9,}"
+          autocomplete="tel"
+          placeholder="09xx xxx xxx"
+          class={field}
+        />
+      </div>
+    </div>
+
+    <div>
+      <label class={label} for="rf-email">
+        Email <span class="font-normal text-muted-foreground">(không bắt buộc)</span>
+      </label>
+      <input
+        id="rf-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="email@example.com"
+        class={field}
+      />
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class={label} for="rf-course">
+          Khoá học quan tâm <span class="text-brand-red-600">*</span>
+        </label>
+        <select id="rf-course" name="course" required class={field}>
+          <option value="" selected disabled>Chọn khoá học</option>
+          {courseOptions.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+
+      <div>
+        <label class={label} for="rf-level">
+          Trình độ hiện tại <span class="text-brand-red-600">*</span>
+        </label>
+        <select id="rf-level" name="level" required class={field}>
+          <option value="" selected disabled>Chọn trình độ</option>
+          {levels.map((l) => <option value={l}>{l}</option>)}
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class={label} for="rf-note">Mục tiêu / thời gian học mong muốn</label>
+      <textarea
+        id="rf-note"
+        name="note"
+        rows="3"
+        placeholder="Ví dụ: cần HSK4 trước tháng 12, học buổi tối sau 18h…"
+        class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-brand-red-500 focus:ring-2 focus:ring-brand-red-500/20"
+      ></textarea>
+    </div>
+
+    <p
+      data-register-error
+      hidden
+      class="rounded-xl bg-brand-red-50 px-4 py-3 text-sm font-medium text-brand-red-700 dark:bg-brand-red-500/10 dark:text-brand-red-300"
+    >
+      Gửi chưa thành công. Bạn vui lòng gọi {contact.phonePrimary} hoặc chat Zalo để được
+      hỗ trợ ngay.
+    </p>
+
+    <button
+      type="submit"
+      class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-red-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      Gửi đăng ký tư vấn
+    </button>
+
+    <p class="text-center text-xs leading-relaxed text-muted-foreground">
+      Thông tin của bạn chỉ dùng để tư vấn khoá học. Hoặc gọi trực tiếp
+      <a
+        href={`tel:${contact.phonePrimaryRaw}`}
+        class="font-semibold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+      >.
+    </p>
+  </form>
+
+  <div
+    data-register-success
+    hidden
+    class="rounded-2xl bg-brand-red-50 p-7 text-center dark:bg-brand-red-500/10"
+  >
+    <p class="font-bricolage text-xl font-extrabold text-brand-red-800 dark:text-brand-red-200">
+      Đã ghi nhận thông tin của bạn!
+    </p>
+    <p class="mt-2.5 text-sm leading-relaxed text-brand-red-900/80 dark:text-brand-red-100/80">
+      Trung tâm sẽ liên hệ để tư vấn lộ trình và xếp lớp. Nếu cần gấp, bạn gọi
+      <a href={`tel:${contact.phonePrimaryRaw}`} class="font-bold underline">
+        {contact.phonePrimary}
+      </a>
+      hoặc
+      <a href={contact.zalo} target="_blank" rel="noopener" class="font-bold underline">
+        chat Zalo
+      </a>
+      nhé.
+    </p>
+    <button
+      type="button"
+      data-register-reset
+      class="mt-5 cursor-pointer text-sm font-semibold text-brand-red-700 underline-offset-4 hover:underline dark:text-brand-red-300"
+    >
+      Gửi thêm một đăng ký khác
+    </button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-register-root]").forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>("[data-register-form]");
+    const success = root.querySelector<HTMLElement>("[data-register-success]");
+    const error = root.querySelector<HTMLElement>("[data-register-error]");
+    const reset = root.querySelector<HTMLButtonElement>("[data-register-reset]");
+    if (!form || !success) return;
+
+    const showSuccess = () => {
+      form.hidden = true;
+      success.hidden = false;
+      form.reset();
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+      const data = Object.fromEntries(new FormData(form).entries()) as Record<
+        string,
+        string
+      >;
+      if (error) error.hidden = true;
+
+      const endpoint = form.dataset.endpoint;
+      if (endpoint) {
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Đang gửi…";
+        }
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          showSuccess();
+        } catch {
+          if (error) error.hidden = false;
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = "Gửi đăng ký tư vấn";
+          }
+        }
+        return;
+      }
+
+      // Chưa cấu hình API: mở sẵn email gửi về trung tâm.
+      const body = [
+        `Họ tên: ${data.name}`,
+        `Điện thoại: ${data.phone}`,
+        data.email ? `Email: ${data.email}` : null,
+        `Khoá học quan tâm: ${data.course}`,
+        `Trình độ hiện tại: ${data.level}`,
+        data.note ? `Ghi chú: ${data.note}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(
+        `Đăng ký tư vấn khoá học — ${data.name}`,
+      )}&body=${encodeURIComponent(body)}`;
+      showSuccess();
+    });
+
+    reset?.addEventListener("click", () => {
+      success.hidden = true;
+      form.hidden = false;
+    });
+  });
+</script>

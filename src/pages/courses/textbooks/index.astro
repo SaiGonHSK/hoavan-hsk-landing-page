@@ -1,0 +1,23 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { textbookCourses } from "@/data/catalog";
+---
+
+<CatalogHub
+  title="Khoá học trực tuyến theo giáo trình"
+  metaTitle="Học tiếng Trung online theo giáo trình"
+  description="Học online theo đúng bộ giáo trình bạn đang dùng — chuẩn HSK 3.0, Boya, Hán ngữ 6 quyển hoặc Giáo trình tiêu chuẩn — với giảng viên của trung tâm kèm theo từng bài."
+  crumbs={[{ label: "Các khoá học", href: "/courses" }, { label: "Theo giáo trình" }]}
+  glyph="书"
+  columns={4}
+  groups={[
+    {
+      title: "Bốn bộ giáo trình đang dạy",
+      cards: textbookCourses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/textbooks/${c.slug}`,
+      })),
+    },
+  ]}
+/>

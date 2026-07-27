@@ -1,0 +1,126 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import Doodle from "@/components/Doodle.astro";
+import { values, commitments, stats, contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+---
+
+<section id="why-us" class="relative overflow-hidden bg-background scroll-mt-24">
+  <Doodle
+    name="flower"
+    class="absolute right-[6%] top-24 hidden size-14 text-amber-400 lg:block"
+  />
+  <Doodle
+    name="asterisk"
+    class="absolute left-[4%] top-1/2 hidden size-12 text-brand-red-300 lg:block"
+  />
+
+  <div class="container relative z-10 mx-auto px-6">
+    <SectionHeading
+      title="Vì sao học viên chọn"
+      highlight="Hoa văn SaigonHSK?"
+      description="SaigonHSK là trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP.HCM. Với những giá trị khác biệt, chúng tôi thực hiện sứ mệnh truyền đạt tinh hoa ngôn ngữ cho cộng đồng."
+    />
+
+    {/* Dải số liệu */}
+    <dl class="mt-14 grid grid-cols-2 gap-6 rounded-3xl bg-brand-ink-50 px-8 py-9 md:grid-cols-4 md:px-12 dark:bg-white/[0.04]">
+      {
+        stats.map((s) => (
+          <div class="text-center">
+            <dt class="font-bricolage text-3xl font-black text-brand-red-600 md:text-4xl dark:text-brand-red-400">
+              {s.value}
+            </dt>
+            <dd class="mt-2 text-xs leading-relaxed text-muted-foreground md:text-sm">
+              {s.label}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    {/* 4 giá trị cốt lõi */}
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      {
+        values.map((v, i) => (
+          <article
+            class={"rounded-3xl bg-brand-ink-50 p-7 transition-transform duration-300 hover:-translate-y-1 md:p-8 dark:bg-white/[0.04]"}
+          >
+            <span class="font-bricolage text-2xl font-black text-brand-red-500 dark:text-brand-red-400">
+              0{i + 1}
+            </span>
+            <h3 class="mt-2 font-bricolage text-xl font-extrabold text-brand-ink-900 md:text-2xl dark:text-white">
+              {v.title}
+            </h3>
+            <p class="mt-3 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+              {v.desc}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+
+    {/* 3 cam kết */}
+    <div class="mt-16 text-center">
+      <p class="font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+        Ba cam kết đi cùng mọi khóa học
+      </p>
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+      {
+        commitments.map((c, i) => (
+          <article
+            class={"relative overflow-hidden rounded-3xl bg-brand-red-600 p-7 text-white transition-transform duration-300 hover:-translate-y-1"}
+          >
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute -bottom-8 -right-3 select-none font-bricolage text-8xl font-black leading-none text-white/10"
+            >
+              保
+            </span>
+            <h3 class="relative font-bricolage text-lg font-bold leading-snug">
+              {c.title}
+            </h3>
+            <p class="relative mt-3 text-sm leading-relaxed text-white/80">{c.desc}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    {/* CTA học thử */}
+    <div
+      class="mt-10 flex flex-col items-center justify-between gap-6 rounded-3xl bg-brand-ink-50 p-8 md:flex-row md:p-10 dark:bg-white/[0.04]"
+    >
+      <div>
+        <p class="font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+          Học thử miễn phí một buổi
+        </p>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Ngồi học cùng lớp đang mở để cảm nhận cách giảng dạy trước khi quyết định
+          đăng ký khóa học.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a
+          href="/register"
+          class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+        >
+          Đăng ký học thử
+          <span
+            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+            set:html={ICONS.arrow}
+          />
+        </a>
+        <a
+          href={`tel:${contact.phonePrimaryRaw}`}
+          class="inline-flex items-center gap-2 rounded-full bg-background px-6 py-4 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/10"
+        >
+          <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
+          {contact.phonePrimary}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

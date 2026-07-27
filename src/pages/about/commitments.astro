@@ -1,0 +1,71 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { commitments, contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+---
+
+<Layout
+  title="Cam kết đầu ra khoá học tiếng Trung | SaigonHSK"
+  description="SaigonHSK cam kết 100% đầu ra: không đạt mục tiêu đã cam kết, học viên được học lại miễn phí. Kiến thức chuẩn HSK 3.0, giảng viên Thạc sĩ – Tiến sĩ."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Cam kết của SaigonHSK"
+      description="Ba cam kết áp dụng cho mọi khoá học tại trung tâm."
+      crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Cam kết" }]}
+      glyph="诺"
+    />
+
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-6 md:grid-cols-3">
+          {
+            commitments.map((c) => (
+              <article class="rounded-3xl bg-brand-red-600 p-7 text-white">
+                <h2 class="font-bricolage text-lg font-bold leading-snug">{c.title}</h2>
+                <p class="mt-3 text-sm leading-relaxed text-white/80">{c.desc}</p>
+              </article>
+            ))
+          }
+        </div>
+
+        <div
+          class="mt-6 flex flex-col items-center justify-between gap-6 rounded-3xl bg-brand-ink-50 p-8 md:flex-row md:p-10 dark:bg-white/[0.04]"
+        >
+          <div>
+            <p class="font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+              Muốn xem lớp học thực tế?
+            </p>
+            <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              Đăng ký một buổi học thử miễn phí hoặc ghé trung tâm tại {
+                contact.addressShort
+              }.
+            </p>
+          </div>
+          <a
+            href="/trial"
+            class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-red-600 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+          >
+            Đăng ký học thử
+            <span
+              class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+              set:html={ICONS.arrow}
+            />
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

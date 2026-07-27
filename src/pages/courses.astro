@@ -1,0 +1,64 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { hskCourses, hskExamCourses, specialCourses, textbookCourses } from "@/data/catalog";
+import { courses as programs } from "@/data/courses";
+---
+
+<CatalogHub
+  title="Các khoá học tiếng Trung tại SaigonHSK"
+  metaTitle="Khoá học tiếng Trung TP.HCM — HSK1 đến HSK6"
+  description="Học theo cấp HSK, luyện thi lấy chứng chỉ, giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung chuyên ngành — tất cả đều có lộ trình và chuẩn đầu ra rõ ràng."
+  metaTitle="Các khoá học"
+  crumbs={[{ label: "Các khoá học" }]}
+  glyph="课"
+  groups={[
+    {
+      title: "Khoá học theo cấp HSK",
+      desc: "Lộ trình chuẩn HSK 3.0 từ HSK1 đến HSK6, học offline tại trung tâm hoặc online.",
+      cards: hskCourses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/${c.slug}`,
+        tag: "Chuẩn HSK 3.0",
+      })),
+    },
+    {
+      title: "Lớp luyện thi HSK",
+      desc: "Luyện đề, chiến thuật làm bài và thi thử trước kỳ thi chính thức.",
+      cards: hskExamCourses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/${c.slug}`,
+        tag: "Luyện đề",
+      })),
+    },
+    {
+      title: "Khoá học chuyên biệt",
+      desc: "Giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung theo ngành nghề.",
+      cards: specialCourses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/${c.slug}`,
+      })),
+    },
+    {
+      title: "Học trực tuyến theo giáo trình",
+      desc: "Đi theo đúng bộ giáo trình bạn đang dùng, có giảng viên kèm từng bài.",
+      cards: textbookCourses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/textbooks/${c.slug}`,
+      })),
+    },
+    {
+      title: "Chương trình đào tạo tại trung tâm",
+      desc: "Các lớp truyền thống của SaigonHSK với chi tiết đối tượng, thời lượng và chuẩn đầu ra từng cấp.",
+      cards: programs.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/courses/programs/${c.slug}`,
+        tag: c.goal,
+      })),
+    },
+  ]}
+/>

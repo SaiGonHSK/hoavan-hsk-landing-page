@@ -1,0 +1,30 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import Teacher from "@/components/Teacher.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+---
+
+<Layout
+  title="Đội ngũ giảng viên tiếng Trung Thạc sĩ, Tiến sĩ | SaigonHSK"
+  description="Giảng viên của Hoa văn SaigonHSK tốt nghiệp Thạc sĩ, Tiến sĩ tại Đại học Sư phạm Hoa Đông, Ngôn ngữ Bắc Kinh, Tây Nam Trùng Khánh và đang giảng dạy tại các trường đại học TP.HCM."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Đội ngũ giảng viên"
+      description="Người đứng lớp quyết định phần lớn kết quả học. Đây là các giảng viên đang trực tiếp giảng dạy tại SaigonHSK."
+      crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Đội ngũ giảng viên" }]}
+      glyph="师"
+    />
+    <Teacher />
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

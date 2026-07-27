@@ -1,0 +1,70 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { ICONS } from "@/lib/icons";
+import { site, contact } from "@/data/site";
+
+const shortcuts = [
+  { label: "Các khoá học", href: "/courses" },
+  { label: "Ôn tập & luyện thi", href: "/practice" },
+  { label: "Học thử miễn phí", href: "/trial" },
+  { label: "Thư viện tiếng Trung", href: "/library" },
+  { label: "Lịch khai giảng", href: "/schedule" },
+  { label: "Liên hệ", href: "/contact" },
+];
+---
+
+<Layout
+  title={`Không tìm thấy trang — ${site.fullName}`}
+  description="Trang bạn tìm không tồn tại hoặc đã được chuyển. Xem các khoá học tiếng Trung, lịch khai giảng và thư viện của Hoa văn SaigonHSK."
+  noindex
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <section class="bg-background py-24 lg:py-32">
+      <div class="container mx-auto px-6 text-center">
+        <p class="font-bricolage text-[6rem] font-black leading-none text-brand-red-600 lg:text-[9rem] dark:text-brand-red-400">
+          404
+        </p>
+        <h1 class="mt-4 font-bricolage text-3xl font-black text-brand-ink-900 md:text-5xl dark:text-white">
+          Không tìm thấy trang này
+        </h1>
+        <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
+          Đường dẫn có thể đã thay đổi. Bạn thử các mục bên dưới, hoặc gọi
+          <a
+            href={`tel:${contact.phonePrimaryRaw}`}
+            class="font-semibold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+          > để được hỗ trợ trực tiếp.
+        </p>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          {
+            shortcuts.map((s) => (
+              <a
+                href={s.href}
+                class="rounded-full bg-brand-ink-50 px-5 py-3 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+              >
+                {s.label}
+              </a>
+            ))
+          }
+        </div>
+
+        <a
+          href="/"
+          class="group mt-10 inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-8 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+        >
+          Về trang chủ
+          <span
+            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+            set:html={ICONS.arrow}
+          />
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

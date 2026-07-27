@@ -1,0 +1,86 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { site, commitments } from "@/data/site";
+
+const steps = [
+  {
+    step: "01",
+    title: "Để lại thông tin",
+    desc: "Điền form đăng ký hoặc gọi hotline. Bạn cho biết mục tiêu và thời gian học mong muốn.",
+  },
+  {
+    step: "02",
+    title: "Test trình độ miễn phí",
+    desc: "Trung tâm kiểm tra nhanh vốn từ, ngữ pháp và kỹ năng để xác định cấp độ phù hợp.",
+  },
+  {
+    step: "03",
+    title: "Nhận lộ trình & xếp lớp",
+    desc: "Giảng viên tư vấn lộ trình, thời lượng, học phí và xếp bạn vào lớp đúng trình độ.",
+  },
+  {
+    step: "04",
+    title: "Học thử rồi quyết định",
+    desc: "Bạn học thử một buổi cùng lớp đang mở trước khi chốt đăng ký khoá học.",
+  },
+];
+---
+
+<Layout
+  title="Đăng ký học tiếng Trung tại TP.HCM — test trình độ miễn phí"
+  description="Đăng ký học tiếng Trung tại Hoa văn SaigonHSK: test trình độ miễn phí, nhận lộ trình phù hợp và học thử một buổi trước khi quyết định."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Đăng ký học tại SaigonHSK"
+      description="Bốn bước đơn giản: để lại thông tin, test trình độ miễn phí, nhận lộ trình và học thử một buổi trước khi quyết định."
+      crumbs={[{ label: "Đăng ký" }]}
+      glyph="报"
+    />
+
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {
+            steps.map((s) => (
+              <div class="rounded-3xl bg-brand-ink-50 p-7 dark:bg-white/[0.04]">
+                <span class="font-bricolage text-4xl font-black leading-none text-brand-red-500 dark:text-brand-red-400">
+                  {s.step}
+                </span>
+                <h2 class="mt-3 font-bricolage text-lg font-extrabold text-brand-ink-900 dark:text-white">
+                  {s.title}
+                </h2>
+                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                  {s.desc}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="mt-6 grid gap-6 md:grid-cols-3">
+          {
+            commitments.map((c) => (
+              <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
+                <h3 class="font-bricolage text-lg font-bold leading-snug">{c.title}</h3>
+                <p class="mt-3 text-sm leading-relaxed text-white/80">{c.desc}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

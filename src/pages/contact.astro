@@ -1,0 +1,30 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import FAQ from "@/components/FAQ.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { contact, site } from "@/data/site";
+---
+
+<Layout
+  title="Liên hệ trung tâm tiếng Trung SaigonHSK tại TP.HCM"
+  description={`Liên hệ Trung tâm Hoa văn SaigonHSK: ${contact.address}. Hotline ${contact.phones.join(" – ")}, email ${contact.email}.`}
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 pb-16 lg:gap-24 lg:pb-24">
+    <PageHero
+      title="Liên hệ với SaigonHSK"
+      description="Gọi hotline, nhắn Zalo hoặc để lại thông tin — trung tâm sẽ tư vấn lộ trình, học phí và lịch khai giảng phù hợp với bạn."
+      crumbs={[{ label: "Liên hệ" }]}
+      glyph="联"
+    />
+
+    <RegisterSection />
+    <FAQ />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

@@ -1,0 +1,56 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import FaqAccordion from "@/components/FaqAccordion.astro";
+import { faqs } from "@/data/faq";
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+/** FAQPage schema để câu hỏi có thể hiện trên kết quả tìm kiếm. */
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.answer },
+  })),
+};
+---
+
+<section id="faq" class="bg-background scroll-mt-24">
+  <div class="container mx-auto px-6">
+    <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <SectionHeading
+          align="left"
+          title="Câu hỏi"
+          highlight="thường gặp"
+          description="Những thắc mắc phổ biến nhất về lộ trình, cam kết đầu ra, giáo trình và cách xếp lớp tại SaigonHSK."
+        />
+
+        <div
+          class="mt-8 rounded-3xl bg-brand-ink-50 p-6 dark:bg-white/[0.04]"
+        >
+          <p class="text-sm font-semibold text-foreground">Còn câu hỏi khác?</p>
+          <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Gọi trực tiếp để được giảng viên tư vấn cụ thể theo trình độ và mục tiêu
+            của bạn.
+          </p>
+          <a
+            href={`tel:${contact.phonePrimaryRaw}`}
+            class="mt-5 inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+          >
+            <span class="[&>svg]:size-4" set:html={ICONS.phone} />
+            {contact.phonePrimary}
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <FaqAccordion items={faqs} name="faq" />
+      </div>
+    </div>
+  </div>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+</section>

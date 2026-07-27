@@ -1,0 +1,72 @@
+---
+/**
+ * Lightbox dùng chung cho toàn trang.
+ * Bất kỳ phần tử nào có `data-lightbox="/duong-dan-anh.png"` (kèm `data-caption`
+ * tuỳ chọn) khi bấm vào sẽ mở ảnh cỡ lớn — xử lý bằng event delegation nên
+ * không cần khai báo thêm gì ở component con.
+ */
+import { ICONS } from "@/lib/icons";
+---
+
+<div
+  id="app-lightbox"
+  data-open="false"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Xem ảnh cỡ lớn"
+  class="pointer-events-none fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 opacity-0 backdrop-blur-sm transition-opacity duration-200 data-[open=true]:pointer-events-auto data-[open=true]:opacity-100 md:p-8"
+>
+  <button
+    type="button"
+    data-lightbox-close
+    aria-label="Đóng"
+    class="absolute right-4 top-4 inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/25 transition-colors hover:bg-white/20 [&>svg]:size-5"
+    set:html={ICONS.close}
+  />
+
+  <figure class="max-h-full w-full max-w-6xl overflow-auto">
+    <img
+      data-lightbox-image
+      src=""
+      alt=""
+      class="mx-auto max-h-[82vh] w-auto max-w-full rounded-xl object-contain shadow-2xl"
+    />
+    <figcaption
+      data-lightbox-caption
+      class="mt-4 text-center text-sm font-medium text-white/80"
+    >
+    </figcaption>
+  </figure>
+</div>
+
+<script>
+  const box = document.getElementById("app-lightbox");
+  const img = box?.querySelector<HTMLImageElement>("[data-lightbox-image]");
+  const caption = box?.querySelector<HTMLElement>("[data-lightbox-caption]");
+
+  const close = () => {
+    if (!box) return;
+    box.dataset.open = "false";
+    document.body.style.overflow = "";
+  };
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    const trigger = target?.closest<HTMLElement>("[data-lightbox]");
+    if (!trigger || !box || !img) return;
+
+    img.src = trigger.dataset.lightbox ?? "";
+    img.alt = trigger.dataset.caption ?? "";
+    if (caption) caption.textContent = trigger.dataset.caption ?? "";
+    box.dataset.open = "true";
+    document.body.style.overflow = "hidden";
+  });
+
+  box?.querySelector("[data-lightbox-close]")?.addEventListener("click", close);
+  box?.addEventListener("click", (event) => {
+    if (event.target === box) close();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") close();
+  });
+</script>

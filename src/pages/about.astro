@@ -1,0 +1,209 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { site, mission, stats, contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+const gallery = [
+  {
+    src: "/images/classroom.webp",
+    alt: "Không khí một lớp học tại Trung tâm Hoa văn SaigonHSK",
+    wide: true,
+  },
+  { src: "/images/facility-1.webp", alt: "Phòng học của Trung tâm Hoa văn SaigonHSK" },
+  { src: "/images/facility-2.webp", alt: "Khu vực cầu thang tại trung tâm" },
+];
+
+/** Các trang con của mục Giới thiệu — mỗi trang nhắm một nhóm từ khoá riêng. */
+const sections = [
+  {
+    title: "05 khác biệt của chúng tôi",
+    desc: "Vì người học, giảng viên chất lượng, tiết kiệm thời gian, hiệu quả cao và lớp nhỏ 10–15 học viên.",
+    href: "/about/differences",
+  },
+  {
+    title: "Đội ngũ giảng viên",
+    desc: "Thạc sĩ, Tiến sĩ tốt nghiệp các đại học lớn của Trung Quốc, đang giảng dạy tại nhiều trường đại học TP.HCM.",
+    href: "/about/teachers",
+  },
+  {
+    title: "Học viên cảm nhận và đánh giá",
+    desc: "Phản hồi thật của sinh viên và học viên sau khi hoàn thành khoá học tại trung tâm.",
+    href: "/about/reviews",
+  },
+  {
+    title: "Thành tích học viên",
+    desc: "Chuẩn đầu ra cam kết theo từng nhóm lớp: 100% đậu HSK2, HSK3, HSK4, HSK5.",
+    href: "/about/achievements",
+  },
+  {
+    title: "Cam kết",
+    desc: "Ba cam kết áp dụng cho mọi khoá học, trong đó có học lại miễn phí nếu không đạt đầu ra.",
+    href: "/about/commitments",
+  },
+];
+---
+
+<Layout
+  title="Giới thiệu Trung tâm tiếng Trung SaigonHSK TP.HCM"
+  description="Trung tâm Hoa văn SaigonHSK — đào tạo tiếng Trung và luyện thi HSK, TOCFL tại TP.HCM từ năm 2019. Giảng viên Thạc sĩ – Tiến sĩ, lớp 10–15 học viên, cam kết 100% đầu ra."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Trung tâm Hoa văn SaigonHSK"
+      description={`${site.slogan} — Vì sự thành công của bạn. Địa chỉ đào tạo tiếng Hoa chất lượng cao, uy tín tại TP. HCM với cam kết 100% đầu ra.`}
+      crumbs={[{ label: "Giới thiệu" }]}
+      glyph="华"
+    />
+
+    {/* Về chúng tôi */}
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+          <div>
+            <SectionHeading
+              align="left"
+              title="Chào mừng bạn đến với"
+              highlight="Hoa văn SaigonHSK"
+            />
+            <div class="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground">
+              <p>
+                SaigonHSK là trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại
+                TP.HCM. Với những giá trị khác biệt, chúng tôi thực hiện sứ mệnh truyền
+                đạt tinh hoa ngôn ngữ cho cộng đồng.
+              </p>
+              <p>
+                Trung tâm dạy tiếng Trung từ Sơ cấp đến Cao cấp, từ luyện HSK đến TOCFL
+                — <span class="font-semibold text-foreground">cam kết đầu ra</span>. Học
+                viên không đạt mục tiêu đã cam kết được học lại hoàn toàn miễn phí.
+              </p>
+              <p>
+                Đội ngũ giảng viên đều có kinh nghiệm giảng dạy và tâm huyết với nghề.
+                Phần lớn tốt nghiệp Thạc sĩ, Tiến sĩ tại các đại học lớn của Trung Quốc
+                và đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam.
+              </p>
+            </div>
+
+            <dl
+              class="mt-10 grid grid-cols-2 gap-6 rounded-3xl bg-brand-ink-50 p-8 sm:grid-cols-4 dark:bg-white/[0.04]"
+            >
+              {
+                stats.map((s) => (
+                  <div class="text-center">
+                    <dt class="font-bricolage text-2xl font-black text-brand-red-600 dark:text-brand-red-400">
+                      {s.value}
+                    </dt>
+                    <dd class="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                      {s.label}
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+
+          <div class="space-y-5">
+            <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
+              <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
+                Sứ mệnh
+              </p>
+              <p class="mt-3 text-base leading-relaxed text-white/90">
+                {mission.statement}
+              </p>
+            </div>
+            <div class="rounded-3xl bg-brand-ink-50 p-7 dark:bg-white/[0.04]">
+              <p
+                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600 dark:text-brand-red-400"
+              >
+                Phương châm hoạt động
+              </p>
+              <p class="mt-3 text-base leading-relaxed text-muted-foreground">
+                {mission.motto}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Điều hướng sang các trang con */}
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          title="Tìm hiểu thêm về"
+          highlight="trung tâm"
+          description="Mỗi mục dưới đây là một trang riêng, đi sâu vào từng khía cạnh của SaigonHSK."
+        />
+
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            sections.map((s) => (
+              <a
+                href={s.href}
+                class="group flex flex-col rounded-3xl bg-brand-ink-50 p-6 transition-transform duration-300 hover:-translate-y-1.5 dark:bg-white/[0.04]"
+              >
+                <h2 class="font-bricolage text-lg font-extrabold leading-snug text-brand-ink-900 dark:text-white">
+                  {s.title}
+                </h2>
+                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                  {s.desc}
+                </p>
+                <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600 dark:text-brand-red-400">
+                  Xem chi tiết
+                  <span
+                    class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
+                    set:html={ICONS.arrow}
+                  />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* Cơ sở vật chất */}
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          title="Cơ sở vật chất"
+          highlight="lớp nhỏ 10–15 học viên"
+          description={`Trung tâm đặt tại ${contact.address} — phòng học đầy đủ thiết bị trình chiếu và âm thanh phục vụ luyện nghe.`}
+        />
+        <div class="mt-12 grid gap-6 md:grid-cols-2">
+          {
+            gallery.map((g) => (
+              <figure
+                class:list={["overflow-hidden rounded-3xl", g.wide && "md:col-span-2"]}
+              >
+                <img
+                  src={g.src}
+                  alt={g.alt}
+                  loading="lazy"
+                  width="1024"
+                  height={g.wide ? "577" : "768"}
+                  class:list={[
+                    "w-full object-cover",
+                    g.wide ? "aspect-[16/8]" : "aspect-[4/3]",
+                  ]}
+                />
+              </figure>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

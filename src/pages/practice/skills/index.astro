@@ -1,0 +1,23 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { skillTracks } from "@/data/catalog";
+---
+
+<CatalogHub
+  title="Luyện bốn kỹ năng"
+  metaTitle="Luyện nghe nói đọc viết tiếng Trung theo cấp HSK"
+  description="Nghe – Nói – Đọc – Viết được luyện riêng theo từng cấp độ, giúp bạn tập trung đúng vào kỹ năng đang yếu."
+  crumbs={[{ label: "Ôn tập & luyện thi", href: "/practice" }, { label: "Luyện kỹ năng" }]}
+  glyph="能"
+  columns={4}
+  groups={[
+    {
+      title: "Chọn kỹ năng muốn luyện",
+      cards: skillTracks.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/practice/skills/${c.slug}`,
+      })),
+    },
+  ]}
+/>

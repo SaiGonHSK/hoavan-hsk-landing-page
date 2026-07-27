@@ -1,0 +1,75 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { contact } from "@/data/site";
+
+/** Chuẩn đầu ra theo từng nhóm lớp — mức trung tâm cam kết, lấy từ mô tả khoá học. */
+const achievements = [
+  { label: "Lớp Sơ cấp 1", result: "100% đậu HSK2" },
+  { label: "Lớp Sơ cấp 2", result: "100% đậu HSK3" },
+  { label: "Lớp Sơ cấp 3", result: "100% đậu HSK4" },
+  { label: "Luyện HSK4 (thường & đặc biệt)", result: "100% đậu HSK4" },
+  { label: "Luyện HSK5 (thường & đặc biệt)", result: "100% đậu HSK5" },
+  { label: "Lớp Trung cấp 1", result: "Đạt 1/2 trình độ HSK5" },
+];
+---
+
+<Layout
+  title="Thành tích học viên — chuẩn đầu ra từng lớp | SaigonHSK"
+  description="Chuẩn đầu ra cam kết theo từng nhóm lớp tại Hoa văn SaigonHSK: 100% đậu HSK2, HSK3, HSK4, HSK5. Không đạt được học lại miễn phí."
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Thành tích học viên"
+      description="Mức trung tâm cam kết cho học viên hoàn thành chương trình — không đạt được học lại miễn phí."
+      crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Thành tích học viên" }]}
+      glyph="绩"
+    />
+
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {
+            achievements.map((a) => (
+              <div class="flex items-center justify-between gap-4 rounded-2xl bg-brand-ink-50 px-6 py-5 dark:bg-white/[0.04]">
+                <span class="text-sm font-semibold text-foreground">{a.label}</span>
+                <span class="shrink-0 rounded-full bg-brand-red-600 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-white">
+                  {a.result}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+
+        <figure class="mt-10 rounded-3xl bg-brand-ink-900 p-8 text-white md:p-10 dark:bg-white/[0.04]">
+          <blockquote class="font-bricolage text-lg font-bold leading-[1.5] md:text-xl">
+            “Chỉ hơn 1 năm, từ một người chưa biết gì về tiếng Trung, mình đồng thời thi
+            đậu HSK6 và TOCFL Band C1.”
+          </blockquote>
+          <figcaption class="mt-5 text-sm text-white/70">
+            Hiển Hoàng — Sinh viên ĐH KHXH&NV TP.HCM
+          </figcaption>
+        </figure>
+
+        <p class="mt-6 text-sm leading-relaxed text-muted-foreground">
+          Bạn là học viên cũ và đã có kết quả thi? Gửi bảng điểm về
+          <a
+            href={`mailto:${contact.email}`}
+            class="font-semibold text-brand-red-600 hover:underline">{contact.email}</a
+          > để trung tâm cập nhật vào bảng thành tích.
+        </p>
+      </div>
+    </section>
+
+    <RegisterSection />
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

@@ -1,0 +1,104 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import Doodle from "@/components/Doodle.astro";
+import RegisterForm from "@/components/RegisterForm.astro";
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+const infoCards = [
+  { label: "Địa chỉ trung tâm", value: contact.address, href: contact.mapsUrl },
+  {
+    label: "Hotline / Zalo",
+    value: contact.phones.join(" – "),
+    href: `tel:${contact.phonePrimaryRaw}`,
+  },
+  { label: "Email", value: contact.email, href: `mailto:${contact.email}` },
+  { label: "Giờ làm việc", value: contact.workingHours },
+];
+---
+
+<section id="register" class="relative overflow-hidden bg-background scroll-mt-24">
+  <Doodle
+    name="flower"
+    class="absolute left-[6%] top-24 hidden size-14 text-amber-400 lg:block"
+  />
+
+  <div class="container relative z-10 mx-auto px-6">
+    <SectionHeading
+      title="Nhận tư vấn lộ trình và"
+      highlight="test trình độ miễn phí"
+      description="Để lại thông tin, giảng viên của trung tâm sẽ liên hệ tư vấn lộ trình phù hợp với mục tiêu, trình độ và thời gian của bạn."
+    />
+
+    <div class="mt-16 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+      {/* Form */}
+      <div class="rounded-3xl bg-brand-ink-50 p-6 md:p-9 dark:bg-white/[0.04]">
+        <RegisterForm />
+      </div>
+
+      {/* Thông tin liên hệ + bản đồ */}
+      <div class="flex flex-col gap-6">
+        <div class="grid gap-4 sm:grid-cols-2">
+          {
+            infoCards.map((c) => {
+              const inner = (
+                <>
+                  <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-red-600 dark:text-brand-red-400">
+                    {c.label}
+                  </p>
+                  <p class="mt-2 text-sm font-semibold leading-relaxed text-foreground">
+                    {c.value}
+                  </p>
+                </>
+              );
+
+              return c.href ? (
+                <a
+                  href={c.href}
+                  target={c.href.startsWith("http") ? "_blank" : undefined}
+                  rel="noopener"
+                  class="rounded-2xl bg-brand-ink-50 p-5 transition-transform hover:-translate-y-0.5 dark:bg-white/[0.04]"
+                >
+                  {inner}
+                </a>
+              ) : (
+                <div class="rounded-2xl bg-brand-ink-50 p-5 dark:bg-white/[0.04]">
+                  {inner}
+                </div>
+              );
+            })
+          }
+        </div>
+
+        <div class="min-h-[260px] flex-1 overflow-hidden rounded-3xl">
+          <iframe
+            src={contact.mapEmbedUrl}
+            title="Bản đồ đường đi tới Trung tâm Hoa văn SaigonHSK"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="size-full min-h-[260px] border-0"></iframe>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <a
+            href={contact.zalo}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-[#0068ff] px-5 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+          >
+            <span class="[&>svg]:size-4" set:html={ICONS.zalo} />
+            Chat Zalo
+          </a>
+          <a
+            href={contact.facebook}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-brand-ink-900 px-5 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 dark:bg-white/10"
+          >
+            Fanpage Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

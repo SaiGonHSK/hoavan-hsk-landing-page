@@ -1,0 +1,381 @@
+---
+import Logo from "@/components/Logo.astro";
+import { contact, site } from "@/data/site";
+import { navigation } from "@/data/navigation";
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  /** Đường dẫn hiện tại để tô sáng mục menu đang mở. */
+  path?: string;
+}
+const { path = Astro.url.pathname } = Astro.props;
+
+const isActive = (href: string) => {
+  const clean = path.replace(/\/$/, "") || "/";
+  if (href === "/") return clean === "/";
+  return clean === href || clean.startsWith(`${href}/`);
+};
+
+const mainNav = navigation.filter((n) => !n.cta);
+const ctaNav = navigation.find((n) => n.cta);
+---
+
+{/* Thanh thông tin liên hệ phía trên */}
+<div class="hidden border-b border-white/10 bg-brand-red-700 text-white lg:block">
+  <div
+    class="container mx-auto flex items-center justify-between gap-6 px-6 py-1.5 text-xs"
+  >
+    <div class="flex items-center gap-5">
+      <a
+        href={`tel:${contact.phonePrimaryRaw}`}
+        class="inline-flex items-center gap-1.5 font-semibold transition-opacity hover:opacity-80"
+      >
+        <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
+        {contact.phonePrimary}
+      </a>
+      <a
+        href={contact.mapsUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-1.5 text-white/85 transition-opacity hover:opacity-100"
+      >
+        <span class="[&>svg]:size-3.5" set:html={ICONS.pin} />
+        {contact.addressShort}
+      </a>
+    </div>
+    <div class="flex items-center gap-5">
+      <span class="text-white/85">{contact.workingHours}</span>
+      <a
+        href={contact.zalo}
+        target="_blank"
+        rel="noopener"
+        class="font-semibold underline-offset-2 hover:underline">Zalo</a
+      >
+      <a
+        href={contact.facebook}
+        target="_blank"
+        rel="noopener"
+        class="font-semibold underline-offset-2 hover:underline">Facebook</a
+      >
+    </div>
+  </div>
+</div>
+
+<header
+  id="site-header"
+  data-scrolled="false"
+  class="sticky top-0 z-40 border-b border-transparent bg-background/85 backdrop-blur-sm transition-all duration-300 data-[scrolled=true]:border-border data-[scrolled=true]:bg-background/95 data-[scrolled=true]:shadow-sm"
+>
+  <div class="container mx-auto flex items-center justify-between gap-4 px-6 py-3">
+    <div class="flex flex-1 items-center gap-6 xl:gap-8">
+      <Logo />
+
+      <nav class="hidden items-center gap-0.5 lg:flex">
+        {
+          mainNav.map((item) => {
+            const active = isActive(item.href);
+            const hasMenu = Boolean(item.items || item.groups);
+            const linkClass = `relative inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-brand-red-600 dark:hover:text-white ${
+              active ? "text-brand-red-600 dark:text-white" : "text-foreground/75"
+            }`;
+
+            if (!hasMenu) {
+              return (
+                <a href={item.href} class={linkClass}>
+                  {item.label}
+                  {active && (
+                    <span class="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-red-600 dark:bg-white" />
+                  )}
+                </a>
+              );
+            }
+
+            return (
+              <div class="group/menu relative" data-menu data-open="false">
+                <a href={item.href} class={linkClass}>
+                  {item.label}
+                  <span
+                    class="[&>svg]:size-3.5 [&>svg]:transition-transform group-data-[open=true]/menu:[&>svg]:rotate-180"
+                    set:html={ICONS.chevron}
+                  />
+                  {active && (
+                    <span class="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-red-600 dark:bg-white" />
+                  )}
+                </a>
+
+                {item.groups ? (
+                  <div
+                    data-menu-panel
+                    data-mega
+                    data-open="false"
+                    class="invisible fixed inset-x-0 z-30 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                  >
+                   <div class="container mx-auto px-6">
+                    <div class="overflow-hidden rounded-3xl border border-border bg-background/98 shadow-2xl backdrop-blur-md">
+                      <div class="grid gap-x-6 gap-y-8 p-7 md:grid-cols-4">
+                        {item.groups.map((group) => (
+                          <div>
+                            <a
+                              href={group.href ?? item.href}
+                              class="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 transition-opacity hover:opacity-70 dark:text-brand-red-400"
+                            >
+                              {group.title}
+                            </a>
+                            <ul class="mt-3.5 space-y-0.5">
+                              {group.items.map((link) => (
+                                <li>
+                                  <a
+                                    href={link.href}
+                                    class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700 dark:hover:bg-white/5 dark:hover:text-white"
+                                  >
+                                    {link.label}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+
+                      <a
+                        href={item.href}
+                        class="group/all flex items-center justify-between gap-3 border-t border-border bg-brand-ink-50 px-7 py-4 text-sm font-bold text-foreground transition-colors hover:text-brand-red-600 dark:bg-white/[0.04]"
+                      >
+                        Xem tất cả {item.label.toLowerCase()}
+                        <span
+                          class="transition-transform group-hover/all:translate-x-1 [&>svg]:size-4"
+                          set:html={ICONS.arrow}
+                        />
+                      </a>
+                    </div>
+                   </div>
+                  </div>
+                ) : (
+                  <div
+                    data-menu-panel
+                    data-open="false"
+                    class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                  >
+                    <div class="overflow-hidden rounded-2xl border border-border bg-background/98 p-2 shadow-xl backdrop-blur-md">
+                      {item.items?.map((link) => (
+                        <a
+                          href={link.href}
+                          class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        }
+      </nav>
+    </div>
+
+    {/* CTA */}
+    {
+      ctaNav && (
+        <a
+          href={ctaNav.href}
+          class="hidden shrink-0 items-center gap-2 rounded-full bg-brand-red-600 px-6 py-2.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 lg:inline-flex"
+        >
+          {ctaNav.label}
+        </a>
+      )
+    }
+
+    {/* Mobile */}
+    <div class="flex items-center gap-2 lg:hidden">
+      <a
+        href={`tel:${contact.phonePrimaryRaw}`}
+        aria-label={`Gọi ${contact.phonePrimary}`}
+        class="inline-flex size-9 items-center justify-center rounded-full bg-brand-red-600 text-white [&>svg]:size-4"
+        set:html={ICONS.phone}
+      />
+      <button
+        type="button"
+        id="mobile-menu-trigger"
+        aria-label="Mở menu"
+        class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border text-foreground/80 transition-colors hover:text-foreground [&>svg]:size-5"
+        set:html={ICONS.menu}
+      />
+    </div>
+  </div>
+</header>
+
+{/* Drawer mobile */}
+<div
+  id="mobile-drawer-overlay"
+  data-open="false"
+  class="pointer-events-none fixed inset-0 z-50 bg-black/50 opacity-0 transition-opacity duration-300 data-[open=true]:pointer-events-auto data-[open=true]:opacity-100"
+>
+</div>
+<aside
+  id="mobile-drawer"
+  data-open="false"
+  class="fixed inset-y-0 right-0 z-50 w-[88vw] max-w-sm translate-x-full overflow-y-auto bg-background shadow-2xl transition-transform duration-300 data-[open=true]:translate-x-0"
+>
+  <div class="flex items-center justify-between border-b border-border px-5 py-4">
+    <Logo />
+    <button
+      type="button"
+      id="mobile-menu-close"
+      aria-label="Đóng menu"
+      class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border [&>svg]:size-4"
+      set:html={ICONS.close}
+    />
+  </div>
+
+  <nav class="flex flex-col gap-1 px-4 py-5">
+    {
+      navigation.map((item) => {
+        const hasMenu = Boolean(item.items || item.groups);
+        if (!hasMenu) {
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                "rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors",
+                item.cta
+                  ? "bg-brand-red-600 text-center text-white"
+                  : "text-foreground hover:bg-muted",
+              ]}
+            >
+              {item.label}
+            </a>
+          );
+        }
+
+        return (
+          <details class="group rounded-lg">
+            <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-foreground">
+              {item.label}
+              <span
+                class="text-muted-foreground [&>svg]:size-4 [&>svg]:transition-transform group-open:[&>svg]:rotate-180"
+                set:html={ICONS.chevron}
+              />
+            </summary>
+
+            <div class="mt-1 flex flex-col gap-0.5 pb-3 pl-3">
+              <a
+                href={item.href}
+                class="rounded-md px-3 py-2 text-sm font-bold text-brand-red-600 dark:text-brand-red-400"
+              >
+                Tổng quan
+              </a>
+
+              {item.items?.map((link) => (
+                <a
+                  href={link.href}
+                  class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </a>
+              ))}
+
+              {item.groups?.map((group) => (
+                <div class="mt-2">
+                  <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600 dark:text-brand-red-400">
+                    {group.title}
+                  </p>
+                  {group.items.map((link) => (
+                    <a
+                      href={link.href}
+                      class="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </details>
+        );
+      })
+    }
+  </nav>
+
+  <div class="mt-2 border-t border-border px-5 py-5">
+    <a
+      href={`tel:${contact.phonePrimaryRaw}`}
+      class="flex w-full items-center justify-center gap-2 rounded-full bg-brand-red-600 px-4 py-3 text-sm font-bold text-white"
+    >
+      <span class="[&>svg]:size-4" set:html={ICONS.phone} />
+      Gọi {contact.phonePrimary}
+    </a>
+    <a
+      href={contact.zalo}
+      target="_blank"
+      rel="noopener"
+      class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-brand-ink-50 px-4 py-3 text-sm font-bold text-foreground dark:bg-white/[0.06]"
+    >
+      Chat Zalo
+    </a>
+    <p class="mt-4 text-xs leading-relaxed text-muted-foreground">{contact.address}</p>
+    <p class="mt-1 text-xs text-muted-foreground">{site.slogan} — {site.sloganVi}</p>
+  </div>
+</aside>
+
+<script>
+  const header = document.getElementById("site-header");
+  const onScroll = () => {
+    if (header) header.dataset.scrolled = String(window.scrollY > 8);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Dropdown / mega menu — mở khi hover, đóng trễ nhẹ để chuột kịp di chuyển.
+  document.querySelectorAll<HTMLElement>("[data-menu]").forEach((wrap) => {
+    const panel = wrap.querySelector<HTMLElement>("[data-menu-panel]");
+    if (!panel) return;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const open = () => {
+      clearTimeout(timer);
+      // Header có backdrop-filter nên chính nó là containing block của panel
+      // position:fixed → top tính từ mép trên header, dùng offsetHeight là vừa khít.
+      if (panel.hasAttribute("data-mega") && header) {
+        panel.style.top = `${header.offsetHeight}px`;
+      }
+      wrap.dataset.open = "true";
+      panel.dataset.open = "true";
+    };
+    const close = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        wrap.dataset.open = "false";
+        panel.dataset.open = "false";
+      }, 140);
+    };
+
+    wrap.addEventListener("mouseenter", open);
+    wrap.addEventListener("mouseleave", close);
+    wrap.addEventListener("focusin", open);
+    wrap.addEventListener("focusout", close);
+  });
+
+  // Drawer mobile
+  const drawer = document.getElementById("mobile-drawer");
+  const overlay = document.getElementById("mobile-drawer-overlay");
+  const setDrawer = (open: boolean) => {
+    if (drawer) drawer.dataset.open = String(open);
+    if (overlay) overlay.dataset.open = String(open);
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  document
+    .getElementById("mobile-menu-trigger")
+    ?.addEventListener("click", () => setDrawer(true));
+  document
+    .getElementById("mobile-menu-close")
+    ?.addEventListener("click", () => setDrawer(false));
+  overlay?.addEventListener("click", () => setDrawer(false));
+  drawer
+    ?.querySelectorAll("a")
+    .forEach((a) => a.addEventListener("click", () => setDrawer(false)));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setDrawer(false);
+  });
+</script>

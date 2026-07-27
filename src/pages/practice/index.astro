@@ -1,0 +1,50 @@
+---
+import CatalogHub from "@/components/CatalogHub.astro";
+import { reviewLevels, examPrepResources, skillTracks, trialClasses } from "@/data/catalog";
+---
+
+<CatalogHub
+  title="Ôn tập & luyện thi HSK"
+  description="Khu tự học của SaigonHSK: ôn lại từng cấp HSK theo bài, luyện đề theo cấp, luyện riêng bốn kỹ năng và đăng ký buổi học thử trải nghiệm."
+  metaTitle="Ôn tập & luyện thi HSK online — từ vựng, ngữ pháp, đề thi"
+  crumbs={[{ label: "Ôn tập & luyện thi" }]}
+  glyph="练"
+  groups={[
+    {
+      title: "Ôn tập các cấp HSK",
+      desc: "Mỗi bài gồm từ vựng, ngữ pháp, đề HSK và bài kiểm tra định kỳ.",
+      cards: reviewLevels.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/practice/${c.slug}`,
+      })),
+    },
+    {
+      title: "Luyện thi HSK các cấp",
+      desc: "Bảng từ vựng, ngữ pháp trọng tâm và bộ đề luyện cho từng cấp.",
+      cards: examPrepResources.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/practice/exam-prep/${c.slug}`,
+      })),
+    },
+    {
+      title: "Luyện các kỹ năng",
+      desc: "Nghe – Nói – Đọc – Viết, luyện riêng theo từng cấp độ.",
+      cards: skillTracks.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/practice/skills/${c.slug}`,
+      })),
+      },
+    {
+      title: "Học thử trải nghiệm",
+      desc: "Buổi học thử miễn phí kèm test trình độ và tư vấn lộ trình.",
+      cards: trialClasses.map((c) => ({
+        title: c.title,
+        summary: c.summary,
+        href: `/trial/${c.slug}`,
+      })),
+    },
+  ]}
+/>

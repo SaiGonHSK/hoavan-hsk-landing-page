@@ -1,0 +1,106 @@
+---
+import { testimonials } from "@/data/testimonials";
+
+/** Chữ cái đầu dùng làm avatar. */
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .slice(-2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
+/** Màu nền avatar xoay vòng cho đỡ đơn điệu. */
+const avatarTones = [
+  "bg-brand-red-100 text-brand-red-700",
+  "bg-amber-100 text-amber-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-sky-100 text-sky-700",
+  "bg-violet-100 text-violet-700",
+];
+
+const VISIBLE = 6;
+const shown = testimonials.slice(0, VISIBLE);
+const more = testimonials.slice(VISIBLE);
+---
+
+<section id="reviews" class="bg-background scroll-mt-24">
+  <div class="container mx-auto px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2
+        class="font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl dark:text-white"
+      >
+        Học viên nói gì về
+        <span class="block text-brand-red-600 dark:text-brand-red-400">SaigonHSK</span>
+      </h2>
+      <p class="mt-4 text-base leading-relaxed text-muted-foreground">
+        Phản hồi từ sinh viên và học viên đã đồng hành cùng trung tâm trên chặng đường
+        chinh phục HSK và TOCFL.
+      </p>
+    </div>
+
+    <div
+      id="review-wall"
+      class="mt-16 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        [...shown, ...more].map((t, i) => (
+          <figure
+            class:list={[
+              "flex flex-col",
+              i >= VISIBLE && "review-extra hidden",
+            ]}
+          >
+            <blockquote
+              class="flex-1 rounded-3xl bg-brand-ink-50 p-6 text-sm leading-relaxed text-muted-foreground dark:bg-white/[0.04]"
+            >
+              {t.quote}
+            </blockquote>
+
+            <figcaption class="mt-5 flex items-center gap-3.5 pl-3">
+              <span
+                class:list={[
+                  "inline-flex size-11 shrink-0 items-center justify-center rounded-full font-bricolage text-sm font-black",
+                  avatarTones[i % avatarTones.length],
+                ]}
+              >
+                {initials(t.name)}
+              </span>
+              <span class="min-w-0">
+                <span class="block text-sm font-bold text-foreground">{t.name}</span>
+                <span class="mt-0.5 block text-xs text-muted-foreground">{t.role}</span>
+              </span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    {
+      more.length > 0 && (
+        <div class="mt-14 text-center">
+          <button
+            type="button"
+            id="review-toggle"
+            class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-brand-ink-900 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 dark:bg-white/10"
+          >
+            <span data-label>Xem thêm {more.length} phản hồi</span>
+          </button>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const toggle = document.getElementById("review-toggle");
+  const label = toggle?.querySelector("[data-label]");
+  const extras = Array.from(document.querySelectorAll<HTMLElement>(".review-extra"));
+
+  toggle?.addEventListener("click", () => {
+    const opening = extras[0]?.classList.contains("hidden");
+    extras.forEach((el) => el.classList.toggle("hidden", !opening));
+    if (label)
+      label.textContent = opening ? "Thu gọn" : `Xem thêm ${extras.length} phản hồi`;
+  });
+</script>

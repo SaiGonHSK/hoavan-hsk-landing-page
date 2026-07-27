@@ -1,0 +1,35 @@
+---
+import CatalogDetail from "@/components/CatalogDetail.astro";
+import { skillTracks } from "@/data/catalog";
+
+export function getStaticPaths() {
+  return skillTracks.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+const related = skillTracks
+  .filter((c) => c.slug !== item.slug)
+  .map((c) => ({ label: c.title, href: `/practice/skills/${c.slug}` }));
+---
+
+<CatalogDetail
+  title={item.title}
+  summary={item.summary}
+  intro={item.intro}
+  facts={item.facts}
+  content={item.content}
+  contentTitle="Nội dung luyện tập"
+  outcomes={item.outcomes}
+  glyph="能"
+  crumbs={[
+    { label: "Ôn tập & luyện thi", href: "/practice" },
+    { label: "Luyện kỹ năng", href: "/practice/skills" },
+    { label: item.title },
+  ]}
+  related={related}
+  relatedTitle="Kỹ năng khác"
+/>

@@ -1,0 +1,34 @@
+---
+import CatalogDetail from "@/components/CatalogDetail.astro";
+import { onlineOfflineCourses } from "@/data/catalog";
+
+export function getStaticPaths() {
+  return onlineOfflineCourses.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+const related = onlineOfflineCourses
+  .filter((c) => c.slug !== item.slug)
+  .slice(0, 8)
+  .map((c) => ({ label: c.title, href: `/courses/${c.slug}` }));
+---
+
+<CatalogDetail
+  seoTitle={`Khoá học ${item.title} tại TP.HCM | SaigonHSK`}
+  courseSchema
+  title={item.title}
+  summary={item.summary}
+  intro={item.intro}
+  facts={item.facts}
+  content={item.content}
+  contentTitle="Nội dung khoá học"
+  outcomes={item.outcomes}
+  audience={item.audience}
+  crumbs={[{ label: "Các khoá học", href: "/courses" }, { label: item.title }]}
+  related={related}
+  relatedTitle="Khoá học khác"
+/>

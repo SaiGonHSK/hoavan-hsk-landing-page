@@ -1,0 +1,147 @@
+---
+import { site } from "@/data/site";
+---
+
+<section id="hero" class="relative overflow-hidden bg-background pt-10 lg:pt-14">
+  {/* Nét cong chạy ngang nền */}
+  <svg
+    class="pointer-events-none absolute inset-x-0 top-44 hidden h-[26rem] w-full text-brand-ink-200/70 lg:block dark:text-white/10"
+    viewBox="0 0 1440 420"
+    fill="none"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M-20 250C180 250 240 60 460 60s320 300 520 300 300-210 480-210"
+      stroke="currentColor"
+      stroke-width="1.5"></path>
+  </svg>
+
+  {/* Doodle trang trí */}
+  <svg
+    class="pointer-events-none absolute left-[6%] top-[44%] hidden size-14 text-brand-red-300 lg:block"
+    viewBox="0 0 48 48"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M24 6v36M9 12l30 24M39 12L9 36"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-linecap="round"></path>
+  </svg>
+  <svg
+    class="pointer-events-none absolute right-[7%] top-[58%] hidden size-16 text-amber-400 lg:block"
+    viewBox="0 0 48 48"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M24 8c5 0 6 7 2 9s-9-1-7-5m5 6c8 0 12 5 12 9s-6 7-9 3m-3-12c-8 0-13 4-13 9s7 8 10 3m3-12c-3 6-1 14 3 18m-6-18c3 6 1 14-3 18"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+  </svg>
+  <svg
+    class="pointer-events-none absolute left-[12%] top-[70%] hidden size-10 text-brand-red-400 lg:block"
+    viewBox="0 0 40 40"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M20 6c-7 0-12 5-12 12s5 12 12 12 10-4 10-9-4-8-8-8-6 2-6 5 2 4 4 4"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-linecap="round"></path>
+  </svg>
+
+  <div class="container relative z-10 mx-auto px-6">
+    {/* Tiêu đề lớn */}
+    <div class="text-center">
+      <h1 class="text-balance">
+        <span class="block font-bricolage text-[9vw] font-black uppercase leading-[1] tracking-[-0.02em] text-brand-ink-900 lg:text-[5.5rem] dark:text-white">
+          Học tiếng Hoa
+        </span>
+        <span class="block font-hand text-[11vw] font-bold leading-[1.05] text-brand-red-600 lg:text-[6.5rem] dark:text-brand-red-400">
+          chinh phục HSK
+        </span>
+      </h1>
+      <p class="sr-only">
+        Trung tâm Hoa văn SaigonHSK — dạy tiếng Trung và luyện thi HSK, TOCFL tại
+        TP.HCM, cam kết 100% đầu ra.
+      </p>
+    </div>
+
+    {/* Ba khối nội dung */}
+    <div
+      class="mt-14 grid items-center gap-10 lg:mt-20 lg:grid-cols-[1fr_1.15fr_1fr] lg:gap-8"
+    >
+      {/* Ghi chú trái */}
+      <div class="order-2 lg:order-1">
+        <div
+          class="mx-auto max-w-sm rounded-2xl bg-brand-ink-50 p-6 dark:bg-white/[0.04]"
+        >
+          <p class="font-bricolage text-base font-extrabold text-foreground">
+            Lộ trình chuẩn HSK 3.0
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Bạn được test trình độ miễn phí, xếp đúng lớp và đi theo lộ trình từ vỡ
+            lòng đến HSK6 — cam kết 100% đầu ra, không đạt học lại miễn phí.
+          </p>
+        </div>
+      </div>
+
+      {/* Ảnh lớp học */}
+      <div class="order-1 lg:order-2">
+        <img
+          src="/images/classroom.webp"
+          alt="Học viên trong một lớp học tại Trung tâm Hoa văn SaigonHSK"
+          width="1024"
+          height="577"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="mx-auto w-full max-w-xl rounded-3xl object-cover shadow-[0_30px_60px_-35px_rgba(15,23,42,0.45)]"
+        />
+      </div>
+
+      {/* Mô tả */}
+      <div class="order-3 text-center lg:text-left">
+        <p class="mx-auto max-w-sm text-base leading-relaxed text-muted-foreground lg:mx-0">
+          <span class="font-semibold text-foreground">
+            {site.slogan} — Vì sự thành công của bạn.
+          </span>
+          <br />
+          Trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP.HCM: sơ cấp đến cao
+          cấp, luyện thi HSK và TOCFL, giảng viên Thạc sĩ – Tiến sĩ.
+        </p>
+      </div>
+    </div>
+
+    {/* Thẻ nổi */}
+    <div class="mt-16 flex flex-wrap items-center justify-center gap-6 lg:mt-8">
+      <div
+        class="flex items-center gap-5 rounded-2xl bg-brand-ink-50 px-6 py-5 dark:bg-white/[0.04]"
+      >
+        <span
+          class="grid size-16 shrink-0 place-items-center rounded-full bg-brand-red-100 font-bricolage text-lg font-black text-brand-red-700 dark:bg-brand-red-500/15 dark:text-brand-red-300"
+        >
+          100%
+        </span>
+        <span class="font-hand text-2xl leading-tight text-foreground">
+          cam kết đầu ra<br />học lại miễn phí
+        </span>
+      </div>
+
+      <img
+        src="/images/facility-1.webp"
+        alt="Phòng học tại Trung tâm Hoa văn SaigonHSK"
+        width="1024"
+        height="768"
+        loading="lazy"
+        class="hidden w-44 rounded-2xl object-cover shadow-[0_24px_50px_-32px_rgba(15,23,42,0.45)] sm:block"
+      />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,217 @@
+---
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import { site, contact, footerLinks } from "@/data/site";
+import logoMark from "@/assets/logo-mark.png";
+
+const year = new Date().getFullYear();
+
+const socials = [
+  {
+    label: "Facebook",
+    href: contact.facebook,
+    path: "M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.45-4.92 8.45-9.94z",
+  },
+  {
+    label: "Zalo",
+    href: contact.zalo,
+    path: "M12 2C6.5 2 2 5.8 2 10.4c0 2.6 1.4 4.9 3.6 6.5-.1.9-.5 2.3-1.4 3.6-.2.3.1.7.5.6 1.9-.5 3.4-1.5 4.3-2.2 1 .2 1.9.3 3 .3 5.5 0 10-3.8 10-8.4S17.5 2 12 2z",
+  },
+  {
+    label: "Email",
+    href: `mailto:${contact.email}`,
+    path: "M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.24-8 5-8-5V6l8 5 8-5z",
+  },
+];
+
+/** Chỉ lấy 2 nhóm liên kết để footer gọn như bản thiết kế. */
+const [coursesGroup, , centerGroup] = footerLinks;
+---
+
+<footer class="relative">
+  {/* Mép cong phía trên */}
+  <svg
+    class="block w-full text-brand-red-600"
+    viewBox="0 0 1440 90"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    style="height:60px"
+  >
+    <path fill="currentColor" d="M0,90 C420,0 1020,0 1440,70 L1440,90 Z"></path>
+  </svg>
+
+  <div class="bg-brand-red-600 text-white">
+    <div class="container mx-auto px-6 pb-10 pt-6 lg:pb-14">
+      <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        {/* Thương hiệu */}
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="inline-flex size-12 items-center justify-center rounded-full bg-white">
+              <img
+                src={logoMark.src}
+                alt={`${site.name} logo`}
+                width="48"
+                height="48"
+                class="size-9 object-contain"
+              />
+            </span>
+            <span class="font-bricolage text-lg font-extrabold uppercase tracking-[0.06em]">
+              Hoa văn SaigonHSK
+            </span>
+          </div>
+
+          <p class="mt-5 text-sm leading-relaxed text-white/80">
+            {site.slogan} — Vì sự thành công của bạn. Trung tâm đào tạo tiếng Hoa chất
+            lượng cao, uy tín tại TP.HCM: từ Sơ cấp đến Cao cấp, luyện thi HSK và
+            TOCFL, cam kết 100% đầu ra.
+          </p>
+
+          <div class="mt-6 flex items-center gap-3">
+            {
+              socials.map(({ href, label, path }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={label}
+                  class="flex size-10 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white hover:text-brand-red-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="size-4"
+                    aria-hidden="true"
+                  >
+                    <path d={path} />
+                  </svg>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        {/* Liên kết */}
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-[0.12em]">Khóa học</h3>
+          <ul class="mt-5 space-y-3">
+            {
+              coursesGroup.items.slice(0, 6).map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="text-sm text-white/80 transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        {/* Trung tâm + liên hệ */}
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-[0.12em]">Liên hệ</h3>
+          <ul class="mt-5 space-y-3 text-sm text-white/80">
+            <li>
+              <a href={contact.mapsUrl} target="_blank" rel="noopener" class="hover:text-white">
+                {contact.address}
+              </a>
+            </li>
+            <li>
+              {
+                contact.phones.map((p, i) => (
+                  <>
+                    {i > 0 && <span class="mx-1">–</span>}
+                    <a
+                      href={`tel:${p.replace(/\./g, "")}`}
+                      class="font-semibold text-white hover:underline"
+                    >
+                      {p}
+                    </a>
+                  </>
+                ))
+              }
+            </li>
+            <li>
+              <a href={`mailto:${contact.email}`} class="hover:text-white">
+                {contact.email}
+              </a>
+            </li>
+            <li>{contact.workingHours}</li>
+          </ul>
+
+          <ul class="mt-5 space-y-3">
+            {
+              centerGroup.items.slice(0, 3).map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="text-sm text-white/80 transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        {/* Nhận lịch khai giảng */}
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-[0.12em]">
+            Nhận lịch khai giảng
+          </h3>
+          <p class="mt-5 text-sm leading-relaxed text-white/80">
+            Để lại email, trung tâm gửi bạn lịch khai giảng và tài liệu học tiếng Trung
+            miễn phí. Không spam.
+          </p>
+
+          <form id="footer-subscribe" class="mt-5 space-y-3">
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Nhập email của bạn"
+              aria-label="Email nhận lịch khai giảng"
+              class="h-12 w-full rounded-full border-0 bg-white px-5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-white/60"
+            />
+            <button
+              type="submit"
+              class="h-12 w-full cursor-pointer rounded-full bg-brand-ink-900 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+            >
+              Đăng ký nhận tin
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Thanh dưới cùng */}
+      <div
+        class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/20 pt-6 text-xs text-white/75 sm:flex-row"
+      >
+        <span>© {year} {site.domain}. All Rights Reserved.</span>
+        <div class="flex items-center gap-6">
+          <a href="/about" class="transition-colors hover:text-white">Giới thiệu</a>
+          <a href="/courses" class="transition-colors hover:text-white">Khóa học</a>
+          <a href="/contact" class="transition-colors hover:text-white">Liên hệ</a>
+          <ThemeToggle class="text-white/75 hover:text-white" />
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script is:inline define:vars={{ email: contact.email }}>
+  // Chưa có backend nhận email → mở sẵn thư gửi tới trung tâm.
+  document.getElementById("footer-subscribe")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const value = new FormData(form).get("email");
+    if (!value) return;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(
+      "Đăng ký nhận lịch khai giảng",
+    )}&body=${encodeURIComponent(`Email của tôi: ${value}`)}`;
+    form.reset();
+  });
+</script>

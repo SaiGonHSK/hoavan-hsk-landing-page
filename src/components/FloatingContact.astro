@@ -1,0 +1,39 @@
+---
+/**
+ * Nút liên hệ nổi (Zalo + gọi điện) — giữ đúng thói quen của website gốc,
+ * nơi nút Zalo luôn hiện ở góc màn hình.
+ */
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+---
+
+<div class="fixed bottom-5 right-5 z-40 flex flex-col items-center gap-3 print:hidden">
+  <a
+    href={contact.zalo}
+    target="_blank"
+    rel="noopener"
+    aria-label="Chat Zalo với trung tâm"
+    class="group relative flex size-13 items-center justify-center rounded-full bg-[#0068ff] text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
+  >
+    <span class="absolute inset-0 animate-ping rounded-full bg-[#0068ff]/40"></span>
+    <span class="relative [&>svg]:size-7" set:html={ICONS.zalo} />
+    <span
+      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
+    >
+      Chat Zalo
+    </span>
+  </a>
+
+  <a
+    href={`tel:${contact.phonePrimaryRaw}`}
+    aria-label={`Gọi ${contact.phonePrimary}`}
+    class="group relative flex size-13 items-center justify-center rounded-full bg-brand-red-600 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
+  >
+    <span class="[&>svg]:size-6" set:html={ICONS.phone} />
+    <span
+      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
+    >
+      {contact.phonePrimary}
+    </span>
+  </a>
+</div>
