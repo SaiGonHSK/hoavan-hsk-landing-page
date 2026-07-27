@@ -34,3 +34,4 @@ tổng quan sẽ tự cập nhật theo.
 `PUBLIC_REGISTER_ENDPOINT` — nếu có API nhận đăng ký, điền vào đây để form POST lên
 server. Bỏ trống thì form mở sẵn email gửi về hộp thư của trung tâm.
 # hoavan-hsk-landing-page
+# hoavan-hsk-landing-page
