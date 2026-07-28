@@ -1,0 +1,413 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-27T09:16:25.753Z",
+  "site": {
+    "name": "Hoa văn SaigonHSK",
+    "fullName": "Trung tâm Hoa văn SaigonHSK",
+    "shortName": "SaigonHSK",
+    "domain": "hoavansaigonhsk.edu.vn",
+    "slogan": "为你的成功",
+    "sloganVi": "Vì sự thành công của bạn",
+    "tagline": "Trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
+    "description": "Trung tâm Hoa văn SaigonHSK đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK và TOCFL với giảng viên Thạc sĩ, Tiến sĩ. Cam kết đầu ra, không đạt học lại miễn phí.",
+    "foundedYear": 2019
+  },
+  "contact": {
+    "address": "384/8 Lý Thái Tổ, Phường Vườn Lài, TP Hồ Chí Minh",
+    "addressShort": "384/8 Lý Thái Tổ, P. Vườn Lài, TP.HCM",
+    "phones": [
+      "0345.20.44.99",
+      "0932.77.88.52"
+    ],
+    "phonePrimary": "0345.20.44.99",
+    "phonePrimaryRaw": "0345204499",
+    "phoneSecondaryRaw": "0932778852",
+    "email": "hoavansaigonhsk@gmail.com",
+    "zalo": "https://zalo.me/0345204499",
+    "facebook": "https://www.facebook.com/SaigonHSK/",
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=384%2F8+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ph%C6%B0%E1%BB%9Dng+V%C6%B0%E1%BB%9Dn+L%C3%A0i%2C+TP+H%E1%BB%93+Ch%C3%AD+Minh",
+    "mapEmbedUrl": "https://www.google.com/maps?q=384%2F8%20L%C3%BD%20Th%C3%A1i%20T%E1%BB%95%2C%20Ph%C6%B0%E1%BB%9Dng%20V%C6%B0%E1%BB%9Dn%20L%C3%A0i%2C%20TP%20H%E1%BB%93%20Ch%C3%AD%20Minh&output=embed",
+    "workingHours": "Thứ 2 – Chủ nhật: 8:00 – 21:00"
+  },
+  "hero": {
+    "titleLine1": "Học tiếng Hoa",
+    "titleLine2": "chinh phục HSK",
+    "description": "为你的成功 — Vì sự thành công của bạn. Trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
+    "noteTitle": "Lộ trình chuẩn HSK 3.0",
+    "noteBody": "Bạn được test trình độ miễn phí, xếp đúng lớp và đi theo lộ trình từ vỡ lòng đến HSK6 — cam kết 100% đầu ra, không đạt học lại miễn phí.",
+    "image": "/images/classroom.webp",
+    "badgeValue": "100%",
+    "badgeText": "cam kết đầu ra\nhọc lại miễn phí"
+  },
+  "mission": {
+    "statement": "Trung tâm Hoa văn SaigonHSK với sứ mệnh truyền cảm hứng và tạo động lực cho người học không ngừng nâng trình độ tiếng Trung.",
+    "motto": "“为你的成功 — Vì sự thành công của bạn” — Nơi khơi nguồn cảm hứng học tiếng Trung, nhanh chóng đưa người học đến trình độ mong muốn."
+  },
+  "model": [
+    "Giáo viên giàu kinh nghiệm, từng du học tại Trung Quốc",
+    "Lớp học ít người, chỉ từ 10–15 học viên",
+    "Lộ trình nhanh, hiệu quả sau mỗi buổi học",
+    "Chế độ học bù, học phụ đạo miễn phí",
+    "Bộ phận giáo vụ luôn lắng nghe học viên, sẵn sàng giải đáp",
+    "Cơ sở vật chất hiện đại",
+    "Được tiếp cận kho tài liệu đa dạng, phong phú hoàn toàn miễn phí",
+    "Cam kết đầu ra — không đạt học lại miễn phí"
+  ],
+  "stats": [
+    {
+      "value": "100%",
+      "label": "Cam kết đầu ra khóa học"
+    },
+    {
+      "value": "HSK 1–6",
+      "label": "Đào tạo trọn lộ trình"
+    },
+    {
+      "value": "Miễn phí",
+      "label": "Học lại nếu chưa đạt đầu ra"
+    }
+  ],
+  "values": [
+    {
+      "id": "vi-nguoi-hoc",
+      "icon": "heart",
+      "title": "Vì người học",
+      "desc": "Giáo trình tối ưu, phương pháp độc quyền được biên soạn riêng cho người Việt học tiếng Hoa. Không đạt được mục tiêu, học viên được học lại miễn phí.",
+      "image": "/images/values/vi-nguoi-hoc.svg"
+    },
+    {
+      "id": "giang-vien-chat-luong",
+      "icon": "cap",
+      "title": "Giảng viên chất lượng",
+      "desc": "Giảng viên phụ trách chuyên môn là Tiến sĩ Võ Thị Quỳnh Trang — Tiến sĩ Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải).",
+      "image": "/images/values/giang-vien-chat-luong.svg"
+    },
+    {
+      "id": "tiet-kiem-thoi-gian",
+      "icon": "clock",
+      "title": "Tiết kiệm thời gian",
+      "desc": "Lộ trình rút gọn theo từng mục tiêu cụ thể: giao tiếp cấp tốc 3 tháng, luyện HSK4 trong 2 tháng, HSK5 trong 2,5 tháng.",
+      "image": "/images/values/tiet-kiem-thoi-gian.svg"
+    },
+    {
+      "id": "hieu-qua-cao",
+      "icon": "target",
+      "title": "Hiệu quả cao",
+      "desc": "Học viên phát triển đồng thời 4 kỹ năng nghe – nói – đọc – viết, nhiều bạn thi đậu HSK6 và TOCFL Band C1 chỉ sau hơn 1 năm học.",
+      "image": "/images/values/hieu-qua-cao.svg"
+    }
+  ],
+  "commitments": [
+    {
+      "icon": "shield",
+      "title": "Học lại miễn phí nếu không đạt đầu ra",
+      "desc": "SaigonHSK cam kết 100% đầu ra khóa học. Học viên không đạt mục tiêu cam kết được học lại hoàn toàn miễn phí."
+    },
+    {
+      "icon": "book",
+      "title": "Kiến thức chuẩn HSK 3.0",
+      "desc": "Giáo trình và đề luyện cập nhật theo chuẩn HSK 3.0 mới nhất, sử dụng tài liệu ôn thi uy tín từ HanBan."
+    },
+    {
+      "icon": "cap",
+      "title": "Giảng viên Thạc sĩ, Tiến sĩ",
+      "desc": "Đội ngũ giảng viên tốt nghiệp Thạc sĩ, Tiến sĩ tại các đại học lớn của Trung Quốc, đang giảng dạy tại nhiều trường đại học uy tín ở TP.HCM."
+    }
+  ],
+  "teacher": {
+    "name": "TS. Võ Thị Quỳnh Trang",
+    "role": "Giảng viên phụ trách chuyên môn",
+    "photo": "/images/teacher-quynh-trang.webp",
+    "points": [
+      "Tốt nghiệp Tiến sĩ ngành Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải).",
+      "Giảng dạy tại nhiều trường đại học lớn, uy tín tại TP. HCM.",
+      "Giảng viên chuyên môn tại Trung tâm Hoa văn SaigonHSK.",
+      "Chuyên luyện thi các lớp HSK 5 & HSK 6.",
+      "Phương pháp giảng dạy lôi cuốn, sinh động và hiệu quả."
+    ]
+  },
+  "teachers": [
+    {
+      "name": "Cô Võ Thị Quỳnh Trang",
+      "title": "Tiến sĩ — Đại học Sư phạm Hoa Đông, Thượng Hải",
+      "role": "Giảng viên phụ trách chuyên môn · Chuyên luyện thi HSK5 & HSK6",
+      "image": "/images/teachers/vo-thi-quynh-trang.webp",
+      "lead": true
+    },
+    {
+      "name": "Cô Trần Hồng Huyên",
+      "title": "Thạc sĩ — Đại học Tây Nam, Trùng Khánh",
+      "image": "/images/teachers/tran-hong-huyen.webp"
+    },
+    {
+      "name": "Thầy Cao Hoài Nhơn",
+      "title": "Thạc sĩ — Đại học Ngôn ngữ Bắc Kinh",
+      "image": "/images/teachers/cao-hoai-nhon.webp"
+    },
+    {
+      "name": "Thầy Tằng Ửng Tày",
+      "title": "Thạc sĩ — Đại học Sư phạm Thủ đô Trung Quốc",
+      "image": "/images/teachers/tang-ung-tay.webp"
+    },
+    {
+      "name": "Cô Hồng Nguyệt Bình",
+      "title": "Thạc sĩ — Giảng viên Đại học Công Thương TP.HCM",
+      "image": "/images/teachers/hong-nguyet-binh.webp"
+    }
+  ],
+  "banners": [
+    {
+      "title": "Lịch khai giảng mới nhất",
+      "desc": "Các lớp offline và online khai giảng liên tục hằng tháng, chuẩn HSK 3.0 với cam kết 100% đầu ra.",
+      "image": "/images/banners/class-schedule.webp",
+      "href": "/schedule",
+      "cta": "Xem lịch khai giảng",
+      "wide": true
+    },
+    {
+      "title": "Sứ mệnh của SaigonHSK",
+      "desc": "Truyền cảm hứng và tạo động lực cho người học không ngừng nâng trình độ tiếng Trung.",
+      "image": "/images/banners/mission.webp",
+      "href": "/about",
+      "cta": "Về trung tâm"
+    },
+    {
+      "title": "Phương châm hoạt động",
+      "desc": "为你的成功 — Vì sự thành công của bạn. Nơi khơi nguồn cảm hứng học tiếng Trung, nhanh chóng đưa người học đến trình độ mong muốn.",
+      "image": "/images/banners/motto.webp",
+      "href": "/about/differences",
+      "cta": "Sự khác biệt"
+    },
+    {
+      "title": "Mô hình đào tạo",
+      "desc": "Lớp 10–15 học viên, học bù và phụ đạo miễn phí, kho tài liệu mở, cam kết đầu ra — không đạt học lại miễn phí.",
+      "image": "/images/banners/training-model.webp",
+      "href": "/courses",
+      "cta": "Xem khóa học"
+    },
+    {
+      "title": "Feedback học viên",
+      "desc": "Những phản hồi tích cực từ học viên là động lực để trung tâm không ngừng hoàn thiện.",
+      "image": "/images/banners/student-feedback.webp",
+      "href": "/about/reviews",
+      "cta": "Đọc phản hồi"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Hiển Hoàng",
+      "role": "Sinh viên ĐH KHXH&NV TP.HCM",
+      "quote": "Chỉ hơn 1 năm, từ một người chưa biết gì về tiếng Trung, mình đồng thời thi đậu HSK6 và TOCFL Band C1. Tất cả sự nỗ lực và may mắn đó là mình nhờ sự truyền đạt kiến thức rất bổ ích, thú vị cùng sự nhiệt tình của cô Quỳnh Trang."
+    },
+    {
+      "name": "Trần Trọng Khang",
+      "role": "Cựu sinh viên ĐH Ngoại Thương TP.HCM",
+      "quote": "Sau khi đồng hành với cô trong 4 khóa học, điều em ấn tượng nhất ở cô chính là sự tận tâm, tận tụy trong từng bài giảng. Hơn thế, cô không chỉ truyền tải những kiến thức trong sách vở mà còn đan xen những kinh nghiệm thực tế."
+    },
+    {
+      "name": "Huỳnh Phối My",
+      "role": "Sinh viên Trường Múa TP.HCM",
+      "quote": "Đến khi mình đã không còn học ở trung tâm nữa, cô vẫn quan tâm và cô trò giữ liên lạc. Mình luôn thầm ngưỡng mộ và theo dõi hành trình người cô đã dạy mình rất nhiều kiến thức, cho mình nhiều kinh nghiệm trên chặng đường chinh phục HSK.",
+      "image": "/images/reviews/phoi-my.jpg"
+    },
+    {
+      "name": "Trần Chí Nguyện",
+      "role": "Sinh viên ĐH Tôn Đức Thắng",
+      "quote": "Ấn tượng đầu tiên khi học với cô là giọng nói của cô rất nhẹ nhàng, phát âm chuẩn và dễ nghe. Trong những giờ học do cô đứng lớp, thứ em học được không chỉ là kiến thức về tiếng mà còn là những câu chuyện cuộc sống bổ ích được cô lồng ghép vào bài học.",
+      "image": "/images/reviews/chi-nguyen.jpg"
+    },
+    {
+      "name": "Lê Quốc Pháp",
+      "role": "Sinh viên ĐH KHXH&NV TP.HCM",
+      "quote": "Cách cô đứng lớp rất đúng chuẩn “sư phạm chuyên nghiệp”, rất hiểu tâm lý và các điểm yếu khi học của tụi em, vì vậy với từng học sinh trong lúc giảng bài hay làm bài tập cô sẽ có những cách tương tác khác nhau."
+    },
+    {
+      "name": "Đoàn Phương Thảo",
+      "role": "Cựu sinh viên ĐH Ngoại Thương Hà Nội",
+      "quote": "Cô dạy rất nhiệt tình và luôn đặt mình vào địa vị của học sinh để giảng giải chi tiết cho học sinh hiểu. Điều em thấy quý nhất ở cô bên cạnh chuyên môn giỏi là tấm lòng nhiệt tình, tận tâm vì học sinh.",
+      "image": "/images/reviews/doan-phuong-thao.png"
+    },
+    {
+      "name": "Trần Gia Tuệ",
+      "role": "Sinh viên ĐH Nguyễn Tất Thành",
+      "quote": "Con thích quan niệm về giáo dục của Laoshi: dạy học trò phải dạy cho hiểu. Nếu đã hiểu rồi mà vẫn cố tình làm bài không được là do bản thân, còn nếu giáo viên chưa dạy cho hiểu mà đánh giá học trò không học được thì rất tội cho học trò.",
+      "image": "/images/reviews/tran-gia-tue.jpg"
+    },
+    {
+      "name": "Long Chấn Phát",
+      "role": "Cựu sinh viên ĐH KHXH&NV TP.HCM",
+      "quote": "Cô Trang kiến thức rất sâu rộng, mình hỏi bất cứ câu hỏi nào cô cũng nhiệt tình giải thích rất rõ ràng và trọn vẹn. Điều quan trọng hơn cả là mình thấy cô rất có tâm giảng dạy — trên lớp cô truyền đạt những kiến thức mới rất hay và khoa học.",
+      "image": "/images/reviews/long-chan-phat.png"
+    },
+    {
+      "name": "Hoàng Hà Phương",
+      "role": "Cựu sinh viên ĐH Ngoại Thương Hà Nội",
+      "quote": "Đối với mình mỗi ngày đi học là một ngày vui và thư giãn. Đặc biệt, cô có nhiều năm học tập và sinh sống tại Trung Quốc nên vừa học được ngôn ngữ, vừa biết thêm nhiều kiến thức xã hội liên quan đến văn hóa, kinh tế và đời sống con người ở đó.",
+      "image": "/images/reviews/hoang-ha-phuong.jpg"
+    },
+    {
+      "name": "Nguyễn Thị Phương Thảo",
+      "role": "Giáo viên tâm lý",
+      "quote": "Cô Trang rất thân thiện, cô luôn quan tâm đến từng học sinh. Cô dạy rất nhiệt tình và dễ hiểu, luôn giải đáp mọi thắc mắc cho học sinh.",
+      "image": "/images/reviews/nguyen-thi-phuong-thao.jpg"
+    },
+    {
+      "name": "Võ Tường Quy",
+      "role": "Sinh viên ĐH Tôn Đức Thắng",
+      "quote": "Cảm ơn cô đã truyền tải cho em những kinh nghiệm quý báu cũng như kiến thức vô cùng bổ ích về môn tiếng Trung. Cô là người giảng viên đầu tiên vừa dạy tiếng Trung lại vừa cung cấp cho em vốn kiến thức phong phú về văn hóa Trung Quốc.",
+      "image": "/images/reviews/tuong-quy.jpg"
+    },
+    {
+      "name": "Nguyễn Lê Thanh Trầm",
+      "role": "Sinh viên ĐH Sư Phạm TP.HCM",
+      "quote": "Cô rất nhiệt tình, chu đáo, luôn tạo không khí học vui vẻ. Nghe cô giảng bài em nhớ ngay tại lớp, về nhà ôn lại một chút nữa là không bao giờ quên. Cô chính là động lực để em học tiếng Trung.",
+      "image": "/images/reviews/thanh-tram.jpg"
+    },
+    {
+      "name": "Nguyễn Danh Giàu",
+      "role": "Sinh viên ĐH Công nghiệp Thực phẩm TP.HCM",
+      "quote": "Cô Trang dạy rất nhiệt tình, dạy kĩ càng từng bài học. Các bạn không hiểu bài cô vẫn chịu khó giảng lại cho hiểu. Cô hiền và dễ thương lắm ạ.",
+      "image": "/images/reviews/danh-giau.jpg"
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Cam kết đầu ra của SaigonHSK cụ thể là gì?",
+      "answer": "Trung tâm cam kết 100% đầu ra khoá học. Với các lớp luyện thi, học viên hoàn thành chương trình được đảm bảo đậu HSK4 hoặc HSK5 tùy khóa; với các lớp sơ cấp, đầu ra tương ứng là HSK2, HSK3, HSK4. Nếu không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí."
+    },
+    {
+      "question": "Tôi chưa biết gì về tiếng Trung thì bắt đầu từ lớp nào?",
+      "answer": "Bạn bắt đầu từ lớp Tiếng Hoa Sơ cấp 1 (SC1) — lớp dành cho người chưa từng tiếp xúc với tiếng Hoa, học từ ngữ âm và quy tắc bút thuận. Nếu bạn chỉ cần nói được nhanh và không có nhiều thời gian tập viết chữ Hán, lớp Giao tiếp Cấp tốc 1 (GT1) là lựa chọn phù hợp hơn."
+    },
+    {
+      "question": "Đã học tiếng Trung trước đó thì được xếp lớp thế nào?",
+      "answer": "Trung tâm test năng lực đầu vào để xếp bạn vào lớp đúng trình độ, dựa trên vốn từ vựng, giáo trình bạn đã học (Hán ngữ 6 quyển, Boya, 301 câu đàm thoại…) và các điểm ngữ pháp bạn đã nắm. Bạn có thể liên hệ trung tâm để đăng ký test miễn phí."
+    },
+    {
+      "question": "Một khóa học kéo dài bao lâu?",
+      "answer": "Các lớp sơ cấp và trung cấp thường là 40 buổi – 80 tiết, 3 buổi/tuần, 1,5h/buổi (khoảng 3,5 tháng) hoặc 30 buổi, 2 buổi/tuần, 2h/buổi (khoảng 4 tháng). Lớp luyện HSK4 thường là 24 buổi (khoảng 2 tháng), HSK5 thường là 30 buổi (2,5 tháng), lớp đặc biệt kéo dài hơn để rút ngắn yêu cầu đầu vào."
+    },
+    {
+      "question": "Học phí và lịch khai giảng thế nào?",
+      "answer": "Học phí và lịch khai giảng thay đổi theo từng khóa và hình thức lớp (lớp nhóm, VIP 1 kèm 1, lớp doanh nghiệp). Vui lòng gọi 0345.20.44.99 hoặc 0932.77.88.52 để nhận bảng học phí và lịch khai giảng mới nhất."
+    },
+    {
+      "question": "Giảng viên của trung tâm là ai?",
+      "answer": "Giảng viên phụ trách chuyên môn là TS. Võ Thị Quỳnh Trang — Tiến sĩ ngành Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải), chuyên luyện thi HSK5 và HSK6. Phần lớn giảng viên còn lại có trình độ Thạc sĩ, Tiến sĩ từ các đại học lớn của Trung Quốc và đang giảng dạy tại các trường đại học uy tín ở TP.HCM."
+    },
+    {
+      "question": "Trung tâm dùng giáo trình nào?",
+      "answer": "Trung tâm sử dụng giáo trình của Đại học Ngôn ngữ & Văn hóa Bắc Kinh cùng các bộ giáo trình chuyên biệt, được giảng viên trình độ Tiến sĩ của trung tâm biên soạn lại để phát triển đồng thời 4 kỹ năng nghe – nói – đọc – viết. Riêng các lớp luyện thi sử dụng tài liệu ôn thi uy tín từ HanBan, cập nhật theo chuẩn HSK 3.0."
+    },
+    {
+      "question": "Lớp trung cấp có gì khác so với lớp sơ cấp?",
+      "answer": "Từ trình độ trung cấp, mỗi lớp học song song hai giáo trình — tổng hợp trung cấp và khẩu ngữ trung cấp — nhằm nâng cao vượt trội khả năng khẩu ngữ, nghe nói và đọc hiểu. Nội dung bài học chuyển sang các chủ điểm văn hóa – xã hội đương đại của Trung Quốc."
+    },
+    {
+      "question": "Có lớp học riêng hoặc lớp cho doanh nghiệp không?",
+      "answer": "Có. Trung tâm có lớp Tiếng Hoa VIP 1 kèm 1 cho người bận rộn với lộ trình và thời gian biểu cá nhân hóa, lớp Tiếng Hoa Doanh nghiệp thiết kế theo đặc thù ngành, cùng các lớp Tiếng Hoa Thiếu nhi và Tiếng Hoa cho người lớn tuổi."
+    },
+    {
+      "question": "Trung tâm ở đâu?",
+      "answer": "Trung tâm ở 384/8 Lý Thái Tổ, Phường Vườn Lài, TP Hồ Chí Minh. Bạn có thể đến trực tiếp để tham quan cơ sở vật chất và nhận tư vấn lộ trình, hoặc liên hệ trước qua Zalo/điện thoại 0345.20.44.99."
+    }
+  ],
+  "schedule": [
+    {
+      "code": "SC1",
+      "className": "Tiếng Hoa Sơ cấp 1",
+      "courseSlug": "tieng-hoa-so-cap",
+      "target": "Đậu HSK2",
+      "cadence": "3 buổi/tuần · 1,5h/buổi (hoặc 2 buổi/tuần · 2h/buổi)",
+      "duration": "40 buổi · ~3,5 tháng"
+    },
+    {
+      "code": "SC2",
+      "className": "Tiếng Hoa Sơ cấp 2",
+      "courseSlug": "tieng-hoa-so-cap",
+      "target": "Đậu HSK3",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "40 buổi · ~3,5 tháng"
+    },
+    {
+      "code": "SC3",
+      "className": "Tiếng Hoa Sơ cấp 3",
+      "courseSlug": "tieng-hoa-so-cap",
+      "target": "Đậu HSK4",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "40 buổi · ~3,5 tháng"
+    },
+    {
+      "code": "TC1",
+      "className": "Tiếng Hoa Trung cấp 1",
+      "courseSlug": "tieng-hoa-trung-cap",
+      "target": "Đạt 1/2 trình độ HSK5",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "40 buổi · ~3,5 tháng"
+    },
+    {
+      "code": "TC2",
+      "className": "Tiếng Hoa Trung cấp 2",
+      "courseSlug": "tieng-hoa-trung-cap",
+      "target": "Vào lớp luyện HSK5",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "40 buổi · ~3,5 tháng"
+    },
+    {
+      "code": "HSK4",
+      "className": "Luyện HSK4 thường",
+      "courseSlug": "luyen-thi-hsk",
+      "target": "Cam kết đậu HSK4",
+      "cadence": "3 buổi/tuần · 2h/buổi",
+      "duration": "24 buổi · ~2 tháng"
+    },
+    {
+      "code": "HSK4+",
+      "className": "Luyện HSK4 đặc biệt",
+      "courseSlug": "luyen-thi-hsk",
+      "target": "Cam kết đậu HSK4",
+      "cadence": "3 buổi/tuần · 2h/buổi",
+      "duration": "36 buổi · ~3 tháng"
+    },
+    {
+      "code": "HSK5",
+      "className": "Luyện HSK5 thường",
+      "courseSlug": "luyen-thi-hsk",
+      "target": "Cam kết đậu HSK5",
+      "cadence": "3 buổi/tuần · 2h/buổi",
+      "duration": "30 buổi · ~2,5 tháng"
+    },
+    {
+      "code": "HSK5+",
+      "className": "Luyện HSK5 đặc biệt",
+      "courseSlug": "luyen-thi-hsk",
+      "target": "Cam kết đậu HSK5",
+      "cadence": "3 buổi/tuần · 2h/buổi",
+      "duration": "45 buổi++ · ~4 tháng"
+    },
+    {
+      "code": "GT1",
+      "className": "Giao tiếp Cấp tốc 1",
+      "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
+      "target": "200–300 từ, giao tiếp cơ bản",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "36 buổi · 3 tháng"
+    },
+    {
+      "code": "GT2",
+      "className": "Giao tiếp Cấp tốc 2",
+      "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
+      "target": "300–400 từ, giao tiếp nâng cao",
+      "cadence": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "36 buổi · 3 tháng"
+    },
+    {
+      "code": "VIP",
+      "className": "Tiếng Hoa VIP 1 kèm 1",
+      "courseSlug": "tieng-hoa-vip",
+      "target": "Theo mục tiêu học viên",
+      "cadence": "Lịch linh hoạt theo học viên",
+      "duration": "Theo lộ trình cá nhân"
+    }
+  ]
+}

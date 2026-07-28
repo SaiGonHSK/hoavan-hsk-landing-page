@@ -113,7 +113,7 @@ const schemas = courseSchema
         </a>
         <a
           href={`tel:${contact.phonePrimaryRaw}`}
-          class="inline-flex items-center gap-2 rounded-full bg-brand-ink-50 px-6 py-4 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+          class="inline-flex items-center gap-2 rounded-full bg-brand-ink-50 px-6 py-4 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5"
         >
           <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
           {contact.phonePrimary}
@@ -126,10 +126,10 @@ const schemas = courseSchema
       facts.length > 0 && (
         <section class="bg-background pt-14">
           <div class="container mx-auto px-6">
-            <dl class="grid gap-px overflow-hidden rounded-3xl bg-brand-ink-100 sm:grid-cols-2 lg:grid-cols-3 dark:bg-white/10">
+            <dl class="grid gap-px overflow-hidden rounded-3xl bg-brand-ink-100 sm:grid-cols-2 lg:grid-cols-3">
               {facts.map((f) => (
                 <div class="bg-background p-6">
-                  <dt class="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-red-600 dark:text-brand-red-400">
+                  <dt class="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-red-600">
                     {f.label}
                   </dt>
                   <dd class="mt-2 text-sm font-semibold leading-relaxed text-foreground">
@@ -149,8 +149,8 @@ const schemas = courseSchema
         <div class="grid gap-6 lg:grid-cols-3">
           {
             content.length > 0 && (
-              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-2 dark:bg-white/[0.04]">
-                <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-2">
+                <h2 class="text-xl font-extrabold text-brand-ink-900">
                   {contentTitle}
                 </h2>
                 <ul class="mt-5 space-y-3">
@@ -168,7 +168,7 @@ const schemas = courseSchema
           {
             outcomes.length > 0 && (
               <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
-                <h2 class="font-bricolage text-xl font-extrabold">Sau khoá học</h2>
+                <h2 class="text-xl font-extrabold">Sau khoá học</h2>
                 <ul class="mt-5 space-y-3">
                   {outcomes.map((o) => (
                     <li class="flex items-start gap-3 text-sm leading-relaxed text-white/85">
@@ -183,8 +183,8 @@ const schemas = courseSchema
 
           {
             audience.length > 0 && (
-              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-3 dark:bg-white/[0.04]">
-                <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+              <div class="rounded-3xl bg-brand-ink-50 p-7 lg:col-span-3">
+                <h2 class="text-xl font-extrabold text-brand-ink-900">
                   Dành cho ai
                 </h2>
                 <ul class="mt-5 grid gap-3 md:grid-cols-2">
@@ -207,12 +207,12 @@ const schemas = courseSchema
       faqs.length > 0 && (
         <section class="bg-background">
           <div class="container mx-auto px-6">
-            <h2 class="font-bricolage text-2xl font-black text-brand-ink-900 md:text-3xl dark:text-white">
+            <h2 class="text-2xl font-black text-brand-ink-900 md:text-3xl">
               Câu hỏi thường gặp về {title}
             </h2>
             <div class="mt-6 grid gap-4 md:grid-cols-2">
               {faqs.map((f) => (
-                <div class="rounded-3xl bg-brand-ink-50 p-6 dark:bg-white/[0.04]">
+                <div class="rounded-3xl bg-brand-ink-50 p-6">
                   <h3 class="text-sm font-bold text-foreground">{f.question}</h3>
                   <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
                     {f.answer}
@@ -230,14 +230,14 @@ const schemas = courseSchema
       related.length > 0 && (
         <section class="bg-background pb-14">
           <div class="container mx-auto px-6">
-            <h2 class="font-bricolage text-xl font-extrabold text-brand-ink-900 dark:text-white">
+            <h2 class="text-xl font-extrabold text-brand-ink-900">
               {relatedTitle}
             </h2>
             <div class="mt-5 flex flex-wrap gap-3">
               {related.map((r) => (
                 <a
                   href={r.href}
-                  class="rounded-full bg-brand-ink-50 px-5 py-2.5 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+                  class="rounded-full bg-brand-ink-50 px-5 py-2.5 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5"
                 >
                   {r.label}
                 </a>

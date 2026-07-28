@@ -1,0 +1,210 @@
+---
+/**
+ * Minh hoạ đầu thẻ khoá học — mỗi chương trình một cảnh vector riêng, cùng
+ * bảng màu crimson và ngôn ngữ thị giác với HeroIllustration/ValueIllustration.
+ * Khoá nào chưa có cảnh thì component không render gì để thẻ tự rơi về icon.
+ */
+interface Props {
+  /** Trùng `slug` trong `courses`. */
+  slug: string;
+  class?: string;
+  alt?: string;
+}
+
+const { slug, class: className = "", alt = "" } = Astro.props;
+
+const SCENES: Record<string, string> = {
+  "luyen-thi-hsk": `
+  <circle cx="188" cy="150" r="118" fill="#fbe4e6"/>
+  <g transform="rotate(-6 176 150)">
+    <rect x="86" y="52" width="182" height="200" rx="16" fill="#fdfcfb" stroke="#b2182b" stroke-width="5"/>
+    <rect x="150" y="36" width="54" height="26" rx="13" fill="#7c0f1d"/>
+    <g stroke="#ef9ba3" stroke-width="8" stroke-linecap="round"><path d="M114 92h74M114 148h74M114 204h74"/></g>
+    <g fill="none" stroke="#ef9ba3" stroke-width="4">
+      <circle cx="124" cy="120" r="11"/><circle cx="160" cy="120" r="11"/><circle cx="196" cy="120" r="11"/>
+      <circle cx="124" cy="176" r="11"/><circle cx="160" cy="176" r="11"/><circle cx="196" cy="176" r="11"/>
+      <circle cx="124" cy="232" r="11"/><circle cx="160" cy="232" r="11"/><circle cx="196" cy="232" r="11"/>
+    </g>
+    <g fill="#b2182b"><circle cx="160" cy="120" r="11"/><circle cx="124" cy="176" r="11"/><circle cx="196" cy="232" r="11"/></g>
+  </g>
+  <g transform="translate(360,120)">
+    <circle r="66" fill="#b2182b"/>
+    <text y="14" font-family="system-ui" font-size="40" font-weight="800" fill="#fff" text-anchor="middle">HSK</text>
+    <path d="M-30 58 -18 106 0 92l18 14 12-48Z" fill="#7c0f1d"/>
+  </g>
+`,
+
+  "luyen-thi-tocfl": `
+  <circle cx="250" cy="148" r="120" fill="#fbe4e6"/>
+  <g transform="rotate(4 240 150) translate(0,-12)">
+    <rect x="120" y="60" width="240" height="176" rx="16" fill="#fdfcfb" stroke="#b2182b" stroke-width="5"/>
+    <text x="192" y="178" font-family="'PingFang TC','PingFang SC',serif" font-size="92" font-weight="700" fill="#b2182b" text-anchor="middle">華</text>
+    <g stroke="#ef9ba3" stroke-width="8" stroke-linecap="round"><path d="M256 116h74M256 148h56M256 180h74"/></g>
+  </g>
+  <g transform="translate(346,222)">
+    <circle r="40" fill="#b2182b"/>
+    <path d="M0-22 6-7l16 1-12 11 4 16L0 12l-14 9 4-16-12-11 16-1Z" fill="#fdf2f3"/>
+    <path d="M-18 34 -8 74 0 62l8 12 10-40Z" fill="#7c0f1d"/>
+  </g>
+  <text x="240" y="272" font-family="system-ui" font-size="26" font-weight="800" fill="#7c0f1d" text-anchor="middle" letter-spacing="3">TOCFL</text>
+`,
+
+  "tieng-hoa-so-cap": `
+  <circle cx="220" cy="146" r="118" fill="#fbe4e6"/>
+  <g transform="translate(214,140)">
+    <rect x="-92" y="-92" width="184" height="184" rx="16" fill="#fdfcfb" stroke="#b2182b" stroke-width="5"/>
+    <g stroke="#ef9ba3" stroke-width="3" stroke-dasharray="9 12" stroke-linecap="round"><path d="M-88 0h176M0-88v176M-84-84 84 84M84-84-84 84"/></g>
+    <text y="40" font-family="'PingFang SC','Noto Sans SC',serif" font-size="112" font-weight="700" fill="#b2182b" text-anchor="middle">好</text>
+  </g>
+  <g transform="translate(330,196) rotate(34)">
+    <rect x="-13" y="-124" width="26" height="98" rx="5" fill="#b2182b"/>
+    <path d="M-13-136a13 13 0 0 1 26 0v12h-26Z" fill="#7c0f1d"/>
+    <rect x="-13" y="-32" width="26" height="6" fill="#c9cace"/>
+    <path d="M-13-26h26L0 8Z" fill="#f2dcc4"/><path d="M-6-6h12L0 8Z" fill="#26272c"/>
+  </g>
+  <text x="214" y="278" font-family="system-ui" font-size="26" font-weight="800" fill="#7c0f1d" text-anchor="middle" letter-spacing="2">nǐ hǎo</text>
+`,
+
+  "tieng-hoa-trung-cap": `
+  <circle cx="238" cy="146" r="120" fill="#fbe4e6"/>
+  <path d="M106 42H262A26 26 0 0 1 288 68V152A26 26 0 0 1 262 178H178L128 214 138 178H106A26 26 0 0 1 80 152V68A26 26 0 0 1 106 42Z" fill="#fdfcfb" stroke="#b2182b" stroke-width="5" stroke-linejoin="round"/>
+  <text x="184" y="136" font-family="'PingFang SC','Noto Sans SC',serif" font-size="70" font-weight="700" fill="#b2182b" text-anchor="middle">文化</text>
+  <path d="M266 146H394A26 26 0 0 1 420 172V224A26 26 0 0 1 394 250H310L288 282 290 250H266A26 26 0 0 1 240 224V172A26 26 0 0 1 266 146Z" fill="#b2182b"/>
+  <g stroke="#fdf2f3" stroke-width="9" stroke-linecap="round"><path d="M270 186h106M270 214h66"/></g>
+  <g transform="translate(96,258)">
+    <rect x="-38" y="-16" width="120" height="16" rx="7" fill="#7c0f1d"/>
+    <rect x="-28" y="-32" width="120" height="16" rx="7" fill="#ef9ba3"/>
+  </g>
+`,
+
+  "tieng-hoa-cao-cap": `
+  <circle cx="240" cy="150" r="122" fill="#fbe4e6"/>
+  <path d="M60 250h360" stroke="#c9cace" stroke-width="6" stroke-linecap="round"/>
+  <path d="M120 250 216 96l58 92 26-38 60 100Z" fill="#ef9ba3"/>
+  <path d="M216 96 274 188l-30 62h-96Z" fill="#b2182b"/>
+  <path d="M216 96l-26 42c16 8 34 8 52 0Z" fill="#fdfcfb"/>
+  <g transform="translate(216,96)">
+    <path d="M0-72v72" stroke="#26272c" stroke-width="6" stroke-linecap="round"/>
+    <path d="M2-70h52l-14 18 14 18H2Z" fill="#b2182b"/>
+    <text x="26" y="-40" font-family="'PingFang SC',serif" font-size="26" font-weight="700" fill="#fff" text-anchor="middle">六</text>
+  </g>
+  <circle cx="372" cy="86" r="26" fill="#ef9ba3"/>
+`,
+
+  "tieng-hoa-giao-tiep-cap-toc": `
+  <circle cx="240" cy="148" r="120" fill="#fbe4e6"/>
+  <path d="M84 56H244A26 26 0 0 1 270 82V150A26 26 0 0 1 244 176H150L108 208 116 176H84A26 26 0 0 1 58 150V82A26 26 0 0 1 84 56Z" fill="#fdfcfb" stroke="#b2182b" stroke-width="5" stroke-linejoin="round"/>
+  <text x="164" y="140" font-family="'PingFang SC','Noto Sans SC',serif" font-size="62" font-weight="700" fill="#b2182b" text-anchor="middle">你好</text>
+  <path d="M266 148H400A26 26 0 0 1 426 174V232A26 26 0 0 1 400 258H316L288 288 292 258H266A26 26 0 0 1 240 232V174A26 26 0 0 1 266 148Z" fill="#b2182b"/>
+  <text x="336" y="222" font-family="'PingFang SC','Noto Sans SC',serif" font-size="56" font-weight="700" fill="#fdf2f3" text-anchor="middle">谢谢</text>
+  <g transform="translate(94,236)">
+    <path d="M18-46 -8 4h20l-8 40 30-54H30l10-36Z" fill="#7c0f1d"/>
+  </g>
+`,
+
+  "tieng-hoa-doanh-nghiep": `
+  <circle cx="240" cy="150" r="120" fill="#fbe4e6"/>
+  <g fill="#ef9ba3">
+    <rect x="88" y="118" width="60" height="132" rx="8"/>
+    <rect x="330" y="96" width="64" height="154" rx="8"/>
+  </g>
+  <g fill="#fdfcfb" opacity=".85">
+    <rect x="100" y="134" width="16" height="16" rx="3"/><rect x="124" y="134" width="16" height="16" rx="3"/>
+    <rect x="100" y="164" width="16" height="16" rx="3"/><rect x="124" y="164" width="16" height="16" rx="3"/>
+    <rect x="344" y="114" width="16" height="16" rx="3"/><rect x="368" y="114" width="16" height="16" rx="3"/>
+    <rect x="344" y="144" width="16" height="16" rx="3"/><rect x="368" y="144" width="16" height="16" rx="3"/>
+  </g>
+  <path d="M60 250h360" stroke="#c9cace" stroke-width="6" stroke-linecap="round"/>
+  <g transform="translate(240,178)">
+    <path d="M-34-64h68v22h-20v-8h-28v8h-20Z" fill="#7c0f1d"/>
+    <rect x="-96" y="-48" width="192" height="118" rx="16" fill="#b2182b"/>
+    <rect x="-96" y="-4" width="192" height="14" fill="#7c0f1d"/>
+    <rect x="-18" y="-12" width="36" height="30" rx="6" fill="#fdf2f3"/>
+    <text y="52" font-family="'PingFang SC',serif" font-size="34" font-weight="700" fill="#fdf2f3" text-anchor="middle">商务</text>
+  </g>
+`,
+
+  "tieng-hoa-vip": `
+  <circle cx="240" cy="150" r="122" fill="#fbe4e6"/>
+  <g transform="translate(144,120) scale(1.12)" style="--skin:#f0c4a0;--hair:#241d1c;--top:#b2182b">
+    <path d="M0 0c-22 0-34 14-34 36 0 16 2 28-2 42 6-4 12-6 18-8-4-14-2-30-2-40 6 6 12 8 20 8s14-2 20-8c2 10 4 26 0 40 6 2 12 4 18 8-4-14-4-26-4-42C34 14 22 0 0 0Z" fill="var(--hair)"/>
+    <circle cx="0" cy="26" r="30" fill="var(--skin)"/>
+    <path d="M0 0c15 0 22 10 22 24 0 4-1 8-2 11-1-7-2-12-4-15-8 6-22 8-32 5-5-1-7-4-7-8-2 4-4 11-4 17-1-4-2-7-2-11C-29 10-15 0 0 0Z" fill="var(--hair)"/>
+    <circle cx="-9" cy="27" r="3.2" fill="#26272c"/><circle cx="9" cy="27" r="3.2" fill="#26272c"/>
+    <path d="M-5 38c3 3 7 3 10 0" stroke="#a94a4a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M0 58c26 0 44 16 48 40l4 32h-104l4-32c4-24 22-40 48-40Z" fill="var(--top)"/>
+  </g>
+  <g transform="translate(336,128) scale(1.12)" style="--skin:#eec09b;--hair:#5e0b16;--top:#35363d">
+    <path d="M0 0c-22 0-34 14-34 36 0 18 2 32-2 46 6-4 12-6 18-8-4-16-2-34-2-44 6 6 12 8 20 8s14-2 20-8c2 10 4 28 0 44 6 2 12 4 18 8-4-14-4-28-4-46C34 14 22 0 0 0Z" fill="var(--hair)"/>
+    <circle cx="0" cy="26" r="30" fill="var(--skin)"/>
+    <path d="M0 0c15 0 22 10 22 24 0 4-1 8-2 11-1-7-2-12-4-15-8 6-22 8-32 5-5-1-7-4-7-8-2 4-4 11-4 17-1-4-2-7-2-11C-29 10-15 0 0 0Z" fill="var(--hair)"/>
+    <circle cx="-9" cy="27" r="3.2" fill="#26272c"/><circle cx="9" cy="27" r="3.2" fill="#26272c"/>
+    <path d="M-5 38c3 3 7 3 10 0" stroke="#a94a4a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M0 58c26 0 44 16 48 40l4 32h-104l4-32c4-24 22-40 48-40Z" fill="var(--top)"/>
+  </g>
+  <rect x="96" y="236" width="288" height="16" rx="8" fill="#c9cace"/>
+  <g transform="translate(240,232)">
+    <path d="M-52 0h104c4 0 6 3 6 6v-2c0 3-2 5-6 5h-104c-4 0-6-2-6-5v2c0-3 2-6 6-6Z" fill="#c9cace"/>
+    <path d="M-42-26h84v22h-84Z" fill="#fdfcfb"/>
+    <path d="M-42-26h84v6h-84Z" fill="#b2182b"/>
+  </g>
+  <g transform="translate(240,64)">
+    <circle r="34" fill="#b2182b"/>
+    <text y="11" font-family="system-ui" font-size="28" font-weight="800" fill="#fff" text-anchor="middle">1:1</text>
+  </g>
+`,
+
+  "tieng-hoa-thieu-nhi": `
+  <circle cx="240" cy="150" r="120" fill="#fbe4e6"/>
+  <g transform="translate(160,120)">
+    <ellipse cx="0" cy="0" rx="58" ry="66" fill="#b2182b"/>
+    <path d="M0 66l-10 14h20Z" fill="#7c0f1d"/>
+    <path d="M0 80c14 24-14 40 0 62" stroke="#ef9ba3" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-20" cy="-24" rx="12" ry="16" fill="#fff" opacity=".35"/>
+    <text y="16" font-family="'PingFang SC',serif" font-size="52" font-weight="700" fill="#fdf2f3" text-anchor="middle">小</text>
+  </g>
+  <g transform="translate(320,196)">
+    <rect x="-56" y="-56" width="52" height="52" rx="10" fill="#ef9ba3"/>
+    <rect x="4" y="-56" width="52" height="52" rx="10" fill="#b2182b"/>
+    <rect x="-26" y="4" width="52" height="52" rx="10" fill="#7c0f1d"/>
+    <g font-family="'PingFang SC',serif" font-size="30" font-weight="700" fill="#fdf2f3" text-anchor="middle">
+      <text x="-30" y="-20">一</text><text x="30" y="-20">二</text><text x="0" y="40">三</text>
+    </g>
+  </g>
+`,
+
+  "tieng-hoa-nguoi-lon-tuoi": `
+  <circle cx="240" cy="150" r="120" fill="#fbe4e6"/>
+  <g transform="translate(200,168)">
+    <path d="M-80-40h132v66c0 26-22 46-50 46h-32c-28 0-50-20-50-46Z" fill="#fdfcfb" stroke="#b2182b" stroke-width="5"/>
+    <path d="M52-24h20c18 0 30 12 30 28s-12 28-30 28H56" fill="none" stroke="#b2182b" stroke-width="5"/>
+    <path d="M-80-40h132v20h-132Z" fill="#b2182b"/>
+    <path d="M-96 74h164c5 0 8 4 8 8s-3 8-8 8h-164c-5 0-8-4-8-8s3-8 8-8Z" fill="#ef9ba3"/>
+    <g stroke="#ef9ba3" stroke-width="5" stroke-linecap="round" fill="none">
+      <path d="M-40-64c-8-10 0-18 0-26M-4-64c-8-10 0-18 0-26M32-64c-8-10 0-18 0-26"/>
+    </g>
+    <text y="34" font-family="'PingFang SC',serif" font-size="52" font-weight="700" fill="#b2182b" text-anchor="middle">福</text>
+  </g>
+  <g transform="translate(360,236)" fill="none" stroke="#7c0f1d" stroke-width="6">
+    <circle cx="-30" cy="0" r="22"/><circle cx="30" cy="0" r="22"/><path d="M-8 0h16"/>
+  </g>
+`,
+};
+
+const scene = SCENES[slug];
+---
+
+{
+  scene && (
+    <svg
+      class:list={["size-full", className]}
+      viewBox="0 0 480 300"
+      preserveAspectRatio="xMidYMid slice"
+      fill="none"
+      role="img"
+      aria-label={alt}
+    >
+      <Fragment set:html={scene} />
+    </svg>
+  )
+}

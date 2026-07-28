@@ -1,5 +1,4 @@
 ---
-import ThemeToggle from "@/components/ThemeToggle.astro";
 import { site, contact, footerLinks } from "@/data/site";
 import logoMark from "@/assets/logo-mark.png";
 
@@ -54,7 +53,7 @@ const [coursesGroup, , centerGroup] = footerLinks;
                 class="size-9 object-contain"
               />
             </span>
-            <span class="font-bricolage text-lg font-extrabold uppercase tracking-[0.06em]">
+            <span class="text-lg font-extrabold uppercase tracking-[0.06em]">
               Hoa văn SaigonHSK
             </span>
           </div>
@@ -195,7 +194,6 @@ const [coursesGroup, , centerGroup] = footerLinks;
           <a href="/about" class="transition-colors hover:text-white">Giới thiệu</a>
           <a href="/courses" class="transition-colors hover:text-white">Khóa học</a>
           <a href="/contact" class="transition-colors hover:text-white">Liên hệ</a>
-          <ThemeToggle class="text-white/75 hover:text-white" />
         </div>
       </div>
     </div>

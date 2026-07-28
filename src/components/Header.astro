@@ -1,7 +1,7 @@
 ---
 import Logo from "@/components/Logo.astro";
 import { contact, site } from "@/data/site";
-import { navigation } from "@/data/navigation";
+import { menu, groupChildren, plainChildren } from "@/data/pages";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
@@ -16,108 +16,70 @@ const isActive = (href: string) => {
   return clean === href || clean.startsWith(`${href}/`);
 };
 
-const mainNav = navigation.filter((n) => !n.cta);
-const ctaNav = navigation.find((n) => n.cta);
+const mainNav = menu.filter((entry) => !entry.cta);
+const ctaNav = menu.find((entry) => entry.cta);
 ---
 
-{/* Thanh thông tin liên hệ phía trên */}
-<div class="hidden border-b border-white/10 bg-brand-red-700 text-white lg:block">
-  <div
-    class="container mx-auto flex items-center justify-between gap-6 px-6 py-1.5 text-xs"
-  >
-    <div class="flex items-center gap-5">
-      <a
-        href={`tel:${contact.phonePrimaryRaw}`}
-        class="inline-flex items-center gap-1.5 font-semibold transition-opacity hover:opacity-80"
-      >
-        <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
-        {contact.phonePrimary}
-      </a>
-      <a
-        href={contact.mapsUrl}
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-1.5 text-white/85 transition-opacity hover:opacity-100"
-      >
-        <span class="[&>svg]:size-3.5" set:html={ICONS.pin} />
-        {contact.addressShort}
-      </a>
-    </div>
-    <div class="flex items-center gap-5">
-      <span class="text-white/85">{contact.workingHours}</span>
-      <a
-        href={contact.zalo}
-        target="_blank"
-        rel="noopener"
-        class="font-semibold underline-offset-2 hover:underline">Zalo</a
-      >
-      <a
-        href={contact.facebook}
-        target="_blank"
-        rel="noopener"
-        class="font-semibold underline-offset-2 hover:underline">Facebook</a
-      >
-    </div>
-  </div>
-</div>
-
+{/*
+  Nền header lấy đúng tông của footer (`bg-brand-red-600` đặc) để đầu và cuối
+  trang khớp màu — trước đây header là `/95` và đổi sang red-700 khi cuộn nên
+  nhìn lệch. Vẫn giữ `backdrop-blur-sm`: header là containing block của mega
+  menu `position:fixed`, bỏ backdrop-filter là panel bung ra sai chỗ.
+*/}
 <header
   id="site-header"
   data-scrolled="false"
-  class="sticky top-0 z-40 border-b border-transparent bg-background/85 backdrop-blur-sm transition-all duration-300 data-[scrolled=true]:border-border data-[scrolled=true]:bg-background/95 data-[scrolled=true]:shadow-sm"
+  class="sticky top-0 z-40 border-b border-white/10 bg-brand-red-600 backdrop-blur-sm transition-all duration-300 data-[scrolled=true]:shadow-lg data-[scrolled=true]:shadow-brand-red-950/25"
 >
   <div class="container mx-auto flex items-center justify-between gap-4 px-6 py-3">
     <div class="flex flex-1 items-center gap-6 xl:gap-8">
-      <Logo />
+      <Logo onDark />
 
-      <nav class="hidden items-center gap-0.5 lg:flex">
+      <nav class="hidden items-center gap-1 lg:flex">
         {
           mainNav.map((item) => {
-            const active = isActive(item.href);
-            const hasMenu = Boolean(item.items || item.groups);
-            const linkClass = `relative inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-brand-red-600 dark:hover:text-white ${
-              active ? "text-brand-red-600 dark:text-white" : "text-foreground/75"
+            const active = isActive(item.slug);
+            const groups = groupChildren(item.children);
+            const plain = plainChildren(item.children);
+            const hasMenu = groups.length > 0 || plain.length > 0;
+            /* Menu chữ trắng trên nền đỏ, mục đang mở nổi bằng viên nền sáng. */
+            const linkClass = `inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors ${
+              active ? "bg-white/15 font-semibold" : "hover:bg-white/10"
             }`;
 
             if (!hasMenu) {
               return (
-                <a href={item.href} class={linkClass}>
+                <a href={item.slug} class={linkClass}>
                   {item.label}
-                  {active && (
-                    <span class="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-red-600 dark:bg-white" />
-                  )}
                 </a>
               );
             }
 
             return (
               <div class="group/menu relative" data-menu data-open="false">
-                <a href={item.href} class={linkClass}>
+                <a href={item.slug} class={linkClass}>
                   {item.label}
                   <span
                     class="[&>svg]:size-3.5 [&>svg]:transition-transform group-data-[open=true]/menu:[&>svg]:rotate-180"
                     set:html={ICONS.chevron}
                   />
-                  {active && (
-                    <span class="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-red-600 dark:bg-white" />
-                  )}
                 </a>
 
-                {item.groups ? (
+                {groups.length > 0 ? (
                   <div
                     data-menu-panel
                     data-mega
                     data-open="false"
                     class="invisible fixed inset-x-0 z-30 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
                   >
-                   <div class="container mx-auto px-6">
+                   <div class="container mx-auto px-4">
                     <div class="overflow-hidden rounded-3xl border border-border bg-background/98 shadow-2xl backdrop-blur-md">
                       <div class="grid gap-x-6 gap-y-8 p-7 md:grid-cols-4">
-                        {item.groups.map((group) => (
+                        {groups.map((group) => (
                           <div>
                             <a
-                              href={group.href ?? item.href}
-                              class="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 transition-opacity hover:opacity-70 dark:text-brand-red-400"
+                              href={item.slug}
+                              class="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 transition-opacity hover:opacity-70"
                             >
                               {group.title}
                             </a>
@@ -125,8 +87,8 @@ const ctaNav = navigation.find((n) => n.cta);
                               {group.items.map((link) => (
                                 <li>
                                   <a
-                                    href={link.href}
-                                    class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700 dark:hover:bg-white/5 dark:hover:text-white"
+                                    href={link.slug}
+                                    class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
                                   >
                                     {link.label}
                                   </a>
@@ -138,8 +100,8 @@ const ctaNav = navigation.find((n) => n.cta);
                       </div>
 
                       <a
-                        href={item.href}
-                        class="group/all flex items-center justify-between gap-3 border-t border-border bg-brand-ink-50 px-7 py-4 text-sm font-bold text-foreground transition-colors hover:text-brand-red-600 dark:bg-white/[0.04]"
+                        href={item.slug}
+                        class="group/all flex items-center justify-between gap-3 border-t border-border bg-brand-ink-50 px-7 py-4 text-sm font-bold text-foreground transition-colors hover:text-brand-red-600"
                       >
                         Xem tất cả {item.label.toLowerCase()}
                         <span
@@ -154,13 +116,13 @@ const ctaNav = navigation.find((n) => n.cta);
                   <div
                     data-menu-panel
                     data-open="false"
-                    class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                    class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-4 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
                   >
                     <div class="overflow-hidden rounded-2xl border border-border bg-background/98 p-2 shadow-xl backdrop-blur-md">
-                      {item.items?.map((link) => (
+                      {plain.map((link) => (
                         <a
-                          href={link.href}
-                          class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700 dark:hover:bg-white/5 dark:hover:text-white"
+                          href={link.slug}
+                          class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
                         >
                           {link.label}
                         </a>
@@ -179,8 +141,8 @@ const ctaNav = navigation.find((n) => n.cta);
     {
       ctaNav && (
         <a
-          href={ctaNav.href}
-          class="hidden shrink-0 items-center gap-2 rounded-full bg-brand-red-600 px-6 py-2.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 lg:inline-flex"
+          href={ctaNav.slug}
+          class="hidden shrink-0 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-bold whitespace-nowrap text-brand-red-700 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.55)] transition-transform hover:-translate-y-0.5 lg:inline-flex"
         >
           {ctaNav.label}
         </a>
@@ -192,14 +154,14 @@ const ctaNav = navigation.find((n) => n.cta);
       <a
         href={`tel:${contact.phonePrimaryRaw}`}
         aria-label={`Gọi ${contact.phonePrimary}`}
-        class="inline-flex size-9 items-center justify-center rounded-full bg-brand-red-600 text-white [&>svg]:size-4"
+        class="inline-flex size-9 items-center justify-center rounded-full bg-white text-brand-red-600 [&>svg]:size-4"
         set:html={ICONS.phone}
       />
       <button
         type="button"
         id="mobile-menu-trigger"
         aria-label="Mở menu"
-        class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border text-foreground/80 transition-colors hover:text-foreground [&>svg]:size-5"
+        class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-white/35 text-white transition-colors hover:bg-white/10 [&>svg]:size-5"
         set:html={ICONS.menu}
       />
     </div>
@@ -231,12 +193,14 @@ const ctaNav = navigation.find((n) => n.cta);
 
   <nav class="flex flex-col gap-1 px-4 py-5">
     {
-      navigation.map((item) => {
-        const hasMenu = Boolean(item.items || item.groups);
+      menu.map((item) => {
+        const groups = groupChildren(item.children);
+        const plain = plainChildren(item.children);
+        const hasMenu = groups.length > 0 || plain.length > 0;
         if (!hasMenu) {
           return (
             <a
-              href={item.href}
+              href={item.slug}
               class:list={[
                 "rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors",
                 item.cta
@@ -261,29 +225,29 @@ const ctaNav = navigation.find((n) => n.cta);
 
             <div class="mt-1 flex flex-col gap-0.5 pb-3 pl-3">
               <a
-                href={item.href}
-                class="rounded-md px-3 py-2 text-sm font-bold text-brand-red-600 dark:text-brand-red-400"
+                href={item.slug}
+                class="rounded-md px-3 py-2 text-sm font-bold text-brand-red-600"
               >
                 Tổng quan
               </a>
 
-              {item.items?.map((link) => (
+              {plain.map((link) => (
                 <a
-                  href={link.href}
+                  href={link.slug}
                   class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </a>
               ))}
 
-              {item.groups?.map((group) => (
+              {groups.map((group) => (
                 <div class="mt-2">
-                  <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600 dark:text-brand-red-400">
+                  <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
                     {group.title}
                   </p>
                   {group.items.map((link) => (
                     <a
-                      href={link.href}
+                      href={link.slug}
                       class="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
@@ -310,7 +274,7 @@ const ctaNav = navigation.find((n) => n.cta);
       href={contact.zalo}
       target="_blank"
       rel="noopener"
-      class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-brand-ink-50 px-4 py-3 text-sm font-bold text-foreground dark:bg-white/[0.06]"
+      class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-brand-ink-50 px-4 py-3 text-sm font-bold text-foreground"
     >
       Chat Zalo
     </a>

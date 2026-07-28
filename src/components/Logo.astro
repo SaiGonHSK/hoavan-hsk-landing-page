@@ -8,9 +8,11 @@ import { site } from "@/data/site";
 interface Props {
   /** Chỉ hiện con dấu, ẩn phần chữ (khi chật chỗ). */
   markOnly?: boolean;
+  /** Đặt trên nền đậm (header đỏ): chữ trắng và con dấu nằm trên đĩa trắng. */
+  onDark?: boolean;
   class?: string;
 }
-const { markOnly = false, class: className = "" } = Astro.props;
+const { markOnly = false, onDark = false, class: className = "" } = Astro.props;
 ---
 
 <a
@@ -26,16 +28,31 @@ const { markOnly = false, class: className = "" } = Astro.props;
     alt={`Logo ${site.fullName}`}
     width="192"
     height="192"
-    class="size-10 shrink-0 object-contain md:size-11"
+    class:list={[
+      "size-10 shrink-0 object-contain md:size-11",
+      onDark && "rounded-full bg-white p-0.5",
+    ]}
   />
 
   {
     !markOnly && (
       <span class="flex flex-col gap-0.5">
-        <span class="font-bricolage text-sm font-extrabold uppercase tracking-[0.08em] text-foreground md:text-base">
+        <span
+          class:list={[
+            " text-sm font-extrabold uppercase tracking-[0.08em] md:text-base",
+            onDark ? "text-white" : "text-foreground",
+          ]}
+        >
           Hoa văn SaigonHSK
         </span>
-        <span class="text-[11px] font-semibold tracking-[0.12em] text-brand-red-600 dark:text-brand-red-400">
+        <span
+          class:list={[
+            "text-[11px] font-semibold tracking-[0.12em]",
+            onDark
+              ? "text-white/75"
+              : "text-brand-red-600",
+          ]}
+        >
           {site.slogan}
         </span>
       </span>

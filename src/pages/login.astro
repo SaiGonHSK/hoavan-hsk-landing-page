@@ -1,0 +1,237 @@
+---
+/**
+ * Trang đăng nhập khu vực học viên.
+ *
+ * Không dùng PageHero: trang này chỉ có đúng một việc là đăng nhập, nên form
+ * nằm giữa màn hình, không breadcrumb, không tiêu đề trang.
+ *
+ * Có `PUBLIC_LOGIN_ENDPOINT` → POST JSON rồi chuyển sang khu vực học viên.
+ * Chưa có → form vẫn kiểm tra dữ liệu nhập nhưng báo rõ là hệ thống chưa mở,
+ * kèm hotline, thay vì gửi vào hư không.
+ */
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { contact, site } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+import markUrl from "@/assets/logo-mark.png";
+
+const endpoint = import.meta.env.PUBLIC_LOGIN_ENDPOINT ?? "";
+
+/** Icon riêng của trang, không đủ dùng chung để đưa vào `ICONS`. */
+const EYE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_OFF = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 6.2A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.4 3.2"/><path d="M6.2 8.2A17.6 17.6 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4-.8"/><path d="M14.1 14.1a3 3 0 0 1-4.2-4.2"/><path d="m3 3 18 18"/></svg>`;
+const LOCK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="11" x="4" y="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
+
+const field =
+  "h-12 w-full rounded-xl border border-border bg-background pl-11 pr-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-brand-red-500 focus:ring-2 focus:ring-brand-red-500/20";
+const label = "mb-1.5 block text-sm font-semibold text-foreground";
+const affix =
+  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground [&>svg]:size-[18px]";
+---
+
+<Layout
+  title={`Đăng nhập khu vực học viên | ${site.shortName}`}
+  description="Đăng nhập để vào khu vực học viên của Trung tâm Hoa văn SaigonHSK: theo dõi lộ trình, bài tập và kết quả luyện thi."
+  noindex
+>
+  <Header />
+
+  <main id="main" class="relative overflow-hidden bg-background">
+    <span
+      aria-hidden="true"
+      class="pointer-events-none absolute -right-6 -top-10 select-none text-[11rem] font-black leading-none text-brand-red-900/[0.05] lg:text-[15rem]"
+      >学</span
+    >
+
+    <div
+      class="container relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] items-center justify-center px-6 py-14 lg:py-20"
+    >
+      <div class="w-full max-w-md">
+        <h1 class="sr-only">Đăng nhập khu vực học viên</h1>
+
+        <div
+          class="rounded-3xl border border-border/70 bg-brand-ink-50 p-7 shadow-sm md:p-9"
+        >
+          <img
+            src={markUrl.src}
+            alt={`Logo ${site.fullName}`}
+            width="192"
+            height="192"
+            class="mx-auto size-14 object-contain"
+          />
+
+          <form data-login-form class="mt-7 space-y-4" data-endpoint={endpoint}>
+            <div>
+              <label class={label} for="login-email">Email hoặc số điện thoại</label>
+              <div class="relative">
+                <span aria-hidden="true" class={affix} set:html={ICONS.mail} />
+                <input
+                  id="login-email"
+                  name="username"
+                  type="text"
+                  required
+                  autocomplete="username"
+                  placeholder="email@example.com"
+                  class={field}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class={label} for="login-password">Mật khẩu</label>
+              <div class="relative">
+                <span aria-hidden="true" class={affix} set:html={LOCK} />
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  required
+                  minlength="6"
+                  autocomplete="current-password"
+                  placeholder="••••••••"
+                  class={`${field} pr-12`}
+                />
+                <button
+                  type="button"
+                  data-toggle-password
+                  aria-label="Hiện mật khẩu"
+                  aria-pressed="false"
+                  class="absolute right-1.5 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground [&>svg]:size-[18px]"
+                >
+                  <span data-eye-on hidden set:html={EYE_OFF} />
+                  <span data-eye-off set:html={EYE} />
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-1">
+              <label class="flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  name="remember"
+                  class="size-4 accent-brand-red-600"
+                />
+                Ghi nhớ đăng nhập
+              </label>
+              <a
+                href={`tel:${contact.phonePrimaryRaw}`}
+                class="text-sm font-semibold text-brand-red-600 hover:underline"
+              >
+                Quên mật khẩu?
+              </a>
+            </div>
+
+            <p
+              data-login-error
+              role="alert"
+              hidden
+              class="rounded-xl bg-brand-red-50 px-4 py-3 text-sm leading-relaxed text-brand-red-700"
+            >
+            </p>
+
+            <button
+              type="submit"
+              data-login-submit
+              class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            >
+              <span data-login-label>Đăng nhập</span>
+              <span data-login-icon class="[&>svg]:size-4" set:html={ICONS.arrow} />
+            </button>
+          </form>
+
+          <p class="mt-6 text-center text-sm text-muted-foreground">
+            Chưa có tài khoản?
+            <a
+              href="/register"
+              class="font-semibold text-brand-red-600 hover:underline"
+            >
+              Đăng ký tư vấn
+            </a>
+          </p>
+        </div>
+
+        <p class="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
+          Cần hỗ trợ tài khoản? Gọi
+          <a
+            href={`tel:${contact.phonePrimaryRaw}`}
+            class="font-semibold text-foreground hover:underline"
+          >
+            {contact.phonePrimary}
+          </a>
+          hoặc nhắn Zalo cho trung tâm.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+  <FloatingContact />
+</Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-login-form]");
+  const error = document.querySelector<HTMLParagraphElement>("[data-login-error]");
+  const button = document.querySelector<HTMLButtonElement>("[data-login-submit]");
+  const buttonLabel = document.querySelector<HTMLSpanElement>("[data-login-label]");
+  const buttonIcon = document.querySelector<HTMLSpanElement>("[data-login-icon]");
+
+  /* Hiện/ẩn mật khẩu: đổi type và tráo cặp icon con mắt. */
+  const toggle = document.querySelector<HTMLButtonElement>("[data-toggle-password]");
+  const password = document.querySelector<HTMLInputElement>("#login-password");
+  const eyeOn = toggle?.querySelector<HTMLSpanElement>("[data-eye-on]");
+  const eyeOff = toggle?.querySelector<HTMLSpanElement>("[data-eye-off]");
+
+  toggle?.addEventListener("click", () => {
+    if (!password) return;
+    const shown = password.type === "text";
+    password.type = shown ? "password" : "text";
+    toggle.setAttribute("aria-pressed", String(!shown));
+    toggle.setAttribute("aria-label", shown ? "Hiện mật khẩu" : "Ẩn mật khẩu");
+    if (eyeOn) eyeOn.hidden = shown;
+    if (eyeOff) eyeOff.hidden = !shown;
+    password.focus();
+  });
+
+  const fail = (message: string) => {
+    if (!error) return;
+    error.textContent = message;
+    error.hidden = false;
+  };
+
+  const busy = (state: boolean) => {
+    if (button) button.disabled = state;
+    if (buttonLabel) buttonLabel.textContent = state ? "Đang đăng nhập…" : "Đăng nhập";
+    if (buttonIcon) buttonIcon.hidden = state;
+  };
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (error) error.hidden = true;
+
+    const endpoint = form.dataset.endpoint;
+    if (!endpoint) {
+      fail("Khu vực học viên đang được hoàn thiện, chưa mở đăng nhập. Vui lòng liên hệ trung tâm để được hỗ trợ.");
+      return;
+    }
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    busy(true);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const body = (await res.json()) as { redirect?: string };
+      window.location.href = body.redirect ?? "/";
+    } catch {
+      fail("Sai tài khoản hoặc mật khẩu. Vui lòng thử lại.");
+    } finally {
+      busy(false);
+    }
+  });
+</script>

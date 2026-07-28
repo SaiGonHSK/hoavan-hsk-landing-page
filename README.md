@@ -29,6 +29,19 @@ yarn preview   # xem thử bản build
 Thêm hoặc sửa khoá học: chỉnh `src/data/catalog.ts` — trang chi tiết, menu và trang
 tổng quan sẽ tự cập nhật theo.
 
+## Menu và trang do trang quản trị tạo
+
+Menu header và các trang nội dung lấy từ app quản trị (`hoavan-hsk-admin`):
+
+```sh
+PUBLIC_CONTENT_API=http://localhost:3000/console npm run build
+```
+
+- `src/data/pages.ts` gọi `GET /api/public/pages` để lấy cây menu + nội dung.
+- `src/components/Header.astro` dựng menu (và mega menu theo “nhóm cột”) từ cây đó.
+- `src/pages/[...slug].astro` sinh trang tĩnh cho mọi mục có nội dung.
+- Không gọi được API → tự dùng bản chụp trong `content/site.json`, build vẫn chạy.
+
 ## Biến môi trường
 
 `PUBLIC_REGISTER_ENDPOINT` — nếu có API nhận đăng ký, điền vào đây để form POST lên

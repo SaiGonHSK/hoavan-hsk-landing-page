@@ -37,7 +37,7 @@ const achievements = [
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {
             achievements.map((a) => (
-              <div class="flex items-center justify-between gap-4 rounded-2xl bg-brand-ink-50 px-6 py-5 dark:bg-white/[0.04]">
+              <div class="flex items-center justify-between gap-4 rounded-2xl bg-brand-ink-50 px-6 py-5">
                 <span class="text-sm font-semibold text-foreground">{a.label}</span>
                 <span class="shrink-0 rounded-full bg-brand-red-600 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-white">
                   {a.result}
@@ -47,8 +47,8 @@ const achievements = [
           }
         </div>
 
-        <figure class="mt-10 rounded-3xl bg-brand-ink-900 p-8 text-white md:p-10 dark:bg-white/[0.04]">
-          <blockquote class="font-bricolage text-lg font-bold leading-[1.5] md:text-xl">
+        <figure class="mt-10 rounded-3xl bg-brand-ink-900 p-8 text-white md:p-10">
+          <blockquote class="text-lg font-bold leading-[1.5] md:text-xl">
             “Chỉ hơn 1 năm, từ một người chưa biết gì về tiếng Trung, mình đồng thời thi
             đậu HSK6 và TOCFL Band C1.”
           </blockquote>

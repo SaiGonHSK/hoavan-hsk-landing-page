@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "note": "Cấu trúc menu của landing — sửa bằng tay trong repo. Trang quản trị chỉ đọc, không ghi.",
+  "menu": [
+    {
+      "label": "Giới thiệu",
+      "slug": "/about",
+      "children": [
+        {
+          "label": "Về chúng tôi",
+          "slug": "/about"
+        },
+        {
+          "label": "05 khác biệt của chúng tôi",
+          "slug": "/about/differences"
+        },
+        {
+          "label": "Đội ngũ giảng viên",
+          "slug": "/about/teachers"
+        },
+        {
+          "label": "Học viên cảm nhận và đánh giá",
+          "slug": "/about/reviews"
+        },
+        {
+          "label": "Thành tích học viên",
+          "slug": "/about/achievements"
+        },
+        {
+          "label": "Cam kết",
+          "slug": "/about/commitments"
+        }
+      ]
+    },
+    {
+      "label": "Các khoá học",
+      "slug": "/courses",
+      "children": [
+        {
+          "label": "HSK1",
+          "slug": "/courses/hsk-1",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "HSK2",
+          "slug": "/courses/hsk-2",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "HSK3",
+          "slug": "/courses/hsk-3",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "HSK4",
+          "slug": "/courses/hsk-4",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "HSK5",
+          "slug": "/courses/hsk-5",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "HSK6",
+          "slug": "/courses/hsk-6",
+          "group": "Khoá học theo cấp HSK"
+        },
+        {
+          "label": "Luyện thi HSK3",
+          "slug": "/courses/luyen-thi-hsk-3",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK4",
+          "slug": "/courses/luyen-thi-hsk-4",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK5",
+          "slug": "/courses/luyen-thi-hsk-5",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK6",
+          "slug": "/courses/luyen-thi-hsk-6",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Giao tiếp công sở cơ bản",
+          "slug": "/courses/giao-tiep-cong-so-co-ban",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Giao tiếp công sở nâng cao",
+          "slug": "/courses/giao-tiep-cong-so-nang-cao",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Ngữ pháp tiếng Trung Quốc cơ bản",
+          "slug": "/courses/ngu-phap-co-ban",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Ngữ pháp tiếng Trung Quốc nâng cao",
+          "slug": "/courses/ngu-phap-nang-cao",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Tiếng Trung Quốc trẻ em",
+          "slug": "/courses/tieng-trung-tre-em",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Tiếng Trung Quốc chuyên ngành",
+          "slug": "/courses/tieng-trung-chuyen-nganh",
+          "group": "Khoá học chuyên biệt"
+        },
+        {
+          "label": "Giáo trình chuẩn HSK 3.0",
+          "slug": "/courses/textbooks/giao-trinh-chuan-hsk-3-0",
+          "group": "Học trực tuyến theo giáo trình"
+        },
+        {
+          "label": "Giáo trình Boya",
+          "slug": "/courses/textbooks/giao-trinh-boya",
+          "group": "Học trực tuyến theo giáo trình"
+        },
+        {
+          "label": "Giáo trình Hán ngữ 6 quyển",
+          "slug": "/courses/textbooks/giao-trinh-han-ngu-6-quyen",
+          "group": "Học trực tuyến theo giáo trình"
+        },
+        {
+          "label": "Giáo trình tiêu chuẩn",
+          "slug": "/courses/textbooks/giao-trinh-tieu-chuan",
+          "group": "Học trực tuyến theo giáo trình"
+        }
+      ]
+    },
+    {
+      "label": "Ôn tập & luyện thi",
+      "slug": "/practice",
+      "children": [
+        {
+          "label": "Ôn tập HSK1",
+          "slug": "/practice/hsk-1",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Ôn tập HSK2",
+          "slug": "/practice/hsk-2",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Ôn tập HSK3",
+          "slug": "/practice/hsk-3",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Ôn tập HSK4",
+          "slug": "/practice/hsk-4",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Ôn tập HSK5",
+          "slug": "/practice/hsk-5",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Ôn tập HSK6",
+          "slug": "/practice/hsk-6",
+          "group": "Ôn tập các cấp HSK"
+        },
+        {
+          "label": "Luyện thi HSK3",
+          "slug": "/practice/exam-prep/hsk-3",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK4",
+          "slug": "/practice/exam-prep/hsk-4",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK5",
+          "slug": "/practice/exam-prep/hsk-5",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện thi HSK6",
+          "slug": "/practice/exam-prep/hsk-6",
+          "group": "Luyện thi HSK"
+        },
+        {
+          "label": "Luyện kỹ năng Nghe",
+          "slug": "/practice/skills/nghe",
+          "group": "Luyện các kỹ năng"
+        },
+        {
+          "label": "Luyện kỹ năng Nói",
+          "slug": "/practice/skills/noi",
+          "group": "Luyện các kỹ năng"
+        },
+        {
+          "label": "Luyện kỹ năng Đọc",
+          "slug": "/practice/skills/doc",
+          "group": "Luyện các kỹ năng"
+        },
+        {
+          "label": "Luyện kỹ năng Viết",
+          "slug": "/practice/skills/viet",
+          "group": "Luyện các kỹ năng"
+        },
+        {
+          "label": "Học thử HSK1",
+          "slug": "/trial/hsk-1",
+          "group": "Học thử trải nghiệm"
+        },
+        {
+          "label": "Học thử HSK2",
+          "slug": "/trial/hsk-2",
+          "group": "Học thử trải nghiệm"
+        },
+        {
+          "label": "Học thử HSK3",
+          "slug": "/trial/hsk-3",
+          "group": "Học thử trải nghiệm"
+        },
+        {
+          "label": "Học thử HSK4",
+          "slug": "/trial/hsk-4",
+          "group": "Học thử trải nghiệm"
+        }
+      ]
+    },
+    {
+      "label": "Liên hệ",
+      "slug": "/contact",
+      "children": []
+    },
+    {
+      "label": "Thư viện",
+      "slug": "/library",
+      "children": [
+        {
+          "label": "Từ vựng theo chủ đề",
+          "slug": "/library/tu-vung-theo-chu-de"
+        },
+        {
+          "label": "Văn hoá Trung Quốc",
+          "slug": "/library/van-hoa-trung-quoc"
+        },
+        {
+          "label": "Thành ngữ tiếng Trung Quốc",
+          "slug": "/library/thanh-ngu"
+        },
+        {
+          "label": "Quán dụng ngữ tiếng Trung Quốc",
+          "slug": "/library/quan-dung-ngu"
+        },
+        {
+          "label": "Yết hậu ngữ tiếng Trung Quốc",
+          "slug": "/library/yet-hau-ngu"
+        },
+        {
+          "label": "Câu chuyện Hán tự",
+          "slug": "/library/cau-chuyen-han-tu"
+        },
+        {
+          "label": "Tài liệu ngữ pháp tiếng Trung Quốc",
+          "slug": "/library/tai-lieu-ngu-phap"
+        },
+        {
+          "label": "Câu đố",
+          "slug": "/library/cau-do"
+        },
+        {
+          "label": "Truyện cười",
+          "slug": "/library/truyen-cuoi"
+        },
+        {
+          "label": "Kiến thức từ vựng",
+          "slug": "/library/kien-thuc-tu-vung"
+        },
+        {
+          "label": "Kiến thức ngữ pháp",
+          "slug": "/library/kien-thuc-ngu-phap"
+        },
+        {
+          "label": "Tiếng Trung chuyên ngành",
+          "slug": "/library/tieng-trung-chuyen-nganh"
+        }
+      ]
+    },
+    {
+      "label": "Đăng nhập",
+      "slug": "/login",
+      "cta": true,
+      "children": []
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+---
+/**
+ * Thành tích học viên — cùng lưới ảnh với mục "Không khí lớp học".
+ * Ảnh khai báo ở `src/data/achievements.ts`; chưa có ảnh thì hiện ô viền đứt.
+ */
+import SectionHeading from "@/components/SectionHeading.astro";
+import PhotoMosaic from "@/components/PhotoMosaic.astro";
+import { achievements } from "@/data/achievements";
+---
+
+<section
+  id="achievements"
+  class="relative overflow-hidden bg-background scroll-mt-24"
+>
+  <div class="container relative z-10 mx-auto px-6">
+    <SectionHeading
+      title="Thành tích"
+      highlight="của học viên SaigonHSK"
+      description="Chứng chỉ HSK, TOCFL và những cột mốc học viên đạt được sau mỗi khoá học tại trung tâm."
+    />
+
+    <PhotoMosaic
+      photos={achievements}
+      placeholders={5}
+      placeholderLabel="Ảnh chứng chỉ học viên — sắp cập nhật"
+      class="mt-12"
+    />
+  </div>
+</section>

@@ -140,13 +140,6 @@ const allSchemas = [organizationSchema, websiteSchema, ...schemas];
       ))
     }
 
-    <script is:inline>
-      const stored = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (stored === "dark" || (!stored && prefersDark)) {
-        document.documentElement.classList.add("dark");
-      }
-    </script>
   </head>
   <body>
     <a
@@ -157,6 +150,83 @@ const allSchemas = [organizationSchema, websiteSchema, ...schemas];
     </a>
     <slot />
     <Lightbox />
+
+    {/*
+      Hiệu ứng hiện dần khi cuộn tới. Script tự gắn cho mọi <section> trong
+      <main> nên component không cần biết gì; thẻ trong lưới được lệch nhịp
+      (stagger) để trông mượt hơn. Không JS hoặc bật "giảm chuyển động" thì
+      nội dung hiện bình thường.
+    */}
+    <script is:inline>
+      (() => {
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        if (reduce || !("IntersectionObserver" in window)) return;
+
+        const main = document.getElementById("main");
+        if (!main) return;
+
+        /** Thẻ con được lệch nhịp trong cùng một khối. */
+        const stagger = (el) => {
+          const grid = el.querySelector(
+            ':scope > .container > [class*="grid-cols"], :scope > .container > .grid, :scope > [class*="grid-cols"]'
+          );
+          if (!grid) return;
+          Array.from(grid.children)
+            .slice(0, 8)
+            .forEach((child, i) => {
+              child.style.setProperty("--reveal-delay", `${i * 70}ms`);
+              child.classList.add("reveal", "reveal-child");
+            });
+        };
+
+        const targets = [];
+        main.querySelectorAll(":scope > section").forEach((section) => {
+          // Section có thẻ sticky (lộ trình) không được transform cả khối,
+          // nếu không các thẻ xếp chồng sẽ nhảy — chỉ hiện dần từng khối con.
+          if (section.querySelector(".sticky")) {
+            section
+              .querySelectorAll(":scope > .container > *")
+              .forEach((block) => targets.push(block));
+          } else {
+            targets.push(section);
+            stagger(section);
+          }
+        });
+
+        if (!targets.length) return;
+        targets.forEach((el) => el.classList.add("reveal"));
+
+        const show = (el) => {
+          el.classList.add("reveal-in");
+          el.querySelectorAll(".reveal-child").forEach((c) =>
+            c.classList.add("reveal-in")
+          );
+        };
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              show(entry.target);
+              io.unobserve(entry.target);
+            });
+          },
+          // Hai mốc: khối cao hơn khung nhìn vẫn kích hoạt được ở mốc 0.
+          { rootMargin: "0px 0px -12% 0px", threshold: [0, 0.08] }
+        );
+
+        // Khối đã nằm trong khung nhìn ngay khi tải thì hiện luôn, khỏi nháy.
+        requestAnimationFrame(() => {
+          targets.forEach((el) => {
+            const top = el.getBoundingClientRect().top;
+            if (top < window.innerHeight * 0.9) show(el);
+            else io.observe(el);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -165,6 +235,8 @@ const allSchemas = [organizationSchema, websiteSchema, ...schemas];
   body {
     margin: 0;
     width: 100%;
-    height: 100%;
+    /* Dùng min-height: height:100% khoá body ở đúng một viewport, khiến
+       containing block của header sticky kết thúc ở 100vh và header trượt mất. */
+    min-height: 100%;
   }
 </style>

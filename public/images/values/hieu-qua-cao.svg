@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdfd"/>
+      <stop offset=".55" stop-color="#fdf2f3"/>
+      <stop offset="1" stop-color="#fbdcdf"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b2182b"/>
+      <stop offset="1" stop-color="#971324"/>
+    </linearGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#b2182b" opacity=".16"/>
+    </pattern>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#paper)"/>
+  <rect width="800" height="450" fill="url(#dots)"/>
+
+  <!-- vòng cung trang trí, giống nhau ở mọi ảnh -->
+  <g fill="none" stroke="#b2182b" opacity=".14">
+    <circle cx="400" cy="219" r="160" stroke-width="1.5"/>
+    <circle cx="400" cy="219" r="200" stroke-width="1.5" stroke-dasharray="5 12"/>
+  </g>
+  <g fill="none" stroke="#b2182b" stroke-width="2" opacity=".2">
+    <path d="M56 56h74M56 56v74"/>
+    <path d="M744 56h-74M744 56v74"/>
+  </g>
+
+  <!-- chữ Hán làm dấu nước ở góc, không chạm huy hiệu -->
+  <text x="766" y="484" text-anchor="end"
+        font-family="'Noto Serif SC','Songti SC','SimSun',serif"
+        font-size="300" fill="#b2182b" opacity=".09">效</text>
+
+  <!-- huy hiệu icon -->
+  <circle cx="400" cy="219" r="112" fill="#ffffff" opacity=".72"/>
+  <circle cx="400" cy="219" r="82" fill="url(#badge)"/>
+  <g transform="translate(362 181) scale(3.1667)" fill="none"
+     stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+     color="#ffffff"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
+
+  <!-- pinyin + gạch chân thương hiệu -->
+  <text x="400" y="371" text-anchor="middle"
+        font-family="'Bricolage Grotesque',system-ui,sans-serif" font-size="26"
+        font-weight="700" letter-spacing="7" fill="#b2182b" opacity=".55">XIÀO</text>
+  <rect x="0" y="442" width="800" height="8" fill="#b2182b"/>
+</svg>

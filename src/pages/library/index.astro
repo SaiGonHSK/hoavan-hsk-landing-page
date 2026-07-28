@@ -1,6 +1,8 @@
 ---
 import CatalogHub from "@/components/CatalogHub.astro";
-import { library } from "@/data/catalog";
+import { getLibrary } from "@/data/library";
+
+const library = await getLibrary();
 ---
 
 <CatalogHub
@@ -12,10 +14,10 @@ import { library } from "@/data/catalog";
   groups={[
     {
       title: "Các chuyên mục",
-      cards: library.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/library/${c.slug}`,
+      cards: library.map((item) => ({
+        title: item.title,
+        summary: item.summary,
+        href: item.slug,
       })),
     },
   ]}

@@ -78,9 +78,9 @@ import { ICONS } from "@/lib/icons";
               <tbody>
                 {
                   schedule.map((row) => (
-                    <tr class="border-t border-border/70 transition-colors hover:bg-brand-red-50/60 dark:hover:bg-white/[0.03]">
+                    <tr class="border-t border-border/70 transition-colors hover:bg-brand-red-50/60">
                       <td class="px-5 py-4">
-                        <span class="rounded-md bg-brand-red-600/10 px-2 py-1 font-mono text-[11px] font-bold text-brand-red-700 dark:bg-brand-red-500/15 dark:text-brand-red-300">
+                        <span class="rounded-md bg-brand-red-600/10 px-2 py-1 font-mono text-[11px] font-bold text-brand-red-700">
                           {row.code}
                         </span>
                       </td>
@@ -97,13 +97,13 @@ import { ICONS } from "@/lib/icons";
                       <td class="px-5 py-4 text-muted-foreground">{row.target}</td>
                       <td class="px-5 py-4">
                         {row.openDate ? (
-                          <span class="font-semibold text-brand-red-700 dark:text-brand-red-300">
+                          <span class="font-semibold text-brand-red-700">
                             {row.openDate}
                           </span>
                         ) : (
                           <a
                             href={`tel:${contact.phonePrimaryRaw}`}
-                            class="inline-flex items-center gap-1.5 whitespace-nowrap font-semibold text-brand-red-600 hover:underline dark:text-brand-red-300"
+                            class="inline-flex items-center gap-1.5 whitespace-nowrap font-semibold text-brand-red-600 hover:underline"
                           >
                             <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
                             Liên hệ nhận lịch
@@ -135,7 +135,7 @@ import { ICONS } from "@/lib/icons";
               },
             ].map((c) => (
               <div class="rounded-2xl border border-border/80 bg-card p-5">
-                <p class="font-bricolage text-base font-extrabold text-foreground">
+                <p class="text-base font-extrabold text-foreground">
                   {c.title}
                 </p>
                 <p class="mt-2 text-sm leading-relaxed text-muted-foreground">

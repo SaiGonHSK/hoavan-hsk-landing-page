@@ -1,29 +1,18 @@
 ---
 /**
- * Tiêu đề section — cùng ngôn ngữ với hero: chữ khối lớn (Bricolage) và
- * phần nhấn viết tay (Caveat) màu đỏ thương hiệu, kèm nét gạch chân vẽ tay.
+ * Tiêu đề section — cùng ngôn ngữ với hero: chữ khối lớn (Bricolage), dòng nhấn
+ * xuống hàng dưới và tô màu đỏ thương hiệu.
  */
-import Doodle from "@/components/Doodle.astro";
-
 interface Props {
   title: string;
-  /** Phần chữ viết tay đặt xuống dòng dưới title. */
+  /** Dòng nhấn đặt xuống dưới title. */
   highlight?: string;
   description?: string;
   align?: "center" | "left";
-  /** Gạch chân vẽ tay dưới phần nhấn. */
-  underline?: boolean;
   className?: string;
 }
 
-const {
-  title,
-  highlight,
-  description,
-  align = "center",
-  underline = true,
-  className = "",
-} = Astro.props;
+const { title, highlight, description, align = "center", className = "" } = Astro.props;
 
 const wrap =
   align === "center"
@@ -33,21 +22,13 @@ const wrap =
 
 <div class:list={["flex flex-col", wrap, className]}>
   <h2
-    class="font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl dark:text-white"
+    class="text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
   >
     {title}
     {
       highlight && (
-        <span class="relative mt-1 block font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl dark:text-brand-red-400">
+        <span class="mt-1 block text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl">
           {highlight}
-          {underline && (
-            <Doodle
-              name="underline"
-              class={`absolute -bottom-1 h-3 w-44 text-brand-red-300/80 md:w-64 ${
-                align === "center" ? "left-1/2 -translate-x-1/2" : "left-0"
-              }`}
-            />
-          )}
         </span>
       )
     }
@@ -55,7 +36,7 @@ const wrap =
 
   {
     description && (
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-[1.0625rem]">
+      <p class="mt-6 max-w-2xl text-2xl leading-relaxed text-muted-foreground md:text-[1.0625rem]">
         {description}
       </p>
     )

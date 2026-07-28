@@ -25,10 +25,10 @@ const shortcuts = [
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <section class="bg-background py-24 lg:py-32">
       <div class="container mx-auto px-6 text-center">
-        <p class="font-bricolage text-[6rem] font-black leading-none text-brand-red-600 lg:text-[9rem] dark:text-brand-red-400">
+        <p class="text-[6rem] font-black leading-none text-brand-red-600 lg:text-[9rem]">
           404
         </p>
-        <h1 class="mt-4 font-bricolage text-3xl font-black text-brand-ink-900 md:text-5xl dark:text-white">
+        <h1 class="mt-4 text-3xl font-black text-brand-ink-900 md:text-5xl">
           Không tìm thấy trang này
         </h1>
         <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
@@ -44,7 +44,7 @@ const shortcuts = [
             shortcuts.map((s) => (
               <a
                 href={s.href}
-                class="rounded-full bg-brand-ink-50 px-5 py-3 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5 dark:bg-white/[0.06]"
+                class="rounded-full bg-brand-ink-50 px-5 py-3 text-sm font-semibold text-foreground transition-transform hover:-translate-y-0.5"
               >
                 {s.label}
               </a>

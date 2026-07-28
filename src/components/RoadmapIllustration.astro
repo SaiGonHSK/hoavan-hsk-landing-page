@@ -1,0 +1,195 @@
+---
+/**
+ * Minh hoạ cho bốn thẻ chặng của lộ trình (các thẻ xếp chồng ở Roadmap).
+ * Cùng ngôn ngữ thị giác với HeroIllustration/ValueIllustration: vector phẳng
+ * vẽ nội tuyến, không tốn request ảnh và luôn nét.
+ *
+ * Mỗi chặng nhận một bộ màu riêng qua CSS var để hoà với tông thẻ đang xếp
+ * chồng: `--c1` màu chính, `--c2` màu nhạt (doodle, nét kẻ), `--c3` nền toả,
+ * `--c4` màu đậm. Giấy và mực dùng mã màu cố định.
+ */
+interface Props {
+  /** Trùng `step` trong `roadmap` — "01" … "04". */
+  step: string;
+  class?: string;
+  alt?: string;
+}
+
+const { step, class: className = "", alt = "" } = Astro.props;
+
+const TONES: Record<string, string> = {
+  "01": "--c1:#b2182b;--c2:#ef9ba3;--c3:#fbe4e6;--c4:#7c0f1d",
+  "02": "--c1:#d97706;--c2:#fbbf24;--c3:#fef3c7;--c4:#92400e",
+  "03": "--c1:#059669;--c2:#6ee7b7;--c3:#d1fae5;--c4:#065f46",
+  "04": "--c1:#0284c7;--c2:#7dd3fc;--c3:#e0f2fe;--c4:#075985",
+};
+
+const SCENES: Record<string, string> = {
+  /* Sơ cấp — ngữ âm, bút thuận: ô luyện chữ 米字格 và cây bút chì. */
+  "01": `
+  <circle cx="238" cy="146" r="122" fill="var(--c3)"/>
+  <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
+    <path d="M62 62v22M52 68l20 11M72 68l-20 11"/>
+    <path d="M396 246c11-8 22-8 32 0"/>
+  </g>
+  <circle cx="428" cy="112" r="7" fill="var(--c2)"/>
+  <circle cx="58" cy="244" r="5.5" fill="var(--c2)"/>
+
+  <!-- ô luyện chữ -->
+  <g transform="translate(232,138)">
+    <rect x="-96" y="-96" width="192" height="192" rx="16" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
+    <g stroke="var(--c2)" stroke-width="3" stroke-dasharray="9 12" stroke-linecap="round">
+      <path d="M-92 0h184M0-92v184M-88-88 88 88M88-88-88 88"/>
+    </g>
+    <text x="0" y="42" font-family="'PingFang SC','Noto Sans SC',serif" font-size="118" font-weight="700" fill="var(--c1)" text-anchor="middle">你</text>
+  </g>
+
+  <!-- bút chì đang viết -->
+  <g transform="translate(330,190) rotate(34)">
+    <rect x="-14" y="-132" width="28" height="104" rx="5" fill="var(--c1)"/>
+    <path d="M-14-146a14 14 0 0 1 28 0v14h-28Z" fill="var(--c4)"/>
+    <rect x="-14" y="-34" width="28" height="7" fill="#c9cace"/>
+    <path d="M-14-27h28L0 8Z" fill="#f2dcc4"/>
+    <path d="M-6-6h12L0 8Z" fill="#26272c"/>
+  </g>
+
+  <text x="232" y="278" font-size="30" font-weight="800" text-anchor="middle" letter-spacing="2" fill="var(--c4)">nǐ hǎo</text>
+`,
+
+  /* Trung cấp — từ vựng chủ đề văn hoá và luyện khẩu ngữ: hai bong bóng thoại. */
+  "02": `
+  <circle cx="240" cy="146" r="122" fill="var(--c3)"/>
+  <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
+    <path d="M404 66v22M394 72l20 11M414 72l-20 11"/>
+    <path d="M52 214c11-8 22-8 32 0"/>
+  </g>
+  <circle cx="46" cy="120" r="7" fill="var(--c2)"/>
+  <circle cx="440" cy="196" r="5.5" fill="var(--c2)"/>
+
+  <!-- chồng giáo trình: tổng hợp + khẩu ngữ -->
+  <g transform="translate(104,288)">
+    <rect x="-46" y="-19" width="140" height="19" rx="7" fill="var(--c4)"/>
+    <rect x="-34" y="-38" width="140" height="19" rx="7" fill="var(--c2)"/>
+  </g>
+
+  <!-- bong bóng từ vựng -->
+  <path d="M116 44H272A26 26 0 0 1 298 70V158A26 26 0 0 1 272 184H186L134 222 144 184H116A26 26 0 0 1 90 158V70A26 26 0 0 1 116 44Z" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5" stroke-linejoin="round"/>
+  <text x="194" y="140" font-family="'PingFang SC','Noto Sans SC',serif" font-size="74" font-weight="700" fill="var(--c1)" text-anchor="middle">文化</text>
+
+  <!-- bong bóng khẩu ngữ -->
+  <path d="M272 150H400A26 26 0 0 1 426 176V230A26 26 0 0 1 400 256H316L294 290 296 256H272A26 26 0 0 1 246 230V176A26 26 0 0 1 272 150Z" fill="var(--c1)" stroke="none"/>
+  <g stroke="#fdfcfb" stroke-width="9" stroke-linecap="round" opacity=".95">
+    <path d="M276 190h108M276 220h68"/>
+  </g>
+`,
+
+  /* Luyện thi — phiếu trả lời, chấm đúng, đồng hồ tính giờ thi thử. */
+  "03": `
+  <circle cx="234" cy="146" r="122" fill="var(--c3)"/>
+  <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
+    <path d="M60 88v22M50 94l20 11M70 94l-20 11"/>
+    <path d="M400 258c11-8 22-8 32 0"/>
+  </g>
+  <circle cx="52" cy="216" r="6.5" fill="var(--c2)"/>
+
+  <!-- đề thi / phiếu trả lời -->
+  <g transform="rotate(-5 214 152)">
+    <rect x="112" y="44" width="204" height="220" rx="18" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
+    <rect x="186" y="28" width="56" height="28" rx="14" fill="var(--c4)"/>
+
+    <g stroke="var(--c2)" stroke-width="8" stroke-linecap="round">
+      <path d="M142 86h92M142 144h92M142 202h92"/>
+    </g>
+    <g fill="none" stroke="var(--c2)" stroke-width="4">
+      <circle cx="152" cy="116" r="12"/><circle cx="192" cy="116" r="12"/><circle cx="232" cy="116" r="12"/>
+      <circle cx="152" cy="174" r="12"/><circle cx="192" cy="174" r="12"/><circle cx="232" cy="174" r="12"/>
+      <circle cx="152" cy="232" r="12"/><circle cx="192" cy="232" r="12"/><circle cx="232" cy="232" r="12"/>
+    </g>
+    <g fill="var(--c1)">
+      <circle cx="192" cy="116" r="12"/><circle cx="152" cy="174" r="12"/><circle cx="232" cy="232" r="12"/>
+    </g>
+    <g fill="none" stroke="var(--c1)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M264 114l8 8 16-20"/><path d="M264 172l8 8 16-20"/><path d="M264 230l8 8 16-20"/>
+    </g>
+  </g>
+
+  <!-- đồng hồ: thi thử tính giờ -->
+  <g transform="translate(370,86)">
+    <circle r="40" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
+    <g stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
+      <path d="M0-32v-6M32 0h6M0 32v6M-32 0h-6"/>
+    </g>
+    <path d="M0 2V-22" stroke="#26272c" stroke-width="6" stroke-linecap="round"/>
+    <path d="M0 2 16 16" stroke="#26272c" stroke-width="5.5" stroke-linecap="round"/>
+    <circle r="4.5" fill="var(--c1)"/>
+  </g>
+
+  <!-- huy hiệu đạt -->
+  <g transform="translate(352,214)">
+    <circle r="46" fill="var(--c1)"/>
+    <circle r="34" fill="none" stroke="#fdfcfb" stroke-width="3" stroke-dasharray="5 7"/>
+    <path d="M-18 2 -6 14 18-14" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+`,
+
+  /* Cao cấp — chứng chỉ HSK6, mũ tốt nghiệp, máy bay giấy cho hướng du học. */
+  "04": `
+  <circle cx="240" cy="146" r="122" fill="var(--c3)"/>
+  <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
+    <path d="M70 100v22M60 106l20 11M80 106l-20 11"/>
+    <path d="M60 176c11-8 22-8 32 0"/>
+  </g>
+  <circle cx="440" cy="180" r="7" fill="var(--c2)"/>
+
+  <!-- đường bay: phần giữa bị chứng chỉ che nên trông như đang vút lên -->
+  <path d="M56 254C142 250 262 194 366 82" fill="none" stroke="var(--c2)" stroke-width="4.5" stroke-dasharray="10 13" stroke-linecap="round"/>
+
+  <!-- chứng chỉ HSK6 -->
+  <g transform="rotate(4 236 172)">
+    <rect x="132" y="96" width="208" height="152" rx="16" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
+    <text x="202" y="203" font-family="'PingFang SC','Noto Sans SC',serif" font-size="88" font-weight="700" fill="var(--c1)" text-anchor="middle">六</text>
+    <g stroke="var(--c2)" stroke-width="7" stroke-linecap="round">
+      <path d="M262 146h60M262 174h44M262 202h60"/>
+    </g>
+    <g transform="translate(300,226)">
+      <circle r="28" fill="var(--c1)"/>
+      <circle r="20" fill="none" stroke="#fdfcfb" stroke-width="3" stroke-dasharray="4 6"/>
+      <path d="M-11 1 -3 9 12-9" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M-14 24 -7 50 0 40l7 10 7-26Z" fill="var(--c4)"/>
+    </g>
+  </g>
+
+  <!-- mũ tốt nghiệp -->
+  <g transform="translate(146,72)">
+    <path d="M-58 10 0-18 58 10 0 38Z" fill="#26272c"/>
+    <path d="M-30 24v22c0 11 60 11 60 0V24L0 37Z" fill="#3a3b42"/>
+    <path d="M58 10v34" stroke="var(--c1)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="58" cy="48" r="7" fill="var(--c1)"/>
+  </g>
+
+  <!-- máy bay giấy -->
+  <g transform="translate(392,70) rotate(-38)">
+    <path d="M-30-18 36 0-26 24 -8 2Z" fill="var(--c1)"/>
+    <path d="M-26 24 -8 2 36 0Z" fill="var(--c4)"/>
+  </g>
+`,
+};
+
+const scene = SCENES[step];
+const tone = TONES[step] ?? TONES["01"];
+---
+
+{
+  scene && (
+    <svg
+      class:list={["h-full w-full", className]}
+      viewBox="0 0 480 300"
+      fill="none"
+      role="img"
+      aria-label={alt}
+      style={tone}
+    >
+      <Fragment set:html={scene} />
+    </svg>
+  )
+}

@@ -1,14 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/google-sans-flex";
 @import "@fontsource-variable/caveat";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans:
+    "Google Sans Flex Variable",
     system-ui,
     -apple-system,
     "Segoe UI",
@@ -16,7 +15,6 @@
     "Helvetica Neue",
     Arial,
     sans-serif;
-  --font-bricolage: "Bricolage Grotesque Variable", sans-serif;
   --font-hand: "Caveat Variable", "Segoe Script", cursive;
 
   /* Brand palette — single source of truth.
@@ -255,44 +253,8 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
 
-  /* Secondary CTA fill — neutral slate in light, dark slate in dark. */
+  /* Secondary CTA fill — neutral slate. */
   --cta-secondary-bg: #e2e8f0;
-}
-
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: var(--brand-blue-500);
-  --primary-foreground: #ffffff;
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: var(--brand-blue-500);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-
-  --cta-secondary-bg: var(--secondary);
 }
 
 @layer base {
@@ -351,4 +313,55 @@
 ::view-transition-old(root), ::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
+}
+
+/* Nội dung nhập từ trình soạn HTML trong trang quản trị */
+.rich p {
+  margin-bottom: 0.6rem;
+}
+.rich p:last-child {
+  margin-bottom: 0;
+}
+.rich ul,
+.rich ol {
+  margin: 0.4rem 0 0.6rem 1.1rem;
+}
+.rich ul {
+  list-style: disc;
+}
+.rich ol {
+  list-style: decimal;
+}
+.rich strong {
+  color: var(--foreground);
+}
+.rich a {
+  color: var(--brand-red-600);
+  text-decoration: underline;
+}
+
+/* ── Hiện dần khi cuộn tới ────────────────────────────────────────────────
+   Script trong Layout.astro gắn `.reveal` rồi `.reveal-in`. Chỉ chạy khi
+   người dùng không bật "giảm chuyển động"; không JS thì không có class nào
+   nên nội dung hiển thị bình thường. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .reveal-child {
+    transform: translateY(20px);
+  }
+
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
 }

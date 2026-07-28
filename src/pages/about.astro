@@ -92,12 +92,12 @@ const sections = [
             </div>
 
             <dl
-              class="mt-10 grid grid-cols-2 gap-6 rounded-3xl bg-brand-ink-50 p-8 sm:grid-cols-4 dark:bg-white/[0.04]"
+              class="mt-10 grid grid-cols-2 gap-6 rounded-3xl bg-brand-ink-50 p-8 sm:grid-cols-4"
             >
               {
                 stats.map((s) => (
                   <div class="text-center">
-                    <dt class="font-bricolage text-2xl font-black text-brand-red-600 dark:text-brand-red-400">
+                    <dt class="text-2xl font-black text-brand-red-600">
                       {s.value}
                     </dt>
                     <dd class="mt-1.5 text-xs leading-relaxed text-muted-foreground">
@@ -118,9 +118,9 @@ const sections = [
                 {mission.statement}
               </p>
             </div>
-            <div class="rounded-3xl bg-brand-ink-50 p-7 dark:bg-white/[0.04]">
+            <div class="rounded-3xl bg-brand-ink-50 p-7">
               <p
-                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600 dark:text-brand-red-400"
+                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600"
               >
                 Phương châm hoạt động
               </p>
@@ -147,15 +147,15 @@ const sections = [
             sections.map((s) => (
               <a
                 href={s.href}
-                class="group flex flex-col rounded-3xl bg-brand-ink-50 p-6 transition-transform duration-300 hover:-translate-y-1.5 dark:bg-white/[0.04]"
+                class="group flex flex-col rounded-3xl bg-brand-ink-50 p-6 transition-transform duration-300 hover:-translate-y-1.5"
               >
-                <h2 class="font-bricolage text-lg font-extrabold leading-snug text-brand-ink-900 dark:text-white">
+                <h2 class="text-lg font-extrabold leading-snug text-brand-ink-900">
                   {s.title}
                 </h2>
                 <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
                   {s.desc}
                 </p>
-                <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600 dark:text-brand-red-400">
+                <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
                   Xem chi tiết
                   <span
                     class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"

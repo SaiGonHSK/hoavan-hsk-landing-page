@@ -1,8 +1,25 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
-import Doodle from "@/components/Doodle.astro";
+import CourseIllustration from "@/components/CourseIllustration.astro";
 import { courses, featuredCourses } from "@/data/courses";
 import { ICONS } from "@/lib/icons";
+
+/**
+ * Thứ tự ưu tiên cho khung hình đầu thẻ: ảnh khoá học (`c.image`) → minh hoạ
+ * vector (những slug dưới đây) → icon. Khoá nào đã có ảnh thì ảnh thắng.
+ */
+const COURSE_ART = new Set([
+  "luyen-thi-hsk",
+  "luyen-thi-tocfl",
+  "tieng-hoa-so-cap",
+  "tieng-hoa-trung-cap",
+  "tieng-hoa-cao-cap",
+  "tieng-hoa-giao-tiep-cap-toc",
+  "tieng-hoa-doanh-nghiep",
+  "tieng-hoa-vip",
+  "tieng-hoa-thieu-nhi",
+  "tieng-hoa-nguoi-lon-tuoi",
+]);
 
 interface Props {
   /** Tắt tiêu đề khi section được dùng bên trong trang đã có heading riêng. */
@@ -17,11 +34,6 @@ const hasMore = list.length < courses.length;
 ---
 
 <section id="courses" class="relative overflow-hidden bg-background scroll-mt-24">
-  <Doodle
-    name="spiral"
-    class="absolute left-[5%] top-32 hidden size-10 text-brand-red-400 lg:block"
-  />
-
   <div class="container relative z-10 mx-auto px-6">
     {
       showHeading && (
@@ -38,44 +50,67 @@ const hasMore = list.length < courses.length;
         list.map((c) => (
           <a
             href={`/courses/programs/${c.slug}`}
-            class={"group relative flex flex-col rounded-3xl bg-brand-ink-50 p-7 transition-transform duration-300 hover:-translate-y-1.5 dark:bg-white/[0.04]"}
+            class={"group flex flex-col rounded-3xl bg-brand-ink-50 p-3 transition-transform duration-300 hover:-translate-y-1.5"}
           >
-            {c.featured && (
-              <span class="absolute -top-3 right-6 rounded-full bg-brand-red-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] leading-none text-white">
-                Nổi bật
-              </span>
-            )}
-
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 dark:text-brand-red-400">
-              {c.goal}
-            </span>
-
-            <h3 class="mt-1 font-bricolage text-xl font-extrabold leading-snug text-brand-ink-900 dark:text-white">
-              {c.title}
-            </h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-              {c.summary}
-            </p>
-
-            <p class="mt-5 text-xs leading-relaxed text-muted-foreground">
-              <span class="font-bold text-foreground">Đầu vào:</span> {c.entry}
-            </p>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              {c.tags.map((t) => (
-                <span class="rounded-full bg-background px-3 py-1 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]">
-                  {t}
-                </span>
-              ))}
+            {/* Khung hình đầu thẻ, chữ nghĩa xuống dưới */}
+            <div
+              class="relative grid h-40 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-red-50 to-brand-ink-100"
+            >
+              {c.image ? (
+                <img
+                  src={c.image}
+                  alt={c.title}
+                  loading="lazy"
+                  width="3400"
+                  height="2513"
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : COURSE_ART.has(c.slug) ? (
+                <CourseIllustration
+                  slug={c.slug}
+                  alt={c.title}
+                  class="transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <span
+                  class="relative text-brand-red-600 transition-transform duration-300 group-hover:scale-110 [&>svg]:size-14"
+                  set:html={ICONS[c.icon as keyof typeof ICONS] ?? ICONS.book}
+                />
+              )}
             </div>
 
-            <span class="mt-auto flex items-center gap-2 pt-6 text-sm font-bold text-brand-red-600 dark:text-brand-red-400">
-              Xem chi tiết
-              <span
-                class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
-                set:html={ICONS.arrow}
-              />
-            </span>
+            <div class="flex flex-1 flex-col px-4 pb-3 pt-5">
+              <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
+                {c.goal}
+              </span>
+
+              <h3 class="mt-1 text-xl font-extrabold leading-snug text-brand-ink-900">
+                {c.title}
+              </h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                {c.summary}
+              </p>
+
+              <p class="mt-5 text-xs leading-relaxed text-muted-foreground">
+                <span class="font-bold text-foreground">Đầu vào:</span> {c.entry}
+              </p>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                {c.tags.map((t) => (
+                  <span class="rounded-full bg-background px-3 py-1 text-[11px] font-medium text-muted-foreground">
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <span class="mt-auto flex items-center gap-2 pt-6 text-sm font-bold text-brand-red-600">
+                Xem chi tiết
+                <span
+                  class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
+                  set:html={ICONS.arrow}
+                />
+              </span>
+            </div>
           </a>
         ))
       }
@@ -86,7 +121,7 @@ const hasMore = list.length < courses.length;
         <div class="mt-12 text-center">
           <a
             href="/courses"
-            class="group inline-flex items-center gap-2 rounded-full bg-brand-ink-900 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 dark:bg-white/10"
+            class="group inline-flex items-center gap-2 rounded-full bg-brand-ink-900 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
           >
             Xem thêm {courses.length - list.length} chương trình khác
             <span

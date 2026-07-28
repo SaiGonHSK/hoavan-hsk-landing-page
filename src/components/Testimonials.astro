@@ -1,7 +1,14 @@
 ---
+/**
+ * Cảm nhận học viên — tiêu đề nằm trên, bên dưới là dải thẻ trích dẫn cỡ lớn
+ * (2 thẻ mỗi màn hình rộng). Mỗi thẻ gồm phần trích dẫn + ảnh học viên dạng
+ * dọc bên phải, chân thẻ là avatar, tên, vai trò và một nhãn thành tích.
+ */
+import SectionHeading from "@/components/SectionHeading.astro";
 import { testimonials } from "@/data/testimonials";
+import { ICONS } from "@/lib/icons";
 
-/** Chữ cái đầu dùng làm avatar. */
+/** Chữ cái đầu dùng làm ảnh đại diện khi cảm nhận chưa có ảnh thật. */
 const initials = (name: string) =>
   name
     .split(" ")
@@ -10,97 +17,153 @@ const initials = (name: string) =>
     .join("")
     .toUpperCase();
 
-/** Màu nền avatar xoay vòng cho đỡ đơn điệu. */
-const avatarTones = [
-  "bg-brand-red-100 text-brand-red-700",
-  "bg-amber-100 text-amber-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-sky-100 text-sky-700",
-  "bg-violet-100 text-violet-700",
-];
+/**
+ * Nhãn ở góc phải chân thẻ: lấy chứng chỉ được nhắc trong lời cảm nhận
+ * (HSK6, TOCFL Band C1…), không có thì dùng nhãn chung.
+ */
+/** Cảm nhận có ảnh xếp trước để thẻ đầu dải luôn đủ hai cột như thiết kế. */
+const list = [...testimonials].sort(
+  (a, b) =>
+    Number(Boolean((b as { image?: string }).image)) -
+    Number(Boolean((a as { image?: string }).image))
+);
 
-const VISIBLE = 6;
-const shown = testimonials.slice(0, VISIBLE);
-const more = testimonials.slice(VISIBLE);
+const badgeOf = (quote: string) => {
+  const text = quote.replace(/<[^>]+>/g, "");
+  const hsk = text.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/, "");
+  const tocfl = text.match(/TOCFL(\s+Band\s+[A-C]\d?)?/i)?.[0];
+  if (hsk && tocfl) return `${hsk.toUpperCase()} · TOCFL`;
+  return hsk?.toUpperCase() ?? tocfl ?? "Học viên SaigonHSK";
+};
 ---
 
-<section id="reviews" class="bg-background scroll-mt-24">
+<section id="reviews" class="overflow-hidden bg-background scroll-mt-24">
   <div class="container mx-auto px-6">
-    <div class="mx-auto max-w-2xl text-center">
-      <h2
-        class="font-bricolage text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl dark:text-white"
-      >
-        Học viên nói gì về
-        <span class="block text-brand-red-600 dark:text-brand-red-400">SaigonHSK</span>
-      </h2>
-      <p class="mt-4 text-base leading-relaxed text-muted-foreground">
-        Phản hồi từ sinh viên và học viên đã đồng hành cùng trung tâm trên chặng đường
-        chinh phục HSK và TOCFL.
-      </p>
+    <SectionHeading
+      title="Học viên nói gì"
+      highlight="về Hoa văn SaigonHSK"
+      description="Phản hồi từ sinh viên và học viên đã đồng hành cùng trung tâm trên chặng đường chinh phục HSK và TOCFL."
+    />
+
+    {/* Điều hướng dải thẻ */}
+    <div class="mt-10 flex justify-center gap-3 lg:justify-end">
+      <button
+        type="button"
+        data-review-prev
+        aria-label="Cảm nhận trước"
+        class="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-brand-ink-900 text-white transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-30 disabled:hover:translate-y-0 [&>svg]:size-4 [&>svg]:-scale-x-100"
+        set:html={ICONS.arrow}
+      />
+      <button
+        type="button"
+        data-review-next
+        aria-label="Cảm nhận tiếp theo"
+        class="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-brand-ink-900 text-white transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-30 disabled:hover:translate-y-0 [&>svg]:size-4"
+        set:html={ICONS.arrow}
+      />
     </div>
 
+    {/* Dải thẻ: cuộn ngang có bắt điểm dừng, kéo tay trên mobile cũng được. */}
     <div
-      id="review-wall"
-      class="mt-16 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      data-review-track
+      class="mt-6 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {
-        [...shown, ...more].map((t, i) => (
-          <figure
-            class:list={[
-              "flex flex-col",
-              i >= VISIBLE && "review-extra hidden",
-            ]}
-          >
-            <blockquote
-              class="flex-1 rounded-3xl bg-brand-ink-50 p-6 text-sm leading-relaxed text-muted-foreground dark:bg-white/[0.04]"
-            >
-              {t.quote}
-            </blockquote>
+        list.map((t) => {
+          const image = (t as { image?: string }).image;
 
-            <figcaption class="mt-5 flex items-center gap-3.5 pl-3">
-              <span
-                class:list={[
-                  "inline-flex size-11 shrink-0 items-center justify-center rounded-full font-bricolage text-sm font-black",
-                  avatarTones[i % avatarTones.length],
-                ]}
-              >
-                {initials(t.name)}
-              </span>
-              <span class="min-w-0">
-                <span class="block text-sm font-bold text-foreground">{t.name}</span>
-                <span class="mt-0.5 block text-xs text-muted-foreground">{t.role}</span>
-              </span>
-            </figcaption>
-          </figure>
-        ))
+          return (
+            <figure
+              data-review-card
+              class="flex w-[min(88vw,34rem)] shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border border-border bg-background lg:w-[calc((100%-1.5rem)/2)]"
+            >
+              <div class="flex flex-1 gap-6 p-7 md:p-8">
+                <div class="flex flex-1 flex-col">
+                  <span
+                    aria-hidden="true"
+                    class="font-serif text-6xl leading-[0.6] text-brand-ink-200"
+                  >
+                    &ldquo;
+                  </span>
+                  <blockquote
+                    class="rich mt-5 text-[0.95rem] leading-[1.85] text-brand-ink-700"
+                    set:html={t.quote}
+                  />
+                </div>
+
+                {image && (
+                  <img
+                    src={image}
+                    alt={`Học viên ${t.name}`}
+                    width="600"
+                    height="800"
+                    loading="lazy"
+                    decoding="async"
+                    class="hidden aspect-[3/4] w-36 shrink-0 self-start rounded-2xl object-cover object-top sm:block"
+                  />
+                )}
+              </div>
+
+              <figcaption class="mt-auto flex items-center justify-between gap-4 border-t border-border bg-brand-ink-50/70 px-7 py-5 md:px-8">
+                <div class="flex min-w-0 items-center gap-3">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt=""
+                      width="96"
+                      height="96"
+                      loading="lazy"
+                      decoding="async"
+                      class="size-12 shrink-0 rounded-full object-cover object-top"
+                    />
+                  ) : (
+                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand-red-100 text-sm font-black text-brand-red-700">
+                      {initials(t.name)}
+                    </span>
+                  )}
+
+                  <div class="min-w-0">
+                    <p class="truncate font-bold text-brand-ink-900">{t.name}</p>
+                    <p class="truncate text-sm text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
+
+                <span class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900">
+                  {badgeOf(t.quote)}
+                </span>
+              </figcaption>
+            </figure>
+          );
+        })
       }
     </div>
-
-    {
-      more.length > 0 && (
-        <div class="mt-14 text-center">
-          <button
-            type="button"
-            id="review-toggle"
-            class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-brand-ink-900 px-7 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 dark:bg-white/10"
-          >
-            <span data-label>Xem thêm {more.length} phản hồi</span>
-          </button>
-        </div>
-      )
-    }
   </div>
 </section>
 
 <script>
-  const toggle = document.getElementById("review-toggle");
-  const label = toggle?.querySelector("[data-label]");
-  const extras = Array.from(document.querySelectorAll<HTMLElement>(".review-extra"));
+  const track = document.querySelector<HTMLElement>("[data-review-track]");
+  const prev = document.querySelector<HTMLButtonElement>("[data-review-prev]");
+  const next = document.querySelector<HTMLButtonElement>("[data-review-next]");
 
-  toggle?.addEventListener("click", () => {
-    const opening = extras[0]?.classList.contains("hidden");
-    extras.forEach((el) => el.classList.toggle("hidden", !opening));
-    if (label)
-      label.textContent = opening ? "Thu gọn" : `Xem thêm ${extras.length} phản hồi`;
-  });
+  if (track && prev && next) {
+    /** Cuộn đúng một thẻ mỗi lần bấm, kể cả khi bề rộng thẻ đổi theo màn hình. */
+    const step = () => {
+      const card = track.querySelector<HTMLElement>("[data-review-card]");
+      if (!card) return track.clientWidth;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "24");
+      return card.offsetWidth + gap;
+    };
+
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 0;
+      next.disabled = track.scrollLeft >= max;
+    };
+
+    prev.addEventListener("click", () => track.scrollBy({ left: -step() }));
+    next.addEventListener("click", () => track.scrollBy({ left: step() }));
+    track.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    sync();
+  }
 </script>

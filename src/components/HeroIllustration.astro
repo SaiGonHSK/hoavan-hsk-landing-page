@@ -1,0 +1,269 @@
+---
+/**
+ * Minh hoạ hero — ba học viên cầm sách, vector phẳng có đổ bóng nhẹ theo bảng
+ * màu crimson của trung tâm. Vẽ nội tuyến nên không tốn request ảnh và luôn nét.
+ * Nền (vòng tròn, nét đứt, doodle) dùng class Tailwind theo token thương hiệu;
+ * phần nhân vật giữ mã màu cố định.
+ */
+interface Props {
+  class?: string;
+  /** `true` = cắt phần dưới, chỉ để học viên nhô lên từ đáy hero. */
+  crop?: boolean;
+}
+
+const { class: className = "", crop = false } = Astro.props;
+---
+
+<svg
+  class:list={[crop ? "h-full w-full" : "h-auto w-full", className]}
+  viewBox="0 0 900 560"
+  preserveAspectRatio={crop ? "xMidYMin slice" : undefined}
+  fill="none"
+  role="img"
+  aria-labelledby="hero-illustration-title"
+>
+  <title id="hero-illustration-title">
+    Ba học viên cầm sách tiếng Hoa, một bạn giơ cao cuốn sách chữ 学
+  </title>
+
+<defs>
+  <radialGradient id="hi-floor" cx="50%" cy="50%">
+    <stop offset="0%" stop-color="#e6a7ae" stop-opacity=".55"/>
+    <stop offset="100%" stop-color="#e6a7ae" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="hi-back" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fdf2f3"/>
+    <stop offset="100%" stop-color="#fbe4e6"/>
+  </linearGradient>
+  <linearGradient id="hi-shirt" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#000" stop-opacity=".16"/>
+    <stop offset="38%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="80%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity=".12"/>
+  </linearGradient>
+  <linearGradient id="hi-skin" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#c98d63" stop-opacity=".35"/>
+    <stop offset="35%" stop-color="#c98d63" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#c98d63" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="hi-page" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="100%" stop-color="#f0e7e4"/>
+  </linearGradient>
+</defs>
+
+  <!-- backdrop -->
+  <circle cx="450" cy="272" r="252" fill="url(#hi-back)"/>
+  <circle cx="450" cy="272" r="252" fill="none" stroke-width="2.5" stroke-dasharray="9 15" stroke-linecap="round" class="stroke-brand-red-200/80"/>
+  <g fill="none" stroke-width="5.5" stroke-linecap="round" class="stroke-brand-red-300">
+    <path d="M96 132v34M81 141l30 16M111 141l-30 16"/>
+    <path d="M806 402v30M793 409l26 15M819 409l-26 15"/>
+    <path d="M62 330c18-12 36-12 52 0"/>
+    <path d="M792 218c16-11 30-11 43 2"/>
+  </g>
+  <g class="fill-brand-red-200">
+    <circle cx="836" cy="300" r="9"/><circle cx="60" cy="240" r="7"/><circle cx="130" cy="452" r="5.5"/>
+  </g>
+
+  <!-- floor shadows -->
+  <ellipse cx="178" cy="546" rx="124" ry="26" fill="url(#hi-floor)"/>
+  <ellipse cx="434" cy="552" rx="146" ry="28" fill="url(#hi-floor)"/>
+  <ellipse cx="700" cy="546" rx="126" ry="26" fill="url(#hi-floor)"/>
+
+<!-- ============ FIGURE A : boy, holds closed book ============ -->
+<g transform="translate(70,58) scale(1.08)"
+   style="--skin:#f0c4a0;--skin2:#e0a97f;--hair:#1d1917;--hair2:#332b26;--top:#b2182b;--pants:#2b2f3a">
+  <!-- legs -->
+  <path d="M50 208c-2 52 6 92 10 122l4 100h24l0-100c1-30 4-70 4-122Z" fill="var(--pants)"/>
+  <path d="M150 208c2 52-6 92-10 122l-4 100h-24l0-100c-1-30-4-70-4-122Z" fill="var(--pants)"/>
+  <path d="M100 208h50c2 52-6 92-10 122l-4 100h-12l-2-100c-2-38-14-82-22-122Z" fill="#000" opacity=".12"/>
+  <!-- shoes -->
+  <path d="M52 424h27c2 11 9 16 15 19 5 3 4 9-3 9H51c-4 0-6-2-6-6Z" fill="#1b1c20"/>
+  <path d="M121 424h27c2 11 9 16 15 19 5 3 4 9-3 9h-39c-4 0-6-2-6-6Z" fill="#1b1c20"/>
+  <path d="M45 446h49v3c0 3-2 4-5 4H50c-4 0-6-2-6-6Z" fill="#7c0f1d"/>
+  <path d="M114 446h49v3c0 3-2 4-5 4h-39c-4 0-6-2-6-6Z" fill="#7c0f1d"/>
+  <!-- torso -->
+  <path d="M100 84c23 0 41 10 47 28l8 62c3 22 2 36 0 46H45c-2-10-3-24 0-46l8-62c6-18 24-28 47-28Z" fill="var(--top)"/>
+  <path d="M100 84c23 0 41 10 47 28l8 62c3 22 2 36 0 46H45c-2-10-3-24 0-46l8-62c6-18 24-28 47-28Z" fill="url(#hi-shirt)"/>
+  <!-- collar -->
+  <path d="M82 88c6 12 12 20 18 20s12-8 18-20l-9-4c-3 6-6 9-9 9s-6-3-9-9Z" fill="#fdf2f3"/>
+  <!-- arms -->
+  <path d="M56 112c-10 26-12 52-6 72" stroke="var(--top)" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M144 112c10 26 12 52 6 72" stroke="var(--top)" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M50 184c1 16 6 28 12 36" stroke="var(--skin)" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <path d="M150 184c-1 16-6 28-12 36" stroke="var(--skin)" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <!-- neck -->
+  <path d="M86 56h28v30c0 8-28 8-28 0Z" fill="var(--skin2)"/>
+  <!-- head -->
+  <ellipse cx="74" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <ellipse cx="126" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <path d="M100 2c19 0 27 16 27 34 0 24-12 36-27 36S73 60 73 36C73 18 81 2 100 2Z" fill="var(--skin)"/>
+  <path d="M100 2c19 0 27 16 27 34 0 24-12 36-27 36S73 60 73 36C73 18 81 2 100 2Z" fill="url(#hi-skin)"/>
+  <!-- hair -->
+  <path d="M100 0c20 0 30 13 30 31 0 5-1 9-2 12-1-8-3-14-6-17-8 5-24 7-38 4-6-1-9-4-10-8-2 6-3 13-3 21-2-4-3-8-3-13C68 12 80 0 100 0Z" fill="var(--hair)"/>
+  <path d="M104 3c10 2 18 9 21 19-6-4-14-7-21-8Z" fill="var(--hair2)"/>
+  <!-- brows -->
+  <g stroke="#2a221e" stroke-width="2.6" stroke-linecap="round" fill="none">
+    <path d="M83 30c4-2 8-2 11 0"/><path d="M106 30c3-2 7-2 11 0"/>
+  </g>
+  <!-- eyes -->
+  <g>
+    <ellipse cx="88.5" cy="39" rx="6" ry="4.6" fill="#fff"/>
+    <ellipse cx="111.5" cy="39" rx="6" ry="4.6" fill="#fff"/>
+    <circle cx="89" cy="39.4" r="3.5" fill="#3a2118"/><circle cx="112" cy="39.4" r="3.5" fill="#3a2118"/>
+    <circle cx="89" cy="39.4" r="1.6" fill="#14100e"/><circle cx="112" cy="39.4" r="1.6" fill="#14100e"/>
+    <circle cx="90.4" cy="37.8" r="1.2" fill="#fff"/><circle cx="113.4" cy="37.8" r="1.2" fill="#fff"/>
+    <path d="M82.6 37.4c3-3 9-3 11.8 0" stroke="#2a221e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M105.6 37.4c3-3 9-3 11.8 0" stroke="#2a221e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M99 44c-1 4 0 6 3 6" stroke="var(--skin2)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M93 56c4 4 10 4 14 0" stroke="#8a4a3c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="80" cy="49" rx="6" ry="3.4" fill="#e8848f" opacity=".45"/>
+  <ellipse cx="120" cy="49" rx="6" ry="3.4" fill="#e8848f" opacity=".45"/>
+  <!-- closed book -->
+  <g transform="rotate(-6 100 218)">
+    <path d="M52 186h92c3 0 5 2 5 5v58c0 3-2 5-5 5H52Z" fill="#f6efe9"/>
+    <path d="M46 182h94c4 0 6 3 6 6v62c0 4-2 6-6 6H46Z" fill="#26272c"/>
+    <path d="M46 182h14v74H46Z" fill="#7c0f1d"/>
+    <g stroke="#fdf2f3" stroke-width="5" stroke-linecap="round" opacity=".9">
+      <path d="M76 208h48"/><path d="M76 226h32" opacity=".55"/>
+    </g>
+  </g>
+  <!-- hands on book -->
+  <path d="M46 218c10-4 18 1 18 10s-6 14-14 14-15-5-15-12 4-11 11-12Z" fill="var(--skin)"/>
+  <path d="M154 206c-10-4-18 1-18 10s6 14 14 14 15-5 15-12-4-11-11-12Z" fill="var(--skin)"/>
+</g>
+
+<!-- ============ FIGURE B : girl, reads open book ============ -->
+<g transform="translate(320,34) scale(1.14)"
+   style="--skin:#f6d3b4;--skin2:#e6b48d;--hair:#241d1c;--hair2:#40312f;--top:#fbdcdf;--skirt:#2b2f3a">
+  <!-- legs -->
+  <path d="M60 300c0 44 4 82 6 110l1 24h22l1-24c1-28 4-66 6-110Z" fill="var(--skin)"/>
+  <path d="M140 300c0 44-4 82-6 110l-1 24h-22l-1-24c-1-28-4-66-6-110Z" fill="var(--skin)"/>
+  <path d="M100 300h40c0 44-4 82-6 110l-1 24h-10l-1-24c-2-28-14-66-22-110Z" fill="#000" opacity=".07"/>
+  <!-- shoes -->
+  <path d="M64 428h26c2 10 8 15 14 18 5 3 4 9-3 9H63c-4 0-6-2-6-6Z" fill="#26272c"/>
+  <path d="M110 428h26c2 10 8 15 14 18 5 3 4 9-3 9h-37c-4 0-6-2-6-6Z" fill="#26272c"/>
+  <!-- back hair (behind body) -->
+  <path d="M100 4c-26 0-42 18-42 46 0 20 2 40-4 62-4 16-6 32-4 44 8-8 16-12 24-14-6-22-4-46-2-64 6 8 20 12 28 12s22-4 28-12c2 18 4 42-2 64 8 2 16 6 24 14 2-12 0-28-4-44-6-22-4-42-4-62 0-28-16-46-42-46Z" fill="var(--hair)"/>
+  <!-- skirt -->
+  <path d="M50 214h100l26 100c3 11-4 20-15 20H39c-11 0-18-9-15-20Z" fill="var(--skirt)"/>
+  <path d="M100 214h50l26 100c3 11-4 20-15 20h-42Z" fill="#000" opacity=".12"/>
+  <!-- torso -->
+  <path d="M100 84c22 0 39 10 45 27l9 60c3 21 2 34 0 45H46c-2-11-3-24 0-45l9-60c6-17 23-27 45-27Z" fill="var(--top)"/>
+  <path d="M100 84c22 0 39 10 45 27l9 60c3 21 2 34 0 45H46c-2-11-3-24 0-45l9-60c6-17 23-27 45-27Z" fill="url(#hi-shirt)"/>
+  <path d="M82 88c6 13 12 21 18 21s12-8 18-21l-8-4c-4 7-7 10-10 10s-6-3-10-10Z" fill="var(--skirt)"/>
+  <!-- arms out to book -->
+  <path d="M56 112c-12 24-16 46-12 66" stroke="var(--top)" stroke-width="25" stroke-linecap="round" fill="none"/>
+  <path d="M144 112c12 24 16 46 12 66" stroke="var(--top)" stroke-width="25" stroke-linecap="round" fill="none"/>
+  <path d="M44 178c2 20 12 34 26 42" stroke="var(--skin)" stroke-width="19" stroke-linecap="round" fill="none"/>
+  <path d="M156 178c-2 20-12 34-26 42" stroke="var(--skin)" stroke-width="19" stroke-linecap="round" fill="none"/>
+  <!-- neck -->
+  <path d="M87 58h26v28c0 8-26 8-26 0Z" fill="var(--skin2)"/>
+  <!-- head -->
+  <ellipse cx="73" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <ellipse cx="127" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <path d="M100 2c19 0 28 15 28 34 0 24-13 37-28 37S72 60 72 36C72 17 81 2 100 2Z" fill="var(--skin)"/>
+  <path d="M100 2c19 0 28 15 28 34 0 24-13 37-28 37S72 60 72 36C72 17 81 2 100 2Z" fill="url(#hi-skin)"/>
+  <!-- front hair + fringe -->
+  <path d="M100 0c22 0 31 14 31 33 0 6-1 11-3 15-1-9-3-16-6-20-10 8-30 11-44 7-7-2-10-6-10-11-3 6-4 15-4 24-2-5-3-10-3-16C61 12 78 0 100 0Z" fill="var(--hair)"/>
+  <path d="M106 3c11 3 19 11 22 22-7-6-16-10-24-11Z" fill="var(--hair2)"/>
+  <!-- side locks -->
+  <path d="M69 28c-4 14-4 34-1 52 6-4 8-14 8-24 0-12-2-20-7-28Z" fill="var(--hair)"/>
+  <path d="M131 28c4 14 4 34 1 52-6-4-8-14-8-24 0-12 2-20 7-28Z" fill="var(--hair)"/>
+  <g stroke="#2a221e" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M83 30c4-2 8-2 11 0"/><path d="M106 30c3-2 7-2 11 0"/>
+  </g>
+  <g>
+    <ellipse cx="88.5" cy="39" rx="6.2" ry="4.8" fill="#fff"/>
+    <ellipse cx="111.5" cy="39" rx="6.2" ry="4.8" fill="#fff"/>
+    <circle cx="89" cy="39.6" r="3.6" fill="#4a2b1c"/><circle cx="112" cy="39.6" r="3.6" fill="#4a2b1c"/>
+    <circle cx="89" cy="39.6" r="1.7" fill="#14100e"/><circle cx="112" cy="39.6" r="1.7" fill="#14100e"/>
+    <circle cx="90.5" cy="38" r="1.3" fill="#fff"/><circle cx="113.5" cy="38" r="1.3" fill="#fff"/>
+    <path d="M82.4 37.2c3-3 9.4-3 12.2 0" stroke="#2a221e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+    <path d="M105.4 37.2c3-3 9.4-3 12.2 0" stroke="#2a221e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M99 45c-1 4 0 6 3 6" stroke="var(--skin2)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M93 56c4 5 10 5 14 0" stroke="#a94a4a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="79" cy="49" rx="6.4" ry="3.6" fill="#e8848f" opacity=".45"/>
+  <ellipse cx="121" cy="49" rx="6.4" ry="3.6" fill="#e8848f" opacity=".45"/>
+  <!-- open book -->
+  <g transform="translate(0,6)">
+    <path d="M100 208c-18-12-40-16-62-14-5 0-8 3-8 7v58c0 4 3 7 8 7 22-2 44 2 62 14 18-12 40-16 62-14 5 0 8-3 8-7v-58c0-4-3-7-8-7-22-2-44 2-62 14Z" fill="#971324"/>
+    <path d="M100 214c-16-11-36-14-56-13v56c20-1 40 3 56 13Z" fill="url(#hi-page)"/>
+    <path d="M100 214c16-11 36-14 56-13v56c-20-1-40 3-56 13Z" fill="url(#hi-page)"/>
+    <g stroke="#d6b9b3" stroke-width="3" stroke-linecap="round" opacity=".9">
+      <path d="M54 226h34M54 238h28M54 250h32"/><path d="M112 226h34M118 238h28M114 250h32"/>
+    </g>
+    <path d="M100 208v70" stroke="#7c0f1d" stroke-width="3.5"/>
+    <path d="M100 208c-18-12-40-16-62-14v6c22-2 44 2 62 14Z" fill="#000" opacity=".08"/>
+  </g>
+  <path d="M46 236c9-4 17 1 18 9s-5 13-13 13-14-5-14-11 3-10 9-11Z" fill="var(--skin)"/>
+  <path d="M154 236c-9-4-17 1-18 9s5 13 13 13 14-5 14-11-3-10-9-11Z" fill="var(--skin)"/>
+</g>
+
+<!-- ============ FIGURE C : girl, raises book ============ -->
+<g transform="translate(590,48) scale(1.10)"
+   style="--skin:#eec09b;--skin2:#dba274;--hair:#5e0b16;--hair2:#7c0f1d;--top:#35363d;--skirt:#ed8a92">
+  <path d="M60 300c0 44 4 82 6 110l1 24h22l1-24c1-28 4-66 6-110Z" fill="var(--skin)"/>
+  <path d="M140 300c0 44-4 82-6 110l-1 24h-22l-1-24c-1-28-4-66-6-110Z" fill="var(--skin)"/>
+  <path d="M100 300h40c0 44-4 82-6 110l-1 24h-10l-1-24c-2-28-14-66-22-110Z" fill="#000" opacity=".07"/>
+  <path d="M64 428h26c2 10 8 15 14 18 5 3 4 9-3 9H63c-4 0-6-2-6-6Z" fill="#26272c"/>
+  <path d="M110 428h26c2 10 8 15 14 18 5 3 4 9-3 9h-37c-4 0-6-2-6-6Z" fill="#26272c"/>
+  <!-- long hair behind -->
+  <path d="M100 4c-26 0-42 18-42 46 0 22 0 44-6 68-4 16-5 30-3 42 9-8 17-12 25-14-6-24-4-50-2-68 6 8 20 12 28 12s22-4 28-12c2 18 4 44-2 68 8 2 16 6 25 14 2-12 1-26-3-42-6-24-6-46-6-68 0-28-16-46-42-46Z" fill="var(--hair)"/>
+  <path d="M50 214h100l22 94c3 11-5 20-15 20H43c-10 0-18-9-15-20Z" fill="var(--skirt)"/>
+  <path d="M100 214h50l22 94c3 11-5 20-15 20h-39Z" fill="#000" opacity=".12"/>
+  <path d="M100 84c22 0 39 10 45 27l9 60c3 21 2 34 0 45H46c-2-11-3-24 0-45l9-60c6-17 23-27 45-27Z" fill="var(--top)"/>
+  <path d="M100 84c22 0 39 10 45 27l9 60c3 21 2 34 0 45H46c-2-11-3-24 0-45l9-60c6-17 23-27 45-27Z" fill="url(#hi-shirt)"/>
+  <path d="M82 88c6 13 12 21 18 21s12-8 18-21l-8-4c-4 7-7 10-10 10s-6-3-10-10Z" fill="#f6f6f7"/>
+  <!-- left arm down, right arm raised -->
+  <path d="M56 112c-10 26-12 50-6 70" stroke="var(--top)" stroke-width="25" stroke-linecap="round" fill="none"/>
+  <path d="M50 182c2 18 10 30 22 36" stroke="var(--skin)" stroke-width="19" stroke-linecap="round" fill="none"/>
+  <path d="M146 112c14 14 22 30 24 46" stroke="var(--top)" stroke-width="25" stroke-linecap="round" fill="none"/>
+  <path d="M170 158c2-24-2-46-10-62" stroke="var(--skin)" stroke-width="19" stroke-linecap="round" fill="none"/>
+  <path d="M87 58h26v28c0 8-26 8-26 0Z" fill="var(--skin2)"/>
+  <ellipse cx="73" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <ellipse cx="127" cy="38" rx="5" ry="8" fill="var(--skin)"/>
+  <path d="M100 2c19 0 28 15 28 34 0 24-13 37-28 37S72 60 72 36C72 17 81 2 100 2Z" fill="var(--skin)"/>
+  <path d="M100 2c19 0 28 15 28 34 0 24-13 37-28 37S72 60 72 36C72 17 81 2 100 2Z" fill="url(#hi-skin)"/>
+  <path d="M100 0c22 0 31 14 31 33 0 6-1 11-3 15-1-9-3-16-6-20-10 8-30 11-44 7-7-2-10-6-10-11-3 6-4 15-4 24-2-5-3-10-3-16C61 12 78 0 100 0Z" fill="var(--hair)"/>
+  <path d="M106 3c11 3 19 11 22 22-7-6-16-10-24-11Z" fill="var(--hair2)"/>
+  <path d="M69 28c-4 14-4 34-1 52 6-4 8-14 8-24 0-12-2-20-7-28Z" fill="var(--hair)"/>
+  <path d="M131 28c4 14 4 34 1 52-6-4-8-14-8-24 0-12 2-20 7-28Z" fill="var(--hair)"/>
+  <g stroke="#3a2020" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M83 30c4-2 8-2 11 0"/><path d="M106 30c3-2 7-2 11 0"/>
+  </g>
+  <g>
+    <ellipse cx="88.5" cy="39" rx="6.2" ry="4.8" fill="#fff"/>
+    <ellipse cx="111.5" cy="39" rx="6.2" ry="4.8" fill="#fff"/>
+    <circle cx="89" cy="39.6" r="3.6" fill="#3f2418"/><circle cx="112" cy="39.6" r="3.6" fill="#3f2418"/>
+    <circle cx="89" cy="39.6" r="1.7" fill="#14100e"/><circle cx="112" cy="39.6" r="1.7" fill="#14100e"/>
+    <circle cx="90.5" cy="38" r="1.3" fill="#fff"/><circle cx="113.5" cy="38" r="1.3" fill="#fff"/>
+    <path d="M82.4 37.2c3-3 9.4-3 12.2 0" stroke="#3a2020" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+    <path d="M105.4 37.2c3-3 9.4-3 12.2 0" stroke="#3a2020" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M99 45c-1 4 0 6 3 6" stroke="var(--skin2)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M92 55c5 6 11 6 16 0" stroke="#a94a4a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="79" cy="49" rx="6.4" ry="3.6" fill="#e8848f" opacity=".45"/>
+  <ellipse cx="121" cy="49" rx="6.4" ry="3.6" fill="#e8848f" opacity=".45"/>
+  <!-- raised book -->
+  <g transform="rotate(-12 176 74)">
+    <path d="M142 40h72c4 0 6 3 6 6v56c0 3-2 6-6 6h-72Z" fill="#f6efe9"/>
+    <path d="M136 36h72c4 0 7 3 7 7v58c0 4-3 7-7 7h-72Z" fill="#b2182b"/>
+    <path d="M136 36h13v72h-13Z" fill="#7c0f1d"/>
+    <text x="182" y="86" font-family="'PingFang SC','Noto Sans SC',serif" font-size="42" font-weight="700" fill="#fdf2f3" text-anchor="middle">学</text>
+  </g>
+  <path d="M162 82c9-3 16 2 16 10s-5 13-13 13-13-5-13-11 3-10 10-12Z" fill="var(--skin)"/>
+  <!-- book at side -->
+  <g transform="rotate(4 60 220)">
+    <path d="M34 186h56c3 0 5 2 5 5v62c0 3-2 5-5 5H34Z" fill="#f6efe9"/>
+    <path d="M28 182h56c4 0 6 3 6 6v66c0 4-2 6-6 6H28Z" fill="#26272c"/>
+    <path d="M28 182h11v78H28Z" fill="#ed8a92"/>
+    <g stroke="#fdf2f3" stroke-width="4.5" stroke-linecap="round" opacity=".85">
+      <path d="M52 210h28"/><path d="M52 226h18" opacity=".6"/>
+    </g>
+  </g>
+  <path d="M30 216c9-3 16 2 16 10s-5 13-13 13-13-5-13-11 3-10 10-12Z" fill="var(--skin)"/>
+</g>
+</svg>

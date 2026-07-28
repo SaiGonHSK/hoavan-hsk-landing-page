@@ -1,0 +1,38 @@
+---
+/**
+ * Không khí lớp học — lưới ảnh hoạt động tại trung tâm.
+ * Ảnh khai báo ở `src/data/activities.ts`, lưới dùng chung với mục "Thành tích".
+ */
+import SectionHeading from "@/components/SectionHeading.astro";
+import PhotoMosaic from "@/components/PhotoMosaic.astro";
+import { activities } from "@/data/activities";
+---
+
+{
+  activities.length > 0 && (
+    <section
+      id="activities"
+      class="relative overflow-hidden bg-background scroll-mt-24"
+    >
+      <div class="container relative z-10 mx-auto px-6">
+        <SectionHeading
+          title="Không khí lớp học"
+          highlight="tại Hoa văn SaigonHSK"
+          description="Lớp 10–15 học viên, ai cũng được nói và được sửa trong từng buổi. Ngoài giờ học, trung tâm còn tổ chức hoạt động văn hoá Trung Hoa để học viên dùng tiếng Hoa một cách tự nhiên."
+        />
+
+        <PhotoMosaic photos={activities} class="mt-12">
+          {/* Nhãn dán nhỏ cho vui mắt, đặt ở mép lưới */}
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute -right-2 top-1/2 hidden size-20 -translate-y-1/2 rotate-6 place-items-center rounded-full bg-brand-red-600 text-center text-xs font-bold leading-tight text-white shadow-[0_18px_40px_-20px_rgba(178,24,43,0.8)] lg:grid"
+          >
+            为你的
+            <br />
+            成功
+          </span>
+        </PhotoMosaic>
+      </div>
+    </section>
+  )
+}

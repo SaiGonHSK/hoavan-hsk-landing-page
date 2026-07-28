@@ -16,11 +16,11 @@ const { items, name = "faq" } = Astro.props;
     items.map((faq, index) => (
       <details
         name={name}
-        class="faq-item rounded-2xl bg-brand-ink-50 transition-colors dark:bg-white/[0.04]"
+        class="faq-item rounded-2xl bg-brand-ink-50 transition-colors"
         style={`animation-delay: ${index * 0.05}s`}
       >
         <summary class="group relative flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 pr-14 text-left font-bold text-foreground">
-          <span class="transition-colors group-hover:text-brand-red-600 dark:group-hover:text-brand-red-400">
+          <span class="transition-colors group-hover:text-brand-red-600">
             {faq.question}
           </span>
           <svg
@@ -37,15 +37,41 @@ const { items, name = "faq" } = Astro.props;
             <path d="m6 9 6 6 6-6" />
           </svg>
         </summary>
-        <div class="px-6 pb-5 text-left text-muted-foreground leading-relaxed">
-          {faq.answer}
-        </div>
+        <div
+          class="faq-answer px-6 pb-5 text-left leading-relaxed text-muted-foreground"
+          set:html={faq.answer}
+        />
       </details>
     ))
   }
 </div>
 
 <style>
+  /* Nội dung do giáo vụ nhập bằng trình soạn HTML trong trang quản trị */
+  .faq-answer :global(p) {
+    margin-bottom: 0.6rem;
+  }
+  .faq-answer :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .faq-answer :global(ul),
+  .faq-answer :global(ol) {
+    margin: 0.4rem 0 0.6rem 1.1rem;
+  }
+  .faq-answer :global(ul) {
+    list-style: disc;
+  }
+  .faq-answer :global(ol) {
+    list-style: decimal;
+  }
+  .faq-answer :global(strong) {
+    color: var(--foreground);
+  }
+  .faq-answer :global(a) {
+    color: var(--brand-red-600);
+    text-decoration: underline;
+  }
+
   @keyframes fade-up {
     from {
       opacity: 0;

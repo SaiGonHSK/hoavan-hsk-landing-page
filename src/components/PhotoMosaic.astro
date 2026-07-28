@@ -1,0 +1,84 @@
+---
+/**
+ * Lưới ảnh kiểu mosaic dùng chung cho "Không khí lớp học" và "Thành tích".
+ * Bấm vào ảnh để phóng to (lightbox khai báo sẵn ở Layout qua `data-lightbox`).
+ *
+ * Nhịp lặp mỗi 5 ảnh trên lưới 6 cột: 3 ảnh vuông (2 cột) → 1 ảnh nhỏ (2 cột)
+ * → 1 ảnh ngang (4 cột). Thiếu ảnh thì hàng cuối tự ngắn lại, không vỡ lưới.
+ */
+export type Photo = {
+  src: string;
+  caption: string;
+  width?: number;
+  height?: number;
+};
+
+interface Props {
+  photos: readonly Photo[];
+  /** Số ô trống hiện khi chưa có ảnh — để thấy bố cục lúc chờ bổ sung ảnh. */
+  placeholders?: number;
+  placeholderLabel?: string;
+  class?: string;
+}
+
+const {
+  photos,
+  placeholders = 0,
+  placeholderLabel = "Sắp cập nhật ảnh",
+  class: className = "",
+} = Astro.props;
+
+/** Ảnh thứ 5 trong mỗi nhịp là ảnh ngang, còn lại là ảnh vuông. */
+const isWide = (i: number) => i % 5 === 4;
+
+const slots = photos.length > 0 ? photos.length : placeholders;
+---
+
+<div class:list={["relative grid gap-4 sm:grid-cols-2 lg:grid-cols-6", className]}>
+  {
+    photos.map((p, i) => (
+      <button
+        type="button"
+        data-lightbox={p.src}
+        data-caption={p.caption}
+        class:list={[
+          "group relative block cursor-zoom-in overflow-hidden rounded-3xl bg-brand-ink-50",
+          isWide(i) ? "sm:col-span-2 lg:col-span-4" : "lg:col-span-2",
+        ]}
+      >
+        <img
+          src={p.src}
+          alt={p.caption}
+          width={p.width ?? 1024}
+          height={p.height ?? 768}
+          loading="lazy"
+          decoding="async"
+          class:list={[
+            "w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]",
+            isWide(i) ? "aspect-[4/3] lg:aspect-[8/3]" : "aspect-[4/3]",
+          ]}
+        />
+      </button>
+    ))
+  }
+
+  {
+    photos.length === 0 &&
+      Array.from({ length: slots }).map((_, i) => (
+        <div
+          class:list={[
+            "grid place-items-center rounded-3xl border-2 border-dashed border-border bg-brand-ink-50/60 p-6 text-center",
+            isWide(i)
+              ? "aspect-[4/3] sm:col-span-2 lg:col-span-4 lg:aspect-[8/3]"
+              : "aspect-[4/3] lg:col-span-2",
+          ]}
+        >
+          <span class="text-sm font-semibold text-muted-foreground">
+            {placeholderLabel}
+          </span>
+        </div>
+      ))
+  }
+
+  <slot />
+</div>
