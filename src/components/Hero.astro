@@ -65,10 +65,11 @@ import { ICONS } from "@/lib/icons";
   </div>
 
   {/*
-    Minh hoạ — học viên nhô lên từ đáy hero. Margin âm tính theo % chiều rộng
-    nên phần bị cắt luôn cùng tỉ lệ ở mọi khổ màn hình.
+    Minh hoạ hiện trọn cảnh: ba học viên đứng đủ chân trên sàn, cạnh chồng sách
+    và chậu cây. Không còn crop bằng margin âm nên đáy hình không bị cắt ngang
+    thân người; `max-w-3xl` giữ chiều cao hero xấp xỉ như bản crop trước đó.
   */}
-  <div class="relative z-20 mt-8 overflow-hidden lg:mt-10">
-    <HeroIllustration class="mx-auto -mb-[17%] w-full max-w-5xl" />
+  <div class="relative z-20 mt-8 lg:mt-10">
+    <HeroIllustration class="mx-auto w-full max-w-3xl" />
   </div>
 </section>

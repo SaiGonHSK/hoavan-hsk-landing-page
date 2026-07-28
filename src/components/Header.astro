@@ -31,9 +31,14 @@ const ctaNav = menu.find((entry) => entry.cta);
   data-scrolled="false"
   class="sticky top-0 z-40 border-b border-white/10 bg-brand-red-600 backdrop-blur-sm transition-all duration-300 data-[scrolled=true]:shadow-lg data-[scrolled=true]:shadow-brand-red-950/25"
 >
-  <div class="container mx-auto flex items-center justify-between gap-4 px-6 py-3">
-    <div class="flex flex-1 items-center gap-6 xl:gap-8">
+  {/*
+    Ba cột: logo trái — menu giữa — CTA phải. Hai cột biên cùng `flex-1 basis-0`
+    nên nav luôn nằm chính giữa container dù logo và CTA rộng khác nhau.
+  */}
+  <div class="container mx-auto flex items-center gap-4 px-6 py-3">
+    <div class="flex flex-1 basis-0 items-center">
       <Logo onDark />
+    </div>
 
       <nav class="hidden items-center gap-1 lg:flex">
         {
@@ -135,33 +140,32 @@ const ctaNav = menu.find((entry) => entry.cta);
           })
         }
       </nav>
-    </div>
 
-    {/* CTA */}
-    {
-      ctaNav && (
-        <a
-          href={ctaNav.slug}
-          class="hidden shrink-0 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-bold whitespace-nowrap text-brand-red-700 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.55)] transition-transform hover:-translate-y-0.5 lg:inline-flex"
-        >
-          {ctaNav.label}
-        </a>
-      )
-    }
+    <div class="flex flex-1 basis-0 items-center justify-end gap-2">
+      {/* CTA */}
+      {
+        ctaNav && (
+          <a
+            href={ctaNav.slug}
+            class="hidden shrink-0 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-bold whitespace-nowrap text-brand-red-700 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.55)] transition-transform hover:-translate-y-0.5 lg:inline-flex"
+          >
+            {ctaNav.label}
+          </a>
+        )
+      }
 
-    {/* Mobile */}
-    <div class="flex items-center gap-2 lg:hidden">
+      {/* Mobile */}
       <a
         href={`tel:${contact.phonePrimaryRaw}`}
         aria-label={`Gọi ${contact.phonePrimary}`}
-        class="inline-flex size-9 items-center justify-center rounded-full bg-white text-brand-red-600 [&>svg]:size-4"
+        class="inline-flex size-9 items-center justify-center rounded-full bg-white text-brand-red-600 lg:hidden [&>svg]:size-4"
         set:html={ICONS.phone}
       />
       <button
         type="button"
         id="mobile-menu-trigger"
         aria-label="Mở menu"
-        class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-white/35 text-white transition-colors hover:bg-white/10 [&>svg]:size-5"
+        class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-white/35 text-white transition-colors hover:bg-white/10 lg:hidden [&>svg]:size-5"
         set:html={ICONS.menu}
       />
     </div>

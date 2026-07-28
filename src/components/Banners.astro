@@ -10,7 +10,10 @@ const [featured, ...rest] = banners;
 ---
 
 {featured && (
-<section id="banners" class="relative overflow-hidden bg-background scroll-mt-24">
+<section
+  id="banners"
+  class="relative overflow-hidden bg-background scroll-mt-24"
+>
   <div class="container relative z-10 mx-auto px-6">
     <div class="mx-auto max-w-2xl text-center">
       <h2
@@ -26,22 +29,28 @@ const [featured, ...rest] = banners;
       </p>
     </div>
 
-    <div class="mt-12 grid gap-8 lg:grid-cols-1">
-      {/* Poster chính */}
+    {/*
+      Poster chính — khung rộng đúng bằng dải nội dung của header và cao theo
+      `aspect-[16/9]` nên banner thấp lại. `object-contain` giữ trọn tỉ lệ ảnh:
+      không méo, không cắt dòng nào của bảng lịch. Vì ảnh hiển thị nhỏ hơn cỡ
+      gốc 1200×868 nên không bao giờ bị phóng lên → luôn nét.
+      Đổi `16/9` để chỉnh chiều cao: số sau càng lớn thì banner càng cao.
+    */}
+    <div class="mt-12">
       <button
         type="button"
         data-lightbox={featured.image}
         data-caption={featured.title}
-        class="group block cursor-zoom-in text-left transition-transform duration-300 hover:-translate-y-1.5"
+        class="group block w-full cursor-zoom-in text-left transition-transform duration-300 hover:-translate-y-1.5"
       >
         <img
           src={featured.image}
           alt={featured.title}
-          width="2560"
-          height="1852"
+          width="1200"
+          height="868"
           loading="eager"
           decoding="async"
-          class="max-h-[26rem] w-full rounded-3xl object-cover object-top shadow-[0_30px_60px_-38px_rgba(15,23,42,0.5)] lg:max-h-[32rem]"
+          class="block aspect-video w-full rounded-3xl object-contain"
         />
       </button>
     </div>
