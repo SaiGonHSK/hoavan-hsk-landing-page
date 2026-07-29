@@ -2,6 +2,33 @@
 import SectionHeading from "@/components/SectionHeading.astro";
 import { teachers } from "@/data/teachers";
 import { ICONS } from "@/lib/icons";
+
+type Credential = { icon: string; value: string; label: string };
+
+/** "Thạc sĩ — Đại học Tây Nam" → học vị in đậm + nơi tốt nghiệp; role tách theo "·" */
+const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
+  const [degree, school = ""] = t.title.split("—").map((s) => s.trim());
+  const lines: Credential[] = [
+    { icon: ICONS.cap, value: degree, label: school },
+  ];
+
+  const role = (t as { role?: string }).role;
+  if (role) {
+    role
+      .split("·")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .forEach((part, i) => {
+        lines.push({
+          icon: i === 0 ? ICONS.book : ICONS.target,
+          value: "",
+          label: part,
+        });
+      });
+  }
+
+  return lines;
+};
 ---
 
 <section id="teachers" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -9,16 +36,9 @@ import { ICONS } from "@/lib/icons";
     <SectionHeading
       title="Đứng lớp bởi giảng viên"
       highlight="Thạc sĩ, Tiến sĩ"
-      description="Giảng viên của trung tâm tốt nghiệp Thạc sĩ, Tiến sĩ tại các đại học lớn của Trung Quốc và đang giảng dạy tại nhiều trường đại học uy tín ở TP.HCM."
     />
-
+<!-- 
     <div class="mt-12 flex items-center justify-between gap-6">
-      <p
-        class="text-2xl font-black text-brand-ink-900 md:text-3xl"
-      >
-        Giảng viên tại SaigonHSK
-      </p>
-
       <div class="hidden shrink-0 items-center gap-2 md:flex">
         <button
           type="button"
@@ -35,11 +55,11 @@ import { ICONS } from "@/lib/icons";
           set:html={ICONS.arrow}
         />
       </div>
-    </div>
+    </div> -->
 
     <div
       data-rail="track"
-      class="teacher-rail -mx-6 mt-8 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"
+      class="teacher-rail -mx-6 mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"
     >
       {
         teachers.map((t) => (
@@ -49,14 +69,35 @@ import { ICONS } from "@/lib/icons";
             data-caption={`${t.name} — ${t.title}`}
             class="group w-[19rem] shrink-0 cursor-zoom-in snap-start text-left transition-transform duration-300 hover:-translate-y-1.5 sm:w-[22rem] lg:w-[24rem]"
           >
-            <img
-              src={t.image}
-              alt={`${t.name} — ${t.title}`}
-              loading="lazy"
-              width="940"
-              height="788"
-              class="aspect-[940/788] w-full rounded-3xl object-cover shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]"
-            />
+            <div class="relative overflow-hidden rounded-lg shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]">
+              <img
+                src={t.image}
+                alt={`${t.name} — ${t.title}`}
+                loading="lazy"
+                width="940"
+                height="788"
+                class="aspect-[940/788] w-full object-cover"
+              />
+
+              <div class="absolute inset-0 flex flex-col justify-end gap-3.5 bg-gradient-to-t from-black/85 via-black/55 to-black/10 p-6 opacity-0 backdrop-blur-[3px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                {credentialsOf(t).map((c, i) => (
+                  <div
+                    class="flex translate-y-4 items-center gap-3 text-white opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+                    style={`transition-delay: ${120 + i * 90}ms`}
+                  >
+                    <span
+                      class="shrink-0 text-white/80 [&>svg]:size-5"
+                      set:html={c.icon}
+                    />
+                    <p class="min-w-0 truncate text-[0.9375rem] leading-snug">
+                      {c.value && <span class="font-bold">{c.value} </span>}
+                      <span class="text-white/85">{c.label}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <p class="mt-4 px-1 text-base font-extrabold leading-snug text-brand-ink-900">
               {t.name}
             </p>

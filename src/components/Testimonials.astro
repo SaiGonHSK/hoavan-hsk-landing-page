@@ -14,7 +14,7 @@ const initials = (name: string) =>
 const list = [...testimonials].sort(
   (a, b) =>
     Number(Boolean((b as { image?: string }).image)) -
-    Number(Boolean((a as { image?: string }).image))
+    Number(Boolean((a as { image?: string }).image)),
 );
 
 const badgeOf = (quote: string) => {
@@ -31,29 +31,11 @@ const badgeOf = (quote: string) => {
     <SectionHeading
       title="Học viên nói gì"
       highlight="về Hoa văn SaigonHSK"
-      description="Phản hồi từ sinh viên và học viên đã đồng hành cùng trung tâm trên chặng đường chinh phục HSK và TOCFL."
     />
-
-    <div class="mt-10 flex justify-center gap-3 lg:justify-end">
-      <button
-        type="button"
-        data-review-prev
-        aria-label="Cảm nhận trước"
-        class="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-brand-ink-900 text-white transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-30 disabled:hover:translate-y-0 [&>svg]:size-4 [&>svg]:-scale-x-100"
-        set:html={ICONS.arrow}
-      />
-      <button
-        type="button"
-        data-review-next
-        aria-label="Cảm nhận tiếp theo"
-        class="inline-flex size-12 cursor-pointer items-center justify-center rounded-full bg-brand-ink-900 text-white transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-30 disabled:hover:translate-y-0 [&>svg]:size-4"
-        set:html={ICONS.arrow}
-      />
-    </div>
 
     <div
       data-review-track
-      class="mt-6 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      class="mt-16 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {
         list.map((t) => {
@@ -110,8 +92,12 @@ const badgeOf = (quote: string) => {
                   )}
 
                   <div class="min-w-0">
-                    <p class="truncate font-bold text-brand-ink-900">{t.name}</p>
-                    <p class="truncate text-sm text-muted-foreground">{t.role}</p>
+                    <p class="truncate font-bold text-brand-ink-900">
+                      {t.name}
+                    </p>
+                    <p class="truncate text-sm text-muted-foreground">
+                      {t.role}
+                    </p>
                   </div>
                 </div>
 
@@ -124,6 +110,24 @@ const badgeOf = (quote: string) => {
         })
       }
     </div>
+    <!-- <div class="mt-12 flex items-center justify-between gap-6">
+      <div class="hidden shrink-0 items-center gap-2 md:flex">
+        <button
+          type="button"
+          data-rail="prev"
+          aria-label="Xem giảng viên trước"
+          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4 [&>svg]:rotate-180"
+          set:html={ICONS.arrow}
+        />
+        <button
+          type="button"
+          data-rail="next"
+          aria-label="Xem giảng viên tiếp theo"
+          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4"
+          set:html={ICONS.arrow}
+        />
+      </div>
+    </div> -->
   </div>
 </section>
 
@@ -133,7 +137,6 @@ const badgeOf = (quote: string) => {
   const next = document.querySelector<HTMLButtonElement>("[data-review-next]");
 
   if (track && prev && next) {
-
     const step = () => {
       const card = track.querySelector<HTMLElement>("[data-review-card]");
       if (!card) return track.clientWidth;

@@ -1,0 +1,1 @@
+- [Design restraint preference](design-restraint-preference.md) — UI tối giản, bo tối đa rounded-lg, một màu nhấn, không hiệu ứng trang trí
