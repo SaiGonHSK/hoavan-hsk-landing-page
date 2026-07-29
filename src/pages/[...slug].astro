@@ -9,13 +9,6 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { findParent, getPageContents } from "@/data/pages";
 import { site } from "@/data/site";
 
-/**
- * Trang động: nội dung do giáo vụ soạn trong trang quản trị.
- *
- * Đây là phần duy nhất của landing lấy dữ liệu từ API — cấu trúc menu và mọi khối
- * nội dung khác đều nằm cứng trong repo. Astro ưu tiên các file route cố định
- * (/, /about, /courses…) nên route này chỉ nhận đường dẫn chưa có trang riêng.
- */
 export async function getStaticPaths() {
   const pages = await getPageContents();
 
@@ -31,7 +24,6 @@ const crumbs = parent
   ? [{ label: parent.label, href: parent.slug }, { label: page.title }]
   : [{ label: page.title }];
 
-/** Bài do giáo vụ soạn → khai báo là Article để Google hiểu đúng loại nội dung. */
 const schemas = [
   {
     "@context": "https://schema.org",

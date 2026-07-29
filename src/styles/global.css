@@ -17,10 +17,6 @@
     sans-serif;
   --font-hand: "Caveat Variable", "Segoe Script", cursive;
 
-  /* Brand palette — single source of truth.
-      Tweak the --brand-red-* / --brand-ink-* values in :root below
-      and every utility (bg-brand-red-600, from-brand-ink-900, …)
-      updates everywhere. brand-blue-* / brand-pink-* are legacy aliases. */
   --color-brand-red-50: var(--brand-red-50);
   --color-brand-red-100: var(--brand-red-100);
   --color-brand-red-200: var(--brand-red-200);
@@ -56,7 +52,7 @@
   --color-brand-blue-800: var(--brand-blue-800);
   --color-brand-blue-900: var(--brand-blue-900);
   --color-brand-blue-950: var(--brand-blue-950);
-  
+
   --color-brand-pink-50: var(--brand-pink-50);
   --color-brand-pink-100: var(--brand-pink-100);
   --color-brand-pink-200: var(--brand-pink-200);
@@ -153,22 +149,19 @@
     transform: translateZ(0) rotate(360deg);}}}
 
 :root {
-  /* Brand palette — Hoa văn SaigonHSK.
-      Anchored on the crimson of the SaigonHSK seal logo: #b2182b (600).
-      Edit the 600 row to retheme the entire site. */
+
   --brand-red-50: #fdf2f3;
   --brand-red-100: #fbdcdf;
   --brand-red-200: #f5b3b9;
   --brand-red-300: #ed8a92;
   --brand-red-400: #dd5560;
   --brand-red-500: #c92c3c;
-  --brand-red-600: #b2182b; /* anchor — brand crimson (logo) */
+  --brand-red-600: #b2182b;
   --brand-red-700: #971324;
   --brand-red-800: #7c0f1d;
   --brand-red-900: #5e0b16;
   --brand-red-950: #38060d;
 
-  /* Ink — deep neutral used for headings and the dark side of gradients. */
   --brand-ink-50: #f6f6f7;
   --brand-ink-100: #e9e9ec;
   --brand-ink-200: #c9cace;
@@ -181,8 +174,6 @@
   --brand-ink-900: #121316;
   --brand-ink-950: #0a0b0d;
 
-  /* Legacy aliases — older components still reference brand-blue-* / brand-pink-*.
-      They now resolve to the crimson ramp so everything stays on brand. */
   --brand-blue-50: var(--brand-red-50);
   --brand-blue-100: var(--brand-red-100);
   --brand-blue-200: var(--brand-red-200);
@@ -207,7 +198,6 @@
   --brand-pink-900: var(--brand-red-900);
   --brand-pink-950: var(--brand-red-950);
 
-  /* Hero wash — warm paper tints so the crimson logo sits on a soft ground. */
   --brand-hero-100: #dd5560;
   --brand-hero-200: #ed8a92;
   --brand-hero-300: #ffffff;
@@ -219,7 +209,6 @@
   --brand-hero-900: #971324;
   --brand-hero-950: #5e0b16;
 
-  /* Base neutrals — shadcn "Slate" (cool blue-grey). Primary stays brand crimson. */
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -253,7 +242,6 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
 
-  /* Secondary CTA fill — neutral slate. */
   --cta-secondary-bg: #e2e8f0;
 }
 
@@ -315,7 +303,6 @@
     mix-blend-mode: normal;
 }
 
-/* Nội dung nhập từ trình soạn HTML trong trang quản trị */
 .rich p {
   margin-bottom: 0.6rem;
 }
@@ -340,10 +327,6 @@
   text-decoration: underline;
 }
 
-/* ── Hiện dần khi cuộn tới ────────────────────────────────────────────────
-   Script trong Layout.astro gắn `.reveal` rồi `.reveal-in`. Chỉ chạy khi
-   người dùng không bật "giảm chuyển động"; không JS thì không có class nào
-   nên nội dung hiển thị bình thường. */
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;

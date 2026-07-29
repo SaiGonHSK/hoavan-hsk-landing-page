@@ -18,7 +18,6 @@ const { item } = Astro.props;
 
 const others = (await getLibrary()).filter((entry) => entry.slug !== item.slug).slice(0, 8);
 
-/** Bài viết trong thư viện là dạng article, khai báo schema tương ứng. */
 const schemas = [
   {
     "@context": "https://schema.org",

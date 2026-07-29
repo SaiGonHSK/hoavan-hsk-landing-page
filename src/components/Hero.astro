@@ -2,19 +2,17 @@
 import { hero, stats } from "@/data/site";
 import HeroIllustration from "@/components/HeroIllustration.astro";
 import { ICONS } from "@/lib/icons";
-
 ---
 
 <section id="hero" class="relative overflow-hidden bg-background pt-10 lg:pt-14">
   <div class="container relative z-10 mx-auto px-6 text-center">
-    {/* Nhãn chương trình */}
+
     <span
       class="inline-flex items-center rounded-full border border-border bg-background px-6 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
     >
       {hero.noteTitle}
     </span>
 
-    {/* Tiêu đề lớn */}
     <h1 class="mt-6 text-balance">
       <span class="block text-[6.2vw] font-black uppercase leading-[1.05] tracking-[-0.02em] text-brand-ink-900 lg:text-[3.1rem]">
         {hero.titleLine1}
@@ -28,7 +26,6 @@ import { ICONS } from "@/lib/icons";
       TP.HCM, cam kết 100% đầu ra.
     </p>
 
-    {/* Ba chỉ số nổi bật */}
     <ul class="mx-auto mt-9 grid max-w-4xl grid-cols-3 items-start">
       {
         stats.map((s, i) => (
@@ -49,7 +46,6 @@ import { ICONS } from "@/lib/icons";
       }
     </ul>
 
-    {/* CTA chính */}
     <div class="mt-9">
       <a
         href="/register"
@@ -64,11 +60,6 @@ import { ICONS } from "@/lib/icons";
     </div>
   </div>
 
-  {/*
-    Minh hoạ hiện trọn cảnh: ba học viên đứng đủ chân trên sàn, cạnh chồng sách
-    và chậu cây. Không còn crop bằng margin âm nên đáy hình không bị cắt ngang
-    thân người; `max-w-3xl` giữ chiều cao hero xấp xỉ như bản crop trước đó.
-  */}
   <div class="relative z-20 mt-8 lg:mt-10">
     <HeroIllustration class="mx-auto w-full max-w-3xl" />
   </div>

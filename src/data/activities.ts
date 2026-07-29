@@ -1,15 +1,8 @@
-/**
- * Ảnh hoạt động tại trung tâm — dùng cho section "Không khí lớp học".
- * Ảnh lấy từ website chính thức trungtamhoavansaigonhsk.edu.vn.
- *
- * Thêm ảnh: bỏ file vào `public/images/activities/` rồi thêm một dòng vào
- * mảng dưới đây. Lưới lặp nhịp 5 ảnh (3 ảnh vuông → 1 ảnh nhỏ → 1 ảnh ngang)
- * nên số lượng bao nhiêu cũng ra bố cục cân đối; đẹp nhất ở 3, 5, 8 hoặc 10 ảnh.
- */
+
 export type Activity = {
-  /** Đường dẫn ảnh trong `public/`. */
+
   src: string;
-  /** Mô tả ngắn — dùng cho alt và chú thích khi phóng to. */
+
   caption: string;
   width?: number;
   height?: number;

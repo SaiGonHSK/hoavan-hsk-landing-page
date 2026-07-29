@@ -5,7 +5,6 @@ import { menu, groupChildren, plainChildren } from "@/data/pages";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
-  /** Đường dẫn hiện tại để tô sáng mục menu đang mở. */
   path?: string;
 }
 const { path = Astro.url.pathname } = Astro.props;
@@ -20,64 +19,54 @@ const mainNav = menu.filter((entry) => !entry.cta);
 const ctaNav = menu.find((entry) => entry.cta);
 ---
 
-{/*
-  Nền header lấy đúng tông của footer (`bg-brand-red-600` đặc) để đầu và cuối
-  trang khớp màu — trước đây header là `/95` và đổi sang red-700 khi cuộn nên
-  nhìn lệch. Vẫn giữ `backdrop-blur-sm`: header là containing block của mega
-  menu `position:fixed`, bỏ backdrop-filter là panel bung ra sai chỗ.
-*/}
 <header
   id="site-header"
   data-scrolled="false"
   class="sticky top-0 z-40 border-b border-white/10 bg-brand-red-600 backdrop-blur-sm transition-all duration-300 data-[scrolled=true]:shadow-lg data-[scrolled=true]:shadow-brand-red-950/25"
 >
-  {/*
-    Ba cột: logo trái — menu giữa — CTA phải. Hai cột biên cùng `flex-1 basis-0`
-    nên nav luôn nằm chính giữa container dù logo và CTA rộng khác nhau.
-  */}
   <div class="container mx-auto flex items-center gap-4 px-6 py-3">
     <div class="flex flex-1 basis-0 items-center">
       <Logo onDark />
     </div>
 
-      <nav class="hidden items-center gap-1 lg:flex">
-        {
-          mainNav.map((item) => {
-            const active = isActive(item.slug);
-            const groups = groupChildren(item.children);
-            const plain = plainChildren(item.children);
-            const hasMenu = groups.length > 0 || plain.length > 0;
-            /* Menu chữ trắng trên nền đỏ, mục đang mở nổi bằng viên nền sáng. */
-            const linkClass = `inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors ${
-              active ? "bg-white/15 font-semibold" : "hover:bg-white/10"
-            }`;
+    <nav class="hidden items-center gap-1 lg:flex">
+      {
+        mainNav.map((item) => {
+          const active = isActive(item.slug);
+          const groups = groupChildren(item.children);
+          const plain = plainChildren(item.children);
+          const hasMenu = groups.length > 0 || plain.length > 0;
 
-            if (!hasMenu) {
-              return (
-                <a href={item.slug} class={linkClass}>
-                  {item.label}
-                </a>
-              );
-            }
+          const linkClass = `inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors ${
+            active ? "bg-white/15 font-semibold" : "hover:bg-white/10"
+          }`;
 
+          if (!hasMenu) {
             return (
-              <div class="group/menu relative" data-menu data-open="false">
-                <a href={item.slug} class={linkClass}>
-                  {item.label}
-                  <span
-                    class="[&>svg]:size-3.5 [&>svg]:transition-transform group-data-[open=true]/menu:[&>svg]:rotate-180"
-                    set:html={ICONS.chevron}
-                  />
-                </a>
+              <a href={item.slug} class={linkClass}>
+                {item.label}
+              </a>
+            );
+          }
 
-                {groups.length > 0 ? (
-                  <div
-                    data-menu-panel
-                    data-mega
-                    data-open="false"
-                    class="invisible fixed inset-x-0 z-30 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
-                  >
-                   <div class="container mx-auto px-4">
+          return (
+            <div class="group/menu relative" data-menu data-open="false">
+              <a href={item.slug} class={linkClass}>
+                {item.label}
+                <span
+                  class="[&>svg]:size-3.5 [&>svg]:transition-transform group-data-[open=true]/menu:[&>svg]:rotate-180"
+                  set:html={ICONS.chevron}
+                />
+              </a>
+
+              {groups.length > 0 ? (
+                <div
+                  data-menu-panel
+                  data-mega
+                  data-open="false"
+                  class="invisible fixed inset-x-0 z-30 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                >
+                  <div class="container mx-auto px-4">
                     <div class="overflow-hidden rounded-3xl border border-border bg-background/98 shadow-2xl backdrop-blur-md">
                       <div class="grid gap-x-6 gap-y-8 p-7 md:grid-cols-4">
                         {groups.map((group) => (
@@ -115,34 +104,33 @@ const ctaNav = menu.find((entry) => entry.cta);
                         />
                       </a>
                     </div>
-                   </div>
                   </div>
-                ) : (
-                  <div
-                    data-menu-panel
-                    data-open="false"
-                    class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-4 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
-                  >
-                    <div class="overflow-hidden rounded-2xl border border-border bg-background/98 p-2 shadow-xl backdrop-blur-md">
-                      {plain.map((link) => (
-                        <a
-                          href={link.slug}
-                          class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
-                        >
-                          {link.label}
-                        </a>
-                      ))}
-                    </div>
+                </div>
+              ) : (
+                <div
+                  data-menu-panel
+                  data-open="false"
+                  class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-4 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                >
+                  <div class="overflow-hidden rounded-2xl border border-border bg-background/98 p-2 shadow-xl backdrop-blur-md">
+                    {plain.map((link) => (
+                      <a
+                        href={link.slug}
+                        class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </div>
-                )}
-              </div>
-            );
-          })
-        }
-      </nav>
+                </div>
+              )}
+            </div>
+          );
+        })
+      }
+    </nav>
 
     <div class="flex flex-1 basis-0 items-center justify-end gap-2">
-      {/* CTA */}
       {
         ctaNav && (
           <a
@@ -154,7 +142,6 @@ const ctaNav = menu.find((entry) => entry.cta);
         )
       }
 
-      {/* Mobile */}
       <a
         href={`tel:${contact.phonePrimaryRaw}`}
         aria-label={`Gọi ${contact.phonePrimary}`}
@@ -172,7 +159,6 @@ const ctaNav = menu.find((entry) => entry.cta);
   </div>
 </header>
 
-{/* Drawer mobile */}
 <div
   id="mobile-drawer-overlay"
   data-open="false"
@@ -184,7 +170,9 @@ const ctaNav = menu.find((entry) => entry.cta);
   data-open="false"
   class="fixed inset-y-0 right-0 z-50 w-[88vw] max-w-sm translate-x-full overflow-y-auto bg-background shadow-2xl transition-transform duration-300 data-[open=true]:translate-x-0"
 >
-  <div class="flex items-center justify-between border-b border-border px-5 py-4">
+  <div
+    class="flex items-center justify-between border-b border-border px-5 py-4"
+  >
     <Logo />
     <button
       type="button"
@@ -282,8 +270,12 @@ const ctaNav = menu.find((entry) => entry.cta);
     >
       Chat Zalo
     </a>
-    <p class="mt-4 text-xs leading-relaxed text-muted-foreground">{contact.address}</p>
-    <p class="mt-1 text-xs text-muted-foreground">{site.slogan} — {site.sloganVi}</p>
+    <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
+      {contact.address}
+    </p>
+    <p class="mt-1 text-xs text-muted-foreground">
+      {site.slogan} — {site.sloganVi}
+    </p>
   </div>
 </aside>
 
@@ -295,7 +287,6 @@ const ctaNav = menu.find((entry) => entry.cta);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  // Dropdown / mega menu — mở khi hover, đóng trễ nhẹ để chuột kịp di chuyển.
   document.querySelectorAll<HTMLElement>("[data-menu]").forEach((wrap) => {
     const panel = wrap.querySelector<HTMLElement>("[data-menu-panel]");
     if (!panel) return;
@@ -303,8 +294,7 @@ const ctaNav = menu.find((entry) => entry.cta);
 
     const open = () => {
       clearTimeout(timer);
-      // Header có backdrop-filter nên chính nó là containing block của panel
-      // position:fixed → top tính từ mép trên header, dùng offsetHeight là vừa khít.
+
       if (panel.hasAttribute("data-mega") && header) {
         panel.style.top = `${header.offsetHeight}px`;
       }
@@ -325,7 +315,6 @@ const ctaNav = menu.find((entry) => entry.cta);
     wrap.addEventListener("focusout", close);
   });
 
-  // Drawer mobile
   const drawer = document.getElementById("mobile-drawer");
   const overlay = document.getElementById("mobile-drawer-overlay");
   const setDrawer = (open: boolean) => {

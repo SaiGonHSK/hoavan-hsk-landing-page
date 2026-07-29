@@ -1,6 +1,4 @@
-/**
- * Đội ngũ giảng viên và bộ poster giới thiệu — đọc từ `content/site.json`.
- */
+
 import { content } from "./content";
 
 export type Teacher = (typeof content.teachers)[number];

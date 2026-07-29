@@ -1,8 +1,4 @@
 ---
-/**
- * Khung trang chi tiết dùng chung cho khóa học, khu ôn tập, luyện thi,
- * kỹ năng, lớp học thử và các chuyên mục thư viện.
- */
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
@@ -25,14 +21,14 @@ interface Props {
   audience?: string[];
   crumbs: { label: string; href?: string }[];
   glyph?: string;
-  /** Các mục cùng nhóm để điều hướng qua lại. */
+
   related?: { label: string; href: string }[];
   relatedTitle?: string;
-  /** Bật schema Course cho các trang khoá học. */
+
   courseSchema?: boolean;
-  /** Ghi đè tiêu đề SEO (mặc định: "<tên> — <thương hiệu>"). */
+
   seoTitle?: string;
-  /** Ghi đè mô tả SEO. */
+
   seoDescription?: string;
 }
 
@@ -55,7 +51,7 @@ const {
 } = Astro.props;
 
 const origin = Astro.site?.origin ?? "";
-/** Schema Course — điều kiện để Google hiển thị rich result cho khoá học. */
+
 const faqs = courseSchema
   ? courseFaqs({ title, facts, outcomes, phone: contact.phonePrimary })
   : [];
@@ -121,7 +117,6 @@ const schemas = courseSchema
       </div>
     </PageHero>
 
-    {/* Thông số */}
     {
       facts.length > 0 && (
         <section class="bg-background pt-14">
@@ -143,7 +138,6 @@ const schemas = courseSchema
       )
     }
 
-    {/* Nội dung / đối tượng / đầu ra */}
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <div class="grid gap-6 lg:grid-cols-3">
@@ -202,7 +196,6 @@ const schemas = courseSchema
       </div>
     </section>
 
-    {/* Câu hỏi thường gặp */}
     {
       faqs.length > 0 && (
         <section class="bg-background">
@@ -225,7 +218,6 @@ const schemas = courseSchema
       )
     }
 
-    {/* Liên quan */}
     {
       related.length > 0 && (
         <section class="bg-background pb-14">

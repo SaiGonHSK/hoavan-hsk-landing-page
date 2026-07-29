@@ -6,7 +6,7 @@ import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
-  /** Chỉ hiện N câu đầu (trang chủ), còn lại xem ở trang liên hệ. */
+
   limit?: number;
 }
 
@@ -14,7 +14,6 @@ const { limit } = Astro.props;
 const items = limit ? faqs.slice(0, limit) : faqs;
 const hasMore = items.length < faqs.length;
 
-/** FAQPage schema để câu hỏi có thể hiện trên kết quả tìm kiếm. */
 const schema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",

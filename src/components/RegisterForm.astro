@@ -1,9 +1,4 @@
 ---
-/**
- * Form đăng ký tư vấn — Astro thuần, không cần React.
- * Dùng validation sẵn có của trình duyệt, JS chỉ lo phần gửi đi.
- * Có PUBLIC_REGISTER_ENDPOINT → POST JSON; chưa có → mở sẵn email cho trung tâm.
- */
 import { contact } from "@/data/site";
 import { courses } from "@/data/courses";
 import { onlineOfflineCourses } from "@/data/catalog";
@@ -221,7 +216,6 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         return;
       }
 
-      // Chưa cấu hình API: mở sẵn email gửi về trung tâm.
       const body = [
         `Họ tên: ${data.name}`,
         `Điện thoại: ${data.phone}`,

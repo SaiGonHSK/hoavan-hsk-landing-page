@@ -4,10 +4,6 @@ import CourseIllustration from "@/components/CourseIllustration.astro";
 import { courses, featuredCourses } from "@/data/courses";
 import { ICONS } from "@/lib/icons";
 
-/**
- * Thứ tự ưu tiên cho khung hình đầu thẻ: ảnh khoá học (`c.image`) → minh hoạ
- * vector (những slug dưới đây) → icon. Khoá nào đã có ảnh thì ảnh thắng.
- */
 const COURSE_ART = new Set([
   "luyen-thi-hsk",
   "luyen-thi-tocfl",
@@ -22,9 +18,9 @@ const COURSE_ART = new Set([
 ]);
 
 interface Props {
-  /** Tắt tiêu đề khi section được dùng bên trong trang đã có heading riêng. */
+
   showHeading?: boolean;
-  /** Chỉ hiện N chương trình nổi bật (trang chủ) — bỏ trống là hiện đủ 10. */
+
   limit?: number;
 }
 const { showHeading = true, limit } = Astro.props;
@@ -52,7 +48,7 @@ const hasMore = list.length < courses.length;
             href={`/courses/programs/${c.slug}`}
             class={"group flex flex-col rounded-3xl bg-brand-ink-50 p-3 transition-transform duration-300 hover:-translate-y-1.5"}
           >
-            {/* Khung hình đầu thẻ, chữ nghĩa xuống dưới */}
+
             <div
               class="relative grid h-40 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-red-50 to-brand-ink-100"
             >

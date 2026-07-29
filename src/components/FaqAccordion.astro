@@ -5,7 +5,7 @@ interface FaqItem {
 }
 interface Props {
   items: FaqItem[];
-  /** Groups the <details> so only one stays open at a time. Unique per page. */
+
   name?: string;
 }
 const { items, name = "faq" } = Astro.props;
@@ -47,7 +47,6 @@ const { items, name = "faq" } = Astro.props;
 </div>
 
 <style>
-  /* Nội dung do giáo vụ nhập bằng trình soạn HTML trong trang quản trị */
   .faq-answer :global(p) {
     margin-bottom: 0.6rem;
   }
@@ -83,7 +82,6 @@ const { items, name = "faq" } = Astro.props;
     }
   }
 
-  /* Hide default disclosure triangle (Safari/Firefox) */
   .faq-item summary::-webkit-details-marker {
     display: none;
   }
@@ -91,13 +89,11 @@ const { items, name = "faq" } = Astro.props;
     display: none;
   }
 
-  /* Rotate chevron when open */
   .faq-item[open] .faq-chevron {
     transform: rotate(180deg);
     color: var(--primary);
   }
 
-  /* Highlight question text when open */
   .faq-item[open] summary > span {
     color: var(--primary);
   }

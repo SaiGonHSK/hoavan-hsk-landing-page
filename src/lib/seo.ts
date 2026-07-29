@@ -1,21 +1,9 @@
-/**
- * Tập trung phần SEO: tiêu đề, mô tả và bộ từ khoá.
- *
- * Nguyên tắc đặt title: <từ khoá chính> + <địa điểm/điểm khác biệt> + thương hiệu,
- * giữ dưới ~60 ký tự để Google không cắt. Description 140–160 ký tự, có từ khoá
- * và một lý do để bấm vào (cam kết đầu ra, học thử miễn phí, hotline).
- */
 
 const BRAND = "SaigonHSK";
 
-/** Ghép tiêu đề với thương hiệu, tránh lặp nếu đã có sẵn. */
 export const title = (main: string) =>
   main.includes(BRAND) ? main : `${main} | ${BRAND}`;
 
-/**
- * Từ khoá học viên hay gõ khi tìm trung tâm tiếng Trung ở TP.HCM.
- * Dùng để rải tự nhiên vào tiêu đề, mô tả và nội dung — không nhồi nhét.
- */
 export const keywords = {
   core: [
     "học tiếng Trung",
@@ -56,22 +44,15 @@ export const keywordString = [
   ...keywords.purpose,
 ].join(", ");
 
-/** Mô tả mặc định cho các trang chưa có mô tả riêng. */
 export const defaultDescription =
   "Trung tâm Hoa văn SaigonHSK — học tiếng Trung và luyện thi HSK, TOCFL tại TP.HCM. Lớp 10–15 học viên, giảng viên Thạc sĩ – Tiến sĩ, cam kết 100% đầu ra.";
 
-/** Cắt mô tả về đúng độ dài Google hiển thị, không cắt giữa từ. */
 export const clampDescription = (text: string, max = 158) => {
   if (text.length <= max) return text;
   const cut = text.slice(0, max);
   return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
 };
 
-/**
- * Câu hỏi thường gặp sinh theo từng khoá — nhắm các truy vấn dạng câu hỏi
- * ("HSK4 cần bao nhiêu từ vựng", "học HSK4 mất bao lâu", "học phí bao nhiêu")
- * và đủ điều kiện để Google hiển thị dạng FAQ.
- */
 export function courseFaqs(input: {
   title: string;
   facts: { label: string; value: string }[];
@@ -116,7 +97,6 @@ export function courseFaqs(input: {
   return faqs;
 }
 
-/** JSON-LD FAQPage. */
 export const faqSchema = (faqs: { question: string; answer: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -127,7 +107,6 @@ export const faqSchema = (faqs: { question: string; answer: string }[]) => ({
   })),
 });
 
-/** JSON-LD ItemList cho các trang tổng quan (hub). */
 export const itemListSchema = (
   name: string,
   items: { title: string; href: string }[],

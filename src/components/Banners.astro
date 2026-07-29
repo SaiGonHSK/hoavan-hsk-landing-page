@@ -1,11 +1,6 @@
 ---
-/**
- * Bộ poster giới thiệu của trung tâm — bố cục dán ảnh nghiêng như hero.
- * Bấm vào ảnh để xem cỡ lớn (lightbox khai báo ở Layout).
- */
 import { banners } from "@/data/teachers";
 
-/** Giáo vụ có thể xoá hết poster trong admin — khi đó bỏ luôn cả khối. */
 const [featured, ...rest] = banners;
 ---
 
@@ -29,13 +24,6 @@ const [featured, ...rest] = banners;
       </p>
     </div>
 
-    {/*
-      Poster chính — khung rộng đúng bằng dải nội dung của header và cao theo
-      `aspect-[16/9]` nên banner thấp lại. `object-contain` giữ trọn tỉ lệ ảnh:
-      không méo, không cắt dòng nào của bảng lịch. Vì ảnh hiển thị nhỏ hơn cỡ
-      gốc 1200×868 nên không bao giờ bị phóng lên → luôn nét.
-      Đổi `16/9` để chỉnh chiều cao: số sau càng lớn thì banner càng cao.
-    */}
     <div class="mt-12">
       <button
         type="button"

@@ -1,14 +1,11 @@
 ---
-/**
- * Logo dạng Astro thuần — không cần React/framer-motion, hiệu ứng hover bằng CSS.
- */
 import markUrl from "@/assets/logo-mark.png";
 import { site } from "@/data/site";
 
 interface Props {
-  /** Chỉ hiện con dấu, ẩn phần chữ (khi chật chỗ). */
+
   markOnly?: boolean;
-  /** Đặt trên nền đậm (header đỏ): chữ trắng và con dấu nằm trên đĩa trắng. */
+
   onDark?: boolean;
   class?: string;
 }

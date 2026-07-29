@@ -4,15 +4,14 @@ import { ICONS } from "@/lib/icons";
 interface Props {
   title: string;
   description?: string;
-  /** Breadcrumb, không tính mục "Trang chủ" đã có sẵn. */
+
   crumbs?: { label: string; href?: string }[];
-  /** Ký tự Hán làm hoa văn nền. */
+
   glyph?: string;
 }
 
 const { title, description, crumbs = [], glyph = "华" } = Astro.props;
 
-/** BreadcrumbList giúp Google hiển thị đường dẫn phân cấp thay vì URL thô. */
 const origin = Astro.site?.origin ?? "";
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -89,7 +88,6 @@ const breadcrumbSchema = {
 </section>
 
 <style>
-  /* Chevron trong breadcrumb hơi lệch baseline nếu không canh lại. */
   nav[aria-label="Breadcrumb"] li[aria-hidden="true"] {
     display: inline-flex;
     align-items: center;

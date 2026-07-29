@@ -235,9 +235,15 @@
       ]
     },
     {
-      "label": "Liên hệ",
-      "slug": "/contact",
-      "children": []
+      "label": "Lịch khai giảng",
+      "slug": "/schedule",
+      "children": [
+        {
+          "label": "Học thử HSK4",
+          "slug": "/trial/hsk-4",
+          "group": "Học thử trải nghiệm"
+        }
+      ]
     },
     {
       "label": "Thư viện",
@@ -292,6 +298,11 @@
           "slug": "/library/tieng-trung-chuyen-nganh"
         }
       ]
+    },
+    {
+      "label": "Liên hệ",
+      "slug": "/contact",
+      "children": []
     },
     {
       "label": "Đăng nhập",

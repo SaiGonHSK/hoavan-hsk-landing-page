@@ -1,8 +1,3 @@
-/**
- * Bộ icon SVG dạng chuỗi, dùng với `set:html` trong các component Astro
- * để không phải nạp thêm JS chỉ để vẽ icon.
- * Kích thước điều khiển bằng class ở phần tử cha, ví dụ `[&>svg]:size-4`.
- */
 
 const svg = (paths: string, extra = "") =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ${extra}>${paths}</svg>`;
@@ -51,7 +46,6 @@ export const ICONS = {
   zalo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 5.8 2 10.4c0 2.6 1.4 4.9 3.6 6.5-.1.9-.5 2.3-1.4 3.6-.2.3.1.7.5.6 1.9-.5 3.4-1.5 4.3-2.2 1 .2 1.9.3 3 .3 5.5 0 10-3.8 10-8.4S17.5 2 12 2z"/></svg>`,
 } as const;
 
-/** Icon riêng cho từng nhóm khóa học (khớp với `Course["icon"]`). */
 export const COURSE_ICONS = {
   hsk: ICONS.target,
   tocfl: ICONS.shield,

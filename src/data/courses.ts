@@ -1,13 +1,8 @@
-/**
- * Chương trình đào tạo của Trung tâm Hoa văn SaigonHSK.
- * Nội dung (đối tượng, mục tiêu, thời lượng, giáo trình, chuẩn đầu ra) lấy từ
- * website chính thức trungtamhoavansaigonhsk.edu.vn.
- */
 
 export type CourseLevel = {
-  /** Tên lớp, ví dụ "Luyện HSK4 thường" */
+
   name: string;
-  /** Mã lớp nội bộ, ví dụ "HSK4" / "SC1" */
+
   code?: string;
   audience: string[];
   goals: string[];
@@ -20,21 +15,21 @@ export type CourseLevel = {
 export type Course = {
   slug: string;
   title: string;
-  /** Dòng mô tả ngắn hiển thị trên card. */
+
   summary: string;
-  /** Ảnh khoá học trong public/images/courses. Không có thì thẻ dùng icon. */
+
   image?: string;
-  /** Nhãn nhóm: mục tiêu chính của khóa. */
+
   goal: string;
-  /** Trình độ đầu vào gợi ý. */
+
   entry: string;
   icon: "hsk" | "tocfl" | "seed" | "growth" | "peak" | "chat" | "briefcase" | "vip" | "kids" | "senior";
-  /** true → đánh dấu nổi bật trên trang chủ. */
+
   featured?: boolean;
-  /** Các thẻ ngắn hiển thị trên card. */
+
   tags: string[];
   levels: CourseLevel[];
-  /** Dùng khi trung tâm chưa công bố chi tiết trên web. */
+
   contactOnly?: boolean;
   note?: string;
 };
@@ -484,7 +479,6 @@ export function getCourse(slug: string) {
   return courses.find((c) => c.slug === slug);
 }
 
-/** Lộ trình học tại trung tâm — dùng cho section "Lộ trình". */
 export const roadmap = [
   {
     step: "01",

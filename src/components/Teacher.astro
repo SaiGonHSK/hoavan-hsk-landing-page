@@ -1,8 +1,4 @@
 ---
-/**
- * Đội ngũ giảng viên — trình bày dạng rail scroll ngang, mọi giảng viên
- * hiển thị ngang hàng nhau (không tách khối nổi bật riêng).
- */
 import SectionHeading from "@/components/SectionHeading.astro";
 import { teachers } from "@/data/teachers";
 import { ICONS } from "@/lib/icons";
@@ -91,7 +87,7 @@ import { ICONS } from "@/lib/icons";
   const next = document.querySelector<HTMLButtonElement>('[data-rail="next"]');
 
   if (track && prev && next) {
-    /** Cuộn đúng một "trang" thẻ, tối đa bằng bề rộng khung nhìn của rail. */
+
     const step = () => {
       const card = track.querySelector<HTMLElement>("button");
       const gap = parseFloat(getComputedStyle(track).columnGap || "0") || 0;

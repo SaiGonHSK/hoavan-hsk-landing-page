@@ -1,14 +1,8 @@
 ---
-/**
- * Cảm nhận học viên — tiêu đề nằm trên, bên dưới là dải thẻ trích dẫn cỡ lớn
- * (2 thẻ mỗi màn hình rộng). Mỗi thẻ gồm phần trích dẫn + ảnh học viên dạng
- * dọc bên phải, chân thẻ là avatar, tên, vai trò và một nhãn thành tích.
- */
 import SectionHeading from "@/components/SectionHeading.astro";
 import { testimonials } from "@/data/testimonials";
 import { ICONS } from "@/lib/icons";
 
-/** Chữ cái đầu dùng làm ảnh đại diện khi cảm nhận chưa có ảnh thật. */
 const initials = (name: string) =>
   name
     .split(" ")
@@ -17,11 +11,6 @@ const initials = (name: string) =>
     .join("")
     .toUpperCase();
 
-/**
- * Nhãn ở góc phải chân thẻ: lấy chứng chỉ được nhắc trong lời cảm nhận
- * (HSK6, TOCFL Band C1…), không có thì dùng nhãn chung.
- */
-/** Cảm nhận có ảnh xếp trước để thẻ đầu dải luôn đủ hai cột như thiết kế. */
 const list = [...testimonials].sort(
   (a, b) =>
     Number(Boolean((b as { image?: string }).image)) -
@@ -45,7 +34,6 @@ const badgeOf = (quote: string) => {
       description="Phản hồi từ sinh viên và học viên đã đồng hành cùng trung tâm trên chặng đường chinh phục HSK và TOCFL."
     />
 
-    {/* Điều hướng dải thẻ */}
     <div class="mt-10 flex justify-center gap-3 lg:justify-end">
       <button
         type="button"
@@ -63,7 +51,6 @@ const badgeOf = (quote: string) => {
       />
     </div>
 
-    {/* Dải thẻ: cuộn ngang có bắt điểm dừng, kéo tay trên mobile cũng được. */}
     <div
       data-review-track
       class="mt-6 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -146,7 +133,7 @@ const badgeOf = (quote: string) => {
   const next = document.querySelector<HTMLButtonElement>("[data-review-next]");
 
   if (track && prev && next) {
-    /** Cuộn đúng một thẻ mỗi lần bấm, kể cả khi bề rộng thẻ đổi theo màn hình. */
+
     const step = () => {
       const card = track.querySelector<HTMLElement>("[data-review-card]");
       if (!card) return track.clientWidth;

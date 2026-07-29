@@ -1,8 +1,4 @@
-/**
- * Thương hiệu, liên hệ và các khối nội dung của trung tâm.
- * Dữ liệu thật nằm trong `content/site.json` (do app quản trị ghi) — file này
- * chỉ đọc lại và gắn kiểu để component dùng cho tiện.
- */
+
 import { content } from "./content";
 
 export const site = content.site;

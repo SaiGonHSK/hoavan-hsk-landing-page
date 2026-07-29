@@ -1,34 +1,22 @@
-/**
- * Danh mục nội dung của website: khóa học theo cấp HSK, khóa theo giáo trình,
- * khu ôn tập – luyện thi – luyện kỹ năng, lớp học thử và thư viện.
- *
- * Lưu ý: số từ vựng/Hán tự ở mỗi cấp lấy theo "Chuẩn trình độ tiếng Trung
- * quốc tế HSK 3.0" (国际中文教育中文水平等级标准). Trung tâm nên rà lại số liệu
- * và bổ sung thời lượng, học phí thực tế trước khi công bố.
- */
 
 export type CatalogItem = {
   slug: string;
   title: string;
-  /** Mô tả ngắn hiển thị trên card và thẻ meta. */
+
   summary: string;
-  /** Câu mô tả dài cho phần mở đầu trang. */
+
   intro: string;
-  /** Thông số hiển thị dạng bảng nhỏ. */
+
   facts: { label: string; value: string }[];
-  /** Nội dung chính của khóa/chuyên mục. */
+
   content: string[];
-  /** Học viên đạt được gì sau khóa. */
+
   outcomes: string[];
-  /** Dành cho ai. */
+
   audience?: string[];
 };
 
 const LIEN_HE = "Liên hệ trung tâm";
-
-/* ------------------------------------------------------------------ *
- * 2.1 — Khóa học theo cấp HSK (offline và online)
- * ------------------------------------------------------------------ */
 
 const HSK_LEVELS = [
   {
@@ -107,8 +95,6 @@ export const hskCourses: CatalogItem[] = HSK_LEVELS.map((l) => ({
   ],
 }));
 
-/* 2.1 — Lớp luyện thi HSK3 → HSK6 */
-
 export const hskExamCourses: CatalogItem[] = [3, 4, 5, 6].map((level) => ({
   slug: `luyen-thi-hsk-${level}`,
   title: `Luyện thi HSK${level}`,
@@ -139,8 +125,6 @@ export const hskExamCourses: CatalogItem[] = [3, 4, 5, 6].map((level) => ({
     "Người cần chứng chỉ gấp để nộp hồ sơ du học, học bổng hoặc công việc.",
   ],
 }));
-
-/* 2.1 — Các lớp chuyên biệt */
 
 export const specialCourses: CatalogItem[] = [
   {
@@ -307,10 +291,6 @@ export const specialCourses: CatalogItem[] = [
   },
 ];
 
-/* ------------------------------------------------------------------ *
- * 2.2 — Khóa học trực tuyến theo giáo trình
- * ------------------------------------------------------------------ */
-
 export const textbookCourses: CatalogItem[] = [
   {
     slug: "giao-trinh-chuan-hsk-3-0",
@@ -401,10 +381,6 @@ export const textbookCourses: CatalogItem[] = [
     ],
   },
 ];
-
-/* ------------------------------------------------------------------ *
- * 3 — Ôn tập các cấp HSK
- * ------------------------------------------------------------------ */
 
 export const reviewLevels: CatalogItem[] = HSK_LEVELS.map((l) => ({
   slug: `hsk-${l.level}`,
@@ -565,21 +541,8 @@ export const trialClasses: CatalogItem[] = [1, 2, 3, 4].map((level) => ({
   ],
 }));
 
-/* ------------------------------------------------------------------ *
- * 4 — Thư viện
- * ------------------------------------------------------------------ */
-
-/**
- * Nội dung thư viện là trang động soạn từ app quản trị — xem `./library`.
- * Re-export để các chỗ đang import từ đây vẫn chạy.
- */
 export { getLibrary, findLibrary } from "./library";
 
-/* ------------------------------------------------------------------ *
- * Tra cứu nhanh
- * ------------------------------------------------------------------ */
-
-/** Tất cả khóa học thuộc mục "Các khóa học Offline và Online". */
 export const onlineOfflineCourses: CatalogItem[] = [
   ...hskCourses,
   ...hskExamCourses,

@@ -1,15 +1,6 @@
 ---
-/**
- * Minh hoạ cho bốn thẻ chặng của lộ trình (các thẻ xếp chồng ở Roadmap).
- * Cùng ngôn ngữ thị giác với HeroIllustration/ValueIllustration: vector phẳng
- * vẽ nội tuyến, không tốn request ảnh và luôn nét.
- *
- * Mỗi chặng nhận một bộ màu riêng qua CSS var để hoà với tông thẻ đang xếp
- * chồng: `--c1` màu chính, `--c2` màu nhạt (doodle, nét kẻ), `--c3` nền toả,
- * `--c4` màu đậm. Giấy và mực dùng mã màu cố định.
- */
 interface Props {
-  /** Trùng `step` trong `roadmap` — "01" … "04". */
+
   step: string;
   class?: string;
   alt?: string;
@@ -25,7 +16,7 @@ const TONES: Record<string, string> = {
 };
 
 const SCENES: Record<string, string> = {
-  /* Sơ cấp — ngữ âm, bút thuận: ô luyện chữ 米字格 và cây bút chì. */
+
   "01": `
   <circle cx="238" cy="146" r="122" fill="var(--c3)"/>
   <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
@@ -35,7 +26,6 @@ const SCENES: Record<string, string> = {
   <circle cx="428" cy="112" r="7" fill="var(--c2)"/>
   <circle cx="58" cy="244" r="5.5" fill="var(--c2)"/>
 
-  <!-- ô luyện chữ -->
   <g transform="translate(232,138)">
     <rect x="-96" y="-96" width="192" height="192" rx="16" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
     <g stroke="var(--c2)" stroke-width="3" stroke-dasharray="9 12" stroke-linecap="round">
@@ -44,7 +34,6 @@ const SCENES: Record<string, string> = {
     <text x="0" y="42" font-family="'PingFang SC','Noto Sans SC',serif" font-size="118" font-weight="700" fill="var(--c1)" text-anchor="middle">你</text>
   </g>
 
-  <!-- bút chì đang viết -->
   <g transform="translate(330,190) rotate(34)">
     <rect x="-14" y="-132" width="28" height="104" rx="5" fill="var(--c1)"/>
     <path d="M-14-146a14 14 0 0 1 28 0v14h-28Z" fill="var(--c4)"/>
@@ -56,7 +45,6 @@ const SCENES: Record<string, string> = {
   <text x="232" y="278" font-size="30" font-weight="800" text-anchor="middle" letter-spacing="2" fill="var(--c4)">nǐ hǎo</text>
 `,
 
-  /* Trung cấp — từ vựng chủ đề văn hoá và luyện khẩu ngữ: hai bong bóng thoại. */
   "02": `
   <circle cx="240" cy="146" r="122" fill="var(--c3)"/>
   <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
@@ -66,24 +54,20 @@ const SCENES: Record<string, string> = {
   <circle cx="46" cy="120" r="7" fill="var(--c2)"/>
   <circle cx="440" cy="196" r="5.5" fill="var(--c2)"/>
 
-  <!-- chồng giáo trình: tổng hợp + khẩu ngữ -->
   <g transform="translate(104,288)">
     <rect x="-46" y="-19" width="140" height="19" rx="7" fill="var(--c4)"/>
     <rect x="-34" y="-38" width="140" height="19" rx="7" fill="var(--c2)"/>
   </g>
 
-  <!-- bong bóng từ vựng -->
   <path d="M116 44H272A26 26 0 0 1 298 70V158A26 26 0 0 1 272 184H186L134 222 144 184H116A26 26 0 0 1 90 158V70A26 26 0 0 1 116 44Z" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5" stroke-linejoin="round"/>
   <text x="194" y="140" font-family="'PingFang SC','Noto Sans SC',serif" font-size="74" font-weight="700" fill="var(--c1)" text-anchor="middle">文化</text>
 
-  <!-- bong bóng khẩu ngữ -->
   <path d="M272 150H400A26 26 0 0 1 426 176V230A26 26 0 0 1 400 256H316L294 290 296 256H272A26 26 0 0 1 246 230V176A26 26 0 0 1 272 150Z" fill="var(--c1)" stroke="none"/>
   <g stroke="#fdfcfb" stroke-width="9" stroke-linecap="round" opacity=".95">
     <path d="M276 190h108M276 220h68"/>
   </g>
 `,
 
-  /* Luyện thi — phiếu trả lời, chấm đúng, đồng hồ tính giờ thi thử. */
   "03": `
   <circle cx="234" cy="146" r="122" fill="var(--c3)"/>
   <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
@@ -92,7 +76,6 @@ const SCENES: Record<string, string> = {
   </g>
   <circle cx="52" cy="216" r="6.5" fill="var(--c2)"/>
 
-  <!-- đề thi / phiếu trả lời -->
   <g transform="rotate(-5 214 152)">
     <rect x="112" y="44" width="204" height="220" rx="18" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
     <rect x="186" y="28" width="56" height="28" rx="14" fill="var(--c4)"/>
@@ -113,7 +96,6 @@ const SCENES: Record<string, string> = {
     </g>
   </g>
 
-  <!-- đồng hồ: thi thử tính giờ -->
   <g transform="translate(370,86)">
     <circle r="40" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
     <g stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
@@ -124,7 +106,6 @@ const SCENES: Record<string, string> = {
     <circle r="4.5" fill="var(--c1)"/>
   </g>
 
-  <!-- huy hiệu đạt -->
   <g transform="translate(352,214)">
     <circle r="46" fill="var(--c1)"/>
     <circle r="34" fill="none" stroke="#fdfcfb" stroke-width="3" stroke-dasharray="5 7"/>
@@ -132,7 +113,6 @@ const SCENES: Record<string, string> = {
   </g>
 `,
 
-  /* Cao cấp — chứng chỉ HSK6, mũ tốt nghiệp, máy bay giấy cho hướng du học. */
   "04": `
   <circle cx="240" cy="146" r="122" fill="var(--c3)"/>
   <g fill="none" stroke="var(--c2)" stroke-width="5" stroke-linecap="round">
@@ -141,10 +121,8 @@ const SCENES: Record<string, string> = {
   </g>
   <circle cx="440" cy="180" r="7" fill="var(--c2)"/>
 
-  <!-- đường bay: phần giữa bị chứng chỉ che nên trông như đang vút lên -->
   <path d="M56 254C142 250 262 194 366 82" fill="none" stroke="var(--c2)" stroke-width="4.5" stroke-dasharray="10 13" stroke-linecap="round"/>
 
-  <!-- chứng chỉ HSK6 -->
   <g transform="rotate(4 236 172)">
     <rect x="132" y="96" width="208" height="152" rx="16" fill="#fdfcfb" stroke="var(--c1)" stroke-width="5"/>
     <text x="202" y="203" font-family="'PingFang SC','Noto Sans SC',serif" font-size="88" font-weight="700" fill="var(--c1)" text-anchor="middle">六</text>
@@ -159,7 +137,6 @@ const SCENES: Record<string, string> = {
     </g>
   </g>
 
-  <!-- mũ tốt nghiệp -->
   <g transform="translate(146,72)">
     <path d="M-58 10 0-18 58 10 0 38Z" fill="#26272c"/>
     <path d="M-30 24v22c0 11 60 11 60 0V24L0 37Z" fill="#3a3b42"/>
@@ -167,7 +144,6 @@ const SCENES: Record<string, string> = {
     <circle cx="58" cy="48" r="7" fill="var(--c1)"/>
   </g>
 
-  <!-- máy bay giấy -->
   <g transform="translate(392,70) rotate(-38)">
     <path d="M-30-18 36 0-26 24 -8 2Z" fill="var(--c1)"/>
     <path d="M-26 24 -8 2 36 0Z" fill="var(--c4)"/>

@@ -1,7 +1,4 @@
 ---
-/**
- * Khung trang tổng quan (hub) cho các nhóm mục: khóa học, ôn tập, thư viện…
- */
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
@@ -23,7 +20,7 @@ interface Props {
   crumbs: { label: string; href?: string }[];
   glyph?: string;
   groups: HubGroup[];
-  /** Số cột của lưới card. */
+
   columns?: 3 | 4;
 }
 

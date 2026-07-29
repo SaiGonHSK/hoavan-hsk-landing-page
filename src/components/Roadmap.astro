@@ -4,7 +4,6 @@ import RoadmapIllustration from "@/components/RoadmapIllustration.astro";
 import { roadmap } from "@/data/courses";
 import { ICONS } from "@/lib/icons";
 
-/** Mỗi chặng một tông màu riêng cho dễ phân biệt khi các thẻ xếp chồng lên nhau. */
 const STEP_ART = [
   {
     card: "bg-brand-red-50",
@@ -25,7 +24,6 @@ const STEP_ART = [
 ] as const;
 ---
 
-{/* Không đặt `overflow-hidden` ở đây: nó sẽ vô hiệu hoá `sticky` của các thẻ bên trong. */}
 <section id="roadmap" class="relative bg-background scroll-mt-24">
   <div class="container relative z-10 mx-auto px-6">
     <SectionHeading
@@ -34,11 +32,6 @@ const STEP_ART = [
       description="Mỗi chặng có chuẩn đầu ra cụ thể về từ vựng, ngữ pháp và kỹ năng. Học viên được test năng lực trước khi vào lớp để không học lại phần đã biết."
     />
 
-    {/*
-      Các chặng xếp chồng khi cuộn: mỗi thẻ `sticky` với mốc `top` lệch dần, nên
-      thẻ sau trượt lên đè thẻ trước và vẫn ló ra một dải để thấy được thứ tự.
-      Thuần CSS, không cần JS.
-    */}
     <ol class="mt-16 space-y-6">
       {
         roadmap.map((s, i) => {
