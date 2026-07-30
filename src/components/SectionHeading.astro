@@ -8,7 +8,13 @@ interface Props {
   className?: string;
 }
 
-const { title, highlight, description, align = "center", className = "" } = Astro.props;
+const {
+  title,
+  highlight,
+  description,
+  align = "center",
+  className = "",
+} = Astro.props;
 
 const wrap =
   align === "center"
@@ -18,12 +24,12 @@ const wrap =
 
 <div class:list={["flex flex-col", wrap, className]}>
   <h2
-    class="text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
+    class="font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
   >
     {title}
     {
       highlight && (
-        <span class="mt-1 block text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl">
+        <span class="mt-1 block font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl">
           {highlight}
         </span>
       )
@@ -32,7 +38,7 @@ const wrap =
 
   {
     description && (
-      <p class="mt-6 max-w-2xl text-2xl leading-relaxed text-muted-foreground md:text-[1.0625rem]">
+      <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
         {description}
       </p>
     )

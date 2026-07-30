@@ -26,13 +26,14 @@ import { ICONS } from "@/lib/icons";
       TP.HCM, cam kết 100% đầu ra.
     </p>
 
-    <ul class="mx-auto mt-9 grid max-w-4xl grid-cols-3 items-start">
+    <ul class="mx-auto mt-9 grid max-w-4xl grid-cols-1 items-start sm:grid-cols-3">
       {
         stats.map((s, i) => (
           <li
             class:list={[
               "px-3 sm:px-6 lg:px-10",
-              i > 0 && "border-l border-border",
+              i > 0 &&
+                "mt-5 border-t border-border pt-5 sm:mt-0 sm:border-l sm:border-t-0 sm:pt-0",
             ]}
           >
             <p class="text-2xl font-black leading-none text-brand-ink-900 sm:text-3xl lg:text-[2.25rem]">
@@ -60,7 +61,7 @@ import { ICONS } from "@/lib/icons";
     </div>
   </div>
 
-  <div class="relative z-20 mt-8 lg:mt-10">
+  <div class="relative z-20 mt-8 hidden md:block lg:mt-10">
     <HeroIllustration class="mx-auto w-full max-w-3xl" />
   </div>
 </section>
