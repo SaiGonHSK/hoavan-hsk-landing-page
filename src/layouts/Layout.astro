@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import Analytics from "@vercel/analytics/astro";
 import Lightbox from "@/components/Lightbox.astro";
 import { site, contact } from "@/data/site";
 import { contentUpdatedAt } from "@/data/content";
@@ -238,6 +239,7 @@ const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
     </a>
     <slot />
     <Lightbox />
+    <Analytics />
 
     {}
     <script is:inline>
