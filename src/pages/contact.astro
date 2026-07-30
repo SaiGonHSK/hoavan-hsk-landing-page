@@ -7,11 +7,15 @@ import FAQ from "@/components/FAQ.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
+import { clampDescription } from "@/lib/seo";
 ---
 
 <Layout
-  title="Liên hệ trung tâm tiếng Trung SaigonHSK tại TP.HCM"
-  description={`Liên hệ Trung tâm Hoa văn SaigonHSK: ${contact.address}. Hotline ${contact.phones.join(" – ")}, email ${contact.email}.`}
+  title="Địa chỉ & hotline trung tâm tiếng Trung TPHCM | SaigonHSK"
+  description={clampDescription(
+    `Trung tâm tiếng Trung SaigonHSK: ${contact.addressShort}. Hotline ${contact.phonePrimary}, Zalo. Mở cửa ${contact.workingHours} — gọi để nhận học phí và lịch khai giảng.`,
+  )}
+  keywords="địa chỉ trung tâm tiếng Trung TPHCM, hotline học tiếng Trung, trung tâm tiếng Hoa gần đây, tư vấn học phí tiếng Trung"
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 pb-16 lg:gap-24 lg:pb-24">

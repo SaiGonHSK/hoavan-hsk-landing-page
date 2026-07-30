@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "gen:values": "node scripts/gen-value-images.mjs",
+    "gen:og": "node scripts/gen-og-image.mjs",
     "astro": "astro"
   },
   "dependencies": {

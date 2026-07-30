@@ -22,6 +22,8 @@ interface Props {
   groups: HubGroup[];
 
   columns?: 3 | 4;
+
+  keywords?: string;
 }
 
 const {
@@ -32,6 +34,7 @@ const {
   glyph = "课",
   groups,
   columns = 3,
+  keywords,
 } = Astro.props;
 
 const origin = Astro.site?.origin ?? "";
@@ -52,6 +55,7 @@ const gridClass =
 <Layout
   title={`${metaTitle ?? title} | ${site.shortName}`}
   description={clampDescription(description)}
+  keywords={keywords}
   schemas={schemas}
 >
   <Header />
@@ -90,7 +94,10 @@ const gridClass =
                       {card.summary}
                     </p>
                     <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
-                      Xem chi tiết
+                      {/* Tên khoá nằm trong anchor text (ẩn với mắt, hiện với bot và
+                          trình đọc màn hình) — "Xem chi tiết" lặp lại hàng chục lần
+                          không cho Google biết trang đích nói về gì. */}
+                      Xem chi tiết<span class="sr-only"> {card.title}</span>
                       <span
                         class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
                         set:html={ICONS.arrow}

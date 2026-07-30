@@ -405,11 +405,17 @@ export const reviewLevels: CatalogItem[] = HSK_LEVELS.map((l) => ({
   ],
 }));
 
+/**
+ * Tiêu đề là "Tài liệu luyện thi HSKn", không phải "Luyện thi HSKn", để tách khỏi
+ * trang lớp học /courses/luyen-thi-hsk-n. Hai trang trước đây trùng cả H1 lẫn title
+ * nên tự cạnh tranh nhau trên cùng một truy vấn: trang này nhắm nhu cầu tra tài
+ * liệu, trang kia nhắm nhu cầu tìm lớp.
+ */
 export const examPrepResources: CatalogItem[] = [3, 4, 5, 6].map((level) => ({
   slug: `hsk-${level}`,
-  title: `Luyện thi HSK${level}`,
+  title: `Tài liệu luyện thi HSK${level}`,
   summary: `Bảng từ vựng, ngữ pháp trọng tâm và bộ đề luyện cấp HSK${level}.`,
-  intro: `Khu luyện thi HSK${level} tập hợp toàn bộ tài liệu cần cho kỳ thi: bảng từ vựng đầy đủ, tổng hợp ngữ pháp trọng tâm và bộ đề luyện có đáp án.`,
+  intro: `Tổng hợp tài liệu ôn thi HSK${level}: bảng từ vựng đầy đủ, ngữ pháp trọng tâm và bộ đề luyện có đáp án. Dùng để tự ôn miễn phí trước kỳ thi.`,
   facts: [
     { label: "Cấp độ", value: `HSK${level}` },
     { label: "Nội dung", value: "Bảng từ vựng · Ngữ pháp · Bộ đề" },

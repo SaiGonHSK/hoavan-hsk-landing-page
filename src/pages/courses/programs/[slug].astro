@@ -8,6 +8,14 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { courses } from "@/data/courses";
 import { contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import {
+  clampDescription,
+  courseSchema,
+  faqSchema,
+  keywordsFor,
+  pickTitle,
+  toIsoDuration,
+} from "@/lib/seo";
 
 export function getStaticPaths() {
   return courses.map((course) => ({
@@ -17,6 +25,71 @@ export function getStaticPaths() {
 }
 
 const { course } = Astro.props;
+
+const origin = Astro.site?.origin ?? "";
+const url = `${origin}${Astro.url.pathname}`;
+
+/**
+ * Các trang này có dữ liệu chi tiết nhất trên site (thời lượng, giáo trình, chuẩn
+ * đầu ra của từng cấp lớp) nhưng trước đây không phát ra structured data nào. Mỗi
+ * cấp lớp trở thành một CourseInstance để Google hiểu khoá có nhiều lớp.
+ */
+const schemas: Record<string, unknown>[] = [
+  {
+    ...courseSchema({
+      name: course.title,
+      description: course.summary,
+      url,
+      origin,
+      provider: { name: site.fullName, address: contact.address },
+      workload: course.levels[0]?.duration?.[0],
+      level: course.entry,
+      credential: course.goal.match(/HSK\s?[1-6]|TOCFL/i)?.[0].replace(/\s+/g, ""),
+    }),
+    ...(course.levels.length
+      ? {
+          hasCourseInstance: course.levels.map((level) => {
+            const workload = toIsoDuration(level.duration?.[0]);
+            return {
+              "@type": "CourseInstance",
+              name: level.name,
+              ...(level.code ? { courseCode: level.code } : {}),
+              courseMode: ["Onsite", "Online"],
+              ...(workload ? { courseWorkload: workload } : {}),
+              location: {
+                "@type": "Place",
+                name: site.fullName,
+                address: contact.address,
+              },
+            };
+          }),
+        }
+      : {}),
+  },
+];
+
+// FAQ lấy từ chính dữ liệu khoá học, trả lời đúng ba câu người học hỏi nhiều nhất:
+// học bao lâu, đầu vào cần gì, học phí bao nhiêu.
+const faqs = [
+  ...(course.levels[0]?.duration?.length
+    ? [
+        {
+          question: `Khoá ${course.title} học trong bao lâu?`,
+          answer: `${course.levels[0].duration[0]} Khoá gồm ${course.levels.length} lớp theo cấp độ, học viên có thể vào đúng cấp của mình sau khi test trình độ.`,
+        },
+      ]
+    : []),
+  {
+    question: `Cần trình độ gì để học ${course.title}?`,
+    answer: `Đầu vào của khoá: ${course.entry}. Trung tâm test trình độ miễn phí trước khi xếp lớp để bạn không phải học lại phần đã biết.`,
+  },
+  {
+    question: `Học phí khoá ${course.title} bao nhiêu?`,
+    answer: `Học phí tuỳ hình thức lớp (lớp nhóm 10–15 học viên, VIP 1 kèm 1, lớp doanh nghiệp) và cấp lớp bạn vào. Gọi ${contact.phonePrimary} hoặc nhắn Zalo để nhận bảng học phí và lịch khai giảng mới nhất.`,
+  },
+];
+
+schemas.push(faqSchema(faqs));
 
 const blocks = [
   { key: "audience", label: "Đối tượng", icon: ICONS.users },
@@ -31,8 +104,21 @@ const others = courses.filter((c) => c.slug !== course.slug).slice(0, 4);
 ---
 
 <Layout
-  title={`${course.title} — ${site.fullName}`}
-  description={`${course.title} tại Hoa văn SaigonHSK: ${course.summary} Mục tiêu ${course.goal.toLowerCase()}, cam kết đầu ra.`}
+  title={pickTitle(
+    `Khoá ${course.title} tại TPHCM — ${course.goal} | ${site.shortName}`,
+    `Khoá ${course.title} tại TPHCM | ${site.shortName}`,
+    `${course.title} tại TPHCM | ${site.shortName}`,
+    `${course.title} | ${site.shortName}`,
+  )}
+  description={clampDescription(
+    `Khoá ${course.title} tại TP.HCM: ${course.summary} Mục tiêu ${course.goal.toLowerCase()}, đầu vào ${course.entry.toLowerCase()}. Lớp 10–15 học viên, cam kết đầu ra — gọi hotline nhận học phí.`,
+  )}
+  keywords={keywordsFor(
+    `${course.title} TPHCM`,
+    `học ${course.title.toLowerCase()}`,
+    `học phí ${course.title.toLowerCase()}`,
+  )}
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 pb-16 lg:gap-24 lg:pb-24">
@@ -167,6 +253,26 @@ const others = courses.filter((c) => c.slug !== course.slug).slice(0, 4);
             </div>
           )
         }
+      </div>
+    </section>
+
+    <section>
+      <div class="container mx-auto px-6">
+        <h2 class="text-2xl font-black text-foreground md:text-3xl">
+          Câu hỏi thường gặp về khoá {course.title}
+        </h2>
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+          {
+            faqs.map((f) => (
+              <div class="rounded-3xl border border-border/80 bg-card p-6">
+                <h3 class="text-sm font-bold text-foreground">{f.question}</h3>
+                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                  {f.answer}
+                </p>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </section>
 

@@ -2,6 +2,8 @@
 import "@/styles/global.css";
 import Lightbox from "@/components/Lightbox.astro";
 import { site, contact } from "@/data/site";
+import { contentUpdatedAt } from "@/data/content";
+import { keywordString } from "@/lib/seo";
 
 interface Props {
   title?: string;
@@ -16,16 +18,21 @@ interface Props {
   schemas?: Record<string, unknown>[];
 
   preloadImage?: string;
+
+  /** Từ khoá riêng của trang, xếp trước bộ từ khoá chung. */
+  keywords?: string;
 }
 
 const {
-  title = `Trung tâm tiếng Trung SaigonHSK — Luyện thi HSK, TOCFL tại TP.HCM`,
+  title = `Trung tâm tiếng Trung TPHCM — luyện thi HSK, TOCFL | SaigonHSK`,
   description = site.description,
-  image = "/images/classroom.webp",
+  // JPEG 1200×630 sinh bởi `yarn gen:og` — Zalo và Facebook đều đọc được.
+  image = "/images/og-default.jpg",
   ogType = "website",
   noindex = false,
   schemas = [],
   preloadImage,
+  keywords,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", Astro.site);
@@ -36,16 +43,36 @@ const organizationSchema = {
   "@type": ["EducationalOrganization", "LocalBusiness"],
   "@id": `${canonical.origin}/#organization`,
   name: site.fullName,
-  alternateName: [site.shortName, "Hoa văn SaigonHSK", "SaigonHSK"],
+  // Người học gõ tên trung tâm theo rất nhiều cách; khai báo hết để Google gộp
+  // về cùng một thực thể thay vì coi là các thương hiệu khác nhau.
+  alternateName: [
+    site.shortName,
+    "Hoa văn SaigonHSK",
+    "SaigonHSK",
+    "Trung tâm tiếng Trung SaigonHSK",
+    "Trung tâm tiếng Hoa SaigonHSK",
+    "Saigon HSK",
+  ],
   slogan: `${site.slogan} — ${site.sloganVi}`,
   description: site.description,
   url: canonical.origin,
-  logo: new URL("/favicon.png", Astro.site).href,
-  image: ogImage,
+  logo: {
+    "@type": "ImageObject",
+    url: new URL("/favicon.png", Astro.site).href,
+    width: 192,
+    height: 192,
+  },
+  // Google Business Profile/Local ưu tiên nhiều ảnh thật của cơ sở.
+  image: [
+    new URL("/images/classroom.webp", Astro.site).href,
+    new URL("/images/facility-1.webp", Astro.site).href,
+    new URL("/images/facility-2.webp", Astro.site).href,
+  ],
   email: contact.email,
   telephone: contact.phones,
   foundingDate: String(site.foundedYear),
   priceRange: "$$",
+  currenciesAccepted: "VND",
   address: {
     "@type": "PostalAddress",
     streetAddress: "384/8 Lý Thái Tổ, Phường Vườn Lài",
@@ -53,7 +80,21 @@ const organizationSchema = {
     addressRegion: "TP.HCM",
     addressCountry: "VN",
   },
-  areaServed: { "@type": "City", name: "Thành phố Hồ Chí Minh" },
+  hasMap: contact.mapsUrl,
+  areaServed: [
+    { "@type": "City", name: "Thành phố Hồ Chí Minh" },
+    { "@type": "Country", name: "Việt Nam" },
+  ],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "Tư vấn khoá học và học phí",
+      telephone: contact.phonePrimary,
+      email: contact.email,
+      areaServed: "VN",
+      availableLanguage: ["vi", "zh-Hans"],
+    },
+  ],
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
@@ -71,7 +112,33 @@ const organizationSchema = {
     },
   ],
   knowsLanguage: ["vi", "zh-Hans"],
-  sameAs: [contact.facebook],
+  knowsAbout: [
+    "Tiếng Trung Quốc",
+    "Kỳ thi HSK",
+    "Chuẩn HSK 3.0",
+    "Kỳ thi TOCFL",
+    "Tiếng Trung thương mại",
+  ],
+  // Danh mục dịch vụ giúp Google hiểu trung tâm dạy những gì, tăng khả năng
+  // xuất hiện với các truy vấn dạng "trung tâm dạy tiếng Trung giao tiếp".
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Khoá học tiếng Trung tại SaigonHSK",
+    itemListElement: [
+      "Khoá tiếng Trung sơ cấp cho người mới bắt đầu",
+      "Khoá tiếng Trung trung cấp và cao cấp",
+      "Lớp luyện thi chứng chỉ HSK 1–6",
+      "Lớp luyện thi TOCFL",
+      "Tiếng Trung giao tiếp cấp tốc",
+      "Tiếng Trung công sở và doanh nghiệp",
+      "Tiếng Trung cho trẻ em",
+      "Lớp VIP 1 kèm 1",
+    ].map((name) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Course", name, inLanguage: "vi-VN" },
+    })),
+  },
+  sameAs: [contact.facebook, contact.zalo],
 };
 
 const websiteSchema = {
@@ -80,11 +147,29 @@ const websiteSchema = {
   "@id": `${canonical.origin}/#website`,
   url: canonical.origin,
   name: site.fullName,
+  alternateName: site.shortName,
+  description: site.description,
   inLanguage: "vi-VN",
   publisher: { "@id": `${canonical.origin}/#organization` },
 };
 
-const allSchemas = [organizationSchema, websiteSchema, ...schemas];
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${canonical.href}#webpage`,
+  url: canonical.href,
+  name: title,
+  description,
+  inLanguage: "vi-VN",
+  isPartOf: { "@id": `${canonical.origin}/#website` },
+  about: { "@id": `${canonical.origin}/#organization` },
+  dateModified: contentUpdatedAt,
+  primaryImageOfPage: { "@type": "ImageObject", url: ogImage },
+};
+
+const allSchemas = [organizationSchema, websiteSchema, webPageSchema, ...schemas];
+
+const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
 ---
 
 <!doctype html>
@@ -112,7 +197,10 @@ const allSchemas = [organizationSchema, websiteSchema, ...schemas];
         ? "noindex,nofollow"
         : "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"}
     />
+    {/* Cốc Cốc — công cụ tìm kiếm nội địa vẫn đọc meta keywords, Google thì bỏ qua. */}
+    <meta name="keywords" content={metaKeywords} />
     <meta name="author" content={site.fullName} />
+    <meta name="theme-color" content="#c8102e" />
     <meta name="geo.region" content="VN-SG" />
     <meta name="geo.placename" content="Thành phố Hồ Chí Minh" />
 
@@ -123,12 +211,16 @@ const allSchemas = [organizationSchema, websiteSchema, ...schemas];
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={title} />
 
     {
       allSchemas.map((schema) => (

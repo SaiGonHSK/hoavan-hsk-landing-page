@@ -1,6 +1,7 @@
 ---
 import CatalogDetail from "@/components/CatalogDetail.astro";
 import { examPrepResources } from "@/data/catalog";
+import { keywordsFor } from "@/lib/seo";
 
 export function getStaticPaths() {
   return examPrepResources.map((item) => ({
@@ -11,12 +12,31 @@ export function getStaticPaths() {
 
 const { item } = Astro.props;
 
-const related = examPrepResources
-  .filter((c) => c.slug !== item.slug)
-  .map((c) => ({ label: c.title, href: `/practice/exam-prep/${c.slug}` }));
+const level = item.slug.replace("hsk-", "");
+
+const related = [
+  // Liên kết sang trang lớp học cùng cấp: người đang tra tài liệu là đối tượng gần
+  // nhất với nhu cầu đăng ký lớp, và liên kết này nói rõ với Google hai trang phục
+  // vụ hai mục đích khác nhau.
+  {
+    label: `Lớp luyện thi HSK${level} có giảng viên`,
+    href: `/courses/luyen-thi-hsk-${level}`,
+  },
+  ...examPrepResources
+    .filter((c) => c.slug !== item.slug)
+    .map((c) => ({ label: c.title, href: `/practice/exam-prep/${c.slug}` })),
+];
 ---
 
 <CatalogDetail
+  seoTitle={`Từ vựng & đề luyện thi HSK${level} — tài liệu ôn tập | SaigonHSK`}
+  seoDescription={`Tài liệu ôn thi HSK${level} miễn phí: bảng từ vựng HSK ${level} theo chủ đề, tổng hợp ngữ pháp trọng tâm và bộ đề luyện có đáp án. Cần người kèm thì xem lớp luyện thi HSK${level} tại TP.HCM.`}
+  keywords={keywordsFor(
+    `từ vựng HSK ${level}`,
+    `tài liệu luyện thi HSK ${level}`,
+    `đề thi HSK ${level}`,
+    `ngữ pháp HSK ${level}`,
+  )}
   title={item.title}
   summary={item.summary}
   intro={item.intro}
@@ -27,9 +47,9 @@ const related = examPrepResources
   glyph="考"
   crumbs={[
     { label: "Ôn tập & luyện thi", href: "/practice" },
-    { label: "Luyện thi HSK", href: "/practice/exam-prep" },
+    { label: "Tài liệu luyện thi HSK", href: "/practice/exam-prep" },
     { label: item.title },
   ]}
   related={related}
-  relatedTitle="Cấp độ khác"
+  relatedTitle="Xem thêm"
 />

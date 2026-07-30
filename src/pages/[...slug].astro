@@ -24,6 +24,8 @@ const crumbs = parent
   ? [{ label: parent.label, href: parent.slug }, { label: page.title }]
   : [{ label: page.title }];
 
+const origin = Astro.site?.origin ?? "";
+
 const schemas = [
   {
     "@context": "https://schema.org",
@@ -31,8 +33,18 @@ const schemas = [
     headline: page.title,
     description: page.summary,
     inLanguage: "vi-VN",
-    author: { "@type": "Organization", name: site.fullName },
-    publisher: { "@id": `${Astro.site?.origin ?? ""}/#organization` },
+    mainEntityOfPage: `${origin}${page.slug}`,
+    // Google dùng dateModified để xếp hạng độ mới của nội dung; thiếu nó thì nội
+    // dung vừa cập nhật cũng không được nhận diện là mới.
+    ...(page.updatedAt
+      ? { dateModified: page.updatedAt, datePublished: page.updatedAt }
+      : {}),
+    author: {
+      "@type": "Organization",
+      name: site.fullName,
+      url: origin,
+    },
+    publisher: { "@id": `${origin}/#organization` },
   },
 ];
 ---
