@@ -14,6 +14,7 @@ export const ICONS = {
   ),
   clock: svg('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
   chevron: svg('<path d="m6 9 6 6 6-6"/>'),
+  search: svg('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
   arrow: svg('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>'),
   arrowUpRight: svg('<path d="M7 17 17 7"/><path d="M9 7h8v8"/>'),
   menu: svg('<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>'),

@@ -64,7 +64,7 @@ const ctaNav = menu.find((entry) => entry.cta);
                   data-menu-panel
                   data-mega
                   data-open="false"
-                  class="invisible fixed inset-x-0 z-30 translate-y-1 pt-2 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                  class="invisible fixed inset-x-0 z-30 translate-y-1 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
                 >
                   <div class="container mx-auto px-4">
                     <div class="overflow-hidden rounded-3xl border border-border bg-background/98 shadow-2xl backdrop-blur-md">
@@ -110,7 +110,7 @@ const ctaNav = menu.find((entry) => entry.cta);
                 <div
                   data-menu-panel
                   data-open="false"
-                  class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 pt-4 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
+                  class="invisible absolute left-0 top-full z-30 w-72 translate-y-1 opacity-0 transition-all duration-200 data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100"
                 >
                   <div class="overflow-hidden rounded-2xl border border-border bg-background/98 p-2 shadow-xl backdrop-blur-md">
                     {plain.map((link) => (
@@ -292,12 +292,25 @@ const ctaNav = menu.find((entry) => entry.cta);
     if (!panel) return;
     let timer: ReturnType<typeof setTimeout>;
 
+    /** Mọi panel đều bắt đầu ngay dưới đáy header, cách đúng GAP — kể cả panel
+     *  absolute (neo theo link, thấp hơn đáy header) và panel mega (fixed). */
+    const GAP = 8;
+    const align = () => {
+      const headerBottom = header?.getBoundingClientRect().bottom ?? 0;
+
+      if (panel.hasAttribute("data-mega")) {
+        panel.style.top = `${headerBottom}px`;
+        panel.style.paddingTop = `${GAP}px`;
+        return;
+      }
+
+      const wrapBottom = wrap.getBoundingClientRect().bottom;
+      panel.style.paddingTop = `${Math.max(0, headerBottom - wrapBottom) + GAP}px`;
+    };
+
     const open = () => {
       clearTimeout(timer);
-
-      if (panel.hasAttribute("data-mega") && header) {
-        panel.style.top = `${header.offsetHeight}px`;
-      }
+      align();
       wrap.dataset.open = "true";
       panel.dataset.open = "true";
     };

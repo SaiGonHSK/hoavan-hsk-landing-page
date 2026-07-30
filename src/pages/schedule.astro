@@ -3,12 +3,40 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
-import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { schedule } from "@/data/schedule";
-import { contact, site } from "@/data/site";
+import { getCourse } from "@/data/courses";
+import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+
+/** Gom lớp theo chương trình, giữ đúng thứ tự xuất hiện trong data */
+const groups = schedule.reduce<
+  { slug: string; title: string; summary: string; rows: typeof schedule }[]
+>((acc, row) => {
+  const found = acc.find((g) => g.slug === row.courseSlug);
+  if (found) {
+    found.rows = [...found.rows, row];
+    return acc;
+  }
+
+  const course = getCourse(row.courseSlug);
+  acc.push({
+    slug: row.courseSlug,
+    title: course?.title ?? row.className,
+    summary: course?.summary ?? "",
+    rows: [row],
+  });
+  return acc;
+}, []);
+
+/** Chuỗi để lọc client-side, bỏ dấu để gõ không dấu vẫn ra */
+const searchKey = (row: (typeof schedule)[number]) =>
+  `${row.code} ${row.className} ${row.target} ${row.cadence}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d");
 ---
 
 <Layout
@@ -20,102 +48,217 @@ import { ICONS } from "@/lib/icons";
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <PageHero
       title="Lịch khai giảng các lớp tiếng Trung"
-      description="Trung tâm mở lớp liên tục hằng tháng cho cả hình thức offline và online. Bảng dưới đây là nhịp mở lớp của từng chương trình — gọi hotline để nhận ngày khai giảng gần nhất."
+      description="Trung tâm mở lớp liên tục hằng tháng cho cả hình thức offline và online. Chọn lớp bên dưới để xem nhịp học, thời lượng và đầu ra — gọi hotline để nhận ngày khai giảng gần nhất."
       crumbs={[{ label: "Lịch khai giảng" }]}
       glyph="开"
     />
 
-    <section>
+    <!-- Tìm lớp + điều hướng nhanh theo chương trình -->
+    <section class="scroll-mt-24">
       <div class="container mx-auto px-6">
-        <figure
-          class="overflow-hidden rounded-3xl border border-border/80 bg-card p-4 md:p-6"
+        <div class="rounded-lg border border-border bg-background p-6 md:p-8">
+          <label
+            for="schedule-search"
+            class="text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"
+          >
+            Tìm lớp bạn muốn học
+          </label>
+
+          <div class="relative mt-3">
+            <span
+              class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground [&>svg]:size-4"
+              set:html={ICONS.search}
+            />
+            <input
+              id="schedule-search"
+              type="search"
+              data-schedule-search
+              placeholder="Nhập mã lớp hoặc tên lớp: SC1, HSK5, giao tiếp…"
+              class="w-full rounded-lg border border-border bg-brand-ink-50/60 py-3.5 pl-11 pr-4 text-sm font-medium text-foreground outline-none transition-colors placeholder:font-normal placeholder:text-muted-foreground focus:border-brand-red-400 focus:bg-background"
+            />
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2.5">
+            {
+              groups.map((g) => (
+                <a
+                  href={`#lich-${g.slug}`}
+                  class="group inline-flex items-center gap-2.5 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-bold text-brand-ink-900 transition-colors hover:border-brand-ink-300"
+                >
+                  {g.title}
+                  <span class="rounded-md bg-brand-ink-50 px-2 py-0.5 text-[0.6875rem] font-bold text-muted-foreground">
+                    {g.rows.length} lớp
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {
+      groups.map((g) => (
+        <section id={`lich-${g.slug}`} data-group class="scroll-mt-24">
+          <div class="container mx-auto px-6">
+            <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <p class="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-brand-red-600">
+                  Các lớp {g.title.toLowerCase()}
+                </p>
+                <h2 class="mt-3 text-[1.75rem] font-black leading-tight tracking-tight text-brand-ink-900 md:text-4xl">
+                  Lịch học{" "}
+                  <span class="text-brand-red-600">{g.title}</span>
+                </h2>
+                {g.summary && (
+                  <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    {g.summary}
+                  </p>
+                )}
+              </div>
+
+              <a
+                href={`/courses/programs/${g.slug}`}
+                class="group inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
+              >
+                Xem chương trình
+                <span
+                  class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+                  set:html={ICONS.arrow}
+                />
+              </a>
+            </div>
+
+            <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {g.rows.map((row) => {
+                const openDate = (row as { openDate?: string }).openDate;
+
+                return (
+                  <article
+                    data-class-card
+                    data-search={searchKey(row)}
+                    class="flex flex-col rounded-lg border border-border bg-background p-5 transition-colors hover:border-brand-ink-300"
+                  >
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="rounded-md bg-brand-red-50 px-2.5 py-1 font-mono text-[0.6875rem] font-bold text-brand-red-700">
+                        {row.code}
+                      </span>
+
+                      {openDate ? (
+                        <span class="inline-flex items-center gap-2 rounded-md bg-brand-red-50 px-2.5 py-1 text-[0.6875rem] font-bold text-brand-red-700">
+                          Khai giảng {openDate}
+                        </span>
+                      ) : (
+                        <span class="inline-flex items-center gap-2 rounded-md bg-emerald-50 px-2.5 py-1 text-[0.6875rem] font-bold text-emerald-700">
+                          <span class="size-1.5 rounded-full bg-emerald-500" />
+                          Đang nhận đăng ký
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 class="mt-4 text-lg font-black leading-tight text-brand-ink-900">
+                      {row.className}
+                    </h3>
+
+                    <dl class="mt-4 space-y-3 text-sm">
+                      <div class="flex gap-3">
+                        <dt
+                          class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                          set:html={ICONS.calendar}
+                        />
+                        <dd class="leading-relaxed text-brand-ink-700">
+                          {row.cadence}
+                        </dd>
+                      </div>
+                      <div class="flex gap-3">
+                        <dt
+                          class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                          set:html={ICONS.clock}
+                        />
+                        <dd class="leading-relaxed text-brand-ink-700">
+                          {row.duration}
+                        </dd>
+                      </div>
+                      <div class="flex gap-3">
+                        <dt
+                          class="mt-0.5 shrink-0 text-brand-red-500 [&>svg]:size-4"
+                          set:html={ICONS.target}
+                        />
+                        <dd class="font-bold leading-relaxed text-brand-ink-900">
+                          {row.target}
+                        </dd>
+                      </div>
+                    </dl>
+
+                    <div class="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+                      {openDate ? (
+                        <span class="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
+                          Còn nhận học viên
+                        </span>
+                      ) : (
+                        <a
+                          href={`tel:${contact.phonePrimaryRaw}`}
+                          class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-ink-900 hover:text-brand-red-600"
+                        >
+                          <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
+                          Hỏi ngày khai giảng
+                        </a>
+                      )}
+
+                      <a
+                        href="/register"
+                        class="shrink-0 rounded-full bg-brand-red-600 px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+                      >
+                        Đăng ký
+                      </a>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <section data-empty hidden>
+      <div class="container mx-auto px-6">
+        <div
+          class="rounded-lg border-2 border-dashed border-border bg-brand-ink-50/60 p-10 text-center"
         >
-          <img
-            src="/images/banners/class-schedule.webp"
-            alt="Poster lịch khai giảng các lớp tiếng Trung tại Hoa văn SaigonHSK"
-            class="mx-auto w-full rounded-xl object-contain"
-            loading="eager"
-          />
-          <figcaption class="mt-4 text-center text-xs text-muted-foreground">
-            Poster lịch khai giảng do trung tâm phát hành — gọi
+          <p class="text-lg font-black text-brand-ink-900">
+            Không tìm thấy lớp phù hợp
+          </p>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Thử từ khoá khác, hoặc gọi
             <a
               href={`tel:${contact.phonePrimaryRaw}`}
-              class="font-semibold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
-            > để xác nhận lịch mới nhất.
-          </figcaption>
-        </figure>
+              class="font-bold text-brand-red-600 hover:underline"
+              >{contact.phonePrimary}</a
+            > để trung tâm tư vấn lớp đúng trình độ.
+          </p>
+        </div>
       </div>
     </section>
 
     <section>
       <div class="container mx-auto px-6">
-        <div class="overflow-hidden rounded-3xl border border-border/80 bg-card">
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[46rem] border-collapse text-left text-sm">
-              <thead>
-                <tr class="bg-brand-red-600 text-white">
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Mã lớp
-                  </th>
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Khóa học
-                  </th>
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Lịch học
-                  </th>
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Thời lượng
-                  </th>
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Đầu ra
-                  </th>
-                  <th class="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em]">
-                    Khai giảng
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  schedule.map((row) => (
-                    <tr class="border-t border-border/70 transition-colors hover:bg-brand-red-50/60">
-                      <td class="px-5 py-4">
-                        <span class="rounded-md bg-brand-red-600/10 px-2 py-1 font-mono text-[11px] font-bold text-brand-red-700">
-                          {row.code}
-                        </span>
-                      </td>
-                      <td class="px-5 py-4">
-                        <a
-                          href={`/courses/programs/${row.courseSlug}`}
-                          class="font-semibold text-foreground hover:text-brand-red-600"
-                        >
-                          {row.className}
-                        </a>
-                      </td>
-                      <td class="px-5 py-4 text-muted-foreground">{row.cadence}</td>
-                      <td class="px-5 py-4 text-muted-foreground">{row.duration}</td>
-                      <td class="px-5 py-4 text-muted-foreground">{row.target}</td>
-                      <td class="px-5 py-4">
-                        {row.openDate ? (
-                          <span class="font-semibold text-brand-red-700">
-                            {row.openDate}
-                          </span>
-                        ) : (
-                          <a
-                            href={`tel:${contact.phonePrimaryRaw}`}
-                            class="inline-flex items-center gap-1.5 whitespace-nowrap font-semibold text-brand-red-600 hover:underline"
-                          >
-                            <span class="[&>svg]:size-3.5" set:html={ICONS.phone} />
-                            Liên hệ nhận lịch
-                          </a>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <figure class="overflow-hidden rounded-lg border border-border bg-background p-4 md:p-6">
+          <img
+            src="/images/banners/class-schedule.webp"
+            alt="Poster lịch khai giảng các lớp tiếng Trung tại Hoa văn SaigonHSK"
+            class="mx-auto w-full rounded-lg object-contain"
+            loading="lazy"
+          />
+          <figcaption class="mt-4 text-center text-xs text-muted-foreground">
+            Poster lịch khai giảng do trung tâm phát hành — gọi
+            <a
+              href={`tel:${contact.phonePrimaryRaw}`}
+              class="font-semibold text-brand-red-600 hover:underline"
+              >{contact.phonePrimary}</a
+            > để xác nhận lịch mới nhất.
+          </figcaption>
+        </figure>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
           {
@@ -133,8 +276,8 @@ import { ICONS } from "@/lib/icons";
                 desc: "Không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí.",
               },
             ].map((c) => (
-              <div class="rounded-2xl border border-border/80 bg-card p-5">
-                <p class="text-base font-extrabold text-foreground">
+              <div class="rounded-lg border border-border bg-background p-5">
+                <p class="text-base font-extrabold text-brand-ink-900">
                   {c.title}
                 </p>
                 <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -147,9 +290,118 @@ import { ICONS } from "@/lib/icons";
       </div>
     </section>
 
+    <!-- CTA ghi danh sớm -->
+    <section>
+      <div class="container mx-auto px-6">
+        <div
+          class="relative overflow-hidden rounded-lg bg-brand-red-600 px-7 py-10 md:px-12 md:py-14"
+        >
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 [background-image:radial-gradient(rgb(255_255_255/0.28)_1.5px,transparent_1.5px)] [background-size:12px_12px] [mask-image:linear-gradient(to_right,transparent,#000_45%)] lg:block"
+          ></span>
+
+          <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.8fr]">
+            <div>
+              <span
+                class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-700"
+              >
+                <span class="[&>svg]:size-3.5" set:html={ICONS.calendar} />
+                Khai giảng hằng tháng
+              </span>
+
+              <h2
+                class="mt-6 text-[2rem] font-black leading-[1.1] tracking-tight text-white md:text-[2.75rem]"
+              >
+                Ghi danh sớm
+                <span class="block">chọn đúng lớp, đúng nhịp học</span>
+              </h2>
+
+              <ul class="mt-7 space-y-3.5">
+                {
+                  [
+                    "Test trình độ đầu vào miễn phí, xếp lớp đúng sức học",
+                    "Cam kết 100% đầu ra — không đạt, học lại miễn phí",
+                  ].map((line) => (
+                    <li class="flex items-center gap-3 text-sm font-medium text-white md:text-base">
+                      <span
+                        class="shrink-0 text-white/80 [&>svg]:size-4"
+                        set:html={ICONS.check}
+                      />
+                      {line}
+                    </li>
+                  ))
+                }
+              </ul>
+
+              <a
+                href="/register"
+                class="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-bold text-brand-red-700 transition-transform hover:-translate-y-0.5"
+              >
+                Đăng ký ngay
+                <span
+                  class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+                  set:html={ICONS.arrow}
+                />
+              </a>
+            </div>
+
+            <img
+              src="/images/classroom.webp"
+              alt="Lớp học tiếng Trung tại Hoa văn SaigonHSK"
+              width="1024"
+              height="577"
+              loading="lazy"
+              decoding="async"
+              class="hidden aspect-[4/3] w-full rounded-lg object-cover lg:block"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <RegisterSection />
-    <CtaSection />
   </main>
   <Footer />
   <FloatingContact />
 </Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>(
+    "[data-schedule-search]",
+  );
+  const groups = document.querySelectorAll<HTMLElement>("[data-group]");
+  const empty = document.querySelector<HTMLElement>("[data-empty]");
+
+  if (input) {
+    const normalize = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/đ/g, "d")
+        .trim();
+
+    input.addEventListener("input", () => {
+      const q = normalize(input.value);
+      let total = 0;
+
+      groups.forEach((group) => {
+        let shown = 0;
+
+        group
+          .querySelectorAll<HTMLElement>("[data-class-card]")
+          .forEach((card) => {
+            const match = !q || (card.dataset.search ?? "").includes(q);
+            card.hidden = !match;
+            if (match) shown += 1;
+          });
+
+        group.hidden = shown === 0;
+        total += shown;
+      });
+
+      if (empty) empty.hidden = total > 0;
+    });
+  }
+</script>
