@@ -28,23 +28,58 @@ const {
   ],
   href = "/register",
   label = "Đăng ký ngay",
-  image = "/images/classroom.webp",
-  imageAlt = "Lớp học tiếng Trung tại Hoa văn SaigonHSK",
+  image = "/images/register-teacher.webp",
+  imageAlt = "Giảng viên Hoa văn SaigonHSK mời đăng ký khoá học tiếng Trung",
   class: className = "",
 } = Astro.props;
+
+/**
+ * Ảnh giảng viên đã tách nền và mặc áo đỏ trùng màu panel, nên phải đặt trên khung
+ * sáng thì mới nổi. Các ảnh khác (ảnh lớp học chụp thường) thì hiển thị full-bleed.
+ */
+const isCutout = image.includes("register-teacher");
 ---
 
 <section class:list={[className]}>
   <div class="container mx-auto px-6">
     <div
-      class="relative overflow-hidden rounded-lg bg-brand-red-600 px-7 py-10 md:px-12 md:py-14"
+      class="relative overflow-hidden rounded-2xl bg-brand-red-600 px-7 py-10 md:px-12 md:py-14 lg:min-h-[24rem]"
     >
       <span
         aria-hidden="true"
         class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 [background-image:radial-gradient(rgb(255_255_255/0.28)_1.5px,transparent_1.5px)] [background-size:12px_12px] [mask-image:linear-gradient(to_right,transparent,#000_45%)] lg:block"
       ></span>
 
-      <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.8fr]">
+      {
+        isCutout && (
+          <>
+            {/*
+              Khối sáng mờ phía sau chủ thể. Bắt buộc phải có: áo polo của giảng
+              viên cùng tông đỏ với panel, không có nền sáng thì phần thân sẽ chìm
+              hẳn vào nền.
+            */}
+            <span
+              aria-hidden="true"
+              class="animate-subject-halo pointer-events-none absolute -bottom-10 right-4 hidden size-[24rem] rounded-full bg-white/25 blur-2xl lg:block xl:right-16"
+            />
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute bottom-0 right-10 hidden h-[19rem] w-[15rem] -rotate-6 rounded-[3rem] bg-white/10 lg:block xl:right-24"
+            />
+          </>
+        )
+      }
+
+      <div
+        class:list={[
+          "relative",
+          // Ảnh cutout nằm absolute nên cột phải không còn nội dung: giới hạn bề
+          // rộng khối chữ để tiêu đề không chạy xuống dưới ảnh.
+          isCutout
+            ? "lg:max-w-[31rem] xl:max-w-[39rem]"
+            : "grid items-center gap-10 lg:grid-cols-[1fr_0.8fr]",
+        ]}
+      >
         <div>
           <span
             class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-700"
@@ -54,7 +89,7 @@ const {
           </span>
 
           <h2
-            class="mt-6 text-[2rem] font-black leading-[1.1] tracking-tight text-white md:text-[2.75rem]"
+            class="mt-6 text-[2rem] font-black leading-[1.1] tracking-tight text-balance text-white md:text-[2.5rem]"
           >
             {title}
             {subtitle && <span class="block">{subtitle}</span>}
@@ -88,16 +123,40 @@ const {
           </a>
         </div>
 
-        <img
-          src={image}
-          alt={imageAlt}
-          width="1024"
-          height="577"
-          loading="lazy"
-          decoding="async"
-          class="hidden aspect-[4/3] w-full rounded-lg object-cover lg:block"
-        />
+        {
+          !isCutout && (
+            <img
+              src={image}
+              alt={imageAlt}
+              width="1024"
+              height="577"
+              loading="lazy"
+              decoding="async"
+              class="hidden aspect-[4/3] w-full rounded-lg object-cover lg:block"
+            />
+          )
+        }
       </div>
+
+      {/*
+        Ảnh neo đáy panel và cao hơn panel một chút để phần chân bị cắt bởi
+        overflow-hidden — tạo cảm giác người bước ra khỏi khung.
+        drop-shadow tạo viền sáng mảnh, tách áo đỏ khỏi nền đỏ.
+      */}
+      {
+        isCutout && (
+          <img
+            src={image}
+            alt={imageAlt}
+            width="594"
+            height="1100"
+            loading="lazy"
+            decoding="async"
+            style="--float-delay:-2s"
+            class="animate-subject-float pointer-events-none absolute bottom-0 right-6 hidden h-[26rem] w-auto object-contain object-bottom [filter:drop-shadow(0_0_2px_rgb(255_255_255/0.5))_drop-shadow(0_18px_30px_rgb(0_0_0/0.28))] lg:block xl:right-20"
+          />
+        )
+      }
     </div>
   </div>
 </section>

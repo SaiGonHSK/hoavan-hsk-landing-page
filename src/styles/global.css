@@ -261,6 +261,16 @@
   }
 }
 
+/* iOS Safari zooms the whole page when focusing a control with font-size < 16px.
+   Unlayered on purpose so it beats Tailwind's `text-sm` utilities on mobile. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 @keyframes orb-pulse {
   0%,
   100% {
@@ -349,5 +359,46 @@
     opacity: 1;
     transform: none;
     will-change: auto;
+  }
+
+  /*
+   * Ảnh người đã tách nền: trôi lên xuống rất nhẹ để khối ảnh không bị "dán chết"
+   * vào nền trắng. Biên độ nhỏ và chu kỳ dài để không gây phân tán khi đọc.
+   * Bọc trong prefers-reduced-motion: no-preference nên tự tắt với người dùng
+   * bật giảm chuyển động.
+   */
+  @keyframes subject-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14px);
+    }
+  }
+
+  .animate-subject-float {
+    animation: subject-float 6s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+    will-change: transform;
+  }
+
+  /* Vòng sáng phía sau chủ thể, phồng nhẹ lệch pha với ảnh để tạo chiều sâu. */
+  @keyframes subject-halo {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    50% {
+      transform: scale(1.06);
+      opacity: 0.8;
+    }
+  }
+
+  .animate-subject-halo {
+    animation: subject-halo 6s ease-in-out infinite;
+    animation-delay: var(--halo-delay, -3s);
+    will-change: transform, opacity;
   }
 }

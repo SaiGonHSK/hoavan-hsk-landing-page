@@ -1,0 +1,262 @@
+---
+import { activities } from "@/data/activities";
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  title?: string;
+  highlight?: string;
+  proof?: string;
+  class?: string;
+}
+
+const {
+  title = "Học một buổi thật rồi hãy",
+  highlight = "quyết định",
+  proof = "Học thật một buổi, tư vấn lộ trình, không ràng buộc đăng ký",
+  class: className = "",
+} = Astro.props;
+
+const includes = [
+  "Ngồi học nguyên buổi cùng lớp đang mở",
+  "Cảm nhận cách giảng dạy và không khí lớp trước khi đăng ký",
+  "Nghe giảng viên tư vấn lộ trình HSK theo mục tiêu của bạn",
+];
+
+const levels = ["HSK 1–6", "Giao tiếp", "Công sở", "Trẻ em"];
+
+type Channel = {
+  label: string;
+  desc: string;
+  href: string;
+  external: boolean;
+  icon: string;
+  /** Icon đã có màu thương hiệu sẵn (Zalo), không tô lại bằng currentColor */
+  brand?: boolean;
+  tint?: string;
+};
+
+const channels: Channel[] = [
+  {
+    label: "Nhắn Zalo",
+    desc: "Nhắn là có giảng viên tư vấn ngay",
+    href: contact.zalo,
+    external: true,
+    icon: ICONS.zalo,
+    brand: true,
+  },
+  {
+    label: contact.phonePrimary,
+    desc: contact.workingHours,
+    href: `tel:${contact.phonePrimaryRaw}`,
+    external: false,
+    icon: ICONS.phone,
+    tint: "text-emerald-600",
+  },
+  {
+    label: "Tới trung tâm",
+    desc: contact.addressShort,
+    href: contact.mapsUrl,
+    external: true,
+    icon: ICONS.pin,
+    tint: "text-brand-red-600",
+  },
+];
+
+const avatars = [
+  { initial: "H", tint: "bg-brand-red-600" },
+  { initial: "T", tint: "bg-brand-ink-700" },
+  { initial: "M", tint: "bg-brand-red-400" },
+  { initial: "L", tint: "bg-brand-ink-400" },
+];
+
+// 2 hàng ảnh lớp học làm nền mờ phía sau.
+const mosaic = Array.from({ length: 14 }, (_, i) => activities[i % activities.length]);
+
+const fadeUp =
+  "mask-image: linear-gradient(to bottom, transparent, #000 55%); -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);";
+---
+
+<section
+  id="trial-cta"
+  class:list={[
+    "relative isolate overflow-hidden bg-background py-16 lg:py-24 scroll-mt-24",
+    className,
+  ]}
+>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-90 overflow-hidden opacity-[0.22] md:h-105"
+    style={fadeUp}
+  >
+    <div class="grid grid-cols-4 gap-3 px-3 sm:grid-cols-5 lg:grid-cols-7 lg:gap-4 lg:px-6">
+      {
+        mosaic.map((p) => (
+          <img
+            src={p.src}
+            alt=""
+            width={p.width ?? 1024}
+            height={p.height ?? 768}
+            loading="lazy"
+            decoding="async"
+            class="aspect-4/3 w-full rounded-2xl object-cover"
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container relative z-10 mx-auto px-6">
+    <div class="flex flex-col items-center text-center">
+      <span
+        class="inline-flex items-center gap-2 rounded-full bg-brand-red-50 py-1.5 pl-1.5 pr-4 text-xs font-bold uppercase tracking-[0.14em] text-brand-red-700"
+      >
+        <span
+          class="grid size-6 place-items-center rounded-full bg-brand-red-600 text-[13px] font-black text-white"
+          >试</span
+        >
+        Học thử miễn phí
+      </span>
+
+      <h2
+        class="mt-6 font-heading text-[2.1rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-[3.25rem]"
+      >
+        {title}{" "}
+        <span class="relative whitespace-nowrap text-brand-red-600">
+          {highlight}
+          <span
+            aria-hidden="true"
+            class="absolute inset-x-0 -bottom-1 h-[0.18em] rounded-full bg-brand-red-200"></span>
+        </span>
+      </h2>
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+        <span class="flex -space-x-2">
+          {
+            avatars.map((a) => (
+              <span
+                class:list={[
+                  "grid size-7 place-items-center rounded-full text-[11px] font-bold text-white ring-2 ring-background",
+                  a.tint,
+                ]}
+              >
+                {a.initial}
+              </span>
+            ))
+          }
+        </span>
+        <p class="text-sm font-semibold text-brand-ink-600 md:text-base">
+          <span class="text-brand-ink-900">Lớp 10–15 học viên</span> — {proof}
+        </p>
+      </div>
+
+      <ul class="mt-6 flex flex-wrap items-center justify-center gap-2">
+        {
+          levels.map((l) => (
+            <li class="rounded-full border border-border bg-background/80 px-3.5 py-1.5 text-xs font-bold text-brand-ink-500">
+              {l}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div
+      class="mx-auto mt-12 grid max-w-5xl overflow-hidden rounded-[2rem] border border-border bg-background/90 shadow-[0_40px_90px_-60px_rgb(17_24_39/0.55)] backdrop-blur-sm lg:grid-cols-[1.05fr_1fr]"
+    >
+      <div class="relative overflow-hidden bg-brand-red-600 p-8 text-white sm:p-10">
+        <span
+          aria-hidden="true"
+          class="pointer-events-none absolute -bottom-12 -right-3 select-none text-[9rem] font-black leading-none text-white/10"
+          >试</span
+        >
+
+        <div class="relative z-10">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+            Một buổi học thử gồm
+          </p>
+
+          <ul class="mt-6 space-y-4">
+            {
+              includes.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-white/20 [&>svg]:size-3.5">
+                    <Fragment set:html={ICONS.check} />
+                  </span>
+                  <span class="text-[15px] font-semibold leading-relaxed text-white/95">
+                    {item}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <a
+            href="/trial"
+            class="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-brand-red-700 transition-transform hover:-translate-y-0.5"
+          >
+            Chọn lớp học thử
+            <span
+              class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+              set:html={ICONS.arrow}
+            />
+          </a>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <p
+          class="px-6 pt-7 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground sm:px-8"
+        >
+          Hoặc liên hệ nhanh
+        </p>
+
+        <div class="mt-2 divide-y divide-border">
+          {
+            channels.map((c) => (
+              <a
+                href={c.href}
+                target={c.external ? "_blank" : undefined}
+                rel={c.external ? "noopener" : undefined}
+                class="group flex items-center gap-4 px-6 py-5 transition-colors hover:bg-brand-ink-50 sm:px-8"
+              >
+                <span
+                  class:list={[
+                    "grid size-11 shrink-0 place-items-center rounded-xl bg-brand-ink-50 transition-colors group-hover:bg-background",
+                    c.brand ? "[&>svg]:size-6" : `[&>svg]:size-5 ${c.tint}`,
+                  ]}
+                  set:html={c.icon}
+                />
+
+                <span class="min-w-0 flex-1 text-left">
+                  <span class="block font-heading text-[15px] font-extrabold text-brand-ink-900">
+                    {c.label}
+                  </span>
+                  <span class="block text-sm leading-snug text-muted-foreground">
+                    {c.desc}
+                  </span>
+                </span>
+
+                <span
+                  class="shrink-0 text-brand-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-red-600 [&>svg]:size-4"
+                  set:html={ICONS.arrowUpRight}
+                />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-sm text-muted-foreground">
+      Hoặc
+      <a
+        href="/#register"
+        class="font-semibold text-brand-red-600 underline-offset-4 hover:underline"
+      >
+        để lại thông tin tại form đăng ký
+      </a>
+      , trung tâm sẽ gọi lại xếp buổi học thử cho bạn.
+    </p>
+  </div>
+</section>

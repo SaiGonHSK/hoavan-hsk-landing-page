@@ -6,6 +6,9 @@ export type MenuChild = {
   slug: string;
 
   group?: string;
+
+  /** Trang tổng của nhóm — chỉ cần đặt ở mục đầu tiên của nhóm. */
+  groupSlug?: string;
 };
 
 export type MenuEntry = {
@@ -73,13 +76,17 @@ export async function getPageContents(): Promise<PageContent[]> {
 }
 
 export function groupChildren(children: MenuChild[] = []) {
-  const groups: { title: string; items: MenuChild[] }[] = [];
+  const groups: { title: string; slug?: string; items: MenuChild[] }[] = [];
   for (const child of children) {
     const title = child.group?.trim();
     if (!title) continue;
     const existing = groups.find((g) => g.title === title);
-    if (existing) existing.items.push(child);
-    else groups.push({ title, items: [child] });
+    if (existing) {
+      existing.items.push(child);
+      existing.slug ??= child.groupSlug;
+    } else {
+      groups.push({ title, slug: child.groupSlug, items: [child] });
+    }
   }
   return groups;
 }

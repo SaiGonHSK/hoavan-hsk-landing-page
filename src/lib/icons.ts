@@ -50,7 +50,6 @@ export const ICONS = {
 
 export const COURSE_ICONS = {
   hsk: ICONS.target,
-  tocfl: ICONS.shield,
   seed: svg(
     '<path d="M12 21V9"/><path d="M12 9C12 5.7 9.3 3 6 3v2c0 3.3 2.7 6 6 6z"/><path d="M12 9c0-3.3 2.7-6 6-6v2c0 3.3-2.7 6-6 6z"/><path d="M5 21h14"/>',
   ),

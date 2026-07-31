@@ -16,7 +16,7 @@ export const footerLinks = [
     title: "Khoá học",
     items: [
       { label: "Khoá HSK1 – HSK6", href: "/courses" },
-      { label: "Luyện thi HSK3 – HSK6", href: "/courses/luyen-thi-hsk-4" },
+      { label: "Lớp luyện thi HSK3 – HSK6", href: "/courses/luyen-thi-hsk-4" },
       { label: "Giao tiếp công sở", href: "/courses/giao-tiep-cong-so-co-ban" },
       { label: "Ngữ pháp tiếng Trung", href: "/courses/ngu-phap-co-ban" },
       { label: "Tiếng Trung trẻ em", href: "/courses/tieng-trung-tre-em" },
@@ -26,10 +26,10 @@ export const footerLinks = [
   {
     title: "Ôn tập & thư viện",
     items: [
-      { label: "Ôn tập các cấp HSK", href: "/practice" },
-      { label: "Luyện thi HSK", href: "/practice/exam-prep" },
+      { label: "Ôn tập theo cấp HSK", href: "/practice" },
+      { label: "Tài liệu luyện thi HSK", href: "/practice/exam-prep" },
       { label: "Luyện 4 kỹ năng", href: "/practice/skills" },
-      { label: "Học thử trải nghiệm", href: "/trial" },
+      { label: "Học thử miễn phí", href: "/trial" },
       { label: "Thư viện tiếng Trung", href: "/library" },
     ],
   },

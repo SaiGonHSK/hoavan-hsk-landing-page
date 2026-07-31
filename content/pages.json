@@ -67,24 +67,24 @@
           "group": "Khoá học theo cấp HSK"
         },
         {
-          "label": "Luyện thi HSK3",
+          "label": "HSK3",
           "slug": "/courses/luyen-thi-hsk-3",
-          "group": "Luyện thi HSK"
+          "group": "Lớp luyện thi HSK"
         },
         {
-          "label": "Luyện thi HSK4",
+          "label": "HSK4",
           "slug": "/courses/luyen-thi-hsk-4",
-          "group": "Luyện thi HSK"
+          "group": "Lớp luyện thi HSK"
         },
         {
-          "label": "Luyện thi HSK5",
+          "label": "HSK5",
           "slug": "/courses/luyen-thi-hsk-5",
-          "group": "Luyện thi HSK"
+          "group": "Lớp luyện thi HSK"
         },
         {
-          "label": "Luyện thi HSK6",
+          "label": "HSK6",
           "slug": "/courses/luyen-thi-hsk-6",
-          "group": "Luyện thi HSK"
+          "group": "Lớp luyện thi HSK"
         },
         {
           "label": "Giao tiếp công sở cơ bản",
@@ -119,7 +119,8 @@
         {
           "label": "Giáo trình chuẩn HSK 3.0",
           "slug": "/courses/textbooks/giao-trinh-chuan-hsk-3-0",
-          "group": "Học trực tuyến theo giáo trình"
+          "group": "Học trực tuyến theo giáo trình",
+          "groupSlug": "/courses/textbooks"
         },
         {
           "label": "Giáo trình Boya",
@@ -143,107 +144,104 @@
       "slug": "/practice",
       "children": [
         {
-          "label": "Ôn tập HSK1",
+          "label": "HSK1",
           "slug": "/practice/hsk-1",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Ôn tập HSK2",
+          "label": "HSK2",
           "slug": "/practice/hsk-2",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Ôn tập HSK3",
+          "label": "HSK3",
           "slug": "/practice/hsk-3",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Ôn tập HSK4",
+          "label": "HSK4",
           "slug": "/practice/hsk-4",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Ôn tập HSK5",
+          "label": "HSK5",
           "slug": "/practice/hsk-5",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Ôn tập HSK6",
+          "label": "HSK6",
           "slug": "/practice/hsk-6",
-          "group": "Ôn tập các cấp HSK"
+          "group": "Ôn tập theo cấp HSK"
         },
         {
-          "label": "Luyện thi HSK3",
+          "label": "HSK3",
           "slug": "/practice/exam-prep/hsk-3",
-          "group": "Luyện thi HSK"
+          "group": "Tài liệu luyện thi HSK",
+          "groupSlug": "/practice/exam-prep"
         },
         {
-          "label": "Luyện thi HSK4",
+          "label": "HSK4",
           "slug": "/practice/exam-prep/hsk-4",
-          "group": "Luyện thi HSK"
+          "group": "Tài liệu luyện thi HSK"
         },
         {
-          "label": "Luyện thi HSK5",
+          "label": "HSK5",
           "slug": "/practice/exam-prep/hsk-5",
-          "group": "Luyện thi HSK"
+          "group": "Tài liệu luyện thi HSK"
         },
         {
-          "label": "Luyện thi HSK6",
+          "label": "HSK6",
           "slug": "/practice/exam-prep/hsk-6",
-          "group": "Luyện thi HSK"
+          "group": "Tài liệu luyện thi HSK"
         },
         {
-          "label": "Luyện kỹ năng Nghe",
+          "label": "Nghe",
           "slug": "/practice/skills/nghe",
-          "group": "Luyện các kỹ năng"
+          "group": "Luyện 4 kỹ năng",
+          "groupSlug": "/practice/skills"
         },
         {
-          "label": "Luyện kỹ năng Nói",
+          "label": "Nói",
           "slug": "/practice/skills/noi",
-          "group": "Luyện các kỹ năng"
+          "group": "Luyện 4 kỹ năng"
         },
         {
-          "label": "Luyện kỹ năng Đọc",
+          "label": "Đọc",
           "slug": "/practice/skills/doc",
-          "group": "Luyện các kỹ năng"
+          "group": "Luyện 4 kỹ năng"
         },
         {
-          "label": "Luyện kỹ năng Viết",
+          "label": "Viết",
           "slug": "/practice/skills/viet",
-          "group": "Luyện các kỹ năng"
+          "group": "Luyện 4 kỹ năng"
         },
         {
-          "label": "Học thử HSK1",
+          "label": "HSK1",
           "slug": "/trial/hsk-1",
-          "group": "Học thử trải nghiệm"
+          "group": "Học thử miễn phí",
+          "groupSlug": "/trial"
         },
         {
-          "label": "Học thử HSK2",
+          "label": "HSK2",
           "slug": "/trial/hsk-2",
-          "group": "Học thử trải nghiệm"
+          "group": "Học thử miễn phí"
         },
         {
-          "label": "Học thử HSK3",
+          "label": "HSK3",
           "slug": "/trial/hsk-3",
-          "group": "Học thử trải nghiệm"
+          "group": "Học thử miễn phí"
         },
         {
-          "label": "Học thử HSK4",
+          "label": "HSK4",
           "slug": "/trial/hsk-4",
-          "group": "Học thử trải nghiệm"
+          "group": "Học thử miễn phí"
         }
       ]
     },
     {
       "label": "Lịch khai giảng",
       "slug": "/schedule",
-      "children": [
-        {
-          "label": "Học thử HSK4",
-          "slug": "/trial/hsk-4",
-          "group": "Học thử trải nghiệm"
-        }
-      ]
+      "children": []
     },
     {
       "label": "Thư viện",

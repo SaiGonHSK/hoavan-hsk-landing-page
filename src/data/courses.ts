@@ -23,7 +23,7 @@ export type Course = {
   goal: string;
 
   entry: string;
-  icon: "hsk" | "tocfl" | "seed" | "growth" | "peak" | "chat" | "briefcase" | "vip" | "kids" | "senior";
+  icon: "hsk" | "seed" | "growth" | "peak" | "chat" | "briefcase" | "vip" | "kids" | "senior";
 
   featured?: boolean;
 
@@ -139,20 +139,6 @@ export const courses: Course[] = [
         ],
       },
     ],
-  },
-  {
-    slug: "luyen-thi-tocfl",
-    image: "/images/courses/luyen-thi-tocfl.png",
-    title: "Luyện thi TOCFL",
-    summary: "Cam kết đậu TOCFL.",
-    goal: "Đậu TOCFL Band A – C",
-    entry: "Theo kết quả test đầu vào",
-    icon: "tocfl",
-    featured: true,
-    tags: ["Cam kết đậu", "Lộ trình theo band"],
-    contactOnly: true,
-    note: "Trung tâm xây dựng lộ trình riêng theo band mục tiêu và kết quả test đầu vào. Vui lòng liên hệ để được tư vấn chi tiết.",
-    levels: [],
   },
   {
     slug: "tieng-hoa-so-cap",

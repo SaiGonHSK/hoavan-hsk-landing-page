@@ -49,7 +49,7 @@ const schemas: Record<string, unknown>[] = [
       provider: { name: site.fullName, address: contact.address },
       workload: course.levels[0]?.duration?.[0],
       level: course.entry,
-      credential: course.goal.match(/HSK\s?[1-6]|TOCFL/i)?.[0].replace(/\s+/g, ""),
+      credential: course.goal.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/g, ""),
     }),
     ...(course.levels.length
       ? {
@@ -181,7 +181,7 @@ const isLead = (t: (typeof teachers)[number]) =>
 const staff = [...teachers].sort((a, b) => isLead(b) - isLead(a)).slice(0, 3);
 
 /** Cảm nhận học viên: ưu tiên review nhắc đúng chứng chỉ của khoá. */
-const keyword = course.goal.match(/HSK\s?[1-6]|TOCFL/i)?.[0] ?? "";
+const keyword = course.goal.match(/HSK\s?[1-6]/i)?.[0] ?? "";
 const reviews = [
   ...testimonials.filter((t) => keyword && t.quote.includes(keyword)),
   ...testimonials.filter((t) => !keyword || !t.quote.includes(keyword)),

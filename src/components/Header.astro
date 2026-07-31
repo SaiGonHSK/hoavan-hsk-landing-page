@@ -1,6 +1,6 @@
 ---
 import Logo from "@/components/Logo.astro";
-import { contact, site } from "@/data/site";
+import { contact } from "@/data/site";
 import { menu, groupChildren, plainChildren } from "@/data/pages";
 import { ICONS } from "@/lib/icons";
 
@@ -78,7 +78,7 @@ const ctaNav = menu.find((entry) => entry.cta);
                         {groups.map((group) => (
                           <div>
                             <a
-                              href={item.slug}
+                              href={group.slug ?? item.slug}
                               class="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600 transition-opacity hover:opacity-70"
                             >
                               {group.title}
@@ -254,9 +254,18 @@ const ctaNav = menu.find((entry) => entry.cta);
 
               {groups.map((group) => (
                 <div class="mt-2">
-                  <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
-                    {group.title}
-                  </p>
+                  {group.slug ? (
+                    <a
+                      href={group.slug}
+                      class="block px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600"
+                    >
+                      {group.title}
+                    </a>
+                  ) : (
+                    <p class="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
+                      {group.title}
+                    </p>
+                  )}
                   {group.items.map((link) => (
                     <a
                       href={link.slug}
@@ -290,12 +299,6 @@ const ctaNav = menu.find((entry) => entry.cta);
     >
       Chat Zalo
     </a>
-    <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
-      {contact.address}
-    </p>
-    <p class="mt-1 text-xs text-muted-foreground">
-      {site.slogan} — {site.sloganVi}
-    </p>
   </div>
 </aside>
 

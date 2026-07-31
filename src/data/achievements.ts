@@ -8,7 +8,7 @@ export type Achievement = {
   image: string;
   /** Kết quả in trên ruy băng đỏ, vd "6", "5", "B2" */
   score: string;
-  /** Tên kỳ thi in dưới điểm, vd "HSK", "TOCFL" */
+  /** Tên kỳ thi in dưới điểm, vd "HSK" */
   exam: string;
 };
 
@@ -51,13 +51,6 @@ export const achievements: Achievement[] = [
     image: "/images/reviews/long-chan-phat.png",
     score: "6",
     exam: "HSK",
-  },
-  {
-    name: "Hoàng Hà Phương",
-    school: "Cựu sinh viên ĐH Ngoại Thương Hà Nội",
-    image: "/images/reviews/hoang-ha-phuong.jpg",
-    score: "C1",
-    exam: "TOCFL",
   },
   {
     name: "Nguyễn Thị Phương Thảo",

@@ -27,7 +27,7 @@ const wrap =
 
 <div class:list={["flex flex-col", wrap, className]}>
   <h2
-    class="font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
+    class="text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
   >
     {title}
     {inlineHighlight && " "}
@@ -35,7 +35,7 @@ const wrap =
       highlight && (
         <span
           class:list={[
-            "font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl",
+            "text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl",
             inlineHighlight ? "inline whitespace-nowrap" : "mt-1 block",
           ]}
         >

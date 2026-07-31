@@ -11,7 +11,7 @@ import { reviewLevels, examPrepResources, skillTracks, trialClasses } from "@/da
   glyph="练"
   groups={[
     {
-      title: "Ôn tập các cấp HSK",
+      title: "Ôn tập theo cấp HSK",
       desc: "Mỗi bài gồm từ vựng, ngữ pháp, đề HSK và bài kiểm tra định kỳ.",
       cards: reviewLevels.map((c) => ({
         title: c.title,
@@ -20,8 +20,8 @@ import { reviewLevels, examPrepResources, skillTracks, trialClasses } from "@/da
       })),
     },
     {
-      title: "Luyện thi HSK các cấp",
-      desc: "Bảng từ vựng, ngữ pháp trọng tâm và bộ đề luyện cho từng cấp.",
+      title: "Tài liệu luyện thi HSK",
+      desc: "Bảng từ vựng, ngữ pháp trọng tâm và bộ đề luyện tự học cho từng cấp — khác với lớp luyện thi có giảng viên trong mục Các khoá học.",
       cards: examPrepResources.map((c) => ({
         title: c.title,
         summary: c.summary,
@@ -29,7 +29,7 @@ import { reviewLevels, examPrepResources, skillTracks, trialClasses } from "@/da
       })),
     },
     {
-      title: "Luyện các kỹ năng",
+      title: "Luyện 4 kỹ năng",
       desc: "Nghe – Nói – Đọc – Viết, luyện riêng theo từng cấp độ.",
       cards: skillTracks.map((c) => ({
         title: c.title,
@@ -38,7 +38,7 @@ import { reviewLevels, examPrepResources, skillTracks, trialClasses } from "@/da
       })),
       },
     {
-      title: "Học thử trải nghiệm",
+      title: "Học thử miễn phí",
       desc: "Buổi học thử miễn phí kèm test trình độ và tư vấn lộ trình.",
       cards: trialClasses.map((c) => ({
         title: c.title,

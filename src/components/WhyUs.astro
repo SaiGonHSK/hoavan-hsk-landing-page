@@ -1,8 +1,7 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
 import ValueIllustration from "@/components/ValueIllustration.astro";
-import { values, contact } from "@/data/site";
-import { ICONS } from "@/lib/icons";
+import { values } from "@/data/site";
 ---
 
 <section id="why-us" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -36,40 +35,6 @@ import { ICONS } from "@/lib/icons";
           );
         })
       }
-    </div>
-
-    <div
-      class="mt-10 flex flex-col items-center justify-between gap-6 rounded-3xl bg-brand-ink-50 p-8 md:flex-row md:p-10"
-    >
-      <div>
-        <p class="text-2xl font-black text-brand-ink-900 md:text-3xl">
-          Học thử miễn phí một buổi
-        </p>
-        <p class="mt-2 max-w-xl text-base leading-relaxed text-muted-foreground">
-          Ngồi học cùng lớp đang mở để cảm nhận cách giảng dạy trước khi quyết định
-          đăng ký khóa học.
-        </p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <a
-          href="/register"
-          class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
-        >
-          Đăng ký học thử
-          <span
-            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
-            set:html={ICONS.arrow}
-          />
-        </a>
-        <a
-          href={`tel:${contact.phonePrimaryRaw}`}
-          class="inline-flex items-center gap-2 rounded-full bg-background px-6 py-4 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5"
-        >
-          <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
-          {contact.phonePrimary}
-        </a>
-      </div>
     </div>
   </div>
 </section>

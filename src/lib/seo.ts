@@ -34,7 +34,6 @@ export const keywords = {
     "ôn thi HSK",
     "chứng chỉ HSK",
     "HSK 3.0",
-    "luyện thi TOCFL",
     "lớp luyện thi HSK 4",
     "lớp luyện thi HSK 5",
     "từ vựng HSK",
@@ -77,7 +76,7 @@ export const keywordsFor = (...extra: string[]) =>
   ).join(", ");
 
 export const defaultDescription =
-  "Trung tâm Hoa văn SaigonHSK — học tiếng Trung và luyện thi HSK, TOCFL tại TP.HCM. Lớp 10–15 học viên, giảng viên Thạc sĩ – Tiến sĩ, cam kết 100% đầu ra.";
+  "Trung tâm Hoa văn SaigonHSK — học tiếng Trung và luyện thi HSK tại TP.HCM. Lớp 10–15 học viên, giảng viên Thạc sĩ – Tiến sĩ, cam kết 100% đầu ra.";
 
 /**
  * Google cắt title ở khoảng 60 ký tự. Nhận vào các phương án từ dài (nhiều từ khoá)
@@ -149,6 +148,24 @@ export function courseFaqs(input: {
 
   return faqs;
 }
+
+/** Dùng chung cho PageHero và hero của trang chi tiết khoá học. */
+export const breadcrumbSchema = (
+  crumbs: { label: string; href?: string }[],
+  origin: string,
+) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
+    ...crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 2,
+      name: c.label,
+      ...(c.href ? { item: `${origin}${c.href}` } : {}),
+    })),
+  ],
+});
 
 export const faqSchema = (faqs: { question: string; answer: string }[]) => ({
   "@context": "https://schema.org",
