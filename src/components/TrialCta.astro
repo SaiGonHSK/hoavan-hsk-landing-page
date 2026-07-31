@@ -51,7 +51,7 @@ const channels: Channel[] = [
     href: `tel:${contact.phonePrimaryRaw}`,
     external: false,
     icon: ICONS.phone,
-    tint: "text-emerald-600",
+    tint: "text-brand-ink-400",
   },
   {
     label: "Tới trung tâm",
@@ -59,7 +59,7 @@ const channels: Channel[] = [
     href: contact.mapsUrl,
     external: true,
     icon: ICONS.pin,
-    tint: "text-brand-red-600",
+    tint: "text-brand-ink-400",
   },
 ];
 
@@ -238,7 +238,7 @@ const fadeUp =
                 </span>
 
                 <span
-                  class="shrink-0 text-brand-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-red-600 [&>svg]:size-4"
+                  class="shrink-0 text-brand-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-ink-700 [&>svg]:size-4"
                   set:html={ICONS.arrowUpRight}
                 />
               </a>

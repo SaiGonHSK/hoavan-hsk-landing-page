@@ -229,7 +229,7 @@ const heroFacts = [
           course.tags.map((t) => (
             <span class="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-bold text-brand-ink-900">
               <span
-                class="text-brand-red-600 [&>svg]:size-3.5"
+                class="text-emerald-600 [&>svg]:size-3.5"
                 set:html={ICONS.check}
               />
               {t}
@@ -268,7 +268,7 @@ const heroFacts = [
           href={`tel:${contact.phonePrimaryRaw}`}
           class="inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-3.5 text-sm font-bold text-brand-ink-900 transition-all hover:-translate-y-0.5 hover:bg-brand-ink-50"
         >
-          <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
+          <span class="text-brand-ink-400 [&>svg]:size-4" set:html={ICONS.phone} />
           {contact.phonePrimary}
         </a>
         <a
@@ -297,7 +297,7 @@ const heroFacts = [
               {benefits.map((b) => (
                 <li class="flex items-start gap-3">
                   <span
-                    class="mt-0.5 shrink-0 rounded-md bg-brand-red-50 p-1.5 text-brand-red-600 [&>svg]:size-3.5"
+                    class="mt-0.5 shrink-0 rounded-md bg-emerald-50 p-1.5 text-emerald-600 [&>svg]:size-3.5"
                     set:html={ICONS.check}
                   />
                   <span class="text-sm leading-relaxed text-brand-ink-700">
@@ -330,7 +330,7 @@ const heroFacts = [
             includes.map((item) => (
               <div class="flex flex-col rounded-lg border border-border bg-background p-6">
                 <span
-                  class="text-brand-red-600 [&>svg]:size-6"
+                  class="text-brand-ink-400 [&>svg]:size-6"
                   set:html={item.icon}
                 />
                 <h3 class="mt-4 text-base font-black leading-snug text-brand-ink-900">
@@ -679,7 +679,7 @@ const heroFacts = [
               commitments.map((c) => (
                 <div class="rounded-lg border border-border bg-background p-6">
                   <span
-                    class="text-brand-red-600 [&>svg]:size-6"
+                    class="text-brand-ink-400 [&>svg]:size-6"
                     set:html={ICONS[c.icon as keyof typeof ICONS] ?? ICONS.shield}
                   />
                   <h3 class="mt-4 text-base font-black leading-snug text-brand-ink-900">
@@ -798,7 +798,7 @@ const heroFacts = [
           href={`tel:${contact.phonePrimaryRaw}`}
           class="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
         >
-          <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
+          <span class="text-brand-ink-400 [&>svg]:size-4" set:html={ICONS.phone} />
           {contact.phonePrimary}
         </a>
         <a
