@@ -1,0 +1,76 @@
+---
+/**
+ * Badge tên khoá học: chia chéo dọc — nửa trái đỏ chữ trắng, nửa phải trắng chữ đỏ.
+ */
+interface Props {
+  /** Tên khoá đầy đủ, ví dụ "Tiếng Hoa Giao tiếp Cấp tốc" */
+  title: string;
+  class?: string;
+}
+
+const { title, class: className = "" } = Astro.props;
+
+/** Tách "Luyện thi HSK" → LUYỆN THI | HSK, "Tiếng Hoa Sơ cấp" → TIẾNG TRUNG | SƠ CẤP */
+const PREFIXES: { match: string; label: string }[] = [
+  { match: "Luyện thi", label: "Luyện thi" },
+  { match: "Tiếng Hoa", label: "Tiếng Trung" },
+];
+const split = (name: string) => {
+  const prefix = PREFIXES.find((p) =>
+    name.toLowerCase().startsWith(p.match.toLowerCase()),
+  );
+  if (!prefix) return { lead: name, tail: "" };
+
+  const tail = name
+    .slice(prefix.match.length)
+    .replace(/[()]/g, "")
+    .replace(/^\s*cho\s+/i, "")
+    .trim();
+  return { lead: prefix.label, tail };
+};
+
+const { lead, tail } = split(title);
+
+/** Chữ dài thì thu nhỏ để không tràn khỏi nửa badge. */
+const sizeOf = (text: string) =>
+  text.length > 16
+    ? "text-[0.8125rem] md:text-sm"
+    : text.length > 10
+      ? "text-base md:text-lg"
+      : "text-lg md:text-2xl";
+---
+
+<div
+  class:list={["relative isolate size-full overflow-hidden bg-white", className]}
+  role="img"
+  aria-label={title}
+>
+  <span
+    aria-hidden="true"
+    class="absolute inset-0 bg-brand-red-600 [clip-path:polygon(0_0,58%_0,42%_100%,0_100%)]"
+  ></span>
+
+  <div class="relative flex size-full items-center">
+    <p
+      class:list={[
+        "flex-1 pl-5 pr-6 font-black uppercase leading-tight tracking-tight text-white",
+        sizeOf(lead),
+      ]}
+    >
+      {lead}
+    </p>
+
+    {
+      tail && (
+        <p
+          class:list={[
+            "flex-1 self-end pb-5 pl-2 pr-5 text-right font-black uppercase leading-tight tracking-tight text-brand-red-600",
+            sizeOf(tail),
+          ]}
+        >
+          {tail}
+        </p>
+      )
+    }
+  </div>
+</div>

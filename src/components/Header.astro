@@ -51,13 +51,19 @@ const ctaNav = menu.find((entry) => entry.cta);
 
           return (
             <div class="group/menu relative" data-menu data-open="false">
-              <a href={item.slug} class={linkClass}>
+              <button
+                type="button"
+                data-menu-trigger
+                aria-haspopup="true"
+                aria-expanded="false"
+                class={`${linkClass} cursor-pointer`}
+              >
                 {item.label}
                 <span
                   class="[&>svg]:size-3.5 [&>svg]:transition-transform group-data-[open=true]/menu:[&>svg]:rotate-180"
                   set:html={ICONS.chevron}
                 />
-              </a>
+              </button>
 
               {groups.length > 0 ? (
                 <div
@@ -82,7 +88,15 @@ const ctaNav = menu.find((entry) => entry.cta);
                                 <li>
                                   <a
                                     href={link.slug}
-                                    class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
+                                    aria-current={
+                                      isActive(link.slug) ? "page" : undefined
+                                    }
+                                    class:list={[
+                                      "block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
+                                      isActive(link.slug)
+                                        ? "font-semibold text-brand-red-700"
+                                        : "font-medium text-foreground/80",
+                                    ]}
                                   >
                                     {link.label}
                                   </a>
@@ -116,7 +130,13 @@ const ctaNav = menu.find((entry) => entry.cta);
                     {plain.map((link) => (
                       <a
                         href={link.slug}
-                        class="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-brand-red-50 hover:text-brand-red-700"
+                        aria-current={isActive(link.slug) ? "page" : undefined}
+                        class:list={[
+                          "block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
+                          isActive(link.slug)
+                            ? "font-semibold text-brand-red-700"
+                            : "font-medium text-foreground/80",
+                        ]}
                       >
                         {link.label}
                       </a>
@@ -308,24 +328,45 @@ const ctaNav = menu.find((entry) => entry.cta);
       panel.style.paddingTop = `${Math.max(0, headerBottom - wrapBottom) + GAP}px`;
     };
 
+    const trigger = wrap.querySelector<HTMLElement>("[data-menu-trigger]");
+
+    const setOpen = (value: boolean) => {
+      wrap.dataset.open = String(value);
+      panel.dataset.open = String(value);
+      trigger?.setAttribute("aria-expanded", String(value));
+    };
+
     const open = () => {
       clearTimeout(timer);
       align();
-      wrap.dataset.open = "true";
-      panel.dataset.open = "true";
+      setOpen(true);
+    };
+    const closeNow = () => {
+      clearTimeout(timer);
+      setOpen(false);
     };
     const close = () => {
       clearTimeout(timer);
-      timer = setTimeout(() => {
-        wrap.dataset.open = "false";
-        panel.dataset.open = "false";
-      }, 140);
+      timer = setTimeout(() => setOpen(false), 140);
     };
 
     wrap.addEventListener("mouseenter", open);
     wrap.addEventListener("mouseleave", close);
     wrap.addEventListener("focusin", open);
     wrap.addEventListener("focusout", close);
+
+    /** Nút cha không điều hướng — chỉ mở/đóng panel (quan trọng cho touch). */
+    trigger?.addEventListener("click", () => {
+      if (wrap.dataset.open === "true") closeNow();
+      else open();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!wrap.contains(e.target as Node)) closeNow();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeNow();
+    });
   });
 
   const drawer = document.getElementById("mobile-drawer");

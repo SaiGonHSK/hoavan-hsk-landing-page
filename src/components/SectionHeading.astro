@@ -3,6 +3,8 @@ interface Props {
   title: string;
 
   highlight?: string;
+  /** true: highlight nằm cùng hàng với title (không xuống dòng) */
+  inlineHighlight?: boolean;
   description?: string;
   align?: "center" | "left";
   className?: string;
@@ -11,6 +13,7 @@ interface Props {
 const {
   title,
   highlight,
+  inlineHighlight = false,
   description,
   align = "center",
   className = "",
@@ -27,9 +30,15 @@ const wrap =
     class="font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
   >
     {title}
+    {inlineHighlight && " "}
     {
       highlight && (
-        <span class="mt-1 block font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl">
+        <span
+          class:list={[
+            "font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-brand-red-600 md:text-5xl",
+            inlineHighlight ? "inline whitespace-nowrap" : "mt-1 block",
+          ]}
+        >
           {highlight}
         </span>
       )

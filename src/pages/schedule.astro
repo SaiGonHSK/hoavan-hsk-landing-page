@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
+import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { schedule } from "@/data/schedule";
@@ -291,74 +292,7 @@ const searchKey = (row: (typeof schedule)[number]) =>
     </section>
 
     <!-- CTA ghi danh sớm -->
-    <section>
-      <div class="container mx-auto px-6">
-        <div
-          class="relative overflow-hidden rounded-lg bg-brand-red-600 px-7 py-10 md:px-12 md:py-14"
-        >
-          <span
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 [background-image:radial-gradient(rgb(255_255_255/0.28)_1.5px,transparent_1.5px)] [background-size:12px_12px] [mask-image:linear-gradient(to_right,transparent,#000_45%)] lg:block"
-          ></span>
-
-          <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.8fr]">
-            <div>
-              <span
-                class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-700"
-              >
-                <span class="[&>svg]:size-3.5" set:html={ICONS.calendar} />
-                Khai giảng hằng tháng
-              </span>
-
-              <h2
-                class="mt-6 text-[2rem] font-black leading-[1.1] tracking-tight text-white md:text-[2.75rem]"
-              >
-                Ghi danh sớm
-                <span class="block">chọn đúng lớp, đúng nhịp học</span>
-              </h2>
-
-              <ul class="mt-7 space-y-3.5">
-                {
-                  [
-                    "Test trình độ đầu vào miễn phí, xếp lớp đúng sức học",
-                    "Cam kết 100% đầu ra — không đạt, học lại miễn phí",
-                  ].map((line) => (
-                    <li class="flex items-center gap-3 text-sm font-medium text-white md:text-base">
-                      <span
-                        class="shrink-0 text-white/80 [&>svg]:size-4"
-                        set:html={ICONS.check}
-                      />
-                      {line}
-                    </li>
-                  ))
-                }
-              </ul>
-
-              <a
-                href="/register"
-                class="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-bold text-brand-red-700 transition-transform hover:-translate-y-0.5"
-              >
-                Đăng ký ngay
-                <span
-                  class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
-                  set:html={ICONS.arrow}
-                />
-              </a>
-            </div>
-
-            <img
-              src="/images/classroom.webp"
-              alt="Lớp học tiếng Trung tại Hoa văn SaigonHSK"
-              width="1024"
-              height="577"
-              loading="lazy"
-              decoding="async"
-              class="hidden aspect-[4/3] w-full rounded-lg object-cover lg:block"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+    <EnrollCta />
 
     <RegisterSection />
   </main>

@@ -303,12 +303,6 @@
       "label": "Liên hệ",
       "slug": "/contact",
       "children": []
-    },
-    {
-      "label": "Đăng nhập",
-      "slug": "/login",
-      "cta": true,
-      "children": []
     }
   ]
 }
