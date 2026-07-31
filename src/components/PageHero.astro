@@ -8,9 +8,27 @@ interface Props {
   crumbs?: { label: string; href?: string }[];
 
   glyph?: string;
+
+  /** Nhãn nhỏ phía trên tiêu đề, kèm chấm báo hiệu đang mở */
+  eyebrow?: string;
+
+  /** Ảnh minh hoạ bên phải. Có ảnh thì hero chuyển sang bố cục 2 cột. */
+  image?: ImageMetadata;
+  imageAlt?: string;
 }
 
-const { title, description, crumbs = [], glyph = "华" } = Astro.props;
+const {
+  title,
+  description,
+  crumbs = [],
+  glyph = "华",
+  eyebrow,
+  image,
+  imageAlt = "",
+} = Astro.props;
+
+/** Ảnh nằm đúng chỗ chữ 华 nền, có ảnh thì bỏ chữ để không chồng lên nhau. */
+const showGlyph = !image;
 
 const origin = Astro.site?.origin ?? "";
 const breadcrumbSchema = {
@@ -29,11 +47,16 @@ const breadcrumbSchema = {
 ---
 
 <section class="relative overflow-hidden bg-background py-14 lg:py-20">
-  <span
-    aria-hidden="true"
-    class="pointer-events-none absolute -right-4 -top-6 select-none text-[11rem] font-black leading-none text-brand-red-900/[0.05] lg:text-[15rem]"
-    >{glyph}</span
-  >
+  {
+    showGlyph && (
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-4 -top-6 select-none text-[11rem] font-black leading-none text-brand-red-900/[0.05] lg:text-[15rem]"
+      >
+        {glyph}
+      </span>
+    )
+  }
 
   <div class="container relative z-10 mx-auto px-6">
     <nav aria-label="Breadcrumb" class="mb-6">
@@ -64,21 +87,59 @@ const breadcrumbSchema = {
       </ol>
     </nav>
 
-    <h1
-      class="max-w-4xl text-[2.25rem] font-black leading-[1.02] tracking-tight text-balance text-brand-ink-900 md:text-6xl"
+    <div
+      class:list={[
+        image && "grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14",
+      ]}
     >
-      {title}
-    </h1>
+      <div>
+        {
+          eyebrow && (
+            <p class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-brand-red-100 bg-brand-red-50 py-1.5 pl-2.5 pr-4 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-700">
+              <span class="relative flex size-2">
+                <span class="absolute inline-flex size-full animate-ping rounded-full bg-brand-red-500 opacity-75" />
+                <span class="relative inline-flex size-2 rounded-full bg-brand-red-600" />
+              </span>
+              {eyebrow}
+            </p>
+          )
+        }
 
-    {
-      description && (
-        <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-          {description}
-        </p>
-      )
-    }
+        <h1
+          class="max-w-4xl text-[2.25rem] font-black leading-[1.02] tracking-tight text-balance text-brand-ink-900 md:text-6xl"
+        >
+          {title}
+        </h1>
 
-    <slot />
+        {
+          description && (
+            <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              {description}
+            </p>
+          )
+        }
+
+        <slot />
+      </div>
+
+      {
+        image && (
+          <div class="relative mx-auto w-full max-w-sm lg:max-w-none">
+            <img
+              src={image.src}
+              alt={imageAlt}
+              width={image.width}
+              height={image.height}
+              fetchpriority="high"
+              decoding="async"
+              class="w-full rounded-[2rem] object-cover"
+            />
+
+            <slot name="image-overlay" />
+          </div>
+        )
+      }
+    </div>
   </div>
   <script
     is:inline
