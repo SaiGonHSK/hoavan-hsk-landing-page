@@ -28,7 +28,7 @@ const LIEN_HE = "Liên hệ trung tâm";
  * Lộ trình từng cấp HSK theo giáo trình thực tế của trung tâm (chuẩn HSK 3.0):
  * thời lượng, số từ vựng, số điểm ngữ pháp và chủ đề giao tiếp của mỗi khoá.
  */
-const HSK_LEVELS = [
+export const HSK_LEVELS = [
   {
     level: 1,
     months: "2,5 tháng",

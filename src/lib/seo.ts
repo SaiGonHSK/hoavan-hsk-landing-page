@@ -19,9 +19,7 @@ export const CITY = {
 export const keywords = {
   core: [
     "học tiếng Trung",
-    "học tiếng Hoa",
     "trung tâm tiếng Trung TPHCM",
-    "trung tâm tiếng Hoa TPHCM",
     "trung tâm tiếng Trung Sài Gòn",
     "học tiếng Trung ở đâu tốt",
     "học tiếng Trung ở đâu tốt TPHCM",

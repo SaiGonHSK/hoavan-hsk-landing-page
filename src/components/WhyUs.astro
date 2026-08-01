@@ -1,7 +1,71 @@
 ---
+import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
-import ValueIllustration from "@/components/ValueIllustration.astro";
 import { values } from "@/data/site";
+import { honorPosters } from "@/data/achievements";
+import appHome from "@/assets/mobile-app/app-home.png";
+import appSplash from "@/assets/mobile-app/app-splash.png";
+
+type Panel = {
+  tab: string;
+  tabNote: string;
+  badge: string;
+  /** Đường dẫn trong public/ hoặc ảnh import từ src/assets */
+  image: string | ImageMetadata;
+  /** Poster vinh danh là ảnh vuông, hiện trọn thay vì cắt cạnh */
+  contain?: boolean;
+  /** Ảnh chụp app, hiện trong khung điện thoại thay cho ảnh nền */
+  devices?: ImageMetadata[];
+  strong: string;
+  note: string;
+};
+
+// Poster điểm cao nhất trong bảng vinh danh — minh hoạ cho giá trị "Hiệu quả cao".
+const bestPoster = honorPosters.reduce((a, b) =>
+  Number(b.total) > Number(a.total) ? b : a,
+);
+
+/** Ảnh + nhãn tab cho từng giá trị, khớp theo id trong content/site.json. */
+const PANELS: Record<string, Panel> = {
+  "vi-nguoi-hoc": {
+    tab: "Giáo trình riêng",
+    tabNote: "Biên soạn cho người Việt",
+    badge: "Giáo trình độc quyền",
+    image: "/images/activities/hoc-vien-lam-bai.jpg",
+    strong: "Học lại miễn phí",
+    note: "nếu chưa đạt đầu ra đã cam kết",
+  },
+  "giang-vien-chat-luong": {
+    tab: "Đội ngũ giảng viên",
+    tabNote: "Thạc sĩ – Tiến sĩ",
+    badge: "Chuyên môn dẫn dắt",
+    image: "/images/activities/giang-vien-chua-bai.jpg",
+    strong: "Tiến sĩ, Thạc sĩ",
+    note: "tốt nghiệp các đại học lớn tại Trung Quốc",
+  },
+  "ung-dung-hoc-tap": {
+    tab: "Ứng dụng luyện đề",
+    tabNote: "Ôn tập mọi lúc",
+    badge: "Công nghệ học tập",
+    image: appHome,
+    devices: [appSplash, appHome],
+    strong: "Ôn từ vựng · Luyện đề · Theo dõi tiến độ",
+    note: "Chuỗi ngày học, điểm tích luỹ và bài tập của lớp đều nằm trong app",
+  },
+  "hieu-qua-cao": {
+    tab: "Đầu ra đạt chuẩn",
+    tabNote: "Nghe – nói – đọc – viết",
+    badge: "Hiệu quả thực tế",
+    image: bestPoster.image,
+    contain: true,
+    strong: `${bestPoster.exam} ${bestPoster.total}/${bestPoster.max}`,
+    note: `Bạn ${bestPoster.name} — thi ngày ${bestPoster.testDate}`,
+  },
+};
+
+const slides = values
+  .filter((v) => PANELS[v.id])
+  .map((v) => ({ ...v, ...PANELS[v.id] }));
 ---
 
 <section id="why-us" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -9,32 +73,165 @@ import { values } from "@/data/site";
     <SectionHeading
       title="Vì sao học viên chọn"
       highlight="Hoa văn SaigonHSK?"
-      description="SaigonHSK là trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP.HCM. Với những giá trị khác biệt, chúng tôi thực hiện sứ mệnh truyền đạt tinh hoa ngôn ngữ cho cộng đồng."
+      description="SaigonHSK là trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP.HCM. Với những giá trị khác biệt, chúng tôi thực hiện sứ mệnh truyền đạt tinh hoa ngôn ngữ cho cộng đồng."
     />
 
-    <div class="mt-10 grid gap-5 md:grid-cols-2">
+    <div
+      data-value-tabs
+      class="mt-10 overflow-hidden rounded-[2rem] border border-border bg-background"
+    >
       {
-        values.map((v) => {
-          return (
-            <article
-              class="group flex flex-col overflow-hidden rounded-[1.75rem] bg-brand-ink-50 transition-transform duration-300 hover:-translate-y-1"
-            >
-              <ValueIllustration
-                name={v.id}
-                alt={v.title}
-                class="bg-brand-ink-100/60 transition-transform duration-500 group-hover:scale-105"
-              />
+        slides.map((s, i) => (
+          <div
+            data-panel={i}
+            role="tabpanel"
+            id={`why-panel-${i}`}
+            aria-labelledby={`why-tab-${i}`}
+            hidden={i !== 0}
+            class="grid lg:grid-cols-[1fr_1.05fr]"
+          >
+            <div class="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
+              <span class="inline-flex w-fit items-center rounded-full bg-brand-ink-900 px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-white">
+                {s.badge}
+              </span>
 
-              <div class="flex flex-1 flex-col p-7">
-                <h3 class="text-xl font-extrabold text-brand-ink-900">
-                  {v.title}
-                </h3>
-                <p class="mt-3 text-base leading-relaxed text-muted-foreground">{v.desc}</p>
+              <h3 class="mt-6 max-w-md text-2xl font-black leading-tight text-brand-ink-900 sm:text-3xl">
+                {s.title}
+              </h3>
+
+              <p class="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {s.desc}
+              </p>
+
+              <div class="mt-8 max-w-md border-t border-border pt-6">
+                <p class="text-lg font-black leading-none text-brand-ink-900">
+                  {s.strong}
+                </p>
+                <p class="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {s.note}
+                </p>
               </div>
-            </article>
-          );
-        })
+            </div>
+
+            <div
+              class:list={[
+                "relative order-first min-h-56 lg:order-none lg:min-h-[26rem]",
+                (s.contain || s.devices) && "bg-brand-ink-50 p-6 lg:p-10",
+              ]}
+            >
+              {
+                s.devices ? (
+                  <div class="flex h-full items-center justify-center gap-3 sm:gap-5">
+                    {s.devices.map((device, k) => (
+                      <div
+                        class:list={[
+                          "w-1/2 max-w-52 overflow-hidden rounded-[1.5rem] border-[6px] border-brand-ink-900 bg-brand-ink-900 shadow-[0_28px_60px_-32px_rgb(17_24_39/0.6)]",
+                          k === 0
+                            ? "-rotate-6 translate-y-6"
+                            : "rotate-3 -translate-y-2",
+                        ]}
+                      >
+                        <Image
+                          src={device}
+                          alt={`Ứng dụng học tập SaigonHSK — màn hình ${k + 1}`}
+                          width={430}
+                          densities={[1, 2]}
+                          format="webp"
+                          quality={80}
+                          loading="lazy"
+                          decoding="async"
+                          class="block w-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : typeof s.image === "string" ? (
+                  <img
+                    src={s.image}
+                    alt={s.title}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    class="absolute inset-0 size-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={s.image}
+                    alt={`${s.title} — ${s.note}`}
+                    width={720}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={78}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    class="size-full rounded-2xl object-contain"
+                  />
+                )
+              }
+
+              {
+                !s.contain && (
+                  <span
+                    aria-hidden="true"
+                    class="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-background via-background/25 to-transparent lg:block"
+                  />
+                )
+              }
+            </div>
+          </div>
+        ))
       }
+
+      <div
+        role="tablist"
+        aria-label="Giá trị khác biệt của SaigonHSK"
+        class="grid gap-px border-t border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {
+          slides.map((s, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`why-tab-${i}`}
+              data-tab={i}
+              data-active={i === 0 ? "true" : "false"}
+              aria-controls={`why-panel-${i}`}
+              aria-selected={i === 0}
+              class="group relative cursor-pointer bg-background px-6 py-5 text-center transition-colors data-[active=true]:bg-brand-ink-50/60"
+            >
+              <span
+                aria-hidden="true"
+                class="absolute inset-x-0 top-0 h-0.5 bg-brand-red-600 opacity-0 transition-opacity group-data-[active=true]:opacity-100"
+              />
+              <span class="block text-sm font-bold text-muted-foreground transition-colors group-hover:text-brand-ink-900 group-data-[active=true]:text-brand-ink-900">
+                {s.tab}
+              </span>
+              <span class="mt-1 block text-xs text-muted-foreground">
+                {s.tabNote}
+              </span>
+            </button>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-value-tabs]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[data-panel]")];
+
+    const show = (index: number) => {
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.dataset.active = String(active);
+        tab.setAttribute("aria-selected", String(active));
+      });
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+      });
+    };
+
+    tabs.forEach((tab, i) => tab.addEventListener("click", () => show(i)));
+  });
+</script>

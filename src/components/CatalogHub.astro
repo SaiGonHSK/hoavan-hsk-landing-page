@@ -10,7 +10,14 @@ import { ICONS } from "@/lib/icons";
 import { site } from "@/data/site";
 import { clampDescription, itemListSchema } from "@/lib/seo";
 
-export type HubCard = { title: string; summary: string; href: string; tag?: string };
+export type HubCard = {
+  title: string;
+  summary: string;
+  href: string;
+  tag?: string;
+  /** Yêu cầu đầu vào, hiện trên thẻ để người xem tự chọn đúng cấp. */
+  entry?: string;
+};
 export type HubGroup = { title: string; desc?: string; cards: HubCard[] };
 
 interface Props {
@@ -93,6 +100,12 @@ const gridClass =
                     <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
                       {card.summary}
                     </p>
+                    {card.entry && (
+                      <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
+                        <span class="font-bold text-foreground">Đầu vào:</span>{" "}
+                        {card.entry}
+                      </p>
+                    )}
                     <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
                       {/* Tên khoá nằm trong anchor text (ẩn với mắt, hiện với bot và
                           trình đọc màn hình) — "Xem chi tiết" lặp lại hàng chục lần

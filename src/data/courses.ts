@@ -1,3 +1,4 @@
+import { HSK_LEVELS } from "./catalog";
 
 export type CourseLevel = {
 
@@ -46,6 +47,48 @@ const HSK_MATERIALS = [
   "Sử dụng tài liệu ôn thi uy tín từ HanBan.",
 ];
 
+/**
+ * Các khoá theo cấp (Sơ cấp / Trung cấp / Cao cấp) là cùng một lộ trình HSK với
+ * các trang /courses/hsk-N, chỉ gom lại theo nhóm cấp độ. Lấy chung dữ liệu từ
+ * HSK_LEVELS để hai nơi không mô tả lệch nhau như trước.
+ */
+const hskLevel = (level: number): CourseLevel => {
+  const l = HSK_LEVELS.find((x) => x.level === level)!;
+  // Chỉ HSK1 có phần vỡ lòng phát âm và bút thuận.
+  const foundation = "foundation" in l ? [...l.foundation] : [];
+
+  return {
+    name: `Lớp HSK${l.level}`,
+    code: `HSK${l.level}`,
+    audience: [
+      `${l.entry}.`,
+      "Người cần chứng chỉ HSK để du học, xin việc hoặc thăng tiến trong công việc.",
+      "Người muốn học đủ 4 kỹ năng nghe – nói – đọc – viết theo lộ trình rõ ràng.",
+    ],
+    goals: [
+      ...foundation,
+      `Nắm vững ${l.words} vựng HSK${l.level} theo tiêu chuẩn HSK 3.0.`,
+      `Thành thạo ${l.grammarCount} điểm ngữ pháp của cấp HSK${l.level}.`,
+      `Có thể ${l.can}.`,
+    ],
+    // Nhịp học khác nhau giữa các lớp cùng cấp (3 buổi/tuần hoặc 2 buổi/tuần) nên
+    // chỉ nêu tổng thời lượng; số buổi cụ thể xem ở lịch khai giảng.
+    duration: [
+      `${l.months} · lớp tối 3 buổi/tuần hoặc 2 buổi/tuần tuỳ ca, xem lịch khai giảng.`,
+    ],
+    content: [
+      ...foundation,
+      `Từ vựng: ${l.words} của cấp HSK${l.level} theo chuẩn HSK 3.0, học theo chủ điểm gắn với tình huống thực tế.`,
+      `Ngữ pháp: ${l.grammarCount} điểm của cấp độ — ${l.grammar.slice(0, 4).join("; ")}…`,
+      `${l.topics.title}: ${l.topics.items.slice(0, 6).join("; ")}…`,
+      "Luyện nghe – nói theo tình huống, sửa phát âm và thanh điệu trực tiếp trên lớp.",
+      "Kiểm tra định kỳ, thi thử cuối khoá và nhận xét riêng cho từng học viên.",
+    ],
+    materials: STANDARD_MATERIALS,
+    outcomes: [...l.outcomes],
+  };
+};
+
 export const courses: Course[] = [
   {
     slug: "luyen-thi-hsk",
@@ -53,7 +96,7 @@ export const courses: Course[] = [
     title: "Luyện thi HSK",
     summary: "Cam kết đầu ra 100% đậu HSK4, HSK5.",
     goal: "Đậu HSK4 – HSK5",
-    entry: "Từ trình độ SC2/SC3 hoặc TC1/TC2",
+    entry: "Từ trình độ HSK3 hoặc HSK4 trở lên",
     icon: "hsk",
     featured: true,
     tags: ["4 khóa học", "Chuẩn HSK 3.0", "Cam kết đầu ra"],
@@ -62,7 +105,7 @@ export const courses: Course[] = [
         name: "Luyện HSK4 thường",
         code: "HSK4",
         audience: [
-          "Người học có trình độ tương đương lớp SC3 tại trung tâm, hoặc đã học xong 4 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong giáo trình sơ cấp Boya 2, hoặc có vốn từ vựng khoảng 800–900 từ.",
+          "Người học có trình độ tương đương lớp HSK3 tại trung tâm, hoặc đã học xong 4 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong giáo trình sơ cấp Boya 2, hoặc có vốn từ vựng khoảng 800–900 từ.",
           "Đã hoàn toàn nắm được các điểm ngữ pháp cơ bản.",
         ],
         goals: ["Đậu HSK4."],
@@ -81,7 +124,7 @@ export const courses: Course[] = [
         name: "Luyện HSK5 thường",
         code: "HSK5",
         audience: [
-          "Học viên đã học xong lớp TC2 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
+          "Học viên đã học xong lớp HSK5 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
           "Nắm vững và vận dụng được tất cả điểm ngữ pháp cơ bản và một số điểm ngữ pháp nâng cao ở trình độ trung cấp.",
           "Sinh viên năm 2 các trường đại học chuyên ngữ.",
         ],
@@ -102,7 +145,7 @@ export const courses: Course[] = [
         code: "HSK4+",
         audience: [
           "Dành cho học viên muốn rút ngắn thời gian học tập và ôn thi HSK4.",
-          "Đã học xong quyển 3 bộ Giáo trình Hán ngữ 6 quyển, hoặc hoàn thành Sơ cấp 2 (SC2) tại trung tâm.",
+          "Đã học xong quyển 3 bộ Giáo trình Hán ngữ 6 quyển, hoặc hoàn thành lớp HSK2 tại trung tâm.",
           "Có vốn từ khoảng 600 từ trở lên.",
         ],
         goals: ["Đậu HSK4."],
@@ -122,7 +165,7 @@ export const courses: Course[] = [
         name: "Luyện HSK5 đặc biệt",
         code: "HSK5+",
         audience: [
-          "Học viên đã học xong lớp TC1 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
+          "Học viên đã học xong lớp HSK4 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
           "Nắm vững và vận dụng được tất cả điểm ngữ pháp cơ bản và một số điểm ngữ pháp nâng cao ở trình độ trung cấp.",
           "Sinh viên năm 2 các trường đại học chuyên ngữ.",
         ],
@@ -143,212 +186,45 @@ export const courses: Course[] = [
   {
     slug: "tieng-hoa-so-cap",
     image: "/images/courses/tieng-hoa-so-cap.png",
-    title: "Tiếng Hoa Sơ cấp",
-    summary: "Phát triển 4 kỹ năng, đậu HSK2, HSK3, HSK4.",
-    goal: "HSK2 → HSK4",
+    title: "Tiếng Trung Sơ cấp",
+    summary: "Từ con số 0 đến HSK3: phát âm, chữ Hán và 4 kỹ năng.",
+    goal: "HSK1 → HSK3",
     entry: "Bắt đầu từ con số 0",
     icon: "seed",
     featured: true,
-    tags: ["3 khóa học", "Từ vỡ lòng", "4 kỹ năng"],
-    levels: [
-      {
-        name: "Tiếng Hoa Sơ cấp 1",
-        code: "SC1",
-        audience: [
-          "Người chưa từng tiếp xúc với tiếng Hoa, muốn bắt đầu học từ vỡ lòng.",
-          "Người đã từng học tiếng Trung nhưng mất căn bản về ngữ âm, quy tắc bút thuận, học lâu rồi quên hết kiến thức và muốn học lại từ đầu cho vững.",
-          "Người mới bắt đầu học nhưng muốn học đủ cả 4 kỹ năng nghe – nói – đọc – viết.",
-          "Người mới bắt đầu học nhưng muốn học lâu dài vì mục đích du học hoặc làm việc trong môi trường tiếng Hoa.",
-        ],
-        goals: [
-          "Xây dựng nền tảng ngữ âm vững chắc, đọc chính xác phiên âm của bất kỳ từ mới nào sau khi học xong phần ngữ âm.",
-          "Viết thông thạo chữ Hán theo đúng quy tắc bút thuận.",
-          "Tiếp xúc với khoảng 50 bộ chữ, nắm được tên và ý nghĩa của các bộ chữ.",
-          "Phát triển toàn diện 4 kỹ năng nghe – nói – đọc – viết ngay từ khi mới bắt đầu học.",
-          "Giao tiếp được gần 20 chủ đề hằng ngày: giới thiệu bản thân, bạn bè, lớp học, trường học, chỉ đường, phương tiện đi lại, ngày tháng, cách biểu đạt thời gian, số đếm, đổi tiền ở ngân hàng, gọi món ở quán ăn…",
-        ],
-        duration: [
-          "40 buổi – 80 tiết (60 giờ), 3 buổi/tuần, 1,5h/buổi, khoảng 3,5 tháng (14 tuần).",
-          "30 buổi – 80 tiết (60 giờ), 2 buổi/tuần, 2h/buổi, khoảng 4 tháng (15 tuần).",
-        ],
-        content: [
-          "Kiến thức ngữ âm tiếng Hoa.",
-          "Quy tắc bút thuận.",
-          "Từ vựng về 20 chủ đề thường gặp trong cuộc sống.",
-          "Bảng từ vựng HSK2.",
-          "Ngữ pháp tiếng Hoa cơ bản trình độ HSK2.",
-        ],
-        materials: STANDARD_MATERIALS,
-        outcomes: [
-          "Có nền tảng ngữ âm vững chắc.",
-          "Nắm vững ý nghĩa, viết được và sử dụng thông thạo khoảng 350 từ vựng.",
-          "Nắm được ý nghĩa và tên của khoảng 50 bộ chữ.",
-          "Giao tiếp thông thạo các chủ đề đã học.",
-          "Đảm bảo thi đậu 100% HSK2.",
-        ],
-      },
-      {
-        name: "Tiếng Hoa Sơ cấp 2",
-        code: "SC2",
-        audience: [
-          "Người đã hoàn thành khóa SC1 và muốn tiếp tục nâng cao trình độ.",
-          "Người đã học xong giáo trình 301 quyển 1, hoặc 1/2 giáo trình Boya sơ cấp 1, hoặc quyển 1 của Giáo trình Hán ngữ 6 quyển.",
-          "Người đã đạt trình độ HSK2, có vốn từ khoảng 300 từ.",
-        ],
-        goals: [
-          "Hiểu rõ nghĩa, phân biệt được từ loại và vận dụng được từ vựng đã học vào hội thoại.",
-          "Nắm và vận dụng thông thạo 35 điểm ngữ pháp cơ bản quan trọng.",
-          "Tiếp xúc với khoảng 80 bộ chữ, nắm được tên và ý nghĩa của các bộ chữ.",
-          "Giao tiếp thông thạo gần 30 chủ đề hằng ngày: đi bác sĩ, thăm bệnh, mua sắm, trả giá, thời tiết, ẩm thực, thăm hỏi bạn bè, thuê nhà, chọn món ăn, kế hoạch học tập, thể thao…",
-          "Nâng cao và hoàn thiện dần 4 kỹ năng nghe – nói – đọc – viết ở trình độ HSK3.",
-        ],
-        duration: [
-          "40 buổi – 80 tiết (60 giờ), 3 buổi/tuần, 1,5h/buổi, khoảng 3,5 tháng (14 tuần).",
-          "30 buổi – 80 tiết (60 giờ), 2 buổi/tuần, 2h/buổi, khoảng 4 tháng (15 tuần).",
-        ],
-        content: [
-          "Hơn 35 điểm ngữ pháp tiếng Hoa cơ bản.",
-          "Khoảng 650 từ vựng về các chủ điểm thường gặp trong cuộc sống.",
-          "Đọc thông thạo và hội thoại khoảng 30 chủ điểm thường ngày.",
-        ],
-        materials: STANDARD_MATERIALS,
-        outcomes: [
-          "Sử dụng được hơn 35 điểm ngữ pháp cơ bản.",
-          "Nắm vững ý nghĩa, viết được và sử dụng thông thạo khoảng 650 từ vựng.",
-          "Nắm được ý nghĩa và tên của khoảng 80 bộ chữ.",
-          "Giao tiếp thông thạo các chủ đề đã học.",
-          "Đảm bảo thi đậu 100% HSK3.",
-        ],
-      },
-      {
-        name: "Tiếng Hoa Sơ cấp 3",
-        code: "SC3",
-        audience: [
-          "Người đã hoàn thành khóa SC2 và muốn tiếp tục nâng cao trình độ.",
-          "Người đã học xong giáo trình 301 quyển 1 và 2, hoặc 1/2 giáo trình Boya sơ cấp 2, hoặc quyển 2 của Giáo trình Hán ngữ 6 quyển.",
-          "Người đã đạt trình độ HSK3, có vốn từ khoảng 600 từ.",
-          "Người muốn chuẩn bị hành trang thi HSK để du học hoặc làm việc trong môi trường yêu cầu tiếng Trung chuyên nghiệp.",
-        ],
-        goals: [
-          "Hiểu rõ nghĩa, phân biệt từ loại và vận dụng linh hoạt từ vựng đã học.",
-          "Nắm và vận dụng thông thạo 45 điểm ngữ pháp cơ bản quan trọng.",
-          "Tiếp xúc với khoảng 120 bộ chữ, nắm được tên và ý nghĩa của các bộ chữ.",
-          "Giao tiếp ở mức độ phức tạp hơn với từ vựng phong phú hơn: thảo luận kỳ nghỉ, phương tiện giao thông, giới thiệu điểm du lịch, mua quà sinh nhật, mượn đồ dùng, miêu tả chi tiết một người, thảo luận thể thao…",
-          "Nâng cao và hoàn thiện 4 kỹ năng nghe – nói – đọc – viết ở trình độ HSK4.",
-        ],
-        duration: [
-          "40 buổi – 80 tiết (60 giờ), 3 buổi/tuần, 1,5h/buổi, khoảng 3,5 tháng (14 tuần).",
-          "30 buổi – 80 tiết (60 giờ), 2 buổi/tuần, 2h/buổi, khoảng 4 tháng (15 tuần).",
-        ],
-        content: [
-          "Hơn 45 điểm ngữ pháp tiếng Hoa cơ bản.",
-          "Khoảng 1.250 từ vựng về các chủ điểm thường gặp trong cuộc sống.",
-          "Đọc thông thạo và hội thoại khoảng 30 chủ điểm thường ngày.",
-        ],
-        materials: STANDARD_MATERIALS,
-        outcomes: [
-          "Sử dụng được hơn 45 điểm ngữ pháp cơ bản.",
-          "Nắm vững ý nghĩa, viết được và sử dụng thông thạo khoảng 1.250 từ vựng.",
-          "Nắm được ý nghĩa và tên của khoảng 120 bộ chữ.",
-          "Giao tiếp thông thạo các chủ đề đã học.",
-          "Đảm bảo thi đậu 100% HSK4.",
-        ],
-      },
-    ],
+    tags: ["3 lớp: HSK1 – HSK3", "Chuẩn HSK 3.0", "4 kỹ năng"],
+    levels: [hskLevel(1), hskLevel(2), hskLevel(3)],
   },
   {
     slug: "tieng-hoa-trung-cap",
     image: "/images/courses/tieng-hoa-trung-cap.png",
-    title: "Tiếng Hoa Trung cấp",
-    summary: "Phát triển 4 kỹ năng, đạt HSK5.",
-    goal: "Hướng tới HSK5",
-    entry: "Đã hoàn thành SC3 hoặc tương đương HSK4",
+    title: "Tiếng Trung Trung cấp",
+    summary: "Mở rộng lên 3.600 từ, đạt năng lực HSK4 và HSK5.",
+    goal: "HSK4 → HSK5",
+    entry: "Đã hoàn thành HSK3 hoặc tương đương",
     icon: "growth",
     featured: true,
-    tags: ["2 khóa học", "Khẩu ngữ song song", "Chủ đề xã hội"],
-    levels: [
-      {
-        name: "Tiếng Hoa Trung cấp 1",
-        code: "TC1",
-        audience: [
-          "Người đã hoàn thành khóa tiếng Hoa sơ cấp với 4 kỹ năng SC1, SC2, SC3 tại trung tâm.",
-          "Người đã hoàn thành giáo trình Boya 2 hoặc quyển 4–5 Giáo trình Hán ngữ (6 cuốn).",
-          "Người đã có trình độ HSK4, muốn nâng cao trình độ với 4 kỹ năng nghe, nói, đọc, viết.",
-          "Người có trình độ tương đương HSK4, vốn từ vựng khoảng 1.200 từ.",
-        ],
-        goals: [
-          "Hiểu nghĩa, cách dùng và vận dụng được khoảng 1.000 từ vựng ở nhiều lĩnh vực: kinh tế, văn hóa, xã hội.",
-          "Hiểu và nắm vững các từ ngữ trọng điểm ở mức tiền trung cấp (hư từ: phó từ, giới từ, trợ từ…).",
-          "Nâng cao 4 kỹ năng nghe, nói, đọc, viết gắn với các chủ đề xã hội đương đại.",
-          "Được trang bị đủ từ vựng và ngữ pháp để bước vào ôn thi HSK5.",
-        ],
-        duration: ["40 buổi – 80 tiết (60 giờ), 3 buổi/tuần, 1,5h/buổi, khoảng 3,5 tháng (14 tuần)."],
-        content: [
-          "11 chủ điểm thiết thực về văn hóa, xã hội đương đại và phong tục Trung Quốc: cuộc sống du học, khác biệt văn hóa Đông – Tây, lối sống của người trẻ, các lễ hội Trung Quốc…",
-          "Nội dung bài khóa mang tính ứng dụng, cung cấp lượng từ mới và kiến thức ngữ pháp phong phú.",
-          "Rèn song song 4 kỹ năng nghe – nói – đọc – viết, giúp học viên phản ứng nhanh với tiếng Trung và dễ áp dụng thực tế.",
-        ],
-        materials: [
-          ...STANDARD_MATERIALS,
-          "Khóa học dùng hai giáo trình song song — tổng hợp trung cấp và khẩu ngữ trung cấp — để nâng cao vượt trội khả năng khẩu ngữ, nghe nói và đọc hiểu.",
-        ],
-        outcomes: [
-          "Sử dụng được hơn 75 điểm ngữ pháp và các từ vựng trọng điểm (hết ngữ pháp cơ bản, chuyển sang từ pháp).",
-          "Nắm vững ý nghĩa, viết được và sử dụng thông thạo khoảng 1.000 từ vựng.",
-          "Nắm được ý nghĩa và tên của khoảng 120 bộ chữ.",
-          "Nâng cao vượt bậc khả năng nghe và đọc hiểu.",
-          "Đạt khoảng 1/2 trình độ HSK5 — có thể tham gia lớp luyện thi HSK5 đặc biệt bao đầu ra.",
-        ],
-      },
-      {
-        name: "Tiếng Hoa Trung cấp 2",
-        code: "TC2",
-        audience: [
-          "Người đã hoàn thành khóa trung cấp TC1 tại trung tâm.",
-          "Người đã hoàn thành giáo trình Boya trung cấp 1 hoặc quyển 4–5 Giáo trình Hán ngữ (6 cuốn).",
-          "Người đã có trình độ HSK4 vững vàng, muốn nâng cao với 4 kỹ năng nghe, nói, đọc, viết.",
-          "Người có trình độ hơn HSK4, vốn từ vựng hơn 1.000 từ.",
-        ],
-        goals: [
-          "Hiểu nghĩa, cách dùng và vận dụng được khoảng 1.300 từ vựng ở nhiều lĩnh vực: kinh tế, văn hóa, xã hội.",
-          "Nắm vững các từ ngữ trọng điểm, phó từ, giới từ, liên từ ở trình độ cao hơn.",
-          "Nâng cao 4 kỹ năng gắn với các chủ đề xã hội đương đại.",
-          "Chuẩn bị đủ nền tảng để bước vào ôn thi HSK5.",
-        ],
-        duration: ["40 buổi – 80 tiết (60 giờ), 3 buổi/tuần, 1,5h/buổi, khoảng 3,5 tháng (14 tuần)."],
-        content: [
-          "15 chủ điểm nâng cao mở rộng vốn từ tối đa: bảo vệ động vật hoang dã, từ bỏ nỗi lo trong cuộc sống, kỹ xảo trò chuyện, cái đẹp trong cuộc sống, thành công của một thương hiệu lớn, ảnh hưởng của người nổi tiếng, lối sống hiện đại của giới trẻ, phẫu thuật thẩm mỹ, nghệ thuật nhân sinh, thời đại công nghệ, thần tượng của giới trẻ…",
-          "Nâng cao trình độ nghe nói với giáo trình nghe nói được thiết kế riêng biệt.",
-          "Cung cấp khối lượng từ vựng lớn, giúp diễn đạt phong phú và có chiều sâu.",
-        ],
-        materials: [
-          ...STANDARD_MATERIALS,
-          "Khóa học dùng hai giáo trình song song — tổng hợp trung cấp và khẩu ngữ trung cấp.",
-        ],
-        outcomes: [
-          "Tích lũy khoảng 1.300 từ vựng, đủ vốn ngữ pháp và mẫu câu để test năng lực đầu vào lớp ôn thi HSK5 thường của trung tâm.",
-          "Nâng cao trình độ nghe nói với giáo trình nghe nói riêng biệt.",
-        ],
-      },
-    ],
+    tags: ["2 lớp: HSK4 – HSK5", "Chuẩn HSK 3.0", "Đọc hiểu – nghị luận"],
+    // Mỗi cấp chia thành hai chặng (HSK4.1/4.2, HSK5.1/5.2) trên lịch khai giảng.
+    note: "Từ HSK4 trở lên, mỗi cấp được chia thành hai chặng (ví dụ HSK4.1 và HSK4.2), mỗi chặng 3,5 tháng.",
+    levels: [hskLevel(4), hskLevel(5)],
   },
   {
     slug: "tieng-hoa-cao-cap",
     image: "/images/courses/tieng-hoa-cao-cap.png",
-    title: "Tiếng Hoa Cao cấp",
-    summary: "Phát triển 4 kỹ năng, đạt HSK6.",
+    title: "Tiếng Trung Cao cấp",
+    summary: "Nắm 5.400 từ, xử lý văn bản học thuật và chuyên ngành.",
     goal: "Hướng tới HSK6",
-    entry: "Đã hoàn thành TC2 hoặc tương đương HSK5",
+    entry: "Đã hoàn thành HSK5 hoặc tương đương",
     icon: "peak",
-    tags: ["2 khóa học", "Cao cấp 1 & 2"],
-    contactOnly: true,
-    note: "Tiếng Hoa Cao cấp gồm 2 khóa học: Cao cấp 1 và Cao cấp 2. Vui lòng liên hệ trung tâm để nhận lộ trình và chi tiết khóa học.",
-    levels: [],
+    tags: ["Lớp HSK6", "Chuẩn HSK 3.0", "Học thuật – chuyên ngành"],
+    note: "Cấp HSK6 được chia thành hai chặng (HSK6.1 và HSK6.2), mỗi chặng 3,5 tháng. Vui lòng liên hệ trung tâm để nhận lộ trình chi tiết.",
+    levels: [hskLevel(6)],
   },
   {
     slug: "tieng-hoa-giao-tiep-cap-toc",
     image: "/images/courses/tieng-hoa-giao-tiep-cap-toc.png",
-    title: "Tiếng Hoa Giao tiếp Cấp tốc",
+    title: "Tiếng Trung Giao tiếp Cấp tốc",
     summary: "Nói được tiếng Trung trong 3 tháng, không nặng viết chữ Hán.",
     goal: "Giao tiếp cấp tốc",
     entry: "Người mới bắt đầu",
@@ -409,7 +285,7 @@ export const courses: Course[] = [
   {
     slug: "tieng-hoa-doanh-nghiep",
     image: "/images/courses/tieng-hoa-doanh-nghiep.png",
-    title: "Tiếng Hoa Doanh nghiệp",
+    title: "Tiếng Trung Doanh nghiệp",
     summary: "Lớp tiếng Trung thiết kế riêng cho doanh nghiệp.",
     goal: "Tiếng Trung công việc",
     entry: "Theo khảo sát trình độ nhân sự",
@@ -422,7 +298,7 @@ export const courses: Course[] = [
   {
     slug: "tieng-hoa-vip",
     image: "/images/courses/tieng-hoa-vip.png",
-    title: "Tiếng Hoa VIP (1 kèm 1)",
+    title: "Tiếng Trung VIP (1 kèm 1)",
     summary: "Lớp tiếng Trung thiết kế dành cho người bận rộn.",
     goal: "Lộ trình cá nhân hóa",
     entry: "Mọi trình độ",
@@ -435,7 +311,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-thieu-nhi",
-    title: "Tiếng Hoa Thiếu nhi",
+    title: "Tiếng Trung Thiếu nhi",
     summary: "Lớp tiếng Trung thiết kế dành cho thiếu nhi.",
     goal: "Nền tảng cho trẻ",
     entry: "Học sinh tiểu học – trung học",
@@ -447,7 +323,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-nguoi-lon-tuoi",
-    title: "Tiếng Hoa cho người lớn tuổi",
+    title: "Tiếng Trung cho người lớn tuổi",
     summary: "Nhịp học chậm, chú trọng nghe – nói.",
     goal: "Học nhẹ nhàng, dễ tiếp thu",
     entry: "Mọi trình độ",
@@ -468,30 +344,30 @@ export function getCourse(slug: string) {
 export const roadmap = [
   {
     step: "01",
-    code: "SC1 – SC3",
+    code: "HSK1 – HSK3",
     title: "Sơ cấp",
-    result: "HSK2 → HSK4",
-    desc: "Ngữ âm, bút thuận, khoảng 1.250 từ vựng và 45 điểm ngữ pháp cơ bản. Giao tiếp thông thạo các chủ đề thường ngày.",
+    result: "HSK1 → HSK3",
+    desc: "Phát âm, quy tắc viết chữ Hán, 1.000 từ vựng và 130 điểm ngữ pháp. Giao tiếp tương đối lưu loát các chủ đề thường ngày.",
   },
   {
     step: "02",
-    code: "TC1 – TC2",
+    code: "HSK4 – HSK5",
     title: "Trung cấp",
-    result: "Hướng tới HSK5",
-    desc: "Thêm khoảng 1.300 từ vựng theo chủ đề văn hóa – xã hội, học song song giáo trình tổng hợp và khẩu ngữ.",
+    result: "HSK4 → HSK5",
+    desc: "Mở rộng lên 3.600 từ vựng và 350 điểm ngữ pháp, đọc hiểu và trình bày quan điểm về các chủ đề văn hoá – xã hội.",
   },
   {
     step: "03",
-    code: "HSK4 – HSK5",
+    code: "LT-HSK3 – LT-HSK5",
     title: "Luyện thi",
     result: "Cam kết 100% đậu",
     desc: "Lớp thường và lớp đặc biệt, ôn theo tài liệu HanBan, thi thử miễn phí đầu và cuối khóa.",
   },
   {
     step: "04",
-    code: "CC1 – CC2",
+    code: "HSK6",
     title: "Cao cấp",
     result: "Hướng tới HSK6",
-    desc: "Hoàn thiện 4 kỹ năng ở trình độ cao cấp, sẵn sàng cho du học và môi trường làm việc chuyên nghiệp.",
+    desc: "5.400 từ vựng và 450 điểm ngữ pháp, xử lý văn bản học thuật và chuyên ngành, sẵn sàng cho du học và môi trường làm việc chuyên nghiệp.",
   },
 ] as const;

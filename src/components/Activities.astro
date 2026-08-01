@@ -1,23 +1,70 @@
 ---
-import SectionHeading from "@/components/SectionHeading.astro";
-import PhotoMosaic from "@/components/PhotoMosaic.astro";
-import { activities } from "@/data/activities";
+import { Image, getImage } from "astro:assets";
+import BrandHeading from "@/components/BrandHeading.astro";
+import { activityPosters } from "@/data/activities";
+
+/*
+  Lightbox nhận URL dạng chuỗi nên phải tạo sẵn bản phóng to đã nén —
+  nếu trỏ thẳng vào ảnh gốc 2526px thì mỗi lần mở phải tải ~1,5MB.
+*/
+const posters = await Promise.all(
+  activityPosters.map(async (p) => ({
+    ...p,
+    full: (
+      await getImage({
+        src: p.image,
+        width: 1200,
+        format: "webp",
+        quality: 78,
+      })
+    ).src,
+  })),
+);
 ---
 
 {
-  activities.length > 0 && (
+  posters.length > 0 && (
     <section
       id="activities"
       class="relative overflow-hidden bg-background scroll-mt-24"
     >
       <div class="container relative z-10 mx-auto px-6">
-        <SectionHeading
-          title="Hoạt động học viên"
-          highlight="nhà Hoa văn SaigonHSK"
-          description="Ngoài giờ học, trung tâm còn tổ chức hoạt động văn hoá Trung Hoa để học viên dùng tiếng Hoa một cách tự nhiên."
+        <BrandHeading
+          title="Hoạt động học viên "
+          highlight="SaigonHSK"
+          note="Minigame Check-in Tết 2026"
         />
 
-        <PhotoMosaic photos={activities} class="mt-12">
+        <div class="relative mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          {posters.map((p) => (
+            <button
+              type="button"
+              data-lightbox={p.full}
+              data-caption={p.caption}
+              class="group relative block cursor-zoom-in overflow-hidden rounded-3xl bg-brand-ink-50"
+            >
+              <Image
+                src={p.image}
+                alt={p.caption}
+                width={480}
+                densities={[1, 2]}
+                format="webp"
+                quality={76}
+                loading="lazy"
+                decoding="async"
+                class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+              />
+
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-linear-to-t from-brand-ink-950/85 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              />
+
+              <span class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-left text-[15px] font-extrabold leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                {p.caption}
+              </span>
+            </button>
+          ))}
 
           <span
             aria-hidden="true"
@@ -27,7 +74,7 @@ import { activities } from "@/data/activities";
             <br />
             成功
           </span>
-        </PhotoMosaic>
+        </div>
       </div>
     </section>
   )

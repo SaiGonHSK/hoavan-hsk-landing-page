@@ -1,68 +1,312 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { contact } from "@/data/site";
+import { honorPosters } from "@/data/achievements";
+import { contact, commitments } from "@/data/site";
+import { testimonials } from "@/data/testimonials";
+import { lightboxSrc } from "@/lib/images";
+import { ICONS } from "@/lib/icons";
 
-const achievements = [
-  { label: "Lớp Sơ cấp 1", result: "100% đậu HSK2" },
-  { label: "Lớp Sơ cấp 2", result: "100% đậu HSK3" },
-  { label: "Lớp Sơ cấp 3", result: "100% đậu HSK4" },
-  { label: "Luyện HSK4 (thường & đặc biệt)", result: "100% đậu HSK4" },
-  { label: "Luyện HSK5 (thường & đặc biệt)", result: "100% đậu HSK5" },
-  { label: "Lớp Trung cấp 1", result: "Đạt 1/2 trình độ HSK5" },
+const posters = await Promise.all(
+  honorPosters.map(async (p) => ({
+    ...p,
+    caption: `${p.title} — bạn ${p.name}`,
+    full: await lightboxSrc(p.image),
+  })),
+);
+
+/** Chuẩn đầu ra cam kết theo nhóm lớp. */
+const outcomes = [
+  { label: "Lớp HSK1", result: "100% đậu HSK1" },
+  { label: "Lớp HSK2", result: "100% đậu HSK2" },
+  { label: "Lớp HSK3", result: "100% đậu HSK3" },
+  { label: "Lớp HSK4", result: "Đạt năng lực HSK4" },
+  { label: "Luyện thi HSK4", result: "100% đậu HSK4" },
+  { label: "Luyện thi HSK5", result: "100% đậu HSK5" },
 ];
+
+// Điểm cao nhất trong bảng vinh danh — dùng làm số liệu ở hero, không gõ tay
+// để khỏi lệch khi thêm học viên mới.
+const best = posters.reduce((a, b) => (Number(b.total) > Number(a.total) ? b : a));
+
+const heroStats = [
+  { value: String(posters.length), label: "Học viên vừa được vinh danh" },
+  { value: `${best.total}/${best.max}`, label: `Điểm cao nhất — ${best.exam}` },
+  { value: "100%", label: "Cam kết đầu ra mọi khoá học" },
+];
+
+const quotes = testimonials.slice(0, 3);
 ---
 
 <Layout
-  title="Thành tích học viên — chuẩn đầu ra từng lớp | SaigonHSK"
-  description="Chuẩn đầu ra cam kết theo từng nhóm lớp tại Hoa văn SaigonHSK: 100% đậu HSK2, HSK3, HSK4, HSK5. Không đạt được học lại miễn phí."
+  title="Thành tích học viên — bảng điểm HSK & chuẩn đầu ra | SaigonHSK"
+  description="Bảng điểm HSK5, HSK6 của học viên Hoa văn SaigonHSK và chuẩn đầu ra cam kết theo từng nhóm lớp: 100% đậu HSK1–HSK5, không đạt được học lại miễn phí."
+  keywords="thành tích học viên HSK, điểm thi HSK5, điểm thi HSK6, trung tâm tiếng Trung cam kết đầu ra"
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <PageHero
       title="Thành tích học viên"
-      description="Mức trung tâm cam kết cho học viên hoàn thành chương trình — không đạt được học lại miễn phí."
+      description="Bảng điểm thật của học viên vừa thi đỗ, kèm chuẩn đầu ra trung tâm cam kết cho từng nhóm lớp — không đạt được học lại miễn phí."
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Thành tích học viên" }]}
+      eyebrow="Kết quả thi mới nhất"
       glyph="绩"
-    />
+    >
+      <dl class="mt-9 grid max-w-2xl gap-4 sm:grid-cols-3">
+        {
+          heroStats.map((s) => (
+            <div class="rounded-2xl border border-border bg-background px-5 py-4">
+              <dt class="text-2xl font-black leading-none text-brand-red-600">
+                {s.value}
+              </dt>
+              <dd class="mt-2 text-xs leading-relaxed text-muted-foreground">
+                {s.label}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </PageHero>
 
     <section class="bg-background">
       <div class="container mx-auto px-6">
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <SectionHeading
+          align="left"
+          title="Bảng vinh danh"
+          highlight="học viên thi đỗ HSK"
+          inlineHighlight
+          note="Bấm ảnh để xem phiếu điểm gốc"
+          description="Ảnh và số điểm dưới đây lấy nguyên từ poster vinh danh trung tâm đã công bố."
+        />
+
+        <div class="mt-10 grid gap-5 lg:grid-cols-2">
           {
-            achievements.map((a) => (
-              <div class="flex items-center justify-between gap-4 rounded-2xl bg-brand-ink-50 px-6 py-5">
-                <span class="text-sm font-semibold text-foreground">{a.label}</span>
-                <span class="shrink-0 rounded-full bg-brand-red-600 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-white">
-                  {a.result}
-                </span>
+            posters.map((p) => (
+              <article class="flex flex-col gap-5 rounded-3xl border border-border bg-background p-5 transition-shadow hover:shadow-[0_24px_50px_-32px_rgb(17_24_39/0.45)] sm:flex-row">
+                <button
+                  type="button"
+                  data-lightbox={p.full}
+                  data-caption={p.caption}
+                  class="group w-full shrink-0 cursor-zoom-in overflow-hidden rounded-2xl bg-brand-ink-50 sm:w-44"
+                >
+                  <Image
+                    src={p.image}
+                    alt={p.caption}
+                    width={352}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={78}
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                  />
+                </button>
+
+                <div class="flex min-w-0 flex-1 flex-col">
+                  <p class="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    Ngày thi {p.testDate}
+                  </p>
+
+                  <h3 class="mt-2 text-xl font-black leading-tight text-brand-ink-900">
+                    Bạn {p.name}
+                  </h3>
+
+                  <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <span class="rounded-full bg-brand-red-600 px-3 py-1.5 text-[0.6875rem] font-black uppercase tracking-widest text-white">
+                      {p.exam}
+                    </span>
+                    <p class="text-3xl font-black leading-none text-brand-red-600">
+                      {p.total}
+                      <span class="text-sm font-bold text-muted-foreground">
+                        /{p.max}
+                      </span>
+                    </p>
+                  </div>
+
+                  <dl class="mt-4 grid grid-cols-3 gap-2">
+                    {p.parts.map((part) => (
+                      <div class="rounded-xl bg-brand-ink-50 px-3 py-2">
+                        <dt class="truncate text-[0.625rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">
+                          {part.label}
+                        </dt>
+                        <dd class="mt-1 text-base font-black leading-none text-brand-ink-900">
+                          {part.score}
+                          <span class="text-[0.625rem] font-bold text-muted-foreground">
+                            /100
+                          </span>
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  {p.note && (
+                    <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
+                      {p.note}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          align="left"
+          title="Chuẩn đầu ra"
+          highlight="cam kết theo từng lớp"
+          inlineHighlight
+          description="Mức trung tâm cam kết cho học viên hoàn thành chương trình và dự thi đúng lộ trình."
+        />
+
+        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            outcomes.map((o) => (
+              <div class="flex h-full flex-col rounded-3xl border border-border bg-background p-6 transition-colors hover:border-brand-ink-300">
+                <p class="text-base font-black leading-snug text-brand-ink-900">
+                  {o.label}
+                </p>
+
+                <div class="mt-5 flex items-center gap-2.5 border-t border-border pt-4">
+                  <span
+                    class="grid size-6 shrink-0 place-items-center rounded-full bg-emerald-500 text-white [&>svg]:size-3.5"
+                    set:html={ICONS.check}
+                  />
+                  <p class="text-[0.6875rem] font-bold uppercase tracking-widest text-brand-ink-700">
+                    {o.result}
+                  </p>
+                </div>
               </div>
             ))
           }
         </div>
 
-        <figure class="mt-10 rounded-3xl bg-brand-ink-900 p-8 text-white md:p-10">
-          <blockquote class="text-lg font-bold leading-[1.5] md:text-xl">
-            “Chỉ hơn 1 năm, từ một người chưa biết gì về tiếng Trung, mình đồng thời thi
-            đậu HSK6 và TOCFL Band C1.”
-          </blockquote>
-          <figcaption class="mt-5 text-sm text-white/70">
-            Hiển Hoàng — Sinh viên ĐH KHXH&NV TP.HCM
-          </figcaption>
-        </figure>
+        <ul class="mt-5 grid gap-4 md:grid-cols-3">
+          {
+            commitments.map((c) => (
+              <li class="flex gap-4 rounded-3xl bg-brand-ink-50 p-6">
+                <span
+                  class="grid size-10 shrink-0 place-items-center rounded-xl bg-background text-brand-ink-700 shadow-[0_10px_24px_-18px_rgb(17_24_39/0.7)] [&>svg]:size-5"
+                  set:html={ICONS[c.icon as keyof typeof ICONS]}
+                />
+                <div>
+                  <p class="text-sm font-bold leading-snug text-brand-ink-900">
+                    {c.title}
+                  </p>
+                  <p class="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    {c.desc}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
 
-        <p class="mt-6 text-sm leading-relaxed text-muted-foreground">
-          Bạn là học viên cũ và đã có kết quả thi? Gửi bảng điểm về
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          align="left"
+          title="Học viên"
+          highlight="nói gì sau khi thi"
+          inlineHighlight
+        />
+
+        <div class="mt-10 grid gap-5 lg:grid-cols-3">
+          {
+            quotes.map((q, i) => (
+              <figure
+                class:list={[
+                  "flex flex-col rounded-3xl p-8",
+                  i === 0
+                    ? "bg-brand-ink-900 text-white lg:col-span-3 lg:p-10"
+                    : "border border-border bg-background",
+                ]}
+              >
+                <span
+                  aria-hidden="true"
+                  class:list={[
+                    "text-5xl font-black leading-none",
+                    i === 0 ? "text-white/25" : "text-brand-red-200",
+                  ]}
+                >
+                  “
+                </span>
+
+                <blockquote
+                  class:list={[
+                    "mt-4 flex-1 leading-[1.6]",
+                    i === 0
+                      ? "text-lg font-bold md:text-xl"
+                      : "text-sm text-muted-foreground",
+                  ]}
+                >
+                  {q.quote}
+                </blockquote>
+
+                <figcaption
+                  class:list={[
+                    "mt-6 text-sm",
+                    i === 0 ? "text-white/70" : "text-muted-foreground",
+                  ]}
+                >
+                  <span
+                    class:list={[
+                      "font-bold",
+                      i === 0 ? "text-white" : "text-brand-ink-900",
+                    ]}
+                  >
+                    {q.name}
+                  </span>
+                  {" — "}
+                  {q.role}
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+
+        <div
+          class="mt-10 flex flex-col gap-5 rounded-3xl border-2 border-dashed border-brand-red-200 bg-brand-red-50/60 px-6 py-7 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex items-start gap-4 sm:items-center">
+            <span
+              class="mt-0.5 grid size-11 shrink-0 place-items-center rounded-2xl bg-background text-brand-ink-700 sm:mt-0 [&>svg]:size-5"
+              set:html={ICONS.mail}
+            />
+            <div>
+              <p class="text-base font-black leading-snug text-brand-ink-900">
+                Bạn là học viên cũ và đã có kết quả thi?
+              </p>
+              <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Gửi bảng điểm về email của trung tâm để được cập nhật vào bảng vinh
+                danh.
+              </p>
+            </div>
+          </div>
+
           <a
             href={`mailto:${contact.email}`}
-            class="font-semibold text-brand-red-600 hover:underline">{contact.email}</a
-          > để trung tâm cập nhật vào bảng thành tích.
-        </p>
+            class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+          >
+            Gửi bảng điểm
+            <span
+              class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+              set:html={ICONS.arrowUpRight}
+            />
+          </a>
+        </div>
       </div>
     </section>
 

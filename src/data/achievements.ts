@@ -1,83 +1,99 @@
-
-export type Achievement = {
-  /** Tên học viên */
-  name: string;
-  /** Dòng phụ dưới tên: trường / nơi làm việc */
-  school: string;
-  /** Ảnh học viên, tỉ lệ 4/3 hoặc 1/1 đều được */
-  image: string;
-  /** Kết quả in trên ruy băng đỏ, vd "6", "5", "B2" */
-  score: string;
-  /** Tên kỳ thi in dưới điểm, vd "HSK" */
-  exam: string;
-};
+import poster1 from "@/assets/archivements/a1.jpg";
+import poster2 from "@/assets/archivements/a2.jpg";
+import poster3 from "@/assets/archivements/a3.jpg";
+import poster4 from "@/assets/archivements/a4.jpg";
 
 /**
- * TODO: điểm & kỳ thi dưới đây là dữ liệu mẫu để dựng layout —
- * cần trung tâm xác nhận kết quả thật của từng học viên trước khi publish.
+ * Poster vinh danh học viên do trung tâm công bố — điểm bên dưới chép lại
+ * đúng bảng điểm in trên poster.
+ * Ảnh nằm ở src/assets/archivements/ để Astro nén và xuất WebP lúc build,
+ * bản gốc 2526×2526 nên không được nhúng thẳng.
  */
-export const achievements: Achievement[] = [
+export type HonorPoster = {
+  image: ImageMetadata;
+  /** Tên học viên, in dưới ảnh */
+  name: string;
+  /** Tiêu đề poster, dùng làm chú thích khi phóng to */
+  title: string;
+  /** Kỳ thi, vd "HSK5" */
+  exam: string;
+  /** Tổng điểm và thang điểm */
+  total: string;
+  max: string;
+  /** Ngày thi ghi trên bảng điểm */
+  testDate: string;
+  /** Điểm từng kỹ năng, đều thang 100 */
+  parts: { label: string; score: string }[];
+  /** Ghi chú nhỏ, vd phần nói chưa công bố */
+  note?: string;
+  /** Kết quả tóm tắt một dòng, dùng ở trang chủ */
+  result: string;
+};
+
+export const honorPosters: HonorPoster[] = [
   {
-    name: "Huỳnh Phối My",
-    school: "Sinh viên Trường Múa TP.HCM",
-    image: "/images/reviews/phoi-my.jpg",
-    score: "5",
-    exam: "HSK",
+    image: poster1,
+    name: "Rosie Cao",
+    title: "Vinh danh học viên thi đỗ HSK5 (HSK 3.0)",
+    exam: "HSK5",
+    total: "238",
+    max: "300",
+    testDate: "31/01/2026",
+    parts: [
+      { label: "Nghe", score: "86" },
+      { label: "Đọc", score: "86" },
+      { label: "Viết", score: "66" },
+      { label: "Nói (HSKK)", score: "74" },
+    ],
+    note: "Phần nói HSKK: đạt (Pass)",
+    result: "HSK5 — 238/300 · HSKK 74/100",
   },
   {
-    name: "Trần Chí Nguyện",
-    school: "Sinh viên ĐH Tôn Đức Thắng",
-    image: "/images/reviews/chi-nguyen.jpg",
-    score: "5",
-    exam: "HSK",
+    image: poster2,
+    name: "Nhã Anh",
+    title: "Vinh danh học viên thi đỗ HSK5",
+    exam: "HSK5",
+    total: "256",
+    max: "300",
+    testDate: "22/03/2026",
+    parts: [
+      { label: "Nghe", score: "84" },
+      { label: "Đọc", score: "89" },
+      { label: "Viết", score: "83" },
+    ],
+    note: "Điểm HSKK (phần nói) chưa công bố",
+    result: "HSK5 — 256/300",
   },
   {
-    name: "Đoàn Phương Thảo",
-    school: "Cựu sinh viên ĐH Ngoại Thương Hà Nội",
-    image: "/images/reviews/doan-phuong-thao.png",
-    score: "6",
-    exam: "HSK",
+    image: poster3,
+    name: "Lê Văn Tân",
+    title: "Vinh danh học viên thi đỗ HSK6",
+    exam: "HSK6",
+    total: "222",
+    max: "300",
+    testDate: "22/03/2026",
+    parts: [
+      { label: "Nghe", score: "66" },
+      { label: "Đọc", score: "86" },
+      { label: "Viết", score: "70" },
+    ],
+    note: "Học lớp luyện HSK5, thi đỗ luôn HSK6",
+    result: "HSK6 — 222/300",
   },
   {
-    name: "Trần Gia Tuệ",
-    school: "Sinh viên ĐH Nguyễn Tất Thành",
-    image: "/images/reviews/tran-gia-tue.jpg",
-    score: "4",
-    exam: "HSK",
-  },
-  {
-    name: "Long Chấn Phát",
-    school: "Cựu sinh viên ĐH KHXH&NV TP.HCM",
-    image: "/images/reviews/long-chan-phat.png",
-    score: "6",
-    exam: "HSK",
-  },
-  {
-    name: "Nguyễn Thị Phương Thảo",
-    school: "Giáo viên tâm lý",
-    image: "/images/reviews/nguyen-thi-phuong-thao.jpg",
-    score: "4",
-    exam: "HSK",
-  },
-  {
-    name: "Võ Tường Quy",
-    school: "Sinh viên ĐH Tôn Đức Thắng",
-    image: "/images/reviews/tuong-quy.jpg",
-    score: "5",
-    exam: "HSK",
-  },
-  {
-    name: "Nguyễn Lê Thanh Trầm",
-    school: "Sinh viên ĐH Sư Phạm TP.HCM",
-    image: "/images/reviews/thanh-tram.jpg",
-    score: "5",
-    exam: "HSK",
-  },
-  {
-    name: "Nguyễn Danh Giàu",
-    school: "Sinh viên ĐH Công nghiệp Thực phẩm TP.HCM",
-    image: "/images/reviews/danh-giau.jpg",
-    score: "4",
-    exam: "HSK",
+    image: poster4,
+    name: "Quỳnh Anh",
+    title: "Vinh danh học viên thi đỗ HSK5",
+    exam: "HSK5",
+    total: "238",
+    max: "300",
+    testDate: "22/03/2026",
+    parts: [
+      { label: "Nghe", score: "78" },
+      { label: "Đọc", score: "76" },
+      { label: "Viết", score: "84" },
+    ],
+    note: "Điểm HSKK (phần nói) chưa công bố",
+    result: "HSK5 — 238/300",
   },
 ];

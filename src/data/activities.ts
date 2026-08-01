@@ -1,3 +1,47 @@
+import poster1 from "@/assets/activities/a1.jpg";
+import poster2 from "@/assets/activities/a2.jpg";
+import poster3 from "@/assets/activities/a3.jpg";
+import poster4 from "@/assets/activities/a4.jpg";
+import poster5 from "@/assets/activities/a5.jpg";
+import poster6 from "@/assets/activities/a6.jpg";
+
+/**
+ * Poster hoạt động do trung tâm thiết kế (ảnh vuông).
+ * Ảnh nằm ở src/assets/activities/ để Astro nén và xuất WebP lúc build —
+ * bản gốc 2526×2526 nặng ~1,5MB nên không được nhúng thẳng.
+ */
+export type ActivityPoster = {
+  image: ImageMetadata;
+  caption: string;
+};
+
+export const activityPosters: ActivityPoster[] = [
+  {
+    image: poster1,
+    caption:
+      "Minigame Check-in Tết — học viên trao nhau lời chúc năm mới bằng tiếng Trung",
+  },
+  {
+    image: poster2,
+    caption: "Lớp HSK2 của thầy Tín gửi lời chúc Tết bằng tiếng Trung",
+  },
+  {
+    image: poster3,
+    caption: "Lớp HSK2 của cô Huyền cùng nhau check-in Tết tại trung tâm",
+  },
+  {
+    image: poster4,
+    caption: "Bạn Hằng Nga kể về mùa xuân đoàn viên bên gia đình",
+  },
+  {
+    image: poster5,
+    caption: "Bạn Kim Phụng check-in Tết trong tà áo dài",
+  },
+  {
+    image: poster6,
+    caption: "Bạn Quang Minh gửi lời chúc năm mới đến thầy cô và cả lớp",
+  },
+];
 
 export type Activity = {
 
@@ -8,6 +52,7 @@ export type Activity = {
   height?: number;
 };
 
+/** Ảnh lớp học trong public/ — dùng làm nền mờ ở mục Học thử miễn phí. */
 export const activities: Activity[] = [
   {
     src: "/images/activities/lop-luyen-thi-hsk.jpg",

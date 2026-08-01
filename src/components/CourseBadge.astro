@@ -3,17 +3,17 @@
  * Badge tên khoá học: chia chéo dọc — nửa trái đỏ chữ trắng, nửa phải trắng chữ đỏ.
  */
 interface Props {
-  /** Tên khoá đầy đủ, ví dụ "Tiếng Hoa Giao tiếp Cấp tốc" */
+  /** Tên khoá đầy đủ, ví dụ "Tiếng Trung Giao tiếp Cấp tốc" */
   title: string;
   class?: string;
 }
 
 const { title, class: className = "" } = Astro.props;
 
-/** Tách "Luyện thi HSK" → LUYỆN THI | HSK, "Tiếng Hoa Sơ cấp" → TIẾNG TRUNG | SƠ CẤP */
+/** Tách "Luyện thi HSK" → LUYỆN THI | HSK, "Tiếng Trung Sơ cấp" → TIẾNG TRUNG | SƠ CẤP */
 const PREFIXES: { match: string; label: string }[] = [
   { match: "Luyện thi", label: "Luyện thi" },
-  { match: "Tiếng Hoa", label: "Tiếng Trung" },
+  { match: "Tiếng Trung", label: "Tiếng Trung" },
 ];
 const split = (name: string) => {
   const prefix = PREFIXES.find((p) =>

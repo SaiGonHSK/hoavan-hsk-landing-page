@@ -1,0 +1,59 @@
+---
+import markUrl from "@/assets/logo-mark.png";
+
+interface Props {
+  /** Chữ trong nhãn tròn kèm logo, phía trên tiêu đề */
+  badge?: string;
+  title: string;
+  /** Phần in đỏ, nằm cùng hàng với title */
+  highlight?: string;
+  /** Nhãn viết tay nghiêng, nằm bên phải trên màn rộng */
+  note?: string;
+  class?: string;
+}
+
+const {
+  badge = "Trung tâm SaigonHSK",
+  title,
+  highlight,
+  note,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between",
+    className,
+  ]}
+>
+  <div>
+    <span
+      class="inline-flex items-center gap-2 rounded-full border border-border bg-background py-1.5 pl-1.5 pr-5 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+    >
+      <img
+        src={markUrl.src}
+        alt=""
+        width="192"
+        height="192"
+        class="size-6 shrink-0 object-contain"
+      />
+      {badge}
+    </span>
+
+    <h2
+      class="mt-6 font-heading text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
+    >
+      {title}
+      {highlight && <span class="text-brand-red-600">{highlight}</span>}
+    </h2>
+  </div>
+
+  {
+    note && (
+      <p class="w-fit -rotate-2 rounded-2xl border border-dashed border-brand-red-200 bg-brand-red-50 px-4 py-2 font-hand text-xl leading-tight text-brand-red-700 lg:mb-2 lg:text-2xl">
+        {note}
+      </p>
+    )
+  }
+</div>

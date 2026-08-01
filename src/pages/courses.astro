@@ -2,13 +2,18 @@
 import CatalogHub from "@/components/CatalogHub.astro";
 import { hskCourses, hskExamCourses, specialCourses, textbookCourses } from "@/data/catalog";
 import { courses as programs } from "@/data/courses";
+import type { CatalogItem } from "@/data/catalog";
+
+/** Yêu cầu đầu vào nằm trong bảng facts của khoá catalog, lấy ra để hiện trên thẻ. */
+const entryOf = (c: CatalogItem) =>
+  c.facts.find((f) => f.label === "Đầu vào")?.value;
 ---
 
 <CatalogHub
   title="Các khoá học tiếng Trung tại SaigonHSK"
   metaTitle="Khoá học tiếng Trung TPHCM — HSK1 đến HSK6"
   description="Học tiếng Trung theo cấp HSK1–HSK6, luyện thi lấy chứng chỉ HSK, giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung chuyên ngành tại TP.HCM. Mỗi khoá có lộ trình, thời lượng và chuẩn đầu ra rõ ràng — gọi hotline để nhận bảng học phí."
-  keywords="khoá học tiếng Trung TPHCM, học tiếng Trung HSK1 HSK6, bảng học phí tiếng Trung, khoá học tiếng Hoa Sài Gòn"
+  keywords="khoá học tiếng Trung TPHCM, học tiếng Trung HSK1 HSK6, bảng học phí tiếng Trung, khoá học tiếng Trung Sài Gòn"
   crumbs={[{ label: "Các khoá học" }]}
   glyph="课"
   groups={[
@@ -20,6 +25,7 @@ import { courses as programs } from "@/data/courses";
         summary: c.summary,
         href: `/courses/${c.slug}`,
         tag: "Chuẩn HSK 3.0",
+        entry: entryOf(c),
       })),
     },
     {
@@ -30,6 +36,7 @@ import { courses as programs } from "@/data/courses";
         summary: c.summary,
         href: `/courses/${c.slug}`,
         tag: "Luyện đề",
+        entry: entryOf(c),
       })),
     },
     {
@@ -39,6 +46,7 @@ import { courses as programs } from "@/data/courses";
         title: c.title,
         summary: c.summary,
         href: `/courses/${c.slug}`,
+        entry: entryOf(c),
       })),
     },
     {
@@ -48,6 +56,7 @@ import { courses as programs } from "@/data/courses";
         title: c.title,
         summary: c.summary,
         href: `/courses/textbooks/${c.slug}`,
+        entry: entryOf(c),
       })),
     },
     {
@@ -58,6 +67,7 @@ import { courses as programs } from "@/data/courses";
         summary: c.summary,
         href: `/courses/programs/${c.slug}`,
         tag: c.goal,
+        entry: c.entry,
       })),
     },
   ]}

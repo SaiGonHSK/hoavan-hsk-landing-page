@@ -1,0 +1,165 @@
+---
+import BrandHeading from "@/components/BrandHeading.astro";
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/** Tiện nghi tại cơ sở — hiển thị thành dải ngăn cách bằng đường kẻ dọc. */
+const amenities = [
+  { label: "Phòng học sạch sẽ", icon: ICONS.sparkle },
+  { label: "Máy lạnh mát", icon: ICONS.snow },
+  { label: "TV / máy chiếu", icon: ICONS.monitor },
+  { label: "Camera an ninh", icon: ICONS.camera },
+  { label: "Wifi & góc tự học", icon: ICONS.wifi },
+];
+
+type Space = {
+  src: string;
+  name: string;
+  width: number;
+  height: number;
+};
+
+const spaces: Space[] = [
+  {
+    src: "/images/classroom.webp",
+    name: "Phòng học chính",
+    width: 1024,
+    height: 577,
+  },
+  {
+    src: "/images/facility-2.webp",
+    name: "Sảnh lễ tân & lối lên lớp",
+    width: 768,
+    height: 1024,
+  },
+  {
+    src: "/images/facility-1.webp",
+    name: "Không gian sinh hoạt chung",
+    width: 1024,
+    height: 768,
+  },
+  {
+    src: "/images/activities/lop-hoc-nho.jpg",
+    name: "Lớp 10–15 học viên",
+    width: 1024,
+    height: 768,
+  },
+  {
+    src: "/images/activities/lop-hoc-buoi-toi.jpg",
+    name: "Lớp tối cho người đi làm",
+    width: 1024,
+    height: 767,
+  },
+  {
+    src: "/images/activities/tu-van-lo-trinh.jpg",
+    name: "Góc tư vấn lộ trình",
+    width: 1024,
+    height: 683,
+  },
+];
+---
+
+<section
+  id="facility"
+  class:list={["relative overflow-hidden bg-background scroll-mt-24", className]}
+>
+  <div class="container relative z-10 mx-auto px-6">
+    <BrandHeading
+      title="Cơ sở vật chất "
+      highlight="SaigonHSK"
+      note="Cơ sở chính giữa trung tâm TP.HCM"
+    />
+
+    <ul
+      class="mt-10 grid grid-cols-2 gap-y-8 rounded-3xl border border-border bg-brand-ink-50/50 px-2 py-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-brand-ink-200"
+    >
+      {
+        amenities.map((a) => (
+          <li class="flex flex-col items-start gap-4 px-5">
+            <span class="text-sm font-bold leading-snug text-brand-ink-900 md:text-[15px]">
+              {a.label}
+            </span>
+            <span
+              class="grid size-10 place-items-center rounded-xl bg-background text-brand-ink-700 shadow-[0_10px_24px_-18px_rgb(17_24_39/0.7)] [&>svg]:size-5"
+              set:html={a.icon}
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <div
+      class="facility-rail -mx-6 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:gap-5"
+    >
+      {
+        spaces.map((s) => (
+          <figure class="group relative w-64 shrink-0 snap-start overflow-hidden rounded-[1.75rem] bg-brand-ink-100 sm:w-80">
+            <img
+              src={s.src}
+              alt={s.name}
+              width={s.width}
+              height={s.height}
+              loading="lazy"
+              decoding="async"
+              class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-ink-950/85 to-transparent"
+            />
+
+            <figcaption class="absolute inset-x-0 bottom-0 p-5 text-[15px] font-extrabold leading-snug text-white">
+              {s.name}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-8 flex flex-col gap-4 rounded-3xl border border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="flex items-start gap-3 text-sm text-muted-foreground sm:items-center">
+        <span
+          class="mt-0.5 shrink-0 text-blue-600 sm:mt-0 [&>svg]:size-5"
+          set:html={ICONS.pin}
+        />
+        <span>
+          <span class="font-bold text-brand-ink-900">{contact.address}</span>
+          <span class="block sm:inline"> · {contact.workingHours}</span>
+        </span>
+      </p>
+
+      <a
+        href={contact.mapsUrl}
+        target="_blank"
+        rel="noopener"
+        class="group inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-red-600 px-5 py-3 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+      >
+        Xem đường đi
+        <span
+          class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+          set:html={ICONS.arrowUpRight}
+        />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .facility-rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .facility-rail::-webkit-scrollbar {
+    display: none;
+  }
+</style>

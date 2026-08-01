@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
+import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
@@ -46,6 +47,12 @@ interface Props {
   seoDescription?: string;
 
   keywords?: string;
+
+  /**
+   * Khối CTA cuối trang. "enroll" dùng panel ghi danh đỏ giống trang /courses và
+   * /schedule; "default" là CTA chung của các trang còn lại.
+   */
+  cta?: "default" | "enroll";
 }
 
 const {
@@ -69,6 +76,7 @@ const {
   seoTitle,
   seoDescription,
   keywords,
+  cta = "default",
 } = Astro.props;
 
 const origin = Astro.site?.origin ?? "";
@@ -602,8 +610,9 @@ const sectionTitle =
     </div>
 
     <div class="mt-16 flex flex-col gap-16 lg:mt-24 lg:gap-24">
+      {cta === "enroll" && <EnrollCta />}
       <RegisterSection />
-      <CtaSection />
+      {cta === "default" && <CtaSection />}
     </div>
   </main>
   <Footer />

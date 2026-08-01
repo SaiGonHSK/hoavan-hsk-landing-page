@@ -6,6 +6,8 @@ interface Props {
   /** true: highlight nằm cùng hàng với title (không xuống dòng) */
   inlineHighlight?: boolean;
   description?: string;
+  /** Nhãn viết tay nghiêng nằm trên tiêu đề */
+  note?: string;
   align?: "center" | "left";
   className?: string;
 }
@@ -15,6 +17,7 @@ const {
   highlight,
   inlineHighlight = false,
   description,
+  note,
   align = "center",
   className = "",
 } = Astro.props;
@@ -26,6 +29,14 @@ const wrap =
 ---
 
 <div class:list={["flex flex-col", wrap, className]}>
+  {
+    note && (
+      <p class="mb-5 w-fit -rotate-2 rounded-2xl border border-dashed border-brand-red-200 bg-brand-red-50 px-4 py-2 font-hand text-xl leading-tight text-brand-red-700 md:text-2xl">
+        {note}
+      </p>
+    )
+  }
+
   <h2
     class="text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
   >

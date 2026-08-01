@@ -8,7 +8,7 @@
     "domain": "hoavansaigonhsk.edu.vn",
     "slogan": "为你的成功",
     "sloganVi": "Vì sự thành công của bạn",
-    "tagline": "Trung tâm đào tạo tiếng Hoa chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
+    "tagline": "Trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
     "description": "Trung tâm Hoa văn SaigonHSK đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK với giảng viên Thạc sĩ, Tiến sĩ. Cam kết đầu ra, không đạt học lại miễn phí.",
     "foundedYear": 2019
   },
@@ -32,7 +32,7 @@
   "hero": {
     "titleLine1": "Học tiếng Trung",
     "titleLine2": "chinh phục HSK",
-    "description": "为你的成功 — Vì sự thành công của bạn. Trung tâm đào tạo tiếng Trung – tiếng Hoa chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
+    "description": "为你的成功 — Vì sự thành công của bạn. Trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
     "noteTitle": "Lộ trình chuẩn HSK 3.0",
     "noteBody": "Bạn được test trình độ miễn phí, xếp đúng lớp và đi theo lộ trình từ vỡ lòng đến HSK6 — cam kết 100% đầu ra, không đạt học lại miễn phí.",
     "image": "/images/classroom.webp",
@@ -72,7 +72,7 @@
       "id": "vi-nguoi-hoc",
       "icon": "heart",
       "title": "Vì người học",
-      "desc": "Giáo trình tối ưu, phương pháp độc quyền được biên soạn riêng cho người Việt học tiếng Hoa. Không đạt được mục tiêu, học viên được học lại miễn phí.",
+      "desc": "Giáo trình tối ưu, phương pháp độc quyền được biên soạn riêng cho người Việt học tiếng Trung. Không đạt được mục tiêu, học viên được học lại miễn phí.",
       "image": "/images/values/vi-nguoi-hoc.svg"
     },
     {
@@ -83,10 +83,10 @@
       "image": "/images/values/giang-vien-chat-luong.svg"
     },
     {
-      "id": "tiet-kiem-thoi-gian",
-      "icon": "clock",
-      "title": "Tiết kiệm thời gian",
-      "desc": "Lộ trình rút gọn theo từng mục tiêu cụ thể: giao tiếp cấp tốc 3 tháng, luyện HSK4 trong 2 tháng, HSK5 trong 2,5 tháng.",
+      "id": "ung-dung-hoc-tap",
+      "icon": "phone",
+      "title": "Ứng dụng học tập riêng",
+      "desc": "Học viên có ứng dụng riêng của trung tâm để ôn từ vựng, luyện đề HSK và theo dõi tiến độ mỗi ngày — lớp học, bài tập và điểm số đồng bộ cùng giảng viên.",
       "image": "/images/values/tiet-kiem-thoi-gian.svg"
     },
     {
@@ -145,14 +145,14 @@
       "image": "/images/teachers/cao-hoai-nhon.webp"
     },
     {
-      "name": "Thầy Tằng Ửng Tày",
-      "title": "Thạc sĩ — Đại học Sư phạm Thủ đô Trung Quốc",
-      "image": "/images/teachers/tang-ung-tay.webp"
+      "name": "Thầy Tín",
+      "title": "",
+      "image": ""
     },
     {
-      "name": "Cô Hồng Nguyệt Bình",
-      "title": "Thạc sĩ — Giảng viên Đại học Công Thương TP.HCM",
-      "image": "/images/teachers/hong-nguyet-binh.webp"
+      "name": "Cô Tín",
+      "title": "",
+      "image": ""
     }
   ],
   "banners": [
@@ -273,11 +273,11 @@
   "faqs": [
     {
       "question": "Cam kết đầu ra của SaigonHSK cụ thể là gì?",
-      "answer": "Trung tâm cam kết 100% đầu ra khoá học. Với các lớp luyện thi, học viên hoàn thành chương trình được đảm bảo đậu HSK4 hoặc HSK5 tùy khóa; với các lớp sơ cấp, đầu ra tương ứng là HSK2, HSK3, HSK4. Nếu không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí."
+      "answer": "Trung tâm cam kết 100% đầu ra khoá học. Với các lớp luyện thi, học viên hoàn thành chương trình được đảm bảo đậu HSK4 hoặc HSK5 tùy khóa; với các lớp sơ cấp, đầu ra tương ứng là HSK1, HSK2, HSK3. Nếu không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí."
     },
     {
       "question": "Tôi chưa biết gì về tiếng Trung thì bắt đầu từ lớp nào?",
-      "answer": "Bạn bắt đầu từ lớp Tiếng Hoa Sơ cấp 1 (SC1) — lớp dành cho người chưa từng tiếp xúc với tiếng Hoa, học từ ngữ âm và quy tắc bút thuận. Nếu bạn chỉ cần nói được nhanh và không có nhiều thời gian tập viết chữ Hán, lớp Giao tiếp Cấp tốc 1 (GT1) là lựa chọn phù hợp hơn."
+      "answer": "Bạn bắt đầu từ lớp HSK1 — lớp dành cho người chưa từng học tiếng Trung, học từ phát âm và quy tắc viết chữ Hán, kéo dài 2,5 tháng. Nếu bạn chỉ cần nói được nhanh và không có nhiều thời gian tập viết chữ Hán, lớp Giao tiếp Cấp tốc 1 (GT1) là lựa chọn phù hợp hơn."
     },
     {
       "question": "Đã học tiếng Trung trước đó thì được xếp lớp thế nào?",
@@ -305,7 +305,7 @@
     },
     {
       "question": "Có lớp học riêng hoặc lớp cho doanh nghiệp không?",
-      "answer": "Có. Trung tâm có lớp Tiếng Hoa VIP 1 kèm 1 cho người bận rộn với lộ trình và thời gian biểu cá nhân hóa, lớp Tiếng Hoa Doanh nghiệp thiết kế theo đặc thù ngành, cùng các lớp Tiếng Hoa Thiếu nhi và Tiếng Hoa cho người lớn tuổi."
+      "answer": "Có. Trung tâm có lớp Tiếng Trung VIP 1 kèm 1 cho người bận rộn với lộ trình và thời gian biểu cá nhân hóa, lớp Tiếng Trung Doanh nghiệp thiết kế theo đặc thù ngành, cùng các lớp Tiếng Trung Thiếu nhi và Tiếng Trung cho người lớn tuổi."
     },
     {
       "question": "Trung tâm ở đâu?",
@@ -315,7 +315,7 @@
   "schedule": [
     {
       "code": "HSK1",
-      "className": "Lớp HSK1",
+      "className": "Lớp HSK1 (ca 1)",
       "courseSlug": "tieng-hoa-so-cap",
       "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
       "cadence": "Thứ 2-4-6 · 18:15–19:45",
@@ -324,7 +324,7 @@
     },
     {
       "code": "HSK1",
-      "className": "Lớp HSK1 (ca tối muộn)",
+      "className": "Lớp HSK1 (ca 2)",
       "courseSlug": "tieng-hoa-so-cap",
       "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
       "cadence": "Thứ 2-4-6 · 19:45–21:15",
@@ -333,7 +333,7 @@
     },
     {
       "code": "HSK2",
-      "className": "Lớp HSK2",
+      "className": "Lớp HSK2 (ca 1)",
       "courseSlug": "tieng-hoa-so-cap",
       "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
       "cadence": "Thứ 3-5 · 18:15–20:30",
@@ -342,7 +342,7 @@
     },
     {
       "code": "HSK2",
-      "className": "Lớp HSK2 (ca tối muộn)",
+      "className": "Lớp HSK2 (ca 2)",
       "courseSlug": "tieng-hoa-so-cap",
       "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
       "cadence": "Thứ 2-4-6 · 19:45–21:15",
@@ -361,7 +361,7 @@
     {
       "code": "HSK4.1",
       "className": "Lớp HSK4.1",
-      "courseSlug": "tieng-hoa-so-cap",
+      "courseSlug": "tieng-hoa-trung-cap",
       "target": "Tiền HSK4",
       "cadence": "Thứ 3-5 · 18:15–20:30",
       "duration": "3,5 tháng",
@@ -370,7 +370,7 @@
     {
       "code": "HSK4.2",
       "className": "Lớp HSK4.2",
-      "courseSlug": "tieng-hoa-so-cap",
+      "courseSlug": "tieng-hoa-trung-cap",
       "target": "Hoàn thành HSK4 · HSKK Sơ cấp",
       "cadence": "Thứ 3-5 · 18:15–20:30",
       "duration": "3,5 tháng",
@@ -451,7 +451,7 @@
     {
       "code": "HSK4.2-ON",
       "className": "Lớp HSK4.2 Online",
-      "courseSlug": "tieng-hoa-so-cap",
+      "courseSlug": "tieng-hoa-trung-cap",
       "target": "Tiền HSK4",
       "cadence": "Thứ 2-4-6 · 19:30–21:00",
       "duration": "3,5 tháng",
@@ -484,7 +484,7 @@
     },
     {
       "code": "VIP",
-      "className": "Tiếng Hoa VIP 1 kèm 1",
+      "className": "Tiếng Trung VIP 1 kèm 1",
       "courseSlug": "tieng-hoa-vip",
       "target": "Theo mục tiêu học viên",
       "cadence": "Lịch linh hoạt theo học viên",

@@ -5,12 +5,27 @@ import { ICONS } from "@/lib/icons";
 
 type Credential = { icon: string; value: string; label: string };
 
+/**
+ * Chữ cái đầu của tên, dùng khi giảng viên chưa có ảnh chân dung. Bỏ "Cô/Thầy" vì
+ * mọi thẻ đều có, giữ lại tối đa 2 chữ cái để không bị chật.
+ */
+const initialsOf = (name: string) =>
+  name
+    .replace(/^(cô|thầy)\s+/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
 /** "Thạc sĩ — Đại học Tây Nam" → học vị in đậm + nơi tốt nghiệp; role tách theo "·" */
 const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
   const [degree, school = ""] = t.title.split("—").map((s) => s.trim());
-  const lines: Credential[] = [
-    { icon: ICONS.cap, value: degree, label: school },
-  ];
+  // Giảng viên chưa điền học vị thì bỏ hẳn dòng này thay vì hiện gạch đầu dòng rỗng.
+  const lines: Credential[] = degree
+    ? [{ icon: ICONS.cap, value: degree, label: school }]
+    : [];
 
   const role = (t as { role?: string }).role;
   if (role) {
@@ -62,19 +77,36 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
         teachers.map((t) => (
           <button
             type="button"
-            data-lightbox={t.image}
-            data-caption={`${t.name} — ${t.title}`}
-            class="group w-[19rem] shrink-0 cursor-zoom-in snap-start text-left transition-transform duration-300 hover:-translate-y-1.5 sm:w-[22rem] lg:w-[24rem]"
+            data-lightbox={t.image || undefined}
+            data-caption={t.title ? `${t.name} — ${t.title}` : t.name}
+            class:list={[
+              "group w-[19rem] shrink-0 snap-start text-left transition-transform duration-300 hover:-translate-y-1.5 sm:w-[22rem] lg:w-[24rem]",
+              t.image ? "cursor-zoom-in" : "cursor-default",
+            ]}
           >
             <div class="relative overflow-hidden rounded-lg shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]">
-              <img
-                src={t.image}
-                alt={`${t.name} — ${t.title}`}
-                loading="lazy"
-                width="940"
-                height="788"
-                class="aspect-[940/788] w-full object-cover"
-              />
+              {
+                t.image ? (
+                  <img
+                    src={t.image}
+                    alt={t.title ? `${t.name} — ${t.title}` : t.name}
+                    loading="lazy"
+                    width="940"
+                    height="788"
+                    class="aspect-[940/788] w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    class="flex aspect-[940/788] w-full items-center justify-center bg-brand-ink-50"
+                    role="img"
+                    aria-label={t.name}
+                  >
+                    <span class="text-6xl font-black text-brand-ink-900/25">
+                      {initialsOf(t.name)}
+                    </span>
+                  </div>
+                )
+              }
 
               <div class="absolute inset-0 flex flex-col justify-end gap-3.5 bg-gradient-to-t from-black/85 via-black/55 to-black/10 p-6 opacity-0 backdrop-blur-[3px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                 {credentialsOf(t).map((c, i) => (
@@ -98,9 +130,13 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
             <p class="mt-4 px-1 text-base font-extrabold leading-snug text-brand-ink-900">
               {t.name}
             </p>
-            <p class="mt-1 px-1 text-base leading-relaxed text-muted-foreground">
-              {t.title}
-            </p>
+            {
+              t.title && (
+                <p class="mt-1 px-1 text-base leading-relaxed text-muted-foreground">
+                  {t.title}
+                </p>
+              )
+            }
           </button>
         ))
       }
