@@ -1,71 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
-import { values } from "@/data/site";
-import { honorPosters } from "@/data/achievements";
-import appHome from "@/assets/mobile-app/app-home.png";
-import appSplash from "@/assets/mobile-app/app-splash.png";
-
-type Panel = {
-  tab: string;
-  tabNote: string;
-  badge: string;
-  /** Đường dẫn trong public/ hoặc ảnh import từ src/assets */
-  image: string | ImageMetadata;
-  /** Poster vinh danh là ảnh vuông, hiện trọn thay vì cắt cạnh */
-  contain?: boolean;
-  /** Ảnh chụp app, hiện trong khung điện thoại thay cho ảnh nền */
-  devices?: ImageMetadata[];
-  strong: string;
-  note: string;
-};
-
-// Poster điểm cao nhất trong bảng vinh danh — minh hoạ cho giá trị "Hiệu quả cao".
-const bestPoster = honorPosters.reduce((a, b) =>
-  Number(b.total) > Number(a.total) ? b : a,
-);
-
-/** Ảnh + nhãn tab cho từng giá trị, khớp theo id trong content/site.json. */
-const PANELS: Record<string, Panel> = {
-  "vi-nguoi-hoc": {
-    tab: "Giáo trình riêng",
-    tabNote: "Biên soạn cho người Việt",
-    badge: "Giáo trình độc quyền",
-    image: "/images/activities/hoc-vien-lam-bai.jpg",
-    strong: "Học lại miễn phí",
-    note: "nếu chưa đạt đầu ra đã cam kết",
-  },
-  "giang-vien-chat-luong": {
-    tab: "Đội ngũ giảng viên",
-    tabNote: "Thạc sĩ – Tiến sĩ",
-    badge: "Chuyên môn dẫn dắt",
-    image: "/images/activities/giang-vien-chua-bai.jpg",
-    strong: "Tiến sĩ, Thạc sĩ",
-    note: "tốt nghiệp các đại học lớn tại Trung Quốc",
-  },
-  "ung-dung-hoc-tap": {
-    tab: "Ứng dụng luyện đề",
-    tabNote: "Ôn tập mọi lúc",
-    badge: "Công nghệ học tập",
-    image: appHome,
-    devices: [appSplash, appHome],
-    strong: "Ôn từ vựng · Luyện đề · Theo dõi tiến độ",
-    note: "Chuỗi ngày học, điểm tích luỹ và bài tập của lớp đều nằm trong app",
-  },
-  "hieu-qua-cao": {
-    tab: "Đầu ra đạt chuẩn",
-    tabNote: "Nghe – nói – đọc – viết",
-    badge: "Hiệu quả thực tế",
-    image: bestPoster.image,
-    contain: true,
-    strong: `${bestPoster.exam} ${bestPoster.total}/${bestPoster.max}`,
-    note: `Bạn ${bestPoster.name} — thi ngày ${bestPoster.testDate}`,
-  },
-};
-
-const slides = values
-  .filter((v) => PANELS[v.id])
-  .map((v) => ({ ...v, ...PANELS[v.id] }));
+import { valuePanels as slides } from "@/data/valuePanels";
 ---
 
 <section id="why-us" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -115,7 +51,7 @@ const slides = values
 
             <div
               class:list={[
-                "relative order-first min-h-56 lg:order-none lg:min-h-[26rem]",
+                "relative order-first min-h-56 lg:order-0 lg:min-h-104",
                 (s.contain || s.devices) && "bg-brand-ink-50 p-6 lg:p-10",
               ]}
             >
@@ -172,7 +108,7 @@ const slides = values
                 !s.contain && (
                   <span
                     aria-hidden="true"
-                    class="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-background via-background/25 to-transparent lg:block"
+                    class="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-background via-background/25 to-transparent lg:block"
                   />
                 )
               }
