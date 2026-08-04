@@ -174,6 +174,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 
 <script>
   import { LEADS_ENDPOINT, submitLead, type LeadPayload } from "@/lib/leads";
+  import { SOURCE_LABELS, leadSource } from "@/lib/attribution";
 
   const INVALID = "border-brand-red-500";
 
@@ -221,6 +222,9 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         string,
         string
       >;
+      // Kênh khách vào site (Facebook/Zalo/website) — bắt từ lúc đáp trang, xem
+      // lib/attribution.ts. Không phải field khách nhập nên nằm ngoài FormData.
+      const source = leadSource();
       if (error) error.hidden = true;
       clearFieldErrors();
 
@@ -237,6 +241,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
           course: data.course,
           level: data.level,
           note: data.note,
+          source,
         };
         const result = await submitLead(payload);
 
@@ -257,6 +262,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         `Khoá học quan tâm: ${data.course}`,
         `Trình độ hiện tại: ${data.level}`,
         data.note ? `Ghi chú: ${data.note}` : null,
+        `Nguồn: ${SOURCE_LABELS[source]}`,
       ]
         .filter(Boolean)
         .join("\n");

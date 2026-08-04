@@ -14,7 +14,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
 
     <div
       data-value-tabs
-      class="mt-10 overflow-hidden rounded-[2rem] border border-border bg-background"
+      class="mt-10 flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background"
     >
       {
         slides.map((s, i) => (
@@ -117,10 +117,14 @@ import { valuePanels as slides } from "@/data/valuePanels";
         ))
       }
 
+      {/*
+        Dưới lg dải tab nằm TRÊN panel và cuộn ngang: xếp dọc 4 tab chiếm gần hết
+        màn hình, còn để dưới panel thì bấm tab xong nội dung nhảy khỏi khung nhìn.
+      */}
       <div
         role="tablist"
         aria-label="Giá trị khác biệt của SaigonHSK"
-        class="grid gap-px border-t border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+        class="why-tabs order-first flex snap-x snap-mandatory gap-px overflow-x-auto border-b border-border bg-border sm:grid sm:grid-cols-2 sm:overflow-visible lg:order-0 lg:grid-cols-4 lg:border-b-0 lg:border-t"
       >
         {
           slides.map((s, i) => (
@@ -132,16 +136,16 @@ import { valuePanels as slides } from "@/data/valuePanels";
               data-active={i === 0 ? "true" : "false"}
               aria-controls={`why-panel-${i}`}
               aria-selected={i === 0}
-              class="group relative cursor-pointer bg-background px-6 py-5 text-center transition-colors data-[active=true]:bg-brand-ink-50/60"
+              class="group relative shrink-0 snap-start cursor-pointer bg-background px-5 py-4 text-center transition-colors data-[active=true]:bg-brand-ink-50/60 sm:px-6 sm:py-5"
             >
               <span
                 aria-hidden="true"
-                class="absolute inset-x-0 top-0 h-0.5 bg-brand-red-600 opacity-0 transition-opacity group-data-[active=true]:opacity-100"
+                class="absolute inset-x-0 bottom-0 h-0.5 bg-brand-red-600 opacity-0 transition-opacity group-data-[active=true]:opacity-100 lg:bottom-auto lg:top-0"
               />
-              <span class="block text-sm font-bold text-muted-foreground transition-colors group-hover:text-brand-ink-900 group-data-[active=true]:text-brand-ink-900">
+              <span class="block whitespace-nowrap text-sm font-bold text-muted-foreground transition-colors group-hover:text-brand-ink-900 group-data-[active=true]:text-brand-ink-900 sm:whitespace-normal">
                 {s.tab}
               </span>
-              <span class="mt-1 block text-xs text-muted-foreground">
+              <span class="mt-1 block whitespace-nowrap text-xs text-muted-foreground sm:whitespace-normal">
                 {s.tabNote}
               </span>
             </button>
@@ -166,8 +170,22 @@ import { valuePanels as slides } from "@/data/valuePanels";
       panels.forEach((panel, i) => {
         panel.hidden = i !== index;
       });
+
+      // Trên mobile dải tab cuộn ngang nên tab vừa bấm có thể đang bị cắt ở mép.
+      tabs[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
     };
 
     tabs.forEach((tab, i) => tab.addEventListener("click", () => show(i)));
   });
 </script>
+
+<style>
+  .why-tabs {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .why-tabs::-webkit-scrollbar {
+    display: none;
+  }
+</style>

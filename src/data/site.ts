@@ -10,6 +10,9 @@ export const mission = content.mission;
 export const model = content.model;
 export const stats = content.stats;
 export const teacher = content.teacher;
+export const about = content.about;
+export const coreValues = content.coreValues;
+export const reasons = content.reasons;
 
 export const footerLinks = [
   {

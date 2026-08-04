@@ -84,7 +84,6 @@ const origin = Astro.site?.origin ?? "";
 const fact = (label: string) => facts.find((f) => f.label.startsWith(label))?.value;
 
 const months = fact("Thời lượng");
-const vocab = fact("Từ vựng");
 const level = fact("Cấp độ");
 const entry = fact("Đầu vào");
 const mode = fact("Hình thức") ?? "Offline tại TP.HCM hoặc online";
@@ -138,30 +137,6 @@ const heroFacts = [
     tone: "bg-linear-to-br from-emerald-400 to-green-600 shadow-emerald-500/30",
   },
 ].filter((f) => f.value);
-
-/** "Khoá học bao gồm" — dựng từ dữ liệu thật của khoá, không phải nội dung mẫu. */
-const includes = [
-  {
-    icon: ICONS.book,
-    title: vocab ? `${vocab} vựng theo chuẩn HSK 3.0` : "Giáo trình biên soạn riêng",
-    desc: "Giáo trình do giảng viên trình độ Thạc sĩ, Tiến sĩ của trung tâm biên soạn lại theo chuẩn HSK 3.0.",
-  },
-  {
-    icon: ICONS.users,
-    title: "Lớp 10–15 học viên",
-    desc: "Sĩ số nhỏ để giảng viên sửa phát âm và chữa bài trực tiếp cho từng người trong mỗi buổi.",
-  },
-  {
-    icon: ICONS.cap,
-    title: "Test trình độ miễn phí",
-    desc: "Kiểm tra đầu vào trước khi xếp lớp để bạn vào đúng cấp, không học lại phần đã biết.",
-  },
-  {
-    icon: ICONS.shield,
-    title: "Cam kết 100% đầu ra",
-    desc: "Chưa đạt chuẩn đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí.",
-  },
-];
 
 /** Số panel trong khối "Chương trình học" — quyết định lưới 1 hay 2 cột. */
 const panelCount = (content.length > 0 ? 1 : 0) + (topics?.items.length ? 1 : 0);
@@ -298,48 +273,6 @@ const sectionTitle =
               </section>
             )
           }
-
-          <!-- Khoá học bao gồm -->
-          <section>
-            <h2 class={sectionTitle}>Khoá học bao gồm</h2>
-
-            <div
-              class="mt-7 flex flex-col gap-4 rounded-2xl border border-border bg-brand-ink-50 p-6 md:flex-row md:items-center md:gap-8 md:p-7"
-            >
-              <div class="shrink-0">
-                <p class="text-lg font-black text-brand-red-600">Chuẩn HSK 3.0</p>
-                <p class="mt-0.5 text-xs font-medium text-muted-foreground">
-                  Lộ trình của trung tâm
-                </p>
-              </div>
-              <p
-                class="border-border text-sm leading-relaxed text-brand-ink-800 md:border-l md:pl-8"
-              >
-                Toàn bộ chương trình bám sát bộ chuẩn HSK 3.0 đang dùng cho kỳ thi hiện
-                nay — học đúng phạm vi thi, không học thừa.
-              </p>
-            </div>
-
-            <div
-              class="mt-4 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2"
-            >
-              {
-                includes.map((it) => (
-                  <div class="flex items-start gap-4 bg-background p-6">
-                    <span class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-5">
-                      <Fragment set:html={it.icon} />
-                    </span>
-                    <div>
-                      <p class="text-sm font-bold text-brand-ink-900">{it.title}</p>
-                      <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                        {it.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              }
-            </div>
-          </section>
 
           <!-- Chương trình học -->
           {

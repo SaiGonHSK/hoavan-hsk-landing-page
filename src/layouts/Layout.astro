@@ -239,6 +239,14 @@ const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
     <Lightbox />
     <Analytics />
 
+    {/* Bắt nguồn (fbclid/utm/referrer) ngay ở trang đáp: tới lúc submit form thì
+        referrer đã là chính landing, không còn thấy Facebook nữa. */}
+    <script>
+      import { captureAttribution } from "@/lib/attribution";
+
+      captureAttribution();
+    </script>
+
     {}
     <script is:inline>
       (() => {

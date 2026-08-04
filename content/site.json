@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-27T09:16:25.753Z",
+  "updatedAt": "2026-08-04T00:00:00.000Z",
   "site": {
     "name": "Hoa văn SaigonHSK",
     "fullName": "Trung tâm Hoa văn SaigonHSK",
@@ -41,8 +41,9 @@
     "badgeText": "cam kết đầu ra\nhọc lại miễn phí"
   },
   "mission": {
-    "statement": "Trung tâm Hoa văn SaigonHSK với sứ mệnh truyền cảm hứng và tạo động lực cho người học không ngừng nâng trình độ tiếng Trung.",
-    "motto": "“为你的成功 — Vì sự thành công của bạn” — Nơi khơi nguồn cảm hứng học tiếng Trung, nhanh chóng đưa người học đến trình độ mong muốn."
+    "statement": "Hoa văn SaigonHSK cam kết lan tỏa niềm yêu thích tiếng Trung thông qua môi trường học tập chuyên nghiệp, phương pháp giảng dạy hiện đại và đội ngũ giảng viên tận tâm, giúp học viên phát triển toàn diện năng lực ngôn ngữ và tự tin vươn tới thành công.",
+    "motto": "“为你的成功 — Vì sự thành công của bạn” — Truyền cảm hứng học tiếng Trung, đồng hành cùng học viên, chinh phục mọi mục tiêu.",
+    "vision": "Hoa văn SaigonHSK hướng đến trở thành một trong những trung tâm đào tạo tiếng Trung uy tín hàng đầu tại TP.HCM, tiên phong trong việc ứng dụng phương pháp giảng dạy hiện đại, xây dựng môi trường học tập truyền cảm hứng và đồng hành cùng học viên trên hành trình chinh phục tiếng Trung."
   },
   "model": [
     "Giáo viên giàu kinh nghiệm, từng du học tại Trung Quốc",
@@ -855,5 +856,111 @@
       "duration": "Theo lộ trình cá nhân",
       "openDate": ""
     }
-  ]
+  ],
+  "about": {
+    "heading": "Chào mừng đến với",
+    "headingHighlight": "Hoa văn SaigonHSK",
+    "paragraphs": [
+      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
+      "SaigonHSK đào tạo đầy đủ các chương trình từ Sơ cấp đến Cao cấp, dành cho mọi đối tượng học viên: từ người mới bắt đầu, mất gốc đến luyện thi HSK, HSKK và tiếng Trung giao tiếp. Chương trình được thiết kế bài bản, lộ trình rõ ràng, chú trọng thực hành và cam kết đầu ra. Nếu học viên chưa đạt mục tiêu theo đúng lộ trình đã cam kết, trung tâm sẽ hỗ trợ học lại hoàn toàn miễn phí.",
+      "Đội ngũ giảng viên của SaigonHSK là những thầy cô giàu kinh nghiệm, tận tâm và luôn cập nhật phương pháp giảng dạy hiện đại. Phần lớn giảng viên có trình độ Thạc sĩ, Tiến sĩ tốt nghiệp từ các trường đại học danh tiếng tại Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam. Sự am hiểu chuyên môn cùng tinh thần trách nhiệm chính là nền tảng giúp hàng nghìn học viên đạt được mục tiêu học tập và chinh phục các chứng chỉ tiếng Trung."
+    ]
+  },
+  "coreValues": [
+    {
+      "id": "chat-luong",
+      "icon": "shield",
+      "title": "Chất lượng",
+      "desc": "Không ngừng nâng cao chất lượng giảng dạy, chương trình đào tạo và dịch vụ để mang đến hiệu quả học tập tốt nhất cho mỗi học viên."
+    },
+    {
+      "id": "tan-tam",
+      "icon": "heart",
+      "title": "Tận tâm",
+      "desc": "Lấy học viên làm trung tâm, luôn lắng nghe, đồng hành và hỗ trợ trong suốt quá trình học tập nhằm giúp mỗi học viên phát huy tối đa năng lực của mình."
+    },
+    {
+      "id": "chuyen-nghiep",
+      "icon": "cap",
+      "title": "Chuyên nghiệp",
+      "desc": "Xây dựng môi trường học tập hiện đại với đội ngũ giảng viên giàu chuyên môn, phương pháp giảng dạy khoa học và lộ trình học tập rõ ràng."
+    },
+    {
+      "id": "doi-moi",
+      "icon": "sparkle",
+      "title": "Đổi mới",
+      "desc": "Liên tục cập nhật kiến thức, công nghệ và phương pháp giảng dạy tiên tiến nhằm nâng cao trải nghiệm học tập và đáp ứng nhu cầu ngày càng đa dạng của người học."
+    },
+    {
+      "id": "uy-tin",
+      "icon": "target",
+      "title": "Uy tín",
+      "desc": "Giữ vững cam kết về chất lượng đào tạo, lấy kết quả học tập và sự hài lòng của học viên làm thước đo cho sự phát triển bền vững của trung tâm."
+    }
+  ],
+  "reasons": {
+    "title": "8 lý do học viên tin tưởng",
+    "highlight": "lựa chọn Hoa văn SaigonHSK",
+    "intro": "Hoa văn SaigonHSK tự hào là địa chỉ đào tạo tiếng Trung chất lượng cao tại TP. Hồ Chí Minh, nơi đã đồng hành cùng hàng nghìn học viên chinh phục tiếng Trung từ trình độ cơ bản đến các chứng chỉ HSK, HSKK và ứng dụng ngôn ngữ trong học tập, công việc.",
+    "items": [
+      {
+        "title": "Đội ngũ giảng viên giàu kinh nghiệm và chuyên môn cao",
+        "desc": "Giảng viên tại Hoa văn SaigonHSK là những thầy cô giàu kinh nghiệm, tận tâm với nghề. Phần lớn có trình độ Thạc sĩ, Tiến sĩ, từng học tập hoặc nghiên cứu tại các trường đại học uy tín ở Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học tại Việt Nam. Không chỉ truyền đạt kiến thức, giảng viên còn giúp học viên xây dựng phương pháp học hiệu quả và tạo động lực để duy trì việc học lâu dài."
+      },
+      {
+        "title": "Lộ trình học tập khoa học – Hiệu quả sau từng buổi học",
+        "desc": "Mỗi khóa học đều được thiết kế theo lộ trình rõ ràng, phù hợp với từng trình độ và mục tiêu của học viên. Từ người mới bắt đầu, mất gốc đến luyện thi HSK hoặc giao tiếp, học viên đều được hướng dẫn từng bước, giúp tiếp thu kiến thức một cách hệ thống và tiến bộ rõ rệt sau mỗi buổi học."
+      },
+      {
+        "title": "Cam kết đầu ra – Học lại miễn phí nếu chưa đạt mục tiêu",
+        "desc": "Hoa văn SaigonHSK luôn đặt chất lượng đào tạo lên hàng đầu. Chúng tôi cam kết đầu ra theo đúng lộ trình học. Trong trường hợp học viên chưa đạt mục tiêu đã cam kết, trung tâm sẽ hỗ trợ học lại hoàn toàn miễn phí, giúp học viên yên tâm theo đuổi mục tiêu đến cùng."
+      },
+      {
+        "title": "Hỗ trợ học viên tận tâm trong suốt quá trình học",
+        "desc": "Đội ngũ giáo vụ luôn đồng hành cùng học viên từ khi đăng ký đến khi hoàn thành khóa học. Mọi thắc mắc về lịch học, bài tập, tài liệu hoặc kế hoạch học tập đều được hỗ trợ nhanh chóng, giúp học viên có trải nghiệm học tập thuận lợi và hiệu quả."
+      },
+      {
+        "title": "Kho tài liệu phong phú và hoàn toàn miễn phí",
+        "desc": "Học viên được tiếp cận hệ thống tài liệu học tập được biên soạn công phu cùng nhiều nguồn tài liệu tham khảo đa dạng.",
+        "bullets": [
+          "Giáo trình điện tử",
+          "Đề thi HSK các cấp",
+          "Tài liệu luyện nghe, luyện đọc",
+          "Bài tập thực hành",
+          "Video và học liệu bổ trợ"
+        ],
+        "note": "Nguồn tài liệu được cập nhật thường xuyên nhằm giúp học viên nâng cao hiệu quả tự học."
+      },
+      {
+        "title": "Môi trường học tập hiện đại",
+        "desc": "Hoa văn SaigonHSK đầu tư cơ sở vật chất khang trang, phòng học hiện đại và đầy đủ trang thiết bị phục vụ giảng dạy. Không gian học tập thân thiện giúp học viên luôn cảm thấy thoải mái và có thêm động lực trong suốt quá trình học."
+      },
+      {
+        "title": "Chính sách hỗ trợ học viên linh hoạt",
+        "desc": "Nhằm đảm bảo mọi học viên đều có thể theo kịp chương trình, trung tâm áp dụng các chính sách hỗ trợ linh hoạt.",
+        "bullets": [
+          "Học bù khi có lý do chính đáng",
+          "Phụ đạo miễn phí đối với học viên cần củng cố kiến thức",
+          "Tư vấn lộ trình học phù hợp với từng mục tiêu cá nhân"
+        ]
+      },
+      {
+        "title": "Ứng dụng học tập độc quyền – Học mọi lúc, tiến bộ mỗi ngày",
+        "desc": "Học viên tại Hoa văn SaigonHSK được sử dụng ứng dụng học tập và ôn luyện độc quyền, tích hợp bài giảng, tài liệu, bài tập và hệ thống ôn luyện HSK theo từng cấp độ. Ứng dụng giúp việc học không còn giới hạn trong lớp học, mà có thể diễn ra mọi lúc, mọi nơi, góp phần nâng cao hiệu quả tiếp thu và rút ngắn thời gian đạt mục tiêu.",
+        "bullets": [
+          "📱 Ôn luyện mọi lúc, mọi nơi trên điện thoại hoặc máy tính",
+          "📚 Truy cập bài giảng, tài liệu và bài tập theo từng khóa học",
+          "✍️ Luyện tập và củng cố kiến thức sau mỗi buổi học",
+          "🎯 Ôn luyện HSK, HSKK với hệ thống đề và bài tập được cập nhật thường xuyên",
+          "🔔 Theo dõi tiến độ học tập và nhận thông báo từ trung tâm",
+          "💬 Kết nối nhanh với giảng viên và bộ phận giáo vụ khi cần hỗ trợ"
+        ]
+      }
+    ],
+    "closingTitle": "Hoa văn SaigonHSK – Đồng hành cùng thành công của bạn",
+    "closingParagraphs": [
+      "“为你的成功 — Vì sự thành công của bạn” không chỉ là phương châm hoạt động mà còn là cam kết của Hoa văn SaigonHSK đối với mỗi học viên.",
+      "Chúng tôi tin rằng, với chương trình đào tạo bài bản, đội ngũ giảng viên giàu kinh nghiệm, phương pháp giảng dạy hiện đại và sự đồng hành tận tâm, mỗi học viên đều có thể tự tin chinh phục tiếng Trung, mở rộng cơ hội học tập, nghề nghiệp và hội nhập quốc tế."
+    ]
+  }
 }

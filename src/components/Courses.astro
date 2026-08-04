@@ -28,12 +28,14 @@ const hasMore = list.length < courses.length;
       )
     }
 
-    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div
+      class="course-rail -mx-6 mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0"
+    >
       {
         list.map((c) => (
           <a
             href={`/courses/programs/${c.slug}`}
-            class={"group flex flex-col rounded-3xl bg-brand-ink-50 p-3 transition-transform duration-300 hover:-translate-y-1.5"}
+            class={"group flex w-[78vw] max-w-80 shrink-0 snap-start flex-col rounded-3xl bg-brand-ink-50 p-3 transition-transform duration-300 hover:-translate-y-1.5 sm:w-80 lg:w-auto lg:max-w-none"}
           >
 
             <div class="relative h-40 overflow-hidden rounded-2xl">
@@ -98,3 +100,14 @@ const hasMore = list.length < courses.length;
     }
   </div>
 </section>
+
+<style>
+  .course-rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .course-rail::-webkit-scrollbar {
+    display: none;
+  }
+</style>

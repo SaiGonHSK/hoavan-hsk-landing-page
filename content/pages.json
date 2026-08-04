@@ -11,7 +11,7 @@
           "slug": "/about"
         },
         {
-          "label": "05 khác biệt của chúng tôi",
+          "label": "Khác biệt của chúng tôi",
           "slug": "/about/differences"
         },
         {
@@ -241,6 +241,7 @@
     {
       "label": "Thư viện",
       "slug": "/library",
+      "hidden": true,
       "children": [
         {
           "label": "Từ vựng theo chủ đề",

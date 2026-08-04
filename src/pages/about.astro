@@ -7,7 +7,7 @@ import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { site, mission, stats, contact } from "@/data/site";
+import { site, mission, stats, contact, about, coreValues } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 
 const gallery = [
@@ -69,25 +69,11 @@ const sections = [
           <div>
             <SectionHeading
               align="left"
-              title="Chào mừng bạn đến với"
-              highlight="Hoa văn SaigonHSK"
+              title={about.heading}
+              highlight={about.headingHighlight}
             />
             <div class="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground">
-              <p>
-                SaigonHSK là trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại
-                TP.HCM. Với những giá trị khác biệt, chúng tôi thực hiện sứ mệnh truyền
-                đạt tinh hoa ngôn ngữ cho cộng đồng.
-              </p>
-              <p>
-                Trung tâm dạy tiếng Trung từ Sơ cấp đến Cao cấp, từ mất gốc đến luyện
-                thi HSK — <span class="font-semibold text-foreground">cam kết đầu ra</span>. Học
-                viên không đạt mục tiêu đã cam kết được học lại hoàn toàn miễn phí.
-              </p>
-              <p>
-                Đội ngũ giảng viên đều có kinh nghiệm giảng dạy và tâm huyết với nghề.
-                Phần lớn tốt nghiệp Thạc sĩ, Tiến sĩ tại các đại học lớn của Trung Quốc
-                và đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam.
-              </p>
+              {about.paragraphs.map((p) => <p>{p}</p>)}
             </div>
 
             <dl
@@ -127,7 +113,47 @@ const sections = [
                 {mission.motto}
               </p>
             </div>
+            <div class="rounded-3xl border border-border p-7">
+              <p
+                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600"
+              >
+                Tầm nhìn
+              </p>
+              <p class="mt-3 text-base leading-relaxed text-muted-foreground">
+                {mission.vision}
+              </p>
+            </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          title="Giá trị"
+          highlight="cốt lõi"
+          inlineHighlight
+          description="Năm giá trị định hướng mọi hoạt động đào tạo và dịch vụ của Hoa văn SaigonHSK."
+        />
+
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            coreValues.map((v) => (
+              <article class="flex flex-col rounded-3xl bg-brand-ink-50 p-7">
+                <span
+                  class="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-red-600 text-white [&>svg]:size-5"
+                  set:html={ICONS[v.icon as keyof typeof ICONS]}
+                />
+                <h2 class="mt-5 text-lg font-extrabold leading-snug text-brand-ink-900">
+                  {v.title}
+                </h2>
+                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                  {v.desc}
+                </p>
+              </article>
+            ))
+          }
         </div>
       </div>
     </section>

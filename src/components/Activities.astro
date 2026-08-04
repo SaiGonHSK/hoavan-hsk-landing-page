@@ -35,13 +35,15 @@ const posters = await Promise.all(
           note="Minigame Check-in Tết 2026"
         />
 
-        <div class="relative mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+        <div
+          class="activity-rail relative mt-12 -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+        >
           {posters.map((p) => (
             <button
               type="button"
               data-lightbox={p.full}
               data-caption={p.caption}
-              class="group relative block cursor-zoom-in overflow-hidden rounded-3xl bg-brand-ink-50"
+              class="group relative block w-[78vw] max-w-80 shrink-0 snap-start cursor-zoom-in overflow-hidden rounded-3xl bg-brand-ink-50 sm:w-80 lg:w-auto lg:max-w-none"
             >
               <Image
                 src={p.image}
@@ -79,3 +81,14 @@ const posters = await Promise.all(
     </section>
   )
 }
+
+<style>
+  .activity-rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .activity-rail::-webkit-scrollbar {
+    display: none;
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
 import Logo from "@/components/Logo.astro";
 import { contact } from "@/data/site";
-import { menu, groupChildren, plainChildren } from "@/data/pages";
+import { menu, groupChildren, plainChildren, type MenuChild } from "@/data/pages";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
@@ -9,14 +9,26 @@ interface Props {
 }
 const { path = Astro.url.pathname } = Astro.props;
 
+const clean = path.replace(/\/$/, "") || "/";
+
 const isActive = (href: string) => {
-  const clean = path.replace(/\/$/, "") || "/";
   if (href === "/") return clean === "/";
   return clean === href || clean.startsWith(`${href}/`);
 };
 
-const mainNav = menu.filter((entry) => !entry.cta);
-const ctaNav = menu.find((entry) => entry.cta);
+/**
+ * Trong một dropdown chỉ đánh dấu mục khớp sâu nhất: ở `/about/differences` thì
+ * `/about` cũng khớp theo tiền tố, nếu không lọc sẽ sáng cả "Về chúng tôi".
+ */
+const deepestSlug = (children: MenuChild[]) =>
+  children
+    .map((c) => c.slug)
+    .filter(isActive)
+    .sort((a, b) => b.length - a.length)[0];
+
+const visibleNav = menu.filter((entry) => !entry.hidden);
+const mainNav = visibleNav.filter((entry) => !entry.cta);
+const ctaNav = visibleNav.find((entry) => entry.cta);
 ---
 
 <header
@@ -36,6 +48,7 @@ const ctaNav = menu.find((entry) => entry.cta);
           const groups = groupChildren(item.children);
           const plain = plainChildren(item.children);
           const hasMenu = groups.length > 0 || plain.length > 0;
+          const current = deepestSlug(item.children);
 
           const linkClass = `inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors ${
             active ? "bg-white/15 font-semibold" : "hover:bg-white/10"
@@ -89,11 +102,11 @@ const ctaNav = menu.find((entry) => entry.cta);
                                   <a
                                     href={link.slug}
                                     aria-current={
-                                      isActive(link.slug) ? "page" : undefined
+                                      link.slug === current ? "page" : undefined
                                     }
                                     class:list={[
                                       "block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
-                                      isActive(link.slug)
+                                      link.slug === current
                                         ? "font-semibold text-brand-red-700"
                                         : "font-medium text-foreground/80",
                                     ]}
@@ -130,10 +143,10 @@ const ctaNav = menu.find((entry) => entry.cta);
                     {plain.map((link) => (
                       <a
                         href={link.slug}
-                        aria-current={isActive(link.slug) ? "page" : undefined}
+                        aria-current={link.slug === current ? "page" : undefined}
                         class:list={[
                           "block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
-                          isActive(link.slug)
+                          link.slug === current
                             ? "font-semibold text-brand-red-700"
                             : "font-medium text-foreground/80",
                         ]}
@@ -205,7 +218,7 @@ const ctaNav = menu.find((entry) => entry.cta);
 
   <nav class="flex flex-col gap-1 px-4 py-5">
     {
-      menu.map((item) => {
+      visibleNav.map((item) => {
         const groups = groupChildren(item.children);
         const plain = plainChildren(item.children);
         const hasMenu = groups.length > 0 || plain.length > 0;

@@ -10,9 +10,12 @@
  *
  * Tên field trùng đúng `name=` của RegisterForm.astro và json tag của
  * `PublicCreateRequest` bên Go, nên `new FormData(form)` gửi đi được luôn.
- * `source` và `status` do server tự đặt (`landing` / `new`) — người gửi form
- * không được tự khai mình là lead đã liên hệ.
+ * `status` do server tự đặt (`new`), còn `source` chỉ nhận được các kênh khách
+ * tự vào (`landing`/`facebook`/`zalo`) — xem `lib/attribution.ts`. Người gửi form
+ * không được tự khai mình là lead hotline đã liên hệ.
  */
+
+import type { LeadSource } from "@/lib/attribution";
 
 const RAW_BASE = (import.meta.env.PUBLIC_API_BASE ?? "").trim();
 
@@ -44,6 +47,8 @@ export type LeadPayload = {
   course?: string;
   level?: string;
   note?: string;
+  /** Kênh khách vào landing, do `leadSource()` xác định — không phải khách nhập. */
+  source?: LeadSource;
 };
 
 export type LeadResult =
@@ -69,6 +74,7 @@ const LABELS: Record<string, string> = {
   course: "Khoá học quan tâm",
   level: "Trình độ hiện tại",
   note: "Ghi chú",
+  source: "Nguồn",
 };
 
 const GENERIC =

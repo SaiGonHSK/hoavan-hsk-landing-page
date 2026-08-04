@@ -16,6 +16,9 @@ export type MenuEntry = {
   slug: string;
 
   cta?: boolean;
+
+  /** Ẩn khỏi header (desktop + drawer) nhưng vẫn build trang và giữ link ở footer. */
+  hidden?: boolean;
   children?: MenuChild[];
 };
 
