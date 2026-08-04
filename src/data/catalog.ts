@@ -283,20 +283,41 @@ export const HSK_LEVELS = [
   },
 ] as const;
 
+/**
+ * Từ HSK4 trở lên, mỗi cấp được dạy thành hai lớp nối tiếp (vd HSK6.1 và HSK6.2)
+ * và con số months là thời lượng của MỘT lớp — nên mọi chỗ nói về thời lượng đều
+ * phải ghi rõ "2 lớp", tránh để học viên hiểu nhầm cả cấp chỉ 3,5 tháng.
+ */
+const isSplitLevel = (level: number) => level >= 4;
+
 export const hskCourses: CatalogItem[] = HSK_LEVELS.map((l) => ({
   slug: `hsk-${l.level}`,
   title: `HSK${l.level}`,
-  summary: `Khoá HSK${l.level} chuẩn HSK 3.0 — ${l.months}, ${l.words}, ${l.grammarCount} điểm ngữ pháp.`,
-  intro: `Khoá HSK${l.level} kéo dài ${l.months}, bám sát chuẩn HSK 3.0 và rèn song song bốn kỹ năng nghe – nói – đọc – viết. Học viên nắm ${l.words} cùng ${l.grammarCount} điểm ngữ pháp của cấp độ để ${l.can}.`,
+  summary: isSplitLevel(l.level)
+    ? `Khoá HSK${l.level} chuẩn HSK 3.0 — 2 lớp, mỗi lớp ${l.months}, ${l.words}, ${l.grammarCount} điểm ngữ pháp.`
+    : `Khoá HSK${l.level} chuẩn HSK 3.0 — ${l.months}, ${l.words}, ${l.grammarCount} điểm ngữ pháp.`,
+  intro: isSplitLevel(l.level)
+    ? `Khoá HSK${l.level} bao gồm 2 lớp HSK${l.level}.1 và HSK${l.level}.2, mỗi lớp ${l.months}, bám sát chuẩn HSK 3.0 và rèn song song bốn kỹ năng nghe – nói – đọc – viết. Học viên nắm ${l.words} cùng ${l.grammarCount} điểm ngữ pháp của cấp độ để ${l.can}.`
+    : `Khoá HSK${l.level} kéo dài ${l.months}, bám sát chuẩn HSK 3.0 và rèn song song bốn kỹ năng nghe – nói – đọc – viết. Học viên nắm ${l.words} cùng ${l.grammarCount} điểm ngữ pháp của cấp độ để ${l.can}.`,
   facts: [
     { label: "Cấp độ", value: `HSK${l.level} (chuẩn HSK 3.0)` },
-    { label: "Thời lượng", value: l.months },
+    {
+      label: "Thời lượng",
+      value: isSplitLevel(l.level)
+        ? `2 lớp × ${l.months} (HSK${l.level}.1, HSK${l.level}.2)`
+        : l.months,
+    },
     { label: "Từ vựng mục tiêu", value: l.words },
     { label: "Điểm ngữ pháp", value: `${l.grammarCount} điểm` },
     { label: "Đầu vào", value: l.entry },
     { label: "Khai giảng · học phí", value: LIEN_HE },
   ],
   content: [
+    ...(isSplitLevel(l.level)
+      ? [
+          `Khoá chia thành 2 lớp nối tiếp HSK${l.level}.1 và HSK${l.level}.2, mỗi lớp ${l.months}; học xong lớp trước mới học tiếp lớp sau.`,
+        ]
+      : []),
     ...("foundation" in l ? l.foundation : []),
     `Từ vựng cấp HSK${l.level}: ${l.words} theo chuẩn HSK 3.0, học theo chủ điểm gắn với tình huống thực tế.`,
     `Hệ thống ${l.grammarCount} điểm ngữ pháp của cấp độ, có bảng tổng hợp và bài tập vận dụng sau mỗi chủ điểm.`,
@@ -321,13 +342,21 @@ export const hskCourses: CatalogItem[] = HSK_LEVELS.map((l) => ({
   ],
 }));
 
-export const hskExamCourses: CatalogItem[] = [3, 4, 5, 6].map((level) => ({
+/** Thời lượng lớp luyện thi theo lộ trình hiện tại của trung tâm. */
+const EXAM_MONTHS: Record<number, string> = {
+  3: "2 tháng",
+  4: "3 tháng",
+  5: "4 tháng",
+};
+
+export const hskExamCourses: CatalogItem[] = [3, 4, 5].map((level) => ({
   slug: `luyen-thi-hsk-${level}`,
   title: `Luyện thi HSK${level}`,
-  summary: `Lớp luyện đề HSK${level}: chiến thuật làm bài, bảng từ vựng và đề thi thử.`,
-  intro: `Lớp luyện thi HSK${level} dành cho học viên đã có nền tảng và cần tối ưu điểm số trong thời gian ngắn. Trọng tâm là kỹ năng làm bài, bẫy thường gặp trong đề và tốc độ xử lý từng phần thi.`,
+  summary: `Lớp luyện đề HSK${level} trong ${EXAM_MONTHS[level]}: chiến thuật làm bài, bảng từ vựng và đề thi thử.`,
+  intro: `Lớp luyện thi HSK${level} kéo dài ${EXAM_MONTHS[level]}, dành cho học viên đã có nền tảng và cần tối ưu điểm số trong thời gian ngắn. Trọng tâm là kỹ năng làm bài, bẫy thường gặp trong đề và tốc độ xử lý từng phần thi.`,
   facts: [
     { label: "Mục tiêu", value: `Đạt chứng chỉ HSK${level}` },
+    { label: "Thời lượng", value: EXAM_MONTHS[level] },
     { label: "Trọng tâm", value: "Nghe – Đọc – Viết theo dạng đề" },
     { label: "Tài liệu", value: "Bảng từ vựng, sổ tay ngữ pháp, bộ đề luyện" },
     { label: "Hình thức", value: "Offline tại trung tâm hoặc online" },

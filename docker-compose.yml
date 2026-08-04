@@ -3,6 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Biến PUBLIC_* phải có mặt lúc build (site tĩnh), không phải lúc chạy.
+      args:
+        PUBLIC_API_BASE: ${PUBLIC_API_BASE:-}
+        PUBLIC_REGISTER_ENDPOINT: ${PUBLIC_REGISTER_ENDPOINT:-}
+        PUBLIC_CONTENT_API: ${PUBLIC_CONTENT_API:-}
+        PUBLIC_LOGIN_ENDPOINT: ${PUBLIC_LOGIN_ENDPOINT:-}
     image: hoavan-saigonhsk:latest
     container_name: hoavan-saigonhsk
     restart: unless-stopped

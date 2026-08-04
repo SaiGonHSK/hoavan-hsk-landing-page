@@ -74,7 +74,11 @@ const hskLevel = (level: number): CourseLevel => {
     // Nhịp học khác nhau giữa các lớp cùng cấp (3 buổi/tuần hoặc 2 buổi/tuần) nên
     // chỉ nêu tổng thời lượng; số buổi cụ thể xem ở lịch khai giảng.
     duration: [
-      `${l.months} · lớp tối 3 buổi/tuần hoặc 2 buổi/tuần tuỳ ca, xem lịch khai giảng.`,
+      // Từ HSK4 trở lên, cấp độ được dạy thành 2 lớp nối tiếp nên months là thời
+      // lượng của một lớp, phải ghi rõ kẻo hiểu nhầm cả cấp chỉ 3,5 tháng.
+      l.level >= 4
+        ? `2 lớp HSK${l.level}.1 và HSK${l.level}.2, mỗi lớp ${l.months} · lớp tối 3 buổi/tuần hoặc 2 buổi/tuần tuỳ ca, xem lịch khai giảng.`
+        : `${l.months} · lớp tối 3 buổi/tuần hoặc 2 buổi/tuần tuỳ ca, xem lịch khai giảng.`,
     ],
     content: [
       ...foundation,
@@ -94,59 +98,40 @@ export const courses: Course[] = [
     slug: "luyen-thi-hsk",
     image: "/images/courses/luyen-thi-hsk.png",
     title: "Luyện thi HSK",
-    summary: "Cam kết đầu ra 100% đậu HSK4, HSK5.",
-    goal: "Đậu HSK4 – HSK5",
-    entry: "Từ trình độ HSK3 hoặc HSK4 trở lên",
+    summary: "Cam kết đầu ra 100% đậu HSK3, HSK4, HSK5.",
+    goal: "Đậu HSK3 – HSK5",
+    entry: "Từ trình độ HSK2 trở lên",
     icon: "hsk",
     featured: true,
-    tags: ["4 khóa học", "Chuẩn HSK 3.0", "Cam kết đầu ra"],
+    tags: ["3 khóa học", "Chuẩn HSK 3.0", "Cam kết đầu ra"],
+    // Mỗi cấp chỉ còn một lớp luyện thi: HSK3 2 tháng, HSK4 3 tháng, HSK5 4 tháng.
     levels: [
       {
-        name: "Luyện HSK4 thường",
+        name: "Luyện thi HSK3",
+        code: "HSK3",
+        audience: [
+          "Người học có trình độ tương đương lớp HSK2 tại trung tâm, hoặc đã học xong 3 quyển bộ Giáo trình Hán ngữ, hoặc có vốn từ vựng khoảng 600 từ.",
+          "Đã nắm được các điểm ngữ pháp cơ bản và cần luyện đề trước kỳ thi.",
+        ],
+        goals: ["Đậu HSK3."],
+        duration: ["24 buổi, 48 giờ học, 2h/buổi, 3 buổi/tuần (2 tháng)."],
+        content: [
+          "Ôn luyện toàn bộ hệ thống ngữ pháp tiếng Hán giai đoạn sơ cấp theo phạm vi đề HSK3.",
+          "Tổng hợp – củng cố ngữ pháp từ, ngữ pháp ngữ, ngữ pháp câu và phân biệt từ đơn giản.",
+          "Học chính 3 kỹ năng nghe – đọc – viết, kết hợp thi thử miễn phí đầu/cuối khóa cùng các buổi phụ đạo, tổng kết theo tình hình từng lớp.",
+        ],
+        materials: HSK_MATERIALS,
+        outcomes: [
+          "Nắm vững đầy đủ kỹ năng làm bài, từ vựng và cấu trúc ngữ pháp cần thiết cho kỳ thi HSK3.",
+          "Đảm bảo đầu ra 100% đậu HSK3.",
+        ],
+      },
+      {
+        name: "Luyện thi HSK4",
         code: "HSK4",
         audience: [
           "Người học có trình độ tương đương lớp HSK3 tại trung tâm, hoặc đã học xong 4 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong giáo trình sơ cấp Boya 2, hoặc có vốn từ vựng khoảng 800–900 từ.",
           "Đã hoàn toàn nắm được các điểm ngữ pháp cơ bản.",
-        ],
-        goals: ["Đậu HSK4."],
-        duration: ["24 buổi, 48 giờ học, 2h/buổi, 3 buổi/tuần (khoảng 2 tháng)."],
-        content: [
-          "Ôn luyện toàn bộ hệ thống ngữ pháp tiếng Hán giai đoạn cuối sơ cấp, hỗ trợ kiến thức và đề ôn luyện thi Đại học khối D4.",
-          "Tổng hợp – củng cố ngữ pháp từ, ngữ pháp ngữ, ngữ pháp câu và phân biệt từ đơn giản.",
-        ],
-        materials: HSK_MATERIALS,
-        outcomes: [
-          "Nắm vững đầy đủ kỹ năng làm bài, từ vựng và các cấu trúc ngữ pháp cơ bản cho kỳ thi HSK4.",
-          "Đảm bảo đầu ra 100% đậu HSK4.",
-        ],
-      },
-      {
-        name: "Luyện HSK5 thường",
-        code: "HSK5",
-        audience: [
-          "Học viên đã học xong lớp HSK5 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
-          "Nắm vững và vận dụng được tất cả điểm ngữ pháp cơ bản và một số điểm ngữ pháp nâng cao ở trình độ trung cấp.",
-          "Sinh viên năm 2 các trường đại học chuyên ngữ.",
-        ],
-        goals: ["Đậu HSK5."],
-        duration: ["30 buổi, 60 giờ học, 2h/buổi, 3 buổi/tuần (2,5 tháng)."],
-        content: [
-          "Ôn luyện toàn bộ hệ thống ngữ pháp tiếng Hán giai đoạn trung cấp, hỗ trợ kiến thức và đề ôn luyện thi Đại học khối D4.",
-          "Tổng hợp – củng cố ngữ pháp từ, ngữ pháp ngữ, ngữ pháp câu và phân biệt từ trung cấp.",
-        ],
-        materials: HSK_MATERIALS,
-        outcomes: [
-          "Nắm vững đầy đủ kỹ năng làm bài, từ vựng và các cấu trúc ngữ pháp cần thiết cho kỳ thi HSK5.",
-          "Đảm bảo đầu ra 100% đậu HSK5.",
-        ],
-      },
-      {
-        name: "Luyện HSK4 đặc biệt",
-        code: "HSK4+",
-        audience: [
-          "Dành cho học viên muốn rút ngắn thời gian học tập và ôn thi HSK4.",
-          "Đã học xong quyển 3 bộ Giáo trình Hán ngữ 6 quyển, hoặc hoàn thành lớp HSK2 tại trung tâm.",
-          "Có vốn từ khoảng 600 từ trở lên.",
         ],
         goals: ["Đậu HSK4."],
         duration: ["36 buổi, 72 giờ học, 2h/buổi, 3 buổi/tuần (3 tháng)."],
@@ -162,18 +147,19 @@ export const courses: Course[] = [
         ],
       },
       {
-        name: "Luyện HSK5 đặc biệt",
-        code: "HSK5+",
+        name: "Luyện thi HSK5",
+        code: "HSK5",
         audience: [
           "Học viên đã học xong lớp HSK4 tại trung tâm, hoặc đã học xong 6 quyển bộ Giáo trình Hán ngữ, hoặc đã học xong quyển trung cấp Boya 2, hoặc có vốn từ vựng hơn 1.500 từ.",
           "Nắm vững và vận dụng được tất cả điểm ngữ pháp cơ bản và một số điểm ngữ pháp nâng cao ở trình độ trung cấp.",
           "Sinh viên năm 2 các trường đại học chuyên ngữ.",
         ],
         goals: ["Đậu HSK5."],
-        duration: ["45 buổi++, 2h/buổi, 3 buổi/tuần (khoảng 4 tháng)."],
+        duration: ["45 buổi++, 2h/buổi, 3 buổi/tuần (4 tháng)."],
         content: [
           "Ôn luyện toàn bộ hệ thống ngữ pháp tiếng Hán giai đoạn trung cấp, hỗ trợ kiến thức và đề ôn luyện thi Đại học khối D4.",
           "Tổng hợp – củng cố ngữ pháp từ, ngữ pháp ngữ, ngữ pháp câu và phân biệt từ trung cấp.",
+          "Học chính 3 kỹ năng nghe – đọc – viết, kết hợp thi thử miễn phí đầu/cuối khóa cùng các buổi phụ đạo, tổng kết theo tình hình từng lớp.",
         ],
         materials: HSK_MATERIALS,
         outcomes: [
@@ -206,7 +192,7 @@ export const courses: Course[] = [
     featured: true,
     tags: ["2 lớp: HSK4 – HSK5", "Chuẩn HSK 3.0", "Đọc hiểu – nghị luận"],
     // Mỗi cấp chia thành hai chặng (HSK4.1/4.2, HSK5.1/5.2) trên lịch khai giảng.
-    note: "Từ HSK4 trở lên, mỗi cấp được chia thành hai chặng (ví dụ HSK4.1 và HSK4.2), mỗi chặng 3,5 tháng.",
+    note: "Từ HSK4 trở lên, mỗi cấp bao gồm 2 lớp (ví dụ HSK4.1 và HSK4.2), mỗi lớp 3,5 tháng.",
     levels: [hskLevel(4), hskLevel(5)],
   },
   {
@@ -218,7 +204,7 @@ export const courses: Course[] = [
     entry: "Đã hoàn thành HSK5 hoặc tương đương",
     icon: "peak",
     tags: ["Lớp HSK6", "Chuẩn HSK 3.0", "Học thuật – chuyên ngành"],
-    note: "Cấp HSK6 được chia thành hai chặng (HSK6.1 và HSK6.2), mỗi chặng 3,5 tháng. Vui lòng liên hệ trung tâm để nhận lộ trình chi tiết.",
+    note: "Khoá HSK6 bao gồm 2 lớp HSK6.1 và HSK6.2, mỗi lớp 3,5 tháng. Vui lòng liên hệ trung tâm để nhận lộ trình chi tiết.",
     levels: [hskLevel(6)],
   },
   {

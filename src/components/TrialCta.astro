@@ -7,6 +7,11 @@ interface Props {
   title?: string;
   highlight?: string;
   proof?: string;
+  /**
+   * Dòng chốt trỏ về form đăng ký ở trang chủ. Tắt khi trang đặt khối này đã có sẵn
+   * form ngay trên đó — nếu không, dòng này vừa lặp lại vừa dẫn người đọc đi khỏi form.
+   */
+  showFormNote?: boolean;
   class?: string;
 }
 
@@ -14,6 +19,7 @@ const {
   title = "Đăng ký",
   highlight = "học thử",
   proof = "Học thật một buổi, tư vấn lộ trình, không ràng buộc đăng ký",
+  showFormNote = true,
   class: className = "",
 } = Astro.props;
 
@@ -248,15 +254,19 @@ const fadeUp =
       </div>
     </div>
 
-    <p class="mt-6 text-center text-sm text-muted-foreground">
-      Hoặc
-      <a
-        href="/#register"
-        class="font-semibold text-brand-red-600 underline-offset-4 hover:underline"
-      >
-        để lại thông tin tại form đăng ký
-      </a>
-      , trung tâm sẽ gọi lại xếp buổi học thử cho bạn.
-    </p>
+    {
+      showFormNote && (
+        <p class="mt-6 text-center text-sm text-muted-foreground">
+          Hoặc
+          <a
+            href="/#register"
+            class="font-semibold text-brand-red-600 underline-offset-4 hover:underline"
+          >
+            để lại thông tin tại form đăng ký
+          </a>
+          , trung tâm sẽ gọi lại xếp buổi học thử cho bạn.
+        </p>
+      )
+    }
   </div>
 </section>

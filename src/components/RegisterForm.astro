@@ -3,6 +3,16 @@ import { contact } from "@/data/site";
 import { courses } from "@/data/courses";
 import { onlineOfflineCourses } from "@/data/catalog";
 
+interface Props {
+  /**
+   * Form nằm trong cột hẹp (khoảng nửa trang) thì hàng đầu chỉ đủ chỗ cho 2 field,
+   * và nút gửi nên chiếm hết bề rộng thay vì bó lại giữa khung.
+   */
+  dense?: boolean;
+}
+
+const { dense = false } = Astro.props;
+
 const courseOptions = [
   ...onlineOfflineCourses.map((c) => c.title),
   ...courses.map((c) => c.title),
@@ -17,21 +27,14 @@ const levels = [
   "Không rõ, cần trung tâm test",
 ];
 
-const endpoint = import.meta.env.PUBLIC_REGISTER_ENDPOINT ?? "";
-
 const field =
   "h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-brand-red-500";
 const label = "mb-1.5 block text-sm font-semibold text-foreground";
 ---
 
 <div data-register-root>
-  <form
-    data-register-form
-    class="space-y-4"
-    data-endpoint={endpoint}
-    data-email={contact.email}
-  >
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <form data-register-form class="space-y-4" data-email={contact.email}>
+    <div class:list={["grid gap-4 sm:grid-cols-2", !dense && "lg:grid-cols-3"]}>
       <div>
         <label class={label} for="rf-name">
           Họ và tên <span class="text-brand-red-600">*</span>
@@ -64,7 +67,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         />
       </div>
 
-      <div class="sm:col-span-2 lg:col-span-1">
+      <div class:list={["sm:col-span-2", !dense && "lg:col-span-1"]}>
         <label class={label} for="rf-email">
           Email <span class="font-normal text-muted-foreground">(không bắt buộc)</span>
         </label>
@@ -114,16 +117,19 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 
     <p
       data-register-error
+      role="alert"
       hidden
+      data-fallback={`Gửi chưa thành công. Bạn vui lòng gọi ${contact.phonePrimary} hoặc chat Zalo để được hỗ trợ ngay.`}
       class="rounded-xl bg-brand-red-50 px-4 py-3 text-sm font-medium text-brand-red-700"
     >
-      Gửi chưa thành công. Bạn vui lòng gọi {contact.phonePrimary} hoặc chat Zalo để được
-      hỗ trợ ngay.
     </p>
 
     <button
       type="submit"
-      class="mx-auto flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-red-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700 disabled:cursor-not-allowed disabled:opacity-70 sm:max-w-sm"
+      class:list={[
+        "mx-auto flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-red-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700 disabled:cursor-not-allowed disabled:opacity-70",
+        !dense && "sm:max-w-sm",
+      ]}
     >
       Gửi đăng ký tư vấn
     </button>
@@ -167,6 +173,10 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 </div>
 
 <script>
+  import { LEADS_ENDPOINT, submitLead, type LeadPayload } from "@/lib/leads";
+
+  const INVALID = "border-brand-red-500";
+
   document.querySelectorAll<HTMLElement>("[data-register-root]").forEach((root) => {
     const form = root.querySelector<HTMLFormElement>("[data-register-form]");
     const success = root.querySelector<HTMLElement>("[data-register-success]");
@@ -180,6 +190,28 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       form.reset();
     };
 
+    /** Xoá viền đỏ do lần gửi trước để lỗi cũ không dính vào field đã sửa. */
+    const clearFieldErrors = () => {
+      form
+        .querySelectorAll<HTMLElement>(`.${INVALID}`)
+        .forEach((el) => el.classList.remove(INVALID));
+    };
+
+    const showError = (message: string, fields?: Record<string, string>) => {
+      if (error) {
+        error.textContent = message || (error.dataset.fallback ?? "");
+        error.hidden = false;
+      }
+
+      // Server đã đặt tên field theo json tag, trùng `name=` của input.
+      const first = Object.keys(fields ?? {})[0];
+      const input = first
+        ? form.querySelector<HTMLElement>(`[name="${first}"]`)
+        : null;
+      input?.classList.add(INVALID);
+      (input as HTMLInputElement | null)?.focus();
+    };
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
@@ -190,29 +222,31 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         string
       >;
       if (error) error.hidden = true;
+      clearFieldErrors();
 
-      const endpoint = form.dataset.endpoint;
-      if (endpoint) {
+      if (LEADS_ENDPOINT) {
         if (button) {
           button.disabled = true;
           button.textContent = "Đang gửi…";
         }
-        try {
-          const res = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          if (!res.ok) throw new Error(String(res.status));
-          showSuccess();
-        } catch {
-          if (error) error.hidden = false;
-        } finally {
-          if (button) {
-            button.disabled = false;
-            button.textContent = "Gửi đăng ký tư vấn";
-          }
+
+        const payload: LeadPayload = {
+          name: data.name ?? "",
+          phone: data.phone ?? "",
+          email: data.email,
+          course: data.course,
+          level: data.level,
+          note: data.note,
+        };
+        const result = await submitLead(payload);
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = "Gửi đăng ký tư vấn";
         }
+
+        if (result.ok) showSuccess();
+        else showError(result.message, result.fields);
         return;
       }
 

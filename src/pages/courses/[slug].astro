@@ -12,7 +12,7 @@ export function getStaticPaths() {
 
 const { item } = Astro.props;
 
-const examLevel = item.slug.match(/^luyen-thi-hsk-([3-6])$/)?.[1];
+const examLevel = item.slug.match(/^luyen-thi-hsk-([3-5])$/)?.[1];
 
 const related = [
   // Lớp luyện thi trỏ sang bộ tài liệu miễn phí cùng cấp — bổ trợ nhau chứ không

@@ -42,9 +42,35 @@ PUBLIC_CONTENT_API=http://localhost:3000/console npm run build
 - `src/pages/[...slug].astro` sinh trang tĩnh cho mọi mục có nội dung.
 - Không gọi được API → tự dùng bản chụp trong `content/site.json`, build vẫn chạy.
 
+## Form đăng ký tư vấn (leads)
+
+`RegisterForm.astro` gửi đăng ký lên API leads của `hoavan-hsk-server`:
+
+```sh
+PUBLIC_API_BASE=http://localhost:9909 yarn dev
+```
+
+- `src/lib/leads.ts` gọi `POST {PUBLIC_API_BASE}/api/v1/leads` — endpoint công khai,
+  không cần token; `source` = `landing`, `status` = `new` do server tự đặt.
+- Tên field của form trùng json tag của server nên `FormData` gửi đi được luôn.
+- Lỗi 422 kèm `error.fields` → form hiện message của đúng field và tô đỏ input;
+  429 (rate limit theo IP) → mời khách gọi hotline.
+- Gửi lại cùng số điện thoại không tạo lead trùng: server gộp vào lead đang mở.
+- Bỏ trống `PUBLIC_API_BASE` → form lùi về mở sẵn email gửi trung tâm, không làm mất
+  thông tin khách đã nhập.
+
+Server phải có origin của landing trong `CORS_ORIGINS` (mặc định đã có
+`http://localhost:4321` của `astro dev`), nếu không browser sẽ chặn request.
+
 ## Biến môi trường
 
-`PUBLIC_REGISTER_ENDPOINT` — nếu có API nhận đăng ký, điền vào đây để form POST lên
-server. Bỏ trống thì form mở sẵn email gửi về hộp thư của trung tâm.
-# hoavan-hsk-landing-page
-# hoavan-hsk-landing-page
+Copy `.env.example` thành `.env`. Đây là site tĩnh nên mọi biến `PUBLIC_*` được nhúng
+lúc build — sửa xong phải build lại, và khi build bằng Docker thì truyền qua
+`--build-arg` (xem `Dockerfile` / `docker-compose.yml`).
+
+| Biến | Ý nghĩa |
+| --- | --- |
+| `PUBLIC_API_BASE` | Host API Go, ví dụ `http://localhost:9909`. Bỏ trống: form đăng ký dùng mailto |
+| `PUBLIC_REGISTER_ENDPOINT` | Ghi đè URL nhận đăng ký khi cần trỏ sang nơi khác |
+| `PUBLIC_CONTENT_API` | API nội dung của trang quản trị; bỏ trống thì dùng `content/site.json` |
+| `PUBLIC_LOGIN_ENDPOINT` | Endpoint đăng nhập khu vực học viên; bỏ trống thì form báo chưa mở |

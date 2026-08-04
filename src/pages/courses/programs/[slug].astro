@@ -80,7 +80,12 @@ const faqs = [
     ? [
         {
           question: `Khoá ${course.title} học trong bao lâu?`,
-          answer: `${course.levels[0].duration[0]} Khoá gồm ${course.levels.length} lớp theo cấp độ, học viên có thể vào đúng cấp của mình sau khi test trình độ.`,
+          // Khoá một cấp (vd Cao cấp chỉ có HSK6) thì câu "gồm 1 lớp theo cấp độ"
+          // vừa thừa vừa trái với thời lượng đã nêu là 2 lớp HSK6.1 và HSK6.2.
+          answer:
+            course.levels.length > 1
+              ? `${course.levels[0].duration[0]} Khoá gồm ${course.levels.length} lớp theo cấp độ, học viên có thể vào đúng cấp của mình sau khi test trình độ.`
+              : `${course.levels[0].duration[0]} Trung tâm test trình độ miễn phí trước khi xếp lớp để bạn vào đúng chặng của mình.`,
         },
       ]
     : []),
@@ -145,9 +150,9 @@ const includes = [
   {
     icon: ICONS.cap,
     title:
-      course.levels.length > 0
+      course.levels.length > 1
         ? `${course.levels.length} lớp theo cấp độ`
-        : "Lộ trình riêng theo học viên",
+        : (course.levels[0]?.name ?? "Lộ trình riêng theo học viên"),
     desc: "Test trình độ miễn phí trước khi xếp lớp, vào đúng cấp của bạn — không học lại phần đã biết.",
   },
   {

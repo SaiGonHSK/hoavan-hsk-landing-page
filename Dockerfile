@@ -9,6 +9,19 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 COPY . .
+
+# Astro build ra site tĩnh: mọi biến PUBLIC_* được nhúng thẳng vào JS lúc build,
+# không đọc được ở runtime, nên phải truyền vào từ đây. Thiếu PUBLIC_API_BASE
+# thì form đăng ký tự lùi về mở mailto chứ không làm mất thông tin khách.
+ARG PUBLIC_API_BASE=""
+ARG PUBLIC_REGISTER_ENDPOINT=""
+ARG PUBLIC_CONTENT_API=""
+ARG PUBLIC_LOGIN_ENDPOINT=""
+ENV PUBLIC_API_BASE=$PUBLIC_API_BASE \
+  PUBLIC_REGISTER_ENDPOINT=$PUBLIC_REGISTER_ENDPOINT \
+  PUBLIC_CONTENT_API=$PUBLIC_CONTENT_API \
+  PUBLIC_LOGIN_ENDPOINT=$PUBLIC_LOGIN_ENDPOINT
+
 RUN yarn build
 
 # ---------- Giai đoạn chạy: nginx phục vụ file tĩnh ----------

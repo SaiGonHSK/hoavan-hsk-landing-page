@@ -17,11 +17,14 @@ const level = item.slug.replace("hsk-", "");
 const related = [
   // Liên kết sang trang lớp học cùng cấp: người đang tra tài liệu là đối tượng gần
   // nhất với nhu cầu đăng ký lớp, và liên kết này nói rõ với Google hai trang phục
-  // vụ hai mục đích khác nhau.
-  {
-    label: `Lớp luyện thi HSK${level} có giảng viên`,
-    href: `/courses/luyen-thi-hsk-${level}`,
-  },
+  // vụ hai mục đích khác nhau. Trung tâm chỉ mở lớp luyện thi tới HSK5, cấp HSK6
+  // trỏ về khoá học theo cấp để không dẫn sang trang không tồn tại.
+  Number(level) <= 5
+    ? {
+        label: `Lớp luyện thi HSK${level} có giảng viên`,
+        href: `/courses/luyen-thi-hsk-${level}`,
+      }
+    : { label: `Khoá HSK${level} có giảng viên`, href: `/courses/hsk-${level}` },
   ...examPrepResources
     .filter((c) => c.slug !== item.slug)
     .map((c) => ({ label: c.title, href: `/practice/exam-prep/${c.slug}` })),

@@ -316,179 +316,484 @@
     {
       "code": "HSK1",
       "className": "Lớp HSK1 (ca 1)",
+      "courseCode": "HSK1",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "offline",
       "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
-      "cadence": "Thứ 2-4-6 · 18:15–19:45",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 3,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 5,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "10/08/2026"
     },
     {
       "code": "HSK1",
       "className": "Lớp HSK1 (ca 2)",
+      "courseCode": "HSK1",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "offline",
       "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
-      "cadence": "Thứ 2-4-6 · 19:45–21:15",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "24/08/2026"
     },
     {
       "code": "HSK2",
       "className": "Lớp HSK2 (ca 1)",
+      "courseCode": "HSK2",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "offline",
       "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "cadence": "Thứ 3-5 · 18:15–20:30",
+      "slots": [
+        {
+          "weekday": 2,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        },
+        {
+          "weekday": 4,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "11/08/2026"
     },
     {
       "code": "HSK2",
       "className": "Lớp HSK2 (ca 2)",
+      "courseCode": "HSK2",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "offline",
       "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "cadence": "Thứ 2-4-6 · 19:45–21:15",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:45",
+          "endTime": "21:15"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "31/08/2026"
     },
     {
       "code": "HSK3",
       "className": "Lớp HSK3",
+      "courseCode": "HSK3",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "offline",
       "target": "Đạt trình độ HSK3 chuẩn HSK 3.0 · Giao tiếp cơ bản 3",
-      "cadence": "Thứ 2-4-6 · 18:15–19:45",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 3,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 5,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "4,5 tháng",
       "openDate": "26/08/2026"
     },
     {
       "code": "HSK4.1",
       "className": "Lớp HSK4.1",
+      "courseCode": "HSK4",
       "courseSlug": "tieng-hoa-trung-cap",
+      "mode": "offline",
       "target": "Tiền HSK4",
-      "cadence": "Thứ 3-5 · 18:15–20:30",
+      "slots": [
+        {
+          "weekday": 2,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        },
+        {
+          "weekday": 4,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "11/08/2026"
     },
     {
       "code": "HSK4.2",
       "className": "Lớp HSK4.2",
+      "courseCode": "HSK4",
       "courseSlug": "tieng-hoa-trung-cap",
+      "mode": "offline",
       "target": "Hoàn thành HSK4 · HSKK Sơ cấp",
-      "cadence": "Thứ 3-5 · 18:15–20:30",
+      "slots": [
+        {
+          "weekday": 2,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        },
+        {
+          "weekday": 4,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "25/08/2026"
     },
     {
       "code": "HSK5.1",
       "className": "Lớp HSK5.1",
+      "courseCode": "HSK5",
       "courseSlug": "tieng-hoa-trung-cap",
+      "mode": "offline",
       "target": "Tiền HSK5",
-      "cadence": "Thứ 3-5 · 18:15–20:30",
+      "slots": [
+        {
+          "weekday": 2,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        },
+        {
+          "weekday": 4,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "20/08/2026"
     },
     {
       "code": "HSK5.2",
       "className": "Lớp HSK5.2",
+      "courseCode": "HSK5",
       "courseSlug": "tieng-hoa-trung-cap",
+      "mode": "offline",
       "target": "Hoàn thành HSK5 · HSKK Trung cấp 5",
-      "cadence": "Thứ 2-4-6 · 19:30–21:00",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "03/08/2026"
     },
     {
       "code": "LT-HSK3",
       "className": "Luyện thi HSK3",
+      "courseCode": "LT-HSK3",
       "courseSlug": "luyen-thi-hsk",
+      "mode": "offline",
       "target": "Cam kết 100% đậu HSK3 và HSKK Sơ cấp",
-      "cadence": "Thứ 2-4-6 · 18:15–19:45",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 3,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        },
+        {
+          "weekday": 5,
+          "startTime": "18:15",
+          "endTime": "19:45"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2 tháng",
       "openDate": "28/08/2026"
     },
     {
       "code": "LT-HSK4",
       "className": "Luyện thi HSK4",
+      "courseCode": "LT-HSK4",
       "courseSlug": "luyen-thi-hsk",
+      "mode": "offline",
       "target": "Cam kết 100% đậu HSK4 và HSKK Trung cấp",
-      "cadence": "Thứ 3-5 · 18:15–20:30",
+      "slots": [
+        {
+          "weekday": 2,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        },
+        {
+          "weekday": 4,
+          "startTime": "18:15",
+          "endTime": "20:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3 tháng",
       "openDate": "27/08/2026"
     },
     {
       "code": "LT-HSK5",
       "className": "Luyện thi HSK5",
+      "courseCode": "LT-HSK5",
       "courseSlug": "luyen-thi-hsk",
+      "mode": "offline",
       "target": "Cam kết 100% đậu HSK5 và HSKK Cao cấp",
-      "cadence": "Thứ 7 & Chủ nhật · 13:30–16:30",
+      "slots": [
+        {
+          "weekday": 6,
+          "startTime": "13:30",
+          "endTime": "16:30"
+        },
+        {
+          "weekday": 0,
+          "startTime": "13:30",
+          "endTime": "16:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "4 tháng",
       "openDate": "22/08/2026"
     },
     {
       "code": "HSK1-ON",
       "className": "Lớp HSK1 Online",
+      "courseCode": "HSK1",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "online",
       "target": "100% đậu HSK1 · Giao tiếp cơ bản 1",
-      "cadence": "Thứ 2-4-6 · 19:30–21:00",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "10/08/2026"
     },
     {
       "code": "HSK2-ON",
       "className": "Lớp HSK2 Online",
+      "courseCode": "HSK2",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "online",
       "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "cadence": "Thứ 2-4-6 · 18:00–19:30",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        },
+        {
+          "weekday": 3,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        },
+        {
+          "weekday": 5,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "2,5 tháng",
       "openDate": "17/08/2026"
     },
     {
       "code": "HSK3-ON",
       "className": "Lớp HSK3 Online",
+      "courseCode": "HSK3",
       "courseSlug": "tieng-hoa-so-cap",
+      "mode": "online",
       "target": "Đạt trình độ HSK3 chuẩn HSK 3.0 · Giao tiếp cơ bản 3",
-      "cadence": "Thứ 2-4-6 · 18:00–19:30",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        },
+        {
+          "weekday": 3,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        },
+        {
+          "weekday": 5,
+          "startTime": "18:00",
+          "endTime": "19:30"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "24/08/2026"
     },
     {
       "code": "HSK4.2-ON",
       "className": "Lớp HSK4.2 Online",
+      "courseCode": "HSK4",
       "courseSlug": "tieng-hoa-trung-cap",
+      "mode": "online",
       "target": "Tiền HSK4",
-      "cadence": "Thứ 2-4-6 · 19:30–21:00",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "26/08/2026"
     },
     {
       "code": "HSK6.1-ON",
       "className": "Lớp HSK6.1 Online",
+      "courseCode": "HSK6",
       "courseSlug": "tieng-hoa-cao-cap",
+      "mode": "online",
       "target": "Hoàn thành HSK6 · HSKK Trung cấp 6",
-      "cadence": "Thứ 2-4-6 · 19:30–21:00",
+      "slots": [
+        {
+          "weekday": 1,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 3,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        },
+        {
+          "weekday": 5,
+          "startTime": "19:30",
+          "endTime": "21:00"
+        }
+      ],
+      "cadenceNote": "",
       "duration": "3,5 tháng",
       "openDate": "03/08/2026"
     },
     {
       "code": "GT1",
       "className": "Giao tiếp Cấp tốc 1",
+      "courseCode": "GT1",
       "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
+      "mode": "offline",
       "target": "200–300 từ, giao tiếp cơ bản",
-      "cadence": "3 buổi/tuần · 1,5h/buổi",
-      "duration": "36 buổi · 3 tháng"
+      "slots": [],
+      "cadenceNote": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "36 buổi · 3 tháng",
+      "openDate": ""
     },
     {
       "code": "GT2",
       "className": "Giao tiếp Cấp tốc 2",
+      "courseCode": "GT2",
       "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
+      "mode": "offline",
       "target": "300–400 từ, giao tiếp nâng cao",
-      "cadence": "3 buổi/tuần · 1,5h/buổi",
-      "duration": "36 buổi · 3 tháng"
+      "slots": [],
+      "cadenceNote": "3 buổi/tuần · 1,5h/buổi",
+      "duration": "36 buổi · 3 tháng",
+      "openDate": ""
     },
     {
       "code": "VIP",
       "className": "Tiếng Trung VIP 1 kèm 1",
+      "courseCode": "VIP",
       "courseSlug": "tieng-hoa-vip",
+      "mode": "offline",
       "target": "Theo mục tiêu học viên",
-      "cadence": "Lịch linh hoạt theo học viên",
-      "duration": "Theo lộ trình cá nhân"
+      "slots": [],
+      "cadenceNote": "Lịch linh hoạt theo học viên",
+      "duration": "Theo lộ trình cá nhân",
+      "openDate": ""
     }
   ]
 }

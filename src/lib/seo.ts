@@ -133,7 +133,8 @@ export function courseFaqs(input: {
   if (duration) {
     faqs.push({
       question: `Học ${input.title} mất bao lâu?`,
-      answer: `Thời lượng của khoá là ${duration.toLowerCase()}. Nhịp học phổ biến là 3 buổi/tuần; học viên đi làm có thể chọn lớp buổi tối hoặc lớp cuối tuần.`,
+      // Không hạ chữ thường: giá trị có thể chứa mã lớp như "HSK4.1".
+      answer: `Thời lượng của khoá là ${duration}. Nhịp học phổ biến là 3 buổi/tuần; học viên đi làm có thể chọn lớp buổi tối hoặc lớp cuối tuần.`,
     });
   }
 

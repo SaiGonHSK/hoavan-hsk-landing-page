@@ -1,35 +1,28 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
-import PageHero from "@/components/PageHero.astro";
-import RegisterSection from "@/components/RegisterSection.astro";
-import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { site, commitments } from "@/data/site";
+import RegisterForm from "@/components/RegisterForm.astro";
+import TrialCta from "@/components/TrialCta.astro";
+import { ICONS } from "@/lib/icons";
+import { breadcrumbSchema } from "@/lib/seo";
+import { commitments, contact } from "@/data/site";
 
-const steps = [
-  {
-    step: "01",
-    title: "Để lại thông tin",
-    desc: "Điền form đăng ký hoặc gọi hotline. Bạn cho biết mục tiêu và thời gian học mong muốn.",
-  },
-  {
-    step: "02",
-    title: "Test trình độ miễn phí",
-    desc: "Trung tâm kiểm tra nhanh vốn từ, ngữ pháp và kỹ năng để xác định cấp độ phù hợp.",
-  },
-  {
-    step: "03",
-    title: "Nhận lộ trình & xếp lớp",
-    desc: "Giảng viên tư vấn lộ trình, thời lượng, học phí và xếp bạn vào lớp đúng trình độ.",
-  },
-  {
-    step: "04",
-    title: "Học thử rồi quyết định",
-    desc: "Bạn học thử một buổi cùng lớp đang mở trước khi chốt đăng ký khoá học.",
-  },
-];
+/**
+ * Trang này là trang chuyển đổi: form phải nằm ngay trong khung nhìn đầu tiên, cạnh
+ * phần lý do nên đăng ký — không đặt sau hero + một loạt card như trước. Vì vậy trang
+ * không dùng PageHero/RegisterSection (hai khối đó đều tự mang tiêu đề cỡ hero, ghép
+ * lại thành hai tiêu đề trùng nội dung) mà dựng hero riêng và gọi RegisterForm.
+ */
+const crumbs = [{ label: "Đăng ký" }];
+
+const perks = commitments.map((c) => ({
+  title: c.title,
+  desc: c.desc,
+  icon: ICONS[c.icon as keyof typeof ICONS] ?? ICONS.shield,
+}));
+
 ---
 
 <Layout
@@ -38,50 +31,130 @@ const steps = [
   keywords="đăng ký học tiếng Trung TPHCM, test trình độ tiếng Trung miễn phí, học thử tiếng Trung, học phí tiếng Trung"
 >
   <Header />
-  <main id="main" class="flex flex-col gap-16 lg:gap-24">
-    <PageHero
-      title="Đăng ký học tại SaigonHSK"
-      description="Bốn bước đơn giản: để lại thông tin, test trình độ miễn phí, nhận lộ trình và học thử một buổi trước khi quyết định."
-      crumbs={[{ label: "Đăng ký" }]}
-      glyph="报"
-    />
 
-    <section class="bg-background">
-      <div class="container mx-auto px-6">
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {
-            steps.map((s) => (
-              <div class="rounded-3xl bg-brand-ink-50 p-7">
-                <span class="text-4xl font-black leading-none text-brand-red-500">
-                  {s.step}
-                </span>
-                <h2 class="mt-3 text-lg font-extrabold text-brand-ink-900">
-                  {s.title}
-                </h2>
-                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                  {s.desc}
-                </p>
-              </div>
-            ))
-          }
-        </div>
+  <main id="main">
+    <section
+      class="relative overflow-hidden border-b border-border bg-brand-ink-50/70 py-10 lg:py-14"
+    >
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-6 -top-10 select-none text-[11rem] font-black leading-none text-brand-red-900/4 lg:text-[16rem]"
+      >
+        报
+      </span>
 
-        <div class="mt-6 grid gap-6 md:grid-cols-3">
-          {
-            commitments.map((c) => (
-              <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
-                <h3 class="text-lg font-bold leading-snug">{c.title}</h3>
-                <p class="mt-3 text-sm leading-relaxed text-white/80">{c.desc}</p>
-              </div>
-            ))
-          }
+      <div class="container relative z-10 mx-auto px-6">
+        <nav aria-label="Breadcrumb">
+          <ol
+            class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground"
+          >
+            <li>
+              <a href="/" class="transition-colors hover:text-brand-red-600">Trang chủ</a>
+            </li>
+            <li aria-hidden="true" class="opacity-60 [&>svg]:size-3" set:html={ICONS.chevron} />
+            <li class="text-foreground">Đăng ký</li>
+          </ol>
+        </nav>
+
+        <!--
+          Cột chữ hẹp hơn cột form: form là hành động chính nên được nhiều chỗ hơn,
+          và mọi field vẫn đủ rộng để không phải rút xuống một cột.
+        -->
+        <div class="mt-8 grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+          <div>
+            <h1
+              class="text-[2.25rem] font-black leading-[1.02] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
+            >
+              Đăng ký học tiếng Trung tại SaigonHSK
+            </h1>
+
+            <p class="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
+              Để lại thông tin để được test trình độ miễn phí, nhận lộ trình phù hợp với
+              mục tiêu và học thử một buổi cùng lớp đang mở trước khi quyết định.
+            </p>
+
+            <ul class="mt-9 space-y-5">
+              {
+                perks.map((p) => (
+                  <li class="flex items-start gap-4">
+                    <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-xl bg-brand-ink-50 text-brand-ink-400 [&>svg]:size-5">
+                      <Fragment set:html={p.icon} />
+                    </span>
+                    <div>
+                      <p class="text-sm font-bold text-brand-ink-900">{p.title}</p>
+                      <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {p.desc}
+                      </p>
+                    </div>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <!-- Không phải ai cũng muốn điền form: mở sẵn hai lối liên hệ trực tiếp. -->
+            <div class="mt-9 flex flex-wrap gap-3">
+              <a
+                href={`tel:${contact.phonePrimaryRaw}`}
+                class="inline-flex items-center gap-2.5 rounded-full border border-border bg-background px-5 py-3 text-sm font-bold text-brand-ink-900 transition-colors hover:border-brand-red-300 hover:text-brand-red-700"
+              >
+                <span class="text-brand-red-600 [&>svg]:size-4" set:html={ICONS.phone} />
+                {contact.phonePrimary}
+              </a>
+              <a
+                href={contact.zalo}
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2.5 rounded-full border border-border bg-background px-5 py-3 text-sm font-bold text-brand-ink-900 transition-colors hover:border-brand-red-300"
+              >
+                <span class="[&>svg]:size-4" set:html={ICONS.zalo} />
+                Chat Zalo
+              </a>
+            </div>
+          </div>
+
+          <div
+            class="rounded-3xl border border-border bg-background p-6 shadow-xl shadow-brand-ink-900/6 md:p-8"
+          >
+            <h2 class="text-xl font-extrabold text-brand-ink-900 md:text-2xl">
+              Nhận tư vấn lộ trình miễn phí
+            </h2>
+            <p class="mt-2 mb-7 text-sm leading-relaxed text-muted-foreground">
+              Giảng viên của trung tâm sẽ liên hệ tư vấn theo mục tiêu, trình độ và thời
+              gian học của bạn.
+            </p>
+
+            <RegisterForm dense />
+          </div>
         </div>
       </div>
     </section>
 
-    <RegisterSection />
-    <CtaSection />
+    <TrialCta showFormNote={false} />
+
+    <!--
+      Bản đồ tách thành block riêng: khối TrialCta chỉ có link mở Google Maps ở tab
+      mới, còn người cần ngắm đường đi thì thấy luôn bản đồ mà không rời trang.
+    -->
+    <section class="pb-16 lg:pb-24">
+      <div class="container mx-auto px-6">
+        <div class="overflow-hidden rounded-[2rem] border border-border">
+          <iframe
+            src={contact.mapEmbedUrl}
+            title="Bản đồ đường đi tới Trung tâm Hoa văn SaigonHSK"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="h-80 w-full border-0 md:h-104"></iframe>
+        </div>
+      </div>
+    </section>
   </main>
+
   <Footer />
   <FloatingContact />
+
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema(crumbs, Astro.site?.origin ?? ""))}
+  />
 </Layout>

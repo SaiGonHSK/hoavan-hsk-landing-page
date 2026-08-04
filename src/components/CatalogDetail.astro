@@ -365,10 +365,9 @@ const sectionTitle =
                           <li class="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
                             <span
                               aria-hidden="true"
-                              class="shrink-0 text-sm font-bold leading-relaxed text-brand-ink-400"
-                            >
-                              +
-                            </span>
+                              class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                              set:html={ICONS.plus}
+                            />
                             <span>{c}</span>
                           </li>
                         ))}
@@ -391,10 +390,9 @@ const sectionTitle =
                           <li class="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
                             <span
                               aria-hidden="true"
-                              class="shrink-0 text-sm font-bold leading-relaxed text-brand-ink-400"
-                            >
-                              +
-                            </span>
+                              class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                              set:html={ICONS.plus}
+                            />
                             <span>{t}</span>
                           </li>
                         ))}
