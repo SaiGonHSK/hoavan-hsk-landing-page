@@ -19,8 +19,21 @@ const initialsOf = (name: string) =>
     .join("")
     .toUpperCase();
 
-/** "Thạc sĩ — Đại học Tây Nam" → học vị in đậm + nơi tốt nghiệp; role tách theo "·" */
+/**
+ * Thành tích lấy nguyên văn từ banner giới thiệu giảng viên (mảng `points`). Giảng
+ * viên nào chưa có banner thì dựng tạm từ title + role như trước để thẻ không trống.
+ */
 const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
+  const points = (t as { points?: readonly string[] }).points ?? [];
+  if (points.length > 0) {
+    return points.map((point, i) => ({
+      // Dòng đầu là học vị; dòng "HSK6, HSKK cao cấp" là chứng chỉ, còn lại là quá trình.
+      icon: i === 0 ? ICONS.cap : /^HSK/i.test(point) ? ICONS.target : ICONS.book,
+      value: "",
+      label: point,
+    }));
+  }
+
   const [degree, school = ""] = t.title.split("—").map((s) => s.trim());
   // Giảng viên chưa điền học vị thì bỏ hẳn dòng này thay vì hiện gạch đầu dòng rỗng.
   const lines: Credential[] = degree
@@ -111,14 +124,18 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
               <div class="absolute inset-0 flex flex-col justify-end gap-3.5 bg-gradient-to-t from-black/85 via-black/55 to-black/10 p-6 opacity-0 backdrop-blur-[3px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                 {credentialsOf(t).map((c, i) => (
                   <div
-                    class="flex translate-y-4 items-center gap-3 text-white opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+                    class="flex translate-y-4 items-start gap-3 text-white opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
                     style={`transition-delay: ${120 + i * 90}ms`}
                   >
                     <span
-                      class="shrink-0 text-white/80 [&>svg]:size-5"
+                      class="mt-0.5 shrink-0 text-white/80 [&>svg]:size-5"
                       set:html={c.icon}
                     />
-                    <p class="min-w-0 truncate text-[0.9375rem] leading-snug">
+                    {/*
+                      Thành tích lấy từ banner nên có dòng rất dài; cho xuống hàng và
+                      chặn ở 3 dòng thay vì truncate — truncate cắt mất gần hết câu.
+                    */}
+                    <p class="line-clamp-3 min-w-0 text-sm leading-snug">
                       {c.value && <span class="font-bold">{c.value} </span>}
                       <span class="text-white/85">{c.label}</span>
                     </p>

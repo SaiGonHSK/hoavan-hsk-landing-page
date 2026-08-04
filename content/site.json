@@ -132,42 +132,86 @@
       "title": "Tiến sĩ — Đại học Sư phạm Hoa Đông, Thượng Hải",
       "role": "Giảng viên phụ trách chuyên môn · Chuyên luyện thi HSK5 & HSK6",
       "image": "/images/teachers/vo-thi-quynh-trang.webp",
-      "lead": true
-    },
-    {
-      "name": "Thầy Lê Tuấn Minh",
-      "title": "NCS Tiến sĩ — Đại học Đài Bắc, Đài Loan",
-      "image": "/images/teachers/le-tuan-minh.webp"
-    },
-    {
-      "name": "Cô Trần Hồng Huyên",
-      "title": "Thạc sĩ — Đại học Tây Nam, Trùng Khánh",
-      "image": "/images/teachers/tran-hong-huyen.webp"
-    },
-    {
-      "name": "Thầy Lý Hiền Tín",
-      "title": "NCS Thạc sĩ — Đại học Sư phạm TP.HCM",
-      "image": "/images/teachers/ly-hien-tin.webp"
-    },
-    {
-      "name": "Cô Huỳnh Thị Mỹ Chính",
-      "title": "Thạc sĩ — Đại học Ngoại ngữ Bắc Kinh",
-      "image": "/images/teachers/huynh-thi-my-chinh.webp"
-    },
-    {
-      "name": "Cô Dương Mai Phương",
-      "title": "NCS Thạc sĩ — Đại học Sư phạm TP.HCM",
-      "image": "/images/teachers/duong-mai-phuong.webp"
+      "lead": true,
+      "points": [
+        "Tốt nghiệp Tiến sĩ tại trường Đại học Sư phạm Hoa Đông, Thượng Hải, Trung Quốc",
+        "Trưởng bộ môn tiếng Trung — Giảng viên tại trường Đại học Công Thương TP. HCM",
+        "HSK6, HSKK cao cấp"
+      ]
     },
     {
       "name": "Thầy Cao Hoài Nhơn",
       "title": "Thạc sĩ — Đại học Ngôn ngữ Bắc Kinh",
-      "image": "/images/teachers/cao-hoai-nhon.webp"
+      "image": "/images/teachers/cao-hoai-nhon.webp",
+      "points": [
+        "Tốt nghiệp Thạc sĩ ngành Giáo dục Hán ngữ Quốc tế tại trường Đại học Ngôn ngữ Bắc Kinh, Trung Quốc",
+        "Giảng viên tại trường Đại học Công Thương TP. HCM",
+        "HSK6, HSKK cao cấp"
+      ]
+    },
+    {
+      "name": "Thầy Lý Hiền Tín",
+      "title": "NCS Thạc sĩ — Đại học Sư phạm TP. HCM",
+      "image": "/images/teachers/ly-hien-tin.webp",
+      "points": [
+        "NCS Thạc sĩ ngành Lý luận và phương pháp dạy học bộ môn tiếng Trung Quốc tại trường Đại học Sư phạm TP. HCM",
+        "Tốt nghiệp xuất sắc ngành Ngôn ngữ Trung tại trường Đại học Sư phạm TP. HCM",
+        "Giải nhì cuộc thi “Nhịp cầu Hán ngữ sinh viên quốc tế lần thứ 19 khu vực TP. HCM”",
+        "HSK6, HSKK cao cấp"
+      ]
+    },
+    {
+      "name": "Cô Huỳnh Thị Mỹ Chính",
+      "title": "Thạc sĩ — Đại học Ngoại ngữ Bắc Kinh",
+      "image": "/images/teachers/huynh-thi-my-chinh.webp",
+      "points": [
+        "Tốt nghiệp Thạc sĩ ngành Giáo dục Hán ngữ Quốc tế tại trường Đại học Ngoại ngữ Bắc Kinh, Trung Quốc",
+        "Tốt nghiệp cử nhân ngành Ngôn ngữ Trung Quốc tại trường Đại học Sư phạm Phúc Kiến, Trung Quốc",
+        "Giáo viên thỉnh giảng tại trường Đại học Công Thương TP. HCM",
+        "HSK6, HSKK cao cấp"
+      ]
+    },
+    {
+      "name": "Cô Trần Hồng Huyên",
+      "title": "Thạc sĩ — Đại học Tây Nam, Trùng Khánh",
+      "image": "/images/teachers/tran-hong-huyen.webp",
+      "points": [
+        "Tốt nghiệp Thạc sĩ ngành Giáo dục Hán ngữ Quốc tế tại trường Đại học Tây Nam, Trùng Khánh, Trung Quốc",
+        "Tốt nghiệp cử nhân ngành Sư phạm tiếng Trung tại trường Đại học Sư phạm TP. HCM",
+        "HSK6, HSKK cao cấp"
+      ]
+    },
+    {
+      "name": "Cô Dương Mai Phương",
+      "title": "NCS Thạc sĩ — Đại học Sư phạm TP. HCM",
+      "image": "/images/teachers/duong-mai-phuong.webp",
+      "points": [
+        "NCS Thạc sĩ ngành Lý luận và phương pháp dạy học bộ môn tiếng Trung Quốc tại trường Đại học Sư phạm TP. HCM",
+        "Tốt nghiệp cử nhân ngành Ngữ văn Trung Quốc tại trường Đại học Khoa học Xã hội và Nhân văn",
+        "Chuyên viên Ngân hàng Hua Nan — Đài Loan",
+        "HSK6, HSKK cao cấp"
+      ]
     },
     {
       "name": "Thầy Nguyễn Tuấn Cảnh",
-      "title": "NCS Thạc sĩ — Đại học Khoa học Xã hội và Nhân văn TP.HCM",
-      "image": "/images/teachers/nguyen-tuan-canh.webp"
+      "title": "NCS Thạc sĩ — Đại học Liêu Thành, Trung Quốc",
+      "image": "/images/teachers/nguyen-tuan-canh.webp",
+      "points": [
+        "NCS Thạc sĩ ngành Giáo dục Hán ngữ Quốc tế tại trường Đại học Liêu Thành, Trung Quốc",
+        "Tốt nghiệp cử nhân ngành Ngôn ngữ Trung tại trường Đại học Ngoại ngữ – Tin học TP. HCM",
+        "Tốt nghiệp kỳ tiếng loại xuất sắc chuyên ngành Giáo dục Hán ngữ Quốc tế tại trường Đại học Liêu Thành, Trung Quốc",
+        "HSK6, HSKK cao cấp"
+      ]
+    },
+    {
+      "name": "Thầy Lê Tuấn Minh",
+      "title": "NCS Tiến sĩ — Đại học Đài Bắc, Đài Loan",
+      "image": "/images/teachers/le-tuan-minh.webp",
+      "points": [
+        "NCS Tiến sĩ ngành Ngôn ngữ và Văn hoá Trung Quốc tại trường Đại học Đài Bắc, Đài Loan",
+        "Tốt nghiệp Thạc sĩ xuất sắc ngành Giảng dạy tiếng Trung tại trường Đại học Đài Bắc, Đài Loan",
+        "HSK6, HSKK cao cấp"
+      ]
     }
   ],
   "banners": [
