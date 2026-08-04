@@ -17,6 +17,10 @@ import check from "@/assets/icons/check.svg?raw";
 import chevron from "@/assets/icons/chevron.svg?raw";
 import clock from "@/assets/icons/clock.svg?raw";
 import close from "@/assets/icons/close.svg?raw";
+// Hai icon mạng xã hội dùng fill thay vì stroke như phần còn lại — đây là glyph
+// thương hiệu, vẽ lại bằng nét sẽ không còn nhận ra.
+import facebook from "@/assets/icons/facebook.svg?raw";
+import tiktok from "@/assets/icons/tiktok.svg?raw";
 import growth from "@/assets/icons/growth.svg?raw";
 import heart from "@/assets/icons/heart.svg?raw";
 import kids from "@/assets/icons/kids.svg?raw";
@@ -64,6 +68,8 @@ export const ICONS = {
   camera,
   wifi,
   zalo,
+  facebook,
+  tiktok,
 } as const;
 
 export const COURSE_ICONS = {

@@ -15,7 +15,14 @@ pnpm-debug.log*
 
 # environment variables
 .env
-.env.production
+
+# .env.production CÓ trong git là cố ý: site build tĩnh nên mọi biến PUBLIC_* đều
+# nằm sẵn trong JS gửi cho browser, không thứ gì trong đó là bí mật. Đổi lại,
+# `git pull && yarn build` trên VPS ra đúng cấu hình production mà không cần
+# nhớ tạo file tay — trước đây file này bị ignore và build trên VPS sẽ rơi vào
+# nhánh "chưa cấu hình API" (form lùi về mailto) mà không báo gì.
+# Secret (mật khẩu, JWT) không bao giờ được đặt vào đây — chúng thuộc .env của
+# hoavan-hsk-server.
 
 # macOS-specific files
 .DS_Store

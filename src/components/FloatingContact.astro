@@ -34,6 +34,21 @@ import { ICONS } from "@/lib/icons";
   </a>
 
   <a
+    href={contact.tiktok}
+    target="_blank"
+    rel="noopener"
+    aria-label="Xem SaiGonHSK trên TikTok"
+    class="group relative flex size-13 items-center justify-center rounded-full bg-brand-ink-950 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
+  >
+    <span class="[&>svg]:size-6" set:html={ICONS.tiktok} />
+    <span
+      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
+    >
+      Xem SaiGonHSK trên TikTok
+    </span>
+  </a>
+
+  <a
     href={`tel:${contact.phonePrimaryRaw}`}
     aria-label={`Gọi ${contact.phonePrimary}`}
     class="group relative flex size-13 items-center justify-center rounded-full bg-brand-red-600 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"

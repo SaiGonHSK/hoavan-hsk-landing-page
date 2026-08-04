@@ -1,7 +1,7 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
+import RailArrows from "@/components/RailArrows.astro";
 import { testimonials } from "@/data/testimonials";
-import { ICONS } from "@/lib/icons";
 
 const initials = (name: string) =>
   name
@@ -33,11 +33,12 @@ const badgeOf = (quote: string) => {
       highlight="về Hoa văn SaigonHSK"
     />
 
-    <div
-      data-review-track
-      class="mt-16 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {
+    <div data-rail class="group/rail relative mt-16">
+      <div
+        data-rail-track
+        class="flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {
         list.map((t) => {
           const image = (t as { image?: string }).image;
 
@@ -108,52 +109,10 @@ const badgeOf = (quote: string) => {
             </figure>
           );
         })
-      }
-    </div>
-    <!-- <div class="mt-12 flex items-center justify-between gap-6">
-      <div class="hidden shrink-0 items-center gap-2 md:flex">
-        <button
-          type="button"
-          data-rail="prev"
-          aria-label="Xem giảng viên trước"
-          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4 [&>svg]:rotate-180"
-          set:html={ICONS.arrow}
-        />
-        <button
-          type="button"
-          data-rail="next"
-          aria-label="Xem giảng viên tiếp theo"
-          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4"
-          set:html={ICONS.arrow}
-        />
+        }
       </div>
-    </div> -->
+
+      <RailArrows label="đánh giá" />
+    </div>
   </div>
 </section>
-
-<script>
-  const track = document.querySelector<HTMLElement>("[data-review-track]");
-  const prev = document.querySelector<HTMLButtonElement>("[data-review-prev]");
-  const next = document.querySelector<HTMLButtonElement>("[data-review-next]");
-
-  if (track && prev && next) {
-    const step = () => {
-      const card = track.querySelector<HTMLElement>("[data-review-card]");
-      if (!card) return track.clientWidth;
-      const gap = parseFloat(getComputedStyle(track).columnGap || "24");
-      return card.offsetWidth + gap;
-    };
-
-    const sync = () => {
-      const max = track.scrollWidth - track.clientWidth - 1;
-      prev.disabled = track.scrollLeft <= 0;
-      next.disabled = track.scrollLeft >= max;
-    };
-
-    prev.addEventListener("click", () => track.scrollBy({ left: -step() }));
-    next.addEventListener("click", () => track.scrollBy({ left: step() }));
-    track.addEventListener("scroll", sync, { passive: true });
-    window.addEventListener("resize", sync);
-    sync();
-  }
-</script>

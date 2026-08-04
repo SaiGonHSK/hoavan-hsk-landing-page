@@ -1,5 +1,6 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
+import RailArrows from "@/components/RailArrows.astro";
 import { teachers } from "@/data/teachers";
 import { ICONS } from "@/lib/icons";
 
@@ -62,31 +63,13 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
 <section id="teachers" class="relative overflow-hidden bg-background scroll-mt-24">
   <div class="container relative z-10 mx-auto px-6">
     <SectionHeading title="Đội ngũ" highlight="giảng viên" inlineHighlight />
-<!-- 
-    <div class="mt-12 flex items-center justify-between gap-6">
-      <div class="hidden shrink-0 items-center gap-2 md:flex">
-        <button
-          type="button"
-          data-rail="prev"
-          aria-label="Xem giảng viên trước"
-          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4 [&>svg]:rotate-180"
-          set:html={ICONS.arrow}
-        />
-        <button
-          type="button"
-          data-rail="next"
-          aria-label="Xem giảng viên tiếp theo"
-          class="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-brand-ink-50 text-brand-ink-900 transition-colors hover:bg-brand-ink-100 disabled:cursor-default disabled:opacity-35 [&>svg]:size-4"
-          set:html={ICONS.arrow}
-        />
-      </div>
-    </div> -->
 
-    <div
-      data-rail="track"
-      class="teacher-rail -mx-6 mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"
-    >
-      {
+    <div data-rail class="group/rail relative mt-16">
+      <div
+        data-rail-track
+        class="teacher-rail -mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"
+      >
+        {
         teachers.map((t) => (
           <button
             type="button"
@@ -156,7 +139,10 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
             }
           </button>
         ))
-      }
+        }
+      </div>
+
+      <RailArrows label="giảng viên" />
     </div>
   </div>
 </section>
@@ -171,30 +157,3 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
     display: none;
   }
 </style>
-
-<script>
-  const track = document.querySelector<HTMLElement>('[data-rail="track"]');
-  const prev = document.querySelector<HTMLButtonElement>('[data-rail="prev"]');
-  const next = document.querySelector<HTMLButtonElement>('[data-rail="next"]');
-
-  if (track && prev && next) {
-
-    const step = () => {
-      const card = track.querySelector<HTMLElement>("button");
-      const gap = parseFloat(getComputedStyle(track).columnGap || "0") || 0;
-      return card ? card.offsetWidth + gap : track.clientWidth;
-    };
-
-    const sync = () => {
-      const max = track.scrollWidth - track.clientWidth - 1;
-      prev.disabled = track.scrollLeft <= 0;
-      next.disabled = track.scrollLeft >= max;
-    };
-
-    prev.addEventListener("click", () => track.scrollBy({ left: -step() }));
-    next.addEventListener("click", () => track.scrollBy({ left: step() }));
-    track.addEventListener("scroll", sync, { passive: true });
-    window.addEventListener("resize", sync);
-    sync();
-  }
-</script>
