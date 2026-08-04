@@ -91,13 +91,13 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
                     src={t.image}
                     alt={t.title ? `${t.name} — ${t.title}` : t.name}
                     loading="lazy"
-                    width="940"
-                    height="788"
-                    class="aspect-[940/788] w-full object-cover"
+                    width="1080"
+                    height="1080"
+                    class="aspect-square w-full object-cover"
                   />
                 ) : (
                   <div
-                    class="flex aspect-[940/788] w-full items-center justify-center bg-brand-ink-50"
+                    class="flex aspect-square w-full items-center justify-center bg-brand-ink-50"
                     role="img"
                     aria-label={t.name}
                   >

@@ -135,9 +135,29 @@
       "lead": true
     },
     {
+      "name": "Thầy Lê Tuấn Minh",
+      "title": "NCS Tiến sĩ — Đại học Đài Bắc, Đài Loan",
+      "image": "/images/teachers/le-tuan-minh.webp"
+    },
+    {
       "name": "Cô Trần Hồng Huyên",
       "title": "Thạc sĩ — Đại học Tây Nam, Trùng Khánh",
       "image": "/images/teachers/tran-hong-huyen.webp"
+    },
+    {
+      "name": "Thầy Lý Hiền Tín",
+      "title": "NCS Thạc sĩ — Đại học Sư phạm TP.HCM",
+      "image": "/images/teachers/ly-hien-tin.webp"
+    },
+    {
+      "name": "Cô Huỳnh Thị Mỹ Chính",
+      "title": "Thạc sĩ — Đại học Ngoại ngữ Bắc Kinh",
+      "image": "/images/teachers/huynh-thi-my-chinh.webp"
+    },
+    {
+      "name": "Cô Dương Mai Phương",
+      "title": "NCS Thạc sĩ — Đại học Sư phạm TP.HCM",
+      "image": "/images/teachers/duong-mai-phuong.webp"
     },
     {
       "name": "Thầy Cao Hoài Nhơn",
@@ -145,14 +165,9 @@
       "image": "/images/teachers/cao-hoai-nhon.webp"
     },
     {
-      "name": "Thầy Tín",
-      "title": "",
-      "image": ""
-    },
-    {
-      "name": "Cô Tín",
-      "title": "",
-      "image": ""
+      "name": "Thầy Nguyễn Tuấn Cảnh",
+      "title": "NCS Thạc sĩ — Đại học Khoa học Xã hội và Nhân văn TP.HCM",
+      "image": "/images/teachers/nguyen-tuan-canh.webp"
     }
   ],
   "banners": [

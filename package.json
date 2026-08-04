@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "gen:values": "node scripts/gen-value-images.mjs",
     "gen:og": "node scripts/gen-og-image.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "gen:teachers": "node scripts/gen-teacher-images.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
