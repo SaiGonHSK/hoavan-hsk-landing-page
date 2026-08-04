@@ -1,6 +1,7 @@
 ---
 import { Image, getImage } from "astro:assets";
 import BrandHeading from "@/components/BrandHeading.astro";
+import RailHint from "@/components/RailHint.astro";
 import { activityPosters } from "@/data/activities";
 
 /*
@@ -35,9 +36,11 @@ const posters = await Promise.all(
           note="Minigame Check-in Tết 2026"
         />
 
-        <div
-          class="activity-rail relative mt-12 -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
-        >
+        <div data-rail class="group/rail relative mt-12">
+          <div
+            data-rail-track
+            class="activity-rail -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+          >
           {posters.map((p) => (
             <button
               type="button"
@@ -68,14 +71,17 @@ const posters = await Promise.all(
             </button>
           ))}
 
-          <span
-            aria-hidden="true"
-            class="pointer-events-none absolute -right-2 top-1/2 hidden size-20 -translate-y-1/2 rotate-6 place-items-center rounded-full bg-brand-red-600 text-center text-xs font-bold leading-tight text-white shadow-[0_18px_40px_-20px_rgba(178,24,43,0.8)] lg:grid"
-          >
-            为你的
-            <br />
-            成功
-          </span>
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute -right-2 top-1/2 hidden size-20 -translate-y-1/2 rotate-6 place-items-center rounded-full bg-brand-red-600 text-center text-xs font-bold leading-tight text-white shadow-[0_18px_40px_-20px_rgba(178,24,43,0.8)] lg:grid"
+            >
+              为你的
+              <br />
+              成功
+            </span>
+          </div>
+
+          <RailHint label="hoạt động" hideFrom="lg" />
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
 import CourseBadge from "@/components/CourseBadge.astro";
+import RailHint from "@/components/RailHint.astro";
 import { courses, featuredCourses } from "@/data/courses";
 import { ICONS } from "@/lib/icons";
 
@@ -28,9 +29,11 @@ const hasMore = list.length < courses.length;
       )
     }
 
-    <div
-      class="course-rail -mx-6 mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0"
-    >
+    <div data-rail class="group/rail relative mt-16">
+      <div
+        data-rail-track
+        class="course-rail -mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0"
+      >
       {
         list.map((c) => (
           <a
@@ -80,6 +83,9 @@ const hasMore = list.length < courses.length;
           </a>
         ))
       }
+      </div>
+
+      <RailHint label="khoá học" hideFrom="lg" />
     </div>
 
     {

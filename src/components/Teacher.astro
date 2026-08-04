@@ -1,6 +1,6 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
-import RailArrows from "@/components/RailArrows.astro";
+import RailHint from "@/components/RailHint.astro";
 import { teachers } from "@/data/teachers";
 import { ICONS } from "@/lib/icons";
 
@@ -142,7 +142,7 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
         }
       </div>
 
-      <RailArrows label="giảng viên" />
+      <RailHint label="giảng viên" />
     </div>
   </div>
 </section>
