@@ -2,14 +2,9 @@
 import CatalogDetail from "@/components/CatalogDetail.astro";
 import { reviewLevels } from "@/data/catalog";
 
-export function getStaticPaths() {
-  return reviewLevels.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
-}
-
-const { item } = Astro.props;
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
+const item = reviewLevels.find((entry) => entry.slug === Astro.params.slug);
+if (!item) return new Response(null, { status: 404 });
 
 const related = reviewLevels
   .filter((c) => c.slug !== item.slug)

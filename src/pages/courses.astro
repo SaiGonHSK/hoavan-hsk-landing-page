@@ -1,74 +1,123 @@
 ---
-import CatalogHub from "@/components/CatalogHub.astro";
-import { hskCourses, hskExamCourses, specialCourses, textbookCourses } from "@/data/catalog";
-import { courses as programs } from "@/data/courses";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import CourseCatalog, { type CatalogTab } from "@/components/CourseCatalog.astro";
+import EnrollCta from "@/components/EnrollCta.astro";
+import RegisterSection from "@/components/RegisterSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { visiblePrograms } from "@/data/programsApi";
+import { visibleCourses } from "@/data/coursesApi";
 import type { CatalogItem } from "@/data/catalog";
+import { site } from "@/data/site";
+import { clampDescription, itemListSchema } from "@/lib/seo";
 
 /** Yêu cầu đầu vào nằm trong bảng facts của khoá catalog, lấy ra để hiện trên thẻ. */
-const entryOf = (c: CatalogItem) =>
-  c.facts.find((f) => f.label === "Đầu vào")?.value;
+const entryOf = (c: CatalogItem) => c.facts.find((f) => f.label === "Đầu vào")?.value;
+/*
+  Khoá học lấy từ trang quản trị: khoá nào không "Đang mở" thì không hiện ở đây và trang
+  chi tiết của nó cũng 404. Khoá chưa được đưa vào menu cũng không hiện — nó chưa có
+  đường dẫn nào để dẫn tới.
+  Gom theo **khoá tra** (`c.slug`, tức `catalogKey`) chứ không theo `track`: `track`
+  không sửa được trong console nữa, còn ba nhóm dưới đây phân biệt được bằng dạng khoá
+  tra (`hsk-N`, `luyen-thi-hsk-N`, còn lại).
+*/
+const courses = visibleCourses();
+const hskLevelCourses = courses.filter((c) => /^hsk-[1-6]$/.test(c.slug));
+const examCourses = courses.filter((c) => /^luyen-thi-hsk-[1-6]$/.test(c.slug));
+const textbookApiCourses = courses.filter((c) => c.href.startsWith("/courses/textbooks/"));
+const otherCourses = courses.filter(
+  (c) =>
+    !hskLevelCourses.includes(c) &&
+    !examCourses.includes(c) &&
+    !textbookApiCourses.includes(c),
+);
+const tabs: CatalogTab[] = [
+  {
+    key: "hsk",
+    label: "Theo cấp HSK",
+    cards: hskLevelCourses.map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: c.href,
+      tag: "Chuẩn HSK 3.0",
+      entry: entryOf(c),
+    })),
+  },
+  {
+    key: "exam",
+    label: "Luyện thi HSK",
+    cards: examCourses.map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: c.href,
+      tag: "Luyện đề",
+      entry: entryOf(c),
+    })),
+  },
+  {
+    key: "special",
+    label: "Khoá chuyên biệt",
+    cards: otherCourses.map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: c.href,
+      entry: entryOf(c),
+    })),
+  },
+  {
+    key: "textbook",
+    label: "Theo giáo trình",
+    cards: textbookApiCourses.map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: c.href,
+      entry: entryOf(c),
+    })),
+  },
+  {
+    key: "program",
+    label: "Chương trình tại trung tâm",
+    cards: visiblePrograms().map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: `/courses/programs/${c.slug}`,
+      tag: c.goal,
+      entry: c.entry,
+    })),
+  },
+];
+const description =
+  "Học tiếng Trung theo cấp HSK1–HSK6, luyện thi lấy chứng chỉ HSK, giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung chuyên ngành tại TP.HCM. Mỗi khoá có lộ trình, thời lượng và chuẩn đầu ra rõ ràng — gọi hotline để nhận bảng học phí.";
+const origin = Astro.site?.origin ?? "";
+/* Giữ đúng schema mà CatalogHub vẫn phát cho trang này: một ItemList mọi khoá. */
+const schemas = [
+  itemListSchema(
+    "Khoá học tiếng Trung TPHCM — HSK1 đến HSK6",
+    tabs.flatMap((tab) => tab.cards.map((c) => ({ title: c.title, href: c.href }))),
+    origin,
+  ),
+];
 ---
-
-<CatalogHub
-  title="Các khoá học tiếng Trung tại SaigonHSK"
-  metaTitle="Khoá học tiếng Trung TPHCM — HSK1 đến HSK6"
-  description="Học tiếng Trung theo cấp HSK1–HSK6, luyện thi lấy chứng chỉ HSK, giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung chuyên ngành tại TP.HCM. Mỗi khoá có lộ trình, thời lượng và chuẩn đầu ra rõ ràng — gọi hotline để nhận bảng học phí."
+<Layout
+  title={`Khoá học tiếng Trung TPHCM — HSK1 đến HSK6 | ${site.shortName}`}
+  description={clampDescription(description)}
   keywords="khoá học tiếng Trung TPHCM, học tiếng Trung HSK1 HSK6, bảng học phí tiếng Trung, khoá học tiếng Trung Sài Gòn"
-  crumbs={[{ label: "Các khoá học" }]}
-  glyph="课"
-  groups={[
-    {
-      title: "Khoá học theo cấp HSK",
-      desc: "Lộ trình chuẩn HSK 3.0 từ HSK1 đến HSK6, học offline tại trung tâm hoặc online.",
-      cards: hskCourses.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/courses/${c.slug}`,
-        tag: "Chuẩn HSK 3.0",
-        entry: entryOf(c),
-      })),
-    },
-    {
-      title: "Lớp luyện thi HSK",
-      desc: "Luyện đề, chiến thuật làm bài và thi thử trước kỳ thi chính thức.",
-      cards: hskExamCourses.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/courses/${c.slug}`,
-        tag: "Luyện đề",
-        entry: entryOf(c),
-      })),
-    },
-    {
-      title: "Khoá học chuyên biệt",
-      desc: "Giao tiếp công sở, ngữ pháp, lớp trẻ em và tiếng Trung theo ngành nghề.",
-      cards: specialCourses.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/courses/${c.slug}`,
-        entry: entryOf(c),
-      })),
-    },
-    {
-      title: "Học trực tuyến theo giáo trình",
-      desc: "Đi theo đúng bộ giáo trình bạn đang dùng, có giảng viên kèm từng bài.",
-      cards: textbookCourses.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/courses/textbooks/${c.slug}`,
-        entry: entryOf(c),
-      })),
-    },
-    {
-      title: "Chương trình đào tạo tại trung tâm",
-      desc: "Các lớp truyền thống của SaigonHSK với chi tiết đối tượng, thời lượng và chuẩn đầu ra từng cấp.",
-      cards: programs.map((c) => ({
-        title: c.title,
-        summary: c.summary,
-        href: `/courses/programs/${c.slug}`,
-        tag: c.goal,
-        entry: c.entry,
-      })),
-    },
-  ]}
-/>
+  schemas={schemas}
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+    <PageHero
+      title="Các khoá học tiếng Trung tại SaigonHSK"
+      description={description}
+      crumbs={[{ label: "Các khoá học" }]}
+      glyph="课"
+    />
+    <CourseCatalog tabs={tabs} />
+    <EnrollCta />
+    <RegisterSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

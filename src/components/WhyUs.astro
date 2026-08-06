@@ -81,15 +81,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
                       </div>
                     ))}
                   </div>
-                ) : typeof s.image === "string" ? (
-                  <img
-                    src={s.image}
-                    alt={s.title}
-                    loading={i === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    class="absolute inset-0 size-full object-cover"
-                  />
-                ) : (
+                ) : s.contain ? (
                   <Image
                     src={s.image}
                     alt={`${s.title} — ${s.note}`}
@@ -100,6 +92,19 @@ import { valuePanels as slides } from "@/data/valuePanels";
                     loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
                     class="size-full rounded-2xl object-contain"
+                  />
+                ) : (
+                  /* Ảnh chụp lớp học phủ kín nửa panel — cắt cạnh thay vì hiện trọn. */
+                  <Image
+                    src={s.image}
+                    alt={s.title}
+                    widths={[640, 1024]}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    format="webp"
+                    quality={78}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    class="absolute inset-0 size-full object-cover"
                   />
                 )
               }

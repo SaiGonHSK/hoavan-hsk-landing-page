@@ -2,7 +2,7 @@
 import SectionHeading from "@/components/SectionHeading.astro";
 import CourseBadge from "@/components/CourseBadge.astro";
 import RailHint from "@/components/RailHint.astro";
-import { courses, featuredCourses } from "@/data/courses";
+import { featuredPrograms, visiblePrograms } from "@/data/programsApi";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
@@ -13,8 +13,22 @@ interface Props {
 }
 const { showHeading = true, limit } = Astro.props;
 
-const list = limit ? featuredCourses.slice(0, limit) : courses;
-const hasMore = list.length < courses.length;
+/*
+  Chương trình lấy từ trang quản trị (bảng `landing_programs`), không còn danh sách
+  cứng trong repo.
+
+  "Nổi bật" là một ô tích ở console, thứ tự là thứ tự trong màn hình Chương trình đào
+  tạo — trung tâm tự quyết trang chủ hiện gì mà không cần deploy. Phần văn dài của
+  trang chi tiết vẫn sinh từ repo và ghép theo `slug`; xem `programsApi.ts`.
+*/
+const all = visiblePrograms();
+const featured = featuredPrograms();
+
+// Chưa tích chương trình nào thì lấy tạm những mục đầu danh sách — một khối trống
+// trên trang chủ tệ hơn nhiều so với việc hiện đại diện vài chương trình.
+const source = featured.length > 0 ? featured : all;
+const list = limit ? source.slice(0, limit) : source;
+const hasMore = list.length < all.length;
 ---
 
 <section id="courses" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -95,7 +109,7 @@ const hasMore = list.length < courses.length;
             href="/courses"
             class="group inline-flex items-center gap-2 rounded-full border border-border bg-background px-8 py-4 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
           >
-            Xem thêm {courses.length - list.length} chương trình khác
+            Xem thêm {all.length - list.length} chương trình khác
             <span
               class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
               set:html={ICONS.arrow}

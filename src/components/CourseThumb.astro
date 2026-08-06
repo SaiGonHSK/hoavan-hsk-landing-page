@@ -1,0 +1,77 @@
+---
+/**
+ * Thumbnail vuông của thẻ khoá học, sinh thẳng từ tên khoá.
+ *
+ * Vì sao không dùng `CourseBadge` như lưới ở trang chủ: badge đó chia tên khoá thành
+ * hai nửa chéo và được canh cho ô cao 160px. Ở ô 96px của thẻ ngang, "Tiếng Trung Giao
+ * tiếp Cấp tốc" bị cắt còn "TIẾNG TRU…", tức mất hẳn phần phân biệt các khoá với nhau.
+ * Nên ở cỡ này chỉ giữ **phần phân biệt**: cấp HSK, hoặc chữ cuối của tên khoá.
+ *
+ * Sinh trong markup chứ không phải file ảnh: thêm khoá trong console là có thumbnail
+ * ngay, không ai phải vẽ rồi upload thêm gì.
+ */
+interface Props {
+  /** Tên khoá đầy đủ, ví dụ "Tiếng Trung Giao tiếp Cấp tốc". */
+  title: string;
+}
+
+const { title } = Astro.props;
+
+/**
+ * Tên khoá → nhãn ngắn đọc được trong ô vuông nhỏ.
+ *
+ * Ưu tiên cấp HSK vì đó là thứ người xem tìm: "HSK4", "Luyện thi HSK3" đều ra số cấp.
+ * Còn lại thì bỏ các tiền tố mọi khoá đều có ("Tiếng Trung", "Giáo trình") — giữ chúng
+ * thì mọi ô đều mở đầu giống nhau và không ô nào nói được điều gì.
+ *
+ * `(?![.,\d])` để "Giáo trình chuẩn HSK 3.0" không bị đọc thành cấp HSK3: đó là tên
+ * bộ chuẩn, không phải cấp độ.
+ */
+const shorten = (name: string): { lead?: string; main: string } => {
+  const hsk = name.match(/HSK\s?([1-6])(?![.,\d])/i);
+  if (hsk) return { lead: "HSK", main: hsk[1] };
+
+  const rest = name
+    .replace(/^(Tiếng Trung|Giáo trình|Lớp)\s+/i, "")
+    .replace(/[()]/g, "")
+    .trim();
+
+  // Hai chữ cuối là phần mang nghĩa: "Giao tiếp Cấp tốc" → "Cấp tốc".
+  const words = (rest || name).split(/\s+/);
+  return { main: words.slice(-2).join(" ") };
+};
+
+const { lead, main } = shorten(title);
+
+/** Chữ dài thì nhỏ lại để không tràn khỏi ô. */
+const sizeOf = (text: string) =>
+  text.length <= 2
+    ? "text-3xl"
+    : text.length <= 7
+      ? "text-lg"
+      : text.length <= 12
+        ? "text-sm"
+        : "text-xs";
+---
+
+<div
+  class="flex size-full flex-col items-center justify-center gap-0.5 bg-brand-red-50 px-2 text-center"
+  role="img"
+  aria-label={title}
+>
+  {
+    lead && (
+      <span class="text-[0.625rem] font-bold uppercase tracking-[0.16em] text-brand-red-600">
+        {lead}
+      </span>
+    )
+  }
+  <span
+    class:list={[
+      "font-black uppercase leading-none tracking-tight text-brand-red-700",
+      sizeOf(main),
+    ]}
+  >
+    {main}
+  </span>
+</div>

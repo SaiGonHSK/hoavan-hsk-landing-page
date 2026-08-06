@@ -5,6 +5,9 @@ import Lightbox from "@/components/Lightbox.astro";
 import { site, contact } from "@/data/site";
 import { contentUpdatedAt } from "@/data/content";
 import { keywordString } from "@/lib/seo";
+import classroom from "@/assets/facility/classroom.webp";
+import facility1 from "@/assets/facility/facility-1.webp";
+import facility2 from "@/assets/facility/facility-2.webp";
 
 interface Props {
   title?: string;
@@ -63,12 +66,16 @@ const organizationSchema = {
     width: 192,
     height: 192,
   },
-  // Google Business Profile/Local ưu tiên nhiều ảnh thật của cơ sở.
-  image: [
-    new URL("/images/classroom.webp", Astro.site).href,
-    new URL("/images/facility-1.webp", Astro.site).href,
-    new URL("/images/facility-2.webp", Astro.site).href,
-  ],
+  /*
+    Google Business Profile/Local ưu tiên nhiều ảnh thật của cơ sở.
+
+    Lấy `.src` của ảnh import thay vì gõ tay đường dẫn public/: ảnh cơ sở đã chuyển
+    vào src/assets để Astro nén cho các chỗ hiển thị, nên đường dẫn public/ cũ không
+    còn tồn tại. `.src` là URL có hash nội dung — chỉ đổi khi ảnh thật sự đổi.
+  */
+  image: [classroom, facility1, facility2].map(
+    (asset) => new URL(asset.src, Astro.site).href,
+  ),
   email: contact.email,
   telephone: contact.phones,
   foundingDate: String(site.foundedYear),

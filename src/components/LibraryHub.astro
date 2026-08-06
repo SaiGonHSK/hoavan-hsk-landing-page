@@ -1,0 +1,87 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import PageHero from "@/components/PageHero.astro";
+import LibraryFilters from "@/components/LibraryFilters.astro";
+import ArticleGrid from "@/components/ArticleGrid.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { site } from "@/data/site";
+import { clampDescription, itemListSchema } from "@/lib/seo";
+import type { LibraryArticle } from "@/data/library";
+
+/**
+ * Khung chung của `/library` và `/library/<chuyên-mục>`.
+ *
+ * Hai trang chỉ khác nhau ở chip nào đang sáng và danh sách bài, nên chúng dùng
+ * chung một khung: hàng chip phải giống hệt nhau ở mọi trang, nếu không nó không
+ * còn là bộ lọc mà thành hai thanh điều hướng khác nhau.
+ *
+ * Không có `EnrollCta`/`RegisterSection` ở cuối như các hub khác — Thư viện là tài
+ * liệu đọc miễn phí, chèn lời mời ghi danh vào giữa đường đọc làm loãng nội dung.
+ */
+
+interface Props {
+  title: string;
+  metaTitle?: string;
+  description: string;
+  crumbs: { label: string; href?: string }[];
+  glyph?: string;
+
+  /** Toàn bộ bài đã xuất bản — dùng để đếm số bài trên từng chip. */
+  allArticles: LibraryArticle[];
+  /** Bài hiện trong lưới; ở trang chuyên mục là tập con của `allArticles`. */
+  articles: LibraryArticle[];
+  activeKey?: string;
+  emptyMessage?: string;
+}
+
+const {
+  title,
+  metaTitle,
+  description,
+  crumbs,
+  glyph = "书",
+  allArticles,
+  articles,
+  activeKey = "",
+  emptyMessage,
+} = Astro.props;
+
+const origin = Astro.site?.origin ?? "";
+const schemas = [
+  itemListSchema(
+    metaTitle ?? title,
+    articles.map((article) => ({ title: article.title, href: article.slug })),
+    origin,
+  ),
+];
+---
+
+<Layout
+  title={`${metaTitle ?? title} | ${site.shortName}`}
+  description={clampDescription(description)}
+  schemas={schemas}
+>
+  <Header />
+  <main id="main" class="flex flex-col">
+    <PageHero
+      title={title}
+      description={description}
+      crumbs={crumbs}
+      glyph={glyph}
+      align="center"
+      compactBottom
+    >
+      <LibraryFilters articles={allArticles} activeKey={activeKey} />
+    </PageHero>
+
+    <section class="bg-background pb-16 lg:pb-20">
+      <div class="container mx-auto px-6">
+        <ArticleGrid articles={articles} emptyMessage={emptyMessage} />
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

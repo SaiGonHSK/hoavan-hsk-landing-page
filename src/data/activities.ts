@@ -4,6 +4,14 @@ import poster3 from "@/assets/activities/a3.jpg";
 import poster4 from "@/assets/activities/a4.jpg";
 import poster5 from "@/assets/activities/a5.jpg";
 import poster6 from "@/assets/activities/a6.jpg";
+import classHsk from "@/assets/classes/lop-luyen-thi-hsk.jpg";
+import classChristmas from "@/assets/classes/hoat-dong-giang-sinh.jpg";
+import classTet from "@/assets/classes/hoat-dong-tet.jpg";
+import classWriting from "@/assets/classes/hoc-vien-lam-bai.jpg";
+import classFeedback from "@/assets/classes/giang-vien-chua-bai.jpg";
+import classEvening from "@/assets/classes/lop-hoc-buoi-toi.jpg";
+import classSmall from "@/assets/classes/lop-hoc-nho.jpg";
+import classConsult from "@/assets/classes/tu-van-lo-trinh.jpg";
 
 /**
  * Poster hoạt động do trung tâm thiết kế (ảnh vuông).
@@ -44,62 +52,48 @@ export const activityPosters: ActivityPoster[] = [
 ];
 
 export type Activity = {
-
-  src: string;
-
+  image: ImageMetadata;
   caption: string;
-  width?: number;
-  height?: number;
 };
 
-/** Ảnh lớp học trong public/ — dùng làm nền mờ ở mục Học thử miễn phí. */
+/**
+ * Ảnh lớp học chụp tại trung tâm.
+ *
+ * Nằm ở src/assets/classes/ chứ không phải public/: mọi chỗ dùng đều thu nhỏ ảnh
+ * (dải cơ sở vật chất 320px, khảm nền ở mục Học thử ~180px), để trong public/ thì
+ * trình duyệt phải tải nguyên bản 1024px cho từng ô.
+ */
 export const activities: Activity[] = [
   {
-    src: "/images/activities/lop-luyen-thi-hsk.jpg",
+    image: classHsk,
     caption: "Lớp luyện thi HSK với giáo trình ôn thi từ HanBan",
-    width: 1024,
-    height: 768,
   },
   {
-    src: "/images/activities/hoat-dong-giang-sinh.jpg",
+    image: classChristmas,
     caption: "Hoạt động Giáng sinh cùng học viên tại trung tâm",
-    width: 1024,
-    height: 683,
   },
   {
-    src: "/images/activities/hoat-dong-tet.jpg",
+    image: classTet,
     caption: "Không khí Tết Trung Hoa tại Hoa văn SaigonHSK",
-    width: 1024,
-    height: 768,
   },
   {
-    src: "/images/activities/hoc-vien-lam-bai.jpg",
+    image: classWriting,
     caption: "Học viên luyện viết chữ Hán tại lớp",
-    width: 1024,
-    height: 683,
   },
   {
-    src: "/images/activities/giang-vien-chua-bai.jpg",
+    image: classFeedback,
     caption: "Giảng viên chữa bài trên lớp",
-    width: 1024,
-    height: 683,
   },
   {
-    src: "/images/activities/lop-hoc-buoi-toi.jpg",
+    image: classEvening,
     caption: "Lớp học buổi tối dành cho học viên đi làm",
-    width: 1024,
-    height: 767,
   },
   {
-    src: "/images/activities/lop-hoc-nho.jpg",
+    image: classSmall,
     caption: "Lớp 10–15 học viên, ai cũng được nói và được sửa",
-    width: 1024,
-    height: 768,
   },
   {
-    src: "/images/activities/tu-van-lo-trinh.jpg",
+    image: classConsult,
     caption: "Tư vấn lộ trình học cho học viên mới",
-    width: 1024,
-    height: 683,
   },
 ];

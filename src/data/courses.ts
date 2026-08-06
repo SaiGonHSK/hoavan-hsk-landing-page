@@ -31,6 +31,24 @@ export type Course = {
   tags: string[];
   levels: CourseLevel[];
 
+  /**
+   * `catalogKey` của những khoá trong bảng `courses` mà chương trình này gom lại.
+   *
+   * Đây là chỗ **duy nhất** nối lịch khai giảng vào chương trình. Một lớp trên
+   * `GET /api/v1/classes` chỉ biết nó dạy khoá nào (`courseId`); trang lịch tra ngược
+   * qua đây để biết xếp lớp đó vào khối chương trình nào và link "Xem chương trình"
+   * trỏ đi đâu.
+   *
+   * Trước đây mỗi dòng lịch tự mang một ô "Slug chương trình" gõ tay, nên hai lớp cùng
+   * khoá có thể khai hai chương trình khác nhau. Khai ở đây thì quan hệ nằm đúng chỗ
+   * nó thuộc về: chương trình là khái niệm của repo landing, không phải của một lớp.
+   *
+   * Không suy từ `levels[].code` được: `luyen-thi-hsk` đặt code cấp là HSK3/HSK4/HSK5
+   * trùng với code của `tieng-hoa-so-cap` và `tieng-hoa-trung-cap`, còn VIP và mấy khoá
+   * liên hệ thì `levels` rỗng.
+   */
+  courseKeys: string[];
+
   contactOnly?: boolean;
   note?: string;
 };
@@ -83,7 +101,7 @@ const hskLevel = (level: number): CourseLevel => {
     content: [
       ...foundation,
       `Từ vựng: ${l.words} của cấp HSK${l.level} theo chuẩn HSK 3.0, học theo chủ điểm gắn với tình huống thực tế.`,
-      `Ngữ pháp: ${l.grammarCount} điểm của cấp độ — ${l.grammar.slice(0, 4).join("; ")}…`,
+      `Ngữ pháp: ${l.grammarCount} điểm của cấp độ, có bảng tổng hợp và bài tập vận dụng sau mỗi chủ điểm.`,
       `${l.topics.title}: ${l.topics.items.slice(0, 6).join("; ")}…`,
       "Luyện nghe – nói theo tình huống, sửa phát âm và thanh điệu trực tiếp trên lớp.",
       "Kiểm tra định kỳ, thi thử cuối khoá và nhận xét riêng cho từng học viên.",
@@ -105,6 +123,7 @@ export const courses: Course[] = [
     featured: true,
     tags: ["3 khóa học", "Chuẩn HSK 3.0", "Cam kết đầu ra"],
     // Mỗi cấp chỉ còn một lớp luyện thi: HSK3 2 tháng, HSK4 3 tháng, HSK5 4 tháng.
+    courseKeys: ["luyen-thi-hsk-3", "luyen-thi-hsk-4", "luyen-thi-hsk-5"],
     levels: [
       {
         name: "Luyện thi HSK3",
@@ -179,6 +198,7 @@ export const courses: Course[] = [
     icon: "seed",
     featured: true,
     tags: ["3 lớp: HSK1 – HSK3", "Chuẩn HSK 3.0", "4 kỹ năng"],
+    courseKeys: ["hsk-1", "hsk-2", "hsk-3"],
     levels: [hskLevel(1), hskLevel(2), hskLevel(3)],
   },
   {
@@ -193,6 +213,7 @@ export const courses: Course[] = [
     tags: ["2 lớp: HSK4 – HSK5", "Chuẩn HSK 3.0", "Đọc hiểu – nghị luận"],
     // Mỗi cấp chia thành hai chặng (HSK4.1/4.2, HSK5.1/5.2) trên lịch khai giảng.
     note: "Từ HSK4 trở lên, mỗi cấp bao gồm 2 lớp (ví dụ HSK4.1 và HSK4.2), mỗi lớp 3,5 tháng.",
+    courseKeys: ["hsk-4", "hsk-5"],
     levels: [hskLevel(4), hskLevel(5)],
   },
   {
@@ -205,6 +226,7 @@ export const courses: Course[] = [
     icon: "peak",
     tags: ["Lớp HSK6", "Chuẩn HSK 3.0", "Học thuật – chuyên ngành"],
     note: "Khoá HSK6 bao gồm 2 lớp HSK6.1 và HSK6.2, mỗi lớp 3,5 tháng. Vui lòng liên hệ trung tâm để nhận lộ trình chi tiết.",
+    courseKeys: ["hsk-6"],
     levels: [hskLevel(6)],
   },
   {
@@ -217,6 +239,7 @@ export const courses: Course[] = [
     icon: "chat",
     featured: true,
     tags: ["2 khóa học", "3 tháng/khóa", "Tình huống thực tế"],
+    courseKeys: ["giao-tiep-cap-toc-1", "giao-tiep-cap-toc-2"],
     levels: [
       {
         name: "Giao tiếp Cấp tốc 1",
@@ -279,6 +302,7 @@ export const courses: Course[] = [
     tags: ["Đào tạo tại doanh nghiệp", "Giáo trình riêng"],
     contactOnly: true,
     note: "Chương trình được thiết kế theo đặc thù ngành và mục tiêu của từng doanh nghiệp: lịch học, địa điểm và giáo trình linh hoạt. Vui lòng liên hệ để nhận đề xuất đào tạo.",
+    courseKeys: ["giao-tiep-cong-so-co-ban", "giao-tiep-cong-so-nang-cao"],
     levels: [],
   },
   {
@@ -293,6 +317,7 @@ export const courses: Course[] = [
     tags: ["1 kèm 1", "Lịch linh hoạt"],
     contactOnly: true,
     note: "Giảng viên xây dựng lộ trình riêng theo mục tiêu và thời gian biểu của học viên. Vui lòng liên hệ để được tư vấn và xếp lịch.",
+    courseKeys: ["tieng-hoa-vip"],
     levels: [],
   },
   {
@@ -305,6 +330,7 @@ export const courses: Course[] = [
     tags: ["Học qua trò chơi", "Lớp nhỏ"],
     contactOnly: true,
     note: "Chương trình chú trọng phát âm, chữ Hán và phản xạ nói qua hoạt động sinh động phù hợp lứa tuổi. Vui lòng liên hệ để nhận thông tin lớp.",
+    courseKeys: ["tieng-trung-tre-em"],
     levels: [],
   },
   {
@@ -317,6 +343,7 @@ export const courses: Course[] = [
     tags: ["Nhịp học chậm", "Chú trọng giao tiếp"],
     contactOnly: true,
     note: "Lớp được thiết kế với nhịp độ phù hợp, ưu tiên nghe – nói và ứng dụng hằng ngày. Vui lòng liên hệ để được tư vấn.",
+    courseKeys: [],
     levels: [],
   },
 ];
@@ -326,6 +353,7 @@ export const featuredCourses = courses.filter((c) => c.featured);
 export function getCourse(slug: string) {
   return courses.find((c) => c.slug === slug);
 }
+
 
 export const roadmap = [
   {

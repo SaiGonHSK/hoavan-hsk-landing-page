@@ -1,0 +1,74 @@
+---
+import type { LibraryArticle } from "@/data/library";
+
+/**
+ * Đầu trang bài viết Thư viện: chỉ tiêu đề và đoạn mở đầu.
+ *
+ * Thay cho `PageHero` ở riêng trang bài viết, và cố ý không có hàng điều hướng nào
+ * phía trên tiêu đề — không breadcrumb, không chip chuyên mục, không ngày đăng. Bài
+ * viết mở ra là thấy ngay tiêu đề; đường về Thư viện đã có sẵn ở menu và ở khối
+ * "Bài viết liên quan" cuối bài.
+ *
+ * `BreadcrumbList` vẫn phát ra đầy đủ như `PageHero`: Google đọc schema chứ không
+ * đọc hàng chip, nên bỏ breadcrumb nhìn thấy được không có nghĩa là bỏ breadcrumb.
+ * Ngày đăng cũng vậy — nó nằm trong `datePublished` của schema Article ở trang bài.
+ */
+
+interface Props {
+  article: LibraryArticle;
+}
+
+const { article } = Astro.props;
+
+const origin = Astro.site?.origin ?? "";
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
+    { "@type": "ListItem", position: 2, name: "Thư viện", item: `${origin}/library` },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: article.category.label,
+      item: `${origin}${article.category.slug}`,
+    },
+    { "@type": "ListItem", position: 4, name: article.title },
+  ],
+};
+---
+
+{/* Không có đệm dưới: khoảng cách xuống ảnh bìa do `gap` của <main> quyết định,
+    để mọi khối trong trang bài viết cách nhau đúng một nhịp. */}
+<section class="relative overflow-hidden bg-background pt-10 lg:pt-14">
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-4 -top-6 select-none text-[11rem] font-black leading-none text-brand-red-900/[0.05] lg:text-[15rem]"
+  >
+    文
+  </span>
+
+  {/* `container mx-auto px-6` giống hệt Header và Footer, nên tiêu đề, ảnh bìa và
+      thân bài thẳng lề với logo phía trên và cột chân trang phía dưới. */}
+  <div class="container relative z-10 mx-auto px-6 text-center">
+    <h1
+      class="text-[2.25rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-[3.25rem]"
+    >
+      {article.title}
+    </h1>
+
+    {
+      article.intro && (
+        <p class="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
+          {article.intro}
+        </p>
+      )
+    }
+  </div>
+
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+</section>

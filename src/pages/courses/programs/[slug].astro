@@ -10,8 +10,7 @@ import { courses } from "@/data/courses";
 import { schedule } from "@/data/schedule";
 import { teachers } from "@/data/teachers";
 import { testimonials } from "@/data/testimonials";
-import { content } from "@/data/content";
-import { contact, site } from "@/data/site";
+import { commitments, contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 import {
   clampDescription,
@@ -22,14 +21,10 @@ import {
   toIsoDuration,
 } from "@/lib/seo";
 
-export function getStaticPaths() {
-  return courses.map((course) => ({
-    params: { slug: course.slug },
-    props: { course },
-  }));
-}
-
-const { course } = Astro.props;
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[...slug].astro. Chín chương
+// trình này vẫn sinh từ repo (`src/data/courses.ts`), chưa nằm trong bảng `courses`.
+const course = courses.find((entry) => entry.slug === Astro.params.slug);
+if (!course) return new Response(null, { status: 404 });
 
 const origin = Astro.site?.origin ?? "";
 const url = `${origin}${Astro.url.pathname}`;
@@ -177,8 +172,8 @@ const includes = [
   },
 ];
 
-/** Các lớp đang mở của đúng khoá này. */
-const classes = schedule.filter((row) => row.courseSlug === course.slug);
+/** Các lớp đang tuyển sinh của đúng chương trình này. */
+const classes = schedule.filter((row) => row.programSlug === course.slug);
 
 /** Giảng viên: người phụ trách chuyên môn lên đầu. */
 const isLead = (t: (typeof teachers)[number]) =>
@@ -192,7 +187,6 @@ const reviews = [
   ...testimonials.filter((t) => !keyword || !t.quote.includes(keyword)),
 ].slice(0, 3);
 
-const commitments = content.commitments;
 
 const heroFacts = [
   { label: "Mục tiêu", value: course.goal },

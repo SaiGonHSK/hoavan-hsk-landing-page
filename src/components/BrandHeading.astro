@@ -1,5 +1,6 @@
 ---
-import markUrl from "@/assets/logo-mark.png";
+import { Image } from "astro:assets";
+import logoMark from "@/assets/logo-mark.png";
 
 interface Props {
   /** Chữ trong nhãn tròn kèm logo, phía trên tiêu đề */
@@ -31,11 +32,13 @@ const {
     <span
       class="inline-flex items-center gap-2 rounded-full border border-border bg-background py-1.5 pl-1.5 pr-5 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
     >
-      <img
-        src={markUrl.src}
+      <Image
+        src={logoMark}
         alt=""
-        width="192"
-        height="192"
+        width={24}
+        densities={[1, 2]}
+        format="webp"
+        quality={90}
         class="size-6 shrink-0 object-contain"
       />
       {badge}

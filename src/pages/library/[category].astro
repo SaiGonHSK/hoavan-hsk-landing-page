@@ -1,0 +1,26 @@
+---
+import LibraryHub from "@/components/LibraryHub.astro";
+import { findLibraryCategory, getLibrary } from "@/data/library";
+
+// Chuyên mục do trang quản trị soạn (bảng `library_categories`), nên danh sách đổi
+// giữa hai lần xem là chuyện thường — tra theo params thay vì getStaticPaths.
+const category = findLibraryCategory(Astro.params.category ?? "");
+if (!category) return new Response(null, { status: 404 });
+
+// Lấy cả Thư viện chứ không chỉ chuyên mục này: hàng chip cần số bài của **mọi**
+// chuyên mục, nếu không thì chip nào cũng hiện 0 trừ chip đang mở.
+const all = await getLibrary();
+const articles = all.filter((item) => item.category.key === category.key);
+---
+
+<LibraryHub
+  title={category.label}
+  metaTitle={`${category.label} — Thư viện SaigonHSK`}
+  description={`Bài viết trong chuyên mục ${category.label} của Thư viện tiếng Trung SaigonHSK.`}
+  crumbs={[{ label: "Thư viện", href: "/library" }, { label: category.label }]}
+  glyph="文"
+  allArticles={all}
+  articles={articles}
+  activeKey={category.key}
+  emptyMessage={`Chuyên mục ${category.label} chưa có bài viết nào. Bạn chọn chuyên mục khác ở hàng trên nhé.`}
+/>

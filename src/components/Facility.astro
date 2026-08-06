@@ -1,8 +1,15 @@
 ---
+import { Image } from "astro:assets";
 import BrandHeading from "@/components/BrandHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import classroom from "@/assets/facility/classroom.webp";
+import facility1 from "@/assets/facility/facility-1.webp";
+import facility2 from "@/assets/facility/facility-2.webp";
+import classSmall from "@/assets/classes/lop-hoc-nho.jpg";
+import classEvening from "@/assets/classes/lop-hoc-buoi-toi.jpg";
+import classConsult from "@/assets/classes/tu-van-lo-trinh.jpg";
 
 interface Props {
   class?: string;
@@ -19,49 +26,17 @@ const amenities = [
 ];
 
 type Space = {
-  src: string;
+  image: ImageMetadata;
   name: string;
-  width: number;
-  height: number;
 };
 
 const spaces: Space[] = [
-  {
-    src: "/images/classroom.webp",
-    name: "Phòng học chính",
-    width: 1024,
-    height: 577,
-  },
-  {
-    src: "/images/facility-2.webp",
-    name: "Sảnh lễ tân & lối lên lớp",
-    width: 768,
-    height: 1024,
-  },
-  {
-    src: "/images/facility-1.webp",
-    name: "Không gian sinh hoạt chung",
-    width: 1024,
-    height: 768,
-  },
-  {
-    src: "/images/activities/lop-hoc-nho.jpg",
-    name: "Lớp 10–15 học viên",
-    width: 1024,
-    height: 768,
-  },
-  {
-    src: "/images/activities/lop-hoc-buoi-toi.jpg",
-    name: "Lớp tối cho người đi làm",
-    width: 1024,
-    height: 767,
-  },
-  {
-    src: "/images/activities/tu-van-lo-trinh.jpg",
-    name: "Góc tư vấn lộ trình",
-    width: 1024,
-    height: 683,
-  },
+  { image: classroom, name: "Phòng học chính" },
+  { image: facility2, name: "Sảnh lễ tân & lối lên lớp" },
+  { image: facility1, name: "Không gian sinh hoạt chung" },
+  { image: classSmall, name: "Lớp 10–15 học viên" },
+  { image: classEvening, name: "Lớp tối cho người đi làm" },
+  { image: classConsult, name: "Góc tư vấn lộ trình" },
 ];
 ---
 
@@ -102,14 +77,16 @@ const spaces: Space[] = [
         {
         spaces.map((s) => (
           <figure class="group relative w-64 shrink-0 snap-start overflow-hidden rounded-[1.75rem] bg-brand-ink-100 sm:w-80">
-            <img
-              src={s.src}
+            <Image
+              src={s.image}
               alt={s.name}
-              width={s.width}
-              height={s.height}
+              width={320}
+              densities={[1, 2]}
+              format="webp"
+              quality={76}
               loading="lazy"
               decoding="async"
-              class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              class="aspect-4/3 w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
             <span

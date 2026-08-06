@@ -17,6 +17,13 @@ export type HubCard = {
   tag?: string;
   /** Yêu cầu đầu vào, hiện trên thẻ để người xem tự chọn đúng cấp. */
   entry?: string;
+
+  /**
+   * Ảnh bìa 16:9 dán trên đầu thẻ. Chỉ Thư viện truyền vào — bài viết có ảnh bìa
+   * riêng, còn thẻ chuyên mục và thẻ khoá học thì không, nên để tuỳ chọn thay vì
+   * bắt mọi hub phải có ảnh.
+   */
+  image?: string;
 };
 export type HubGroup = { title: string; desc?: string; cards: HubCard[] };
 
@@ -31,6 +38,14 @@ interface Props {
   columns?: 3 | 4;
 
   keywords?: string;
+
+  /**
+   * Chữ hiện khi không nhóm nào có thẻ.
+   *
+   * Cần cho Thư viện: đó là blog, lúc trung tâm chưa đăng bài nào thì trang phải nói
+   * "chưa có bài" chứ không phải một tiêu đề trơ trọi không có gì bên dưới.
+   */
+  emptyMessage?: string;
 }
 
 const {
@@ -42,7 +57,11 @@ const {
   groups,
   columns = 3,
   keywords,
+  emptyMessage,
 } = Astro.props;
+
+// Bỏ nhóm không có thẻ nào: tiêu đề nhóm mà không có gì bên dưới trông như trang lỗi.
+const filledGroups = groups.filter((group) => group.cards.length > 0);
 
 const origin = Astro.site?.origin ?? "";
 const schemas = [
@@ -71,8 +90,13 @@ const gridClass =
 
     <section class="bg-background">
       <div class="container mx-auto space-y-16 px-6">
+        {filledGroups.length === 0 && emptyMessage && (
+          <p class="rounded-3xl bg-brand-ink-50 px-6 py-8 text-center text-sm leading-relaxed text-muted-foreground">
+            {emptyMessage}
+          </p>
+        )}
         {
-          groups.map((group) => (
+          filledGroups.map((group) => (
             <div>
               <h2 class="text-2xl font-black text-brand-ink-900 md:text-3xl">
                 {group.title}
@@ -87,35 +111,46 @@ const gridClass =
                 {group.cards.map((card) => (
                   <a
                     href={card.href}
-                    class="group flex flex-col rounded-3xl bg-brand-ink-50 p-6 transition-transform duration-300 hover:-translate-y-1.5"
+                    class="group flex flex-col overflow-hidden rounded-3xl bg-brand-ink-50 transition-transform duration-300 hover:-translate-y-1.5"
                   >
-                    {card.tag && (
-                      <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
-                        {card.tag}
-                      </span>
-                    )}
-                    <h3 class="mt-1 text-lg font-extrabold leading-snug text-brand-ink-900">
-                      {card.title}
-                    </h3>
-                    <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                      {card.summary}
-                    </p>
-                    {card.entry && (
-                      <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
-                        <span class="font-bold text-foreground">Đầu vào:</span>{" "}
-                        {card.entry}
-                      </p>
-                    )}
-                    <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
-                      {/* Tên khoá nằm trong anchor text (ẩn với mắt, hiện với bot và
-                          trình đọc màn hình) — "Xem chi tiết" lặp lại hàng chục lần
-                          không cho Google biết trang đích nói về gì. */}
-                      Xem chi tiết<span class="sr-only"> {card.title}</span>
-                      <span
-                        class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
-                        set:html={ICONS.arrow}
+                    {card.image && (
+                      <img
+                        src={card.image}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        class="aspect-video w-full object-cover"
                       />
-                    </span>
+                    )}
+                    <div class="flex flex-1 flex-col p-6">
+                      {card.tag && (
+                        <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red-600">
+                          {card.tag}
+                        </span>
+                      )}
+                      <h3 class="mt-1 text-lg font-extrabold leading-snug text-brand-ink-900">
+                        {card.title}
+                      </h3>
+                      <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                        {card.summary}
+                      </p>
+                      {card.entry && (
+                        <p class="mt-4 text-xs leading-relaxed text-muted-foreground">
+                          <span class="font-bold text-foreground">Đầu vào:</span>{" "}
+                          {card.entry}
+                        </p>
+                      )}
+                      <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
+                        {/* Tên khoá nằm trong anchor text (ẩn với mắt, hiện với bot và
+                            trình đọc màn hình) — "Xem chi tiết" lặp lại hàng chục lần
+                            không cho Google biết trang đích nói về gì. */}
+                        Xem chi tiết<span class="sr-only"> {card.title}</span>
+                        <span
+                          class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
+                          set:html={ICONS.arrow}
+                        />
+                      </span>
+                    </div>
                   </a>
                 ))}
               </div>

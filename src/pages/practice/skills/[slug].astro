@@ -2,14 +2,9 @@
 import CatalogDetail from "@/components/CatalogDetail.astro";
 import { skillTracks } from "@/data/catalog";
 
-export function getStaticPaths() {
-  return skillTracks.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
-}
-
-const { item } = Astro.props;
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
+const item = skillTracks.find((entry) => entry.slug === Astro.params.slug);
+if (!item) return new Response(null, { status: 404 });
 
 const related = skillTracks
   .filter((c) => c.slug !== item.slug)

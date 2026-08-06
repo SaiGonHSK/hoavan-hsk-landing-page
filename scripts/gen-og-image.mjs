@@ -12,7 +12,7 @@ import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-const SOURCE = "public/images/classroom.webp";
+const SOURCE = "src/assets/facility/classroom.webp";
 const OUTPUT = "public/images/og-default.jpg";
 
 await mkdir(path.dirname(OUTPUT), { recursive: true });

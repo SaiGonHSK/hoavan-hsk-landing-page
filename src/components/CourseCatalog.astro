@@ -1,0 +1,163 @@
+---
+import CourseThumb from "@/components/CourseThumb.astro";
+import { ICONS } from "@/lib/icons";
+
+export type CatalogCard = {
+  title: string;
+  summary: string;
+  href: string;
+  /** Nhãn nhỏ phía trên tên khoá — "Chuẩn HSK 3.0", "Luyện đề". */
+  tag?: string;
+  /** Yêu cầu đầu vào, một dòng, để người xem tự chọn đúng cấp. */
+  entry?: string;
+};
+
+export type CatalogTab = {
+  /** Khoá lọc, dùng cho `data-group` — không hiện ra ngoài. */
+  key: string;
+  label: string;
+  cards: CatalogCard[];
+};
+
+/**
+ * Danh sách khoá học dạng tab + lưới thẻ ngang.
+ *
+ * Một hàng tab chuyên mục ở trên, bên dưới là lưới thẻ: thumbnail vuông bên trái, nhãn
+ * nhỏ – tên khoá – mô tả hai dòng bên phải. Bấm tab thì lọc ngay tại client, không tải
+ * lại trang.
+ *
+ * Thumbnail dùng `CourseBadge` — sinh thẳng trong markup từ tên khoá, giống lưới khoá ở
+ * trang chủ (`Courses.astro`), nên thêm khoá mới trong console là có ảnh ngay, không ai
+ * phải vẽ và upload thêm file nào.
+ *
+ * Mọi thẻ đều được render sẵn trong HTML và chỉ ẩn bằng `hidden`: Google đọc được cả
+ * năm nhóm, còn người dùng không chờ request nào khi đổi tab.
+ */
+interface Props {
+  tabs: CatalogTab[];
+  /** Nhãn của tab đầu tiên gộp tất cả. */
+  allLabel?: string;
+}
+
+const { tabs, allLabel = "Tất cả khoá học" } = Astro.props;
+
+/** Bỏ nhóm rỗng: một tab bấm vào không có gì trông như trang lỗi. */
+const filled = tabs.filter((tab) => tab.cards.length > 0);
+
+const cards = filled.flatMap((tab) => tab.cards.map((card) => ({ ...card, group: tab.key })));
+---
+
+<section class="scroll-mt-24">
+  <div class="container mx-auto px-6">
+    <!-- Hàng tab: cuộn ngang trên máy nhỏ thay vì xuống dòng thành ba tầng -->
+    <div
+      class="catalog-tabs -mx-6 flex gap-6 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0"
+      role="tablist"
+    >
+      <button
+        type="button"
+        data-tab="all"
+        aria-selected="true"
+        class="shrink-0 border-b-2 border-brand-red-600 pb-2 text-sm font-bold text-brand-ink-900 transition-colors"
+      >
+        {allLabel}
+      </button>
+      {
+        filled.map((tab) => (
+          <button
+            type="button"
+            data-tab={tab.key}
+            aria-selected="false"
+            class="shrink-0 border-b-2 border-transparent pb-2 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-ink-900"
+          >
+            {tab.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        cards.map((card) => (
+          <a
+            href={card.href}
+            data-group={card.group}
+            class="group flex gap-4 rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand-ink-300"
+          >
+            <div class="size-24 shrink-0 overflow-hidden rounded-lg">
+              <CourseThumb title={card.title} />
+            </div>
+
+            <div class="flex min-w-0 flex-1 flex-col">
+              {card.tag && (
+                <span class="truncate text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-brand-red-600">
+                  {card.tag}
+                </span>
+              )}
+              <h3 class="mt-1 truncate text-base font-extrabold leading-snug text-brand-ink-900">
+                {card.title}
+              </h3>
+              <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                {card.summary}
+              </p>
+              {card.entry && (
+                <p class="mt-2 truncate text-xs text-muted-foreground">
+                  <span class="font-bold text-foreground">Đầu vào:</span> {card.entry}
+                </p>
+              )}
+
+              <span class="mt-auto flex items-center gap-1.5 pt-3 text-sm font-bold text-brand-red-600">
+                Tìm hiểu thêm<span class="sr-only"> khoá {card.title}</span>
+                <span
+                  class="transition-transform group-hover:translate-x-1 [&>svg]:size-3.5"
+                  set:html={ICONS.arrow}
+                />
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .catalog-tabs {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .catalog-tabs::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  /*
+    Lọc bằng cách bật/tắt `hidden` trên thẻ đã render sẵn. Không dùng framework: cả
+    hành vi của trang này là một phép lọc trên một danh sách tĩnh.
+  */
+  const ACTIVE = ["border-brand-red-600", "font-bold", "text-brand-ink-900"];
+  const IDLE = ["border-transparent", "font-medium", "text-muted-foreground"];
+
+  const tabs = document.querySelectorAll<HTMLButtonElement>("[data-tab]");
+  const cards = document.querySelectorAll<HTMLElement>("[data-group]");
+
+  const select = (key: string) => {
+    for (const tab of tabs) {
+      const on = tab.dataset.tab === key;
+      tab.setAttribute("aria-selected", String(on));
+      tab.classList.toggle("hover:text-brand-ink-900", !on);
+      for (const cls of ACTIVE) tab.classList.toggle(cls, on);
+      for (const cls of IDLE) tab.classList.toggle(cls, !on);
+    }
+
+    for (const card of cards) {
+      card.hidden = key !== "all" && card.dataset.group !== key;
+    }
+  };
+
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => select(tab.dataset.tab ?? "all"));
+  }
+</script>

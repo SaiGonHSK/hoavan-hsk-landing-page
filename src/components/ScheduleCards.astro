@@ -1,0 +1,178 @@
+---
+import CourseBadge from "@/components/CourseBadge.astro";
+import { sessionLines, type ScheduleRow } from "@/data/schedule";
+import { findProgram } from "@/data/programsApi";
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+/**
+ * Lưới thẻ lịch khai giảng: badge chương trình (cùng `CourseBadge` với lưới khoá học ở
+ * trang chủ) rồi tên lớp và các dòng thông tin có icon — ngày khai giảng, từng buổi học
+ * trong tuần, nhịp học, nơi học.
+ *
+ * Vì sao dạng thẻ này chứ không chỉ bảng (`ScheduleBoard`): bảng tuần trả lời "lớp nào
+ * học buổi nào", còn người đang chọn lớp cần đọc trọn một lớp trong một khối — ngày khai
+ * giảng, giờ, thời lượng, nơi học — rồi bấm đăng ký ngay tại đó. Hai thành phần bổ sung
+ * nhau, không thay nhau.
+ *
+ * Chỉ có lưới, không có `<section>` hay tiêu đề: trang lịch đặt lưới này trong từng khối
+ * chương trình đã có tiêu đề riêng, còn `Schedule.astro` bọc thêm tiêu đề cho trang chủ.
+ */
+interface Props {
+  rows: ScheduleRow[];
+  class?: string;
+}
+
+const { rows, class: className = "" } = Astro.props;
+
+const MODE_LABELS: Record<string, string> = {
+  offline: "Offline",
+  online: "Online",
+  hybrid: "Kết hợp",
+};
+
+/**
+ * Nơi học. Địa chỉ đầy đủ chỉ có ở lớp offline và viết ngắn: mười lăm thẻ offline cùng
+ * một địa chỉ, in đủ mỗi thẻ thì dòng dài nhất của thẻ lại là dòng ít phân biệt nhất.
+ */
+const placeOf = (row: ScheduleRow) =>
+  row.mode === "online"
+    ? "Học online, lớp trực tuyến tương tác"
+    : row.mode === "hybrid"
+      ? "Kết hợp online và học tại trung tâm"
+      : `Học tại trung tâm · ${contact.addressShort.split(",")[0]}`;
+
+
+/**
+ * Bốn dòng thông tin của một thẻ. Mỗi dòng là một mảng chuỗi vì lớp học nhiều buổi mỗi
+ * tuần thì phần giờ học chiếm mấy dòng liền nhau dưới cùng một icon.
+ */
+const detailsOf = (row: ScheduleRow) => {
+  /** Lớp GT1, GT2, VIP xếp lịch theo học viên nên `slots` rỗng — dùng `cadenceNote`. */
+  const fixed = row.slots.length > 0;
+
+  return [
+    {
+      icon: ICONS.calendar,
+      lines: [
+        row.openDate
+          ? `Khai giảng ${row.openDate}`
+          : "Khai giảng linh hoạt — gọi để xếp lớp",
+      ],
+      strong: true,
+    },
+    {
+      icon: ICONS.clock,
+      lines: fixed
+        ? sessionLines(row.slots)
+        : [row.cadenceNote || "Giờ học xếp theo học viên"],
+      strong: false,
+    },
+    {
+      icon: ICONS.cap,
+      lines: [fixed ? `${row.slots.length} buổi/tuần · ${row.duration}` : row.duration],
+      strong: false,
+    },
+    {
+      icon: row.mode === "online" ? ICONS.monitor : ICONS.pin,
+      lines: [placeOf(row)],
+      strong: false,
+    },
+  ];
+};
+
+/** Chuỗi để lọc client-side (`[data-schedule-search]`), bỏ dấu để gõ không dấu vẫn ra. */
+const searchKey = (row: ScheduleRow) =>
+  `${row.code} ${row.name} ${row.target} ${row.cadence}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d");
+
+const cards = rows.map((row) => ({
+  row,
+  /**
+   * Tên khoá cho badge.
+   *
+   * Ưu tiên tên chương trình ("Tiếng Trung Sơ cấp") vì badge là thứ gom cả lưới thẻ về
+   * một mối; rơi về tên khoá do console đặt ("HSK1") khi lớp chưa thuộc chương trình
+   * nào, rồi mới tới tên lớp.
+   */
+  courseTitle:
+    (row.programSlug ? findProgram(row.programSlug)?.title : undefined) ??
+    row.courseTitle ??
+    row.name,
+  details: detailsOf(row),
+}));
+---
+
+<div class:list={["grid gap-5 md:grid-cols-2 lg:grid-cols-3", className]}>
+  {
+    cards.map(({ row, courseTitle, details }) => (
+      <article
+        data-class-card
+        data-search={searchKey(row)}
+        class="flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-colors hover:border-brand-ink-300"
+      >
+        <div class="h-28 border-b border-border">
+          <CourseBadge title={courseTitle} />
+        </div>
+
+        {/* Mã lớp + hình thức học gộp một dòng nhỏ: hai nhãn rời rồi lặp lại mã ở chân
+            thẻ là ba chỗ nói cùng một chuyện. */}
+        <div class="px-5 pb-4 pt-5">
+          <span class="block font-mono text-[0.625rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            {row.code} · {MODE_LABELS[row.mode] ?? row.mode}
+          </span>
+          <h3 class="mt-1.5 text-lg font-black leading-tight text-brand-ink-900">
+            {row.name}
+          </h3>
+        </div>
+
+        <dl class="divide-y divide-border border-t border-border px-5 text-sm">
+          {details.map((detail) => (
+            <div class="flex gap-3 py-3.5">
+              {/* Icon xám: mỗi thẻ chỉ để một khối đỏ (badge chương trình) làm điểm
+                  nhấn — icon đỏ nhân lên bốn lần mỗi thẻ thì cả lưới thành đỏ hết. */}
+              <dt
+                class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                set:html={detail.icon}
+              />
+              <dd class="min-w-0 space-y-1 leading-relaxed text-brand-ink-700">
+                {detail.lines.map((line) => (
+                  <span
+                    class:list={[
+                      "block",
+                      detail.strong && "font-bold text-brand-ink-900",
+                    ]}
+                  >
+                    {line}
+                  </span>
+                ))}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="mt-auto border-t border-border p-5">
+          {row.openDate ? (
+            <a
+              href="/register"
+              class="block rounded-lg border border-brand-red-200 py-3 text-center text-sm font-bold text-brand-red-700 transition-colors hover:border-brand-red-600 hover:bg-brand-red-600 hover:text-white"
+            >
+              Đăng ký giữ chỗ
+            </a>
+          ) : (
+            <a
+              href={`tel:${contact.phonePrimaryRaw}`}
+              class="flex items-center justify-center gap-2 rounded-lg border border-border py-3 text-center text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
+            >
+              <span class="[&>svg]:size-4" set:html={ICONS.phone} />
+              Gọi để xếp lớp
+            </a>
+          )}
+        </div>
+      </article>
+    ))
+  }
+</div>

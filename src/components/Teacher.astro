@@ -4,6 +4,16 @@ import RailHint from "@/components/RailHint.astro";
 import { teachers } from "@/data/teachers";
 import { ICONS } from "@/lib/icons";
 
+interface Props {
+  /**
+   * Ẩn tiêu đề "Đội ngũ giảng viên" — dùng cho trang /about/teachers, nơi hero
+   * đã có đúng dòng chữ này nên hiện thêm ở đây là trùng.
+   */
+  heading?: boolean;
+}
+
+const { heading = true } = Astro.props;
+
 type Credential = { icon: string; value: string; label: string };
 
 /**
@@ -62,9 +72,9 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
 
 <section id="teachers" class="relative overflow-hidden bg-background scroll-mt-24">
   <div class="container relative z-10 mx-auto px-6">
-    <SectionHeading title="Đội ngũ" highlight="giảng viên" inlineHighlight />
+    {heading && <SectionHeading title="Đội ngũ" highlight="giảng viên" inlineHighlight />}
 
-    <div data-rail class="group/rail relative mt-16">
+    <div data-rail class:list={["group/rail relative", heading ? "mt-16" : ""]}>
       <div
         data-rail-track
         class="teacher-rail -mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"

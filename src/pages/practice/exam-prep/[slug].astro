@@ -3,14 +3,9 @@ import CatalogDetail from "@/components/CatalogDetail.astro";
 import { examPrepResources } from "@/data/catalog";
 import { keywordsFor } from "@/lib/seo";
 
-export function getStaticPaths() {
-  return examPrepResources.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
-}
-
-const { item } = Astro.props;
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
+const item = examPrepResources.find((entry) => entry.slug === Astro.params.slug);
+if (!item) return new Response(null, { status: 404 });
 
 const level = item.slug.replace("hsk-", "");
 

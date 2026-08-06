@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Cấu trúc menu của landing — sửa bằng tay trong repo. Trang quản trị chỉ đọc, không ghi.",
+  "note": "Bản dự phòng khi API chết. Nguồn thật là bảng menu_entries trên server, sửa ở console /landing/menu.",
   "menu": [
     {
       "label": "Giới thiệu",
@@ -241,7 +241,6 @@
     {
       "label": "Thư viện",
       "slug": "/library",
-      "hidden": true,
       "children": [
         {
           "label": "Từ vựng theo chủ đề",

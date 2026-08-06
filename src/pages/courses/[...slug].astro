@@ -1,17 +1,28 @@
 ---
 import CatalogDetail from "@/components/CatalogDetail.astro";
-import { onlineOfflineCourses } from "@/data/catalog";
+import { curriculumOf, findVisibleCourse, visibleCourses } from "@/data/coursesApi";
 import { clampDescription, keywordsFor, pickTitle } from "@/lib/seo";
 
-export function getStaticPaths() {
-  return onlineOfflineCourses.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
-}
+/*
+  Một route bắt-tất-cả cho mọi trang khoá học.
 
-const { item } = Astro.props;
+  Trước đây có ba route riêng — `/courses/[slug]`, `/courses/textbooks/[slug]`,
+  `/courses/programs/[slug]` — vì đường dẫn của khoá nằm cứng trong repo. Giờ đường
+  dẫn do mục menu quyết định nên nó sâu bao nhiêu tầng cũng được, và chỉ có bảng tra
+  từ menu mới biết `/courses/textbooks/giao-trinh-boya` ứng với khoá nào.
 
+  Trang render tại server (`output: "server"`) nên tra theo params. Trả Response 404
+  body rỗng để Astro dựng 404.astro kèm đúng mã — `Astro.rewrite("/404")` ra mã 200,
+  tức soft-404.
+*/
+const path = `/courses/${(Astro.params.slug ?? "").replace(/^\/+|\/+$/g, "")}`;
+const item = findVisibleCourse(path);
+if (!item) return new Response(null, { status: 404 });
+
+// Khối "Chương trình học" soạn từ console; rỗng thì dùng nội dung sinh từ repo.
+const curriculum = curriculumOf(item.id);
+
+// `slug` ở đây là **khoá tra sang repo**, không phải đường dẫn — xem `coursesApi.ts`.
 const examLevel = item.slug.match(/^luyen-thi-hsk-([3-5])$/)?.[1];
 
 const related = [
@@ -25,10 +36,12 @@ const related = [
         },
       ]
     : []),
-  ...onlineOfflineCourses
-    .filter((c) => c.slug !== item.slug)
+  // "Khoá học khác" chỉ trỏ tới khoá đang mở và đã có mục menu — link sang khoá
+  // không có trang là link 404.
+  ...visibleCourses()
+    .filter((c) => c.href !== item.href)
     .slice(0, 8)
-    .map((c) => ({ label: c.title, href: `/courses/${c.slug}` })),
+    .map((c) => ({ label: c.title, href: c.href })),
 ];
 
 const fact = (label: string) =>
@@ -74,7 +87,6 @@ const keywords = keywordsFor(
   isExamPrep ? `lớp ${item.title.toLowerCase()}` : "",
   vocab ? `${spacedLevel} bao nhiêu từ vựng` : "",
   months ? `${spacedLevel} học bao lâu` : "",
-  item.grammar ? `ngữ pháp ${spacedLevel}` : "",
 );
 ---
 
@@ -90,9 +102,8 @@ const keywords = keywordsFor(
   content={item.content}
   contentTitle="Nội dung khoá học"
   outcomes={item.outcomes}
-  audience={item.audience}
-  grammar={item.grammar}
   topics={item.topics}
+  curriculum={curriculum}
   crumbs={[{ label: "Các khoá học", href: "/courses" }, { label: item.title }]}
   related={related}
   relatedTitle="Khoá học khác"

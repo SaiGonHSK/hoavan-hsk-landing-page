@@ -96,15 +96,7 @@ import { ICONS } from "@/lib/icons";
                         </div>
                       ))}
                     </div>
-                  ) : typeof v.image === "string" ? (
-                    <img
-                      src={v.image}
-                      alt={v.title}
-                      loading="lazy"
-                      decoding="async"
-                      class="absolute inset-0 size-full object-cover"
-                    />
-                  ) : (
+                  ) : v.contain ? (
                     <Image
                       src={v.image}
                       alt={`${v.title} — ${v.note}`}
@@ -115,6 +107,19 @@ import { ICONS } from "@/lib/icons";
                       loading="lazy"
                       decoding="async"
                       class="size-full rounded-2xl object-contain"
+                    />
+                  ) : (
+                    /* Ảnh chụp lớp học phủ kín nửa thẻ — cắt cạnh thay vì hiện trọn. */
+                    <Image
+                      src={v.image}
+                      alt={v.title}
+                      widths={[640, 1024]}
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      format="webp"
+                      quality={78}
+                      loading="lazy"
+                      decoding="async"
+                      class="absolute inset-0 size-full object-cover"
                     />
                   )}
                 </div>

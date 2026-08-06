@@ -12,9 +12,7 @@ import { ICONS } from "@/lib/icons";
 import {
   breadcrumbSchema,
   clampDescription,
-  courseFaqs,
   courseSchema as buildCourseSchema,
-  faqSchema,
 } from "@/lib/seo";
 
 interface Props {
@@ -25,14 +23,17 @@ interface Props {
   content?: string[];
   contentTitle?: string;
   outcomes?: string[];
-  audience?: string[];
-  grammar?: { count: number; points: string[] };
   topics?: { title: string; note?: string; items: string[] };
+  /**
+   * Khối "Chương trình học" soạn từ trang quản trị: danh sách mục có tiêu đề riêng.
+   *
+   * Có mục nào thì nó **thay** hai panel sinh từ repo (content / topics) — người quản
+   * trị đã tự quyết định trang gồm những mục gì, chồng thêm nội dung sinh tự động vào
+   * là ra hai lần cùng một thứ.
+   */
+  curriculum?: { title: string; items: string[] }[];
   crumbs: { label: string; href?: string }[];
   glyph?: string;
-
-  /** Nhãn đỏ phía trên H1, ví dụ "Chuẩn HSK 3.0". */
-  badge?: string;
 
   /** Slug chương trình để lấy lịch khai giảng; bỏ trống thì ẩn bảng lịch. */
   scheduleSlug?: string;
@@ -63,12 +64,10 @@ const {
   content = [],
   contentTitle = "Nội dung khoá học",
   outcomes = [],
-  audience = [],
-  grammar,
   topics,
+  curriculum = [],
   crumbs,
   glyph = "课",
-  badge,
   scheduleSlug,
   related = [],
   relatedTitle = "Xem thêm",
@@ -88,10 +87,6 @@ const level = fact("Cấp độ");
 const entry = fact("Đầu vào");
 const mode = fact("Hình thức") ?? "Offline tại TP.HCM hoặc online";
 
-const faqs = courseSchema
-  ? courseFaqs({ title, facts, outcomes, phone: contact.phonePrimary })
-  : [];
-
 const schemas: Record<string, unknown>[] = [breadcrumbSchema(crumbs, origin)];
 
 if (courseSchema) {
@@ -106,7 +101,6 @@ if (courseSchema) {
       level: level ?? fact("Mục tiêu"),
       credential: title.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/g, ""),
     }),
-    faqSchema(faqs),
   );
 }
 
@@ -119,9 +113,10 @@ if (courseSchema) {
  */
 const heroFacts = [
   {
-    icon: ICONS.clock,
-    label: "Thời lượng",
-    value: months ?? "Theo lộ trình",
+    icon: ICONS.users,
+    label: "Sĩ số lớp",
+    // Không dùng "Thời lượng" ở đây: đã có trong bảng lịch học và phần intro bên dưới.
+    value: "10–15 học viên",
     tone: "bg-linear-to-br from-rose-500 to-red-600 shadow-red-500/30",
   },
   {
@@ -138,11 +133,8 @@ const heroFacts = [
   },
 ].filter((f) => f.value);
 
-/** Số panel trong khối "Chương trình học" — quyết định lưới 1 hay 2 cột. */
-const panelCount = (content.length > 0 ? 1 : 0) + (topics?.items.length ? 1 : 0);
-
 const classes = scheduleSlug
-  ? schedule.filter((row) => row.courseSlug === scheduleSlug)
+  ? schedule.filter((row) => row.programSlug === scheduleSlug)
   : [];
 
 const sectionTitle =
@@ -193,16 +185,8 @@ const sectionTitle =
         <div class="space-y-14 lg:space-y-16">
           <!-- Giới thiệu khoá -->
           <div>
-            {
-              (badge || level) && (
-                <span class="inline-flex items-center rounded-lg bg-brand-red-600 px-3 py-1.5 text-[0.6875rem] font-black uppercase tracking-[0.12em] text-white">
-                  {badge ?? level}
-                </span>
-              )
-            }
-
             <h1
-              class="mt-5 text-[2.25rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
+              class="text-[2.25rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-5xl"
             >
               {title}
             </h1>
@@ -276,19 +260,46 @@ const sectionTitle =
 
           <!-- Chương trình học -->
           {
-            (content.length > 0 || grammar || topics) && (
+            (curriculum.length > 0 || content.length > 0 || topics) && (
               <section>
                 <h2 class={sectionTitle}>
                   {months ? `Chương trình học ${months}` : "Chương trình học"}
                 </h2>
-                <div
-                  class:list={[
-                    "mt-7 grid gap-4",
-                    // Chỉ chia đôi khi thật sự có hai panel, tránh để trống nửa lưới.
-                    panelCount > 1 && "md:grid-cols-2",
-                  ]}
-                >
-                  {content.length > 0 && (
+
+                {/* Mục soạn từ trang quản trị — thay hai panel sinh từ repo bên dưới. */}
+                {curriculum.length > 0 && (
+                  <div class="mt-7 grid gap-4">
+                    {curriculum.map((block) => (
+                      <div class="rounded-2xl border border-border bg-background p-6 md:p-7">
+                        <h3 class="text-lg font-extrabold text-brand-ink-900">
+                          {block.title}
+                        </h3>
+                        <ul class="mt-5 space-y-3">
+                          {block.items.map((line) => (
+                            <li class="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+                              <span
+                                aria-hidden="true"
+                                class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                                set:html={ICONS.plus}
+                              />
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/*
+                  Hai panel sinh từ repo — chỉ dựng khi trang quản trị chưa soạn mục nào.
+                  Ẩn bằng CSS thì HTML vẫn ra, Google đọc được và thành trùng nội dung.
+
+                  Một cột: các panel dài rất khác nhau — "Nội dung khoá học" có 7 dòng
+                  còn danh sách chủ đề có 13 — nên xếp hai cột làm một bên trống hẳn
+                  nửa dưới, và người đọc phải nhảy mắt qua lại giữa hai cột cùng cấp.
+                */}
+                <div class="mt-7 grid gap-4">
+                  {curriculum.length === 0 && content.length > 0 && (
                     <div class="rounded-2xl border border-border bg-background p-6 md:p-7">
                       <h3 class="text-lg font-extrabold text-brand-ink-900">
                         {contentTitle}
@@ -308,7 +319,7 @@ const sectionTitle =
                     </div>
                   )}
 
-                  {topics && topics.items.length > 0 && (
+                  {curriculum.length === 0 && topics && topics.items.length > 0 && (
                     <div class="rounded-2xl border border-border bg-background p-6 md:p-7">
                       <h3 class="text-lg font-extrabold text-brand-ink-900">
                         {topics.title}
@@ -327,35 +338,6 @@ const sectionTitle =
                               set:html={ICONS.plus}
                             />
                             <span>{t}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {grammar && grammar.points.length > 0 && (
-                    <div
-                      class:list={[
-                        "rounded-2xl border border-border bg-background p-6 md:p-7",
-                        panelCount > 1 && "md:col-span-2",
-                      ]}
-                    >
-                      <div class="flex flex-wrap items-baseline justify-between gap-3">
-                        <h3 class="text-lg font-extrabold text-brand-ink-900">
-                          Ngữ pháp trọng tâm
-                        </h3>
-                        <span class="rounded-full bg-brand-red-600 px-3.5 py-1 text-[0.6875rem] font-bold text-white">
-                          {grammar.count} điểm ngữ pháp
-                        </span>
-                      </div>
-                      <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                        Khoá học đi qua toàn bộ {grammar.count} điểm ngữ pháp của cấp độ.
-                        Một số điểm tiêu biểu:
-                      </p>
-                      <ul class="mt-5 flex flex-wrap gap-2">
-                        {grammar.points.map((p) => (
-                          <li class="rounded-lg bg-brand-ink-50 px-3.5 py-2 text-sm font-medium text-brand-ink-800">
-                            {p}
                           </li>
                         ))}
                       </ul>
@@ -407,48 +389,6 @@ const sectionTitle =
                       </tbody>
                     </table>
                   </div>
-                </div>
-              </section>
-            )
-          }
-
-          <!-- Dành cho ai -->
-          {
-            audience.length > 0 && (
-              <section>
-                <h2 class={sectionTitle}>Khoá học dành cho ai</h2>
-                {/* Một box duy nhất, các mục xếp dọc, đầu dòng là dấu gạch xám. */}
-                <ul class="mt-7 space-y-3 rounded-2xl border border-border bg-background p-6 md:p-7">
-                  {audience.map((a) => (
-                    <li class="flex items-start gap-3 text-sm leading-relaxed text-brand-ink-800">
-                      <span
-                        aria-hidden="true"
-                        class="shrink-0 leading-relaxed text-brand-ink-400"
-                      >
-                        -
-                      </span>
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )
-          }
-
-          <!-- FAQ -->
-          {
-            faqs.length > 0 && (
-              <section>
-                <h2 class={sectionTitle}>Câu hỏi thường gặp về {title}</h2>
-                <div class="mt-7 grid gap-4">
-                  {faqs.map((f) => (
-                    <div class="rounded-2xl border border-border bg-background p-6">
-                      <h3 class="text-sm font-bold text-brand-ink-900">{f.question}</h3>
-                      <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                        {f.answer}
-                      </p>
-                    </div>
-                  ))}
                 </div>
               </section>
             )
@@ -519,8 +459,6 @@ const sectionTitle =
               <ul class="mt-6 space-y-3.5 border-t border-border pt-6">
                 {
                   [
-                    { icon: ICONS.clock, text: months ?? "Lộ trình theo trình độ" },
-                    { icon: ICONS.users, text: "Lớp nhỏ 10–15 học viên" },
                     { icon: ICONS.book, text: "Giáo trình biên soạn riêng" },
                     { icon: ICONS.cap, text: "Giảng viên Thạc sĩ – Tiến sĩ" },
                     { icon: ICONS.shield, text: "Không đạt, học lại miễn phí" },

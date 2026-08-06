@@ -1,13 +1,20 @@
 ---
-import { ICONS } from "@/lib/icons";
+import { Image } from "astro:assets";
 
 interface Props {
   title: string;
   description?: string;
 
+  /**
+   * Chỉ dùng cho schema BreadcrumbList (JSON-LD) — breadcrumb không còn hiển thị
+   * trên trang, nhưng vẫn khai báo cho Google hiểu cấu trúc site.
+   */
   crumbs?: { label: string; href?: string }[];
 
   glyph?: string;
+
+  /** Canh giữa tiêu đề + mô tả. Bỏ qua khi hero có ảnh (bố cục 2 cột). */
+  align?: "left" | "center";
 
   /** Nhãn nhỏ phía trên tiêu đề, kèm chấm báo hiệu đang mở */
   eyebrow?: string;
@@ -15,6 +22,15 @@ interface Props {
   /** Ảnh minh hoạ bên phải. Có ảnh thì hero chuyển sang bố cục 2 cột. */
   image?: ImageMetadata;
   imageAlt?: string;
+
+  /**
+   * Thu gọn đệm dưới của hero.
+   *
+   * Dành cho trang đưa một hàng điều khiển vào slot (Thư viện đưa hàng chip chuyên
+   * mục): hàng đó thuộc về nội dung bên dưới chứ không thuộc hero, nên đệm dưới
+   * mặc định cộng với khoảng cách giữa các section đẩy nó trôi lơ lửng ở giữa.
+   */
+  compactBottom?: boolean;
 }
 
 const {
@@ -22,13 +38,17 @@ const {
   description,
   crumbs = [],
   glyph = "华",
+  align = "left",
   eyebrow,
   image,
   imageAlt = "",
+  compactBottom = false,
 } = Astro.props;
 
 /** Ảnh nằm đúng chỗ chữ 华 nền, có ảnh thì bỏ chữ để không chồng lên nhau. */
 const showGlyph = !image;
+
+const centered = align === "center" && !image;
 
 const origin = Astro.site?.origin ?? "";
 const breadcrumbSchema = {
@@ -46,7 +66,12 @@ const breadcrumbSchema = {
 };
 ---
 
-<section class="relative overflow-hidden bg-background py-14 lg:py-20">
+<section
+  class:list={[
+    "relative overflow-hidden bg-background pt-14 lg:pt-20",
+    compactBottom ? "pb-6 lg:pb-8" : "pb-14 lg:pb-20",
+  ]}
+>
   {
     showGlyph && (
       <span
@@ -59,40 +84,12 @@ const breadcrumbSchema = {
   }
 
   <div class="container relative z-10 mx-auto px-6">
-    <nav aria-label="Breadcrumb" class="mb-6">
-      <ol class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <li>
-          <a href="/" class="transition-colors hover:text-brand-red-600">Trang chủ</a>
-        </li>
-        {
-          crumbs.map((c) => (
-            <>
-              <li
-                aria-hidden="true"
-                class="[&>svg]:size-3 [&>svg]:"
-                set:html={ICONS.chevron}
-              />
-              <li>
-                {c.href ? (
-                  <a href={c.href} class="transition-colors hover:text-brand-red-600">
-                    {c.label}
-                  </a>
-                ) : (
-                  <span class="text-foreground">{c.label}</span>
-                )}
-              </li>
-            </>
-          ))
-        }
-      </ol>
-    </nav>
-
     <div
       class:list={[
         image && "grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14",
       ]}
     >
-      <div>
+      <div class:list={[centered && "flex flex-col items-center text-center"]}>
         {
           eyebrow && (
             <p class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-brand-red-100 bg-brand-red-50 py-1.5 pl-2.5 pr-4 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-700">
@@ -125,13 +122,15 @@ const breadcrumbSchema = {
       {
         image && (
           <div class="relative mx-auto w-full max-w-sm lg:max-w-none">
-            <img
-              src={image.src}
+            <Image
+              src={image}
               alt={imageAlt}
-              width={image.width}
-              height={image.height}
+              widths={[384, 560, 1120]}
+              sizes="(min-width: 1024px) 560px, 100vw"
+              format="webp"
+              quality={80}
+              loading="eager"
               fetchpriority="high"
-              decoding="async"
               class="w-full rounded-[2rem] object-cover"
             />
 
@@ -147,11 +146,3 @@ const breadcrumbSchema = {
     set:html={JSON.stringify(breadcrumbSchema)}
   />
 </section>
-
-<style>
-  nav[aria-label="Breadcrumb"] li[aria-hidden="true"] {
-    display: inline-flex;
-    align-items: center;
-    opacity: 0.6;
-  }
-</style>

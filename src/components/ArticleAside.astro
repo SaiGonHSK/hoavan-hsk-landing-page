@@ -1,0 +1,156 @@
+---
+import type { TocEntry } from "@/lib/articleToc";
+
+/**
+ * Cột phải của trang bài viết Thư viện: mục lục của bài.
+ *
+ * Vì sao có cột này: bài Thư viện dài, trước đây thân bài chiếm cả bề rộng `container`
+ * nên dòng chữ trên màn hình lớn dài quá mức đọc thoải mái, mà nửa phải trang thì trống.
+ * Thu cột chữ về khổ đọc được rồi lấy phần vừa dôi ra làm mục lục giải quyết cả hai.
+ *
+ * Chỉ hiện từ `lg`. Dưới đó cột phụ sẽ nằm chồng lên trước hoặc sau thân bài — mục lục
+ * đặt trước một bài thì chắn đường vào bài, nên thà không có.
+ */
+
+interface Props {
+  toc: TocEntry[];
+}
+
+const { toc } = Astro.props;
+---
+
+<aside class="hidden lg:block">
+  <div class="sticky top-24">
+    <nav aria-labelledby="toc-heading" class="border border-border p-6">
+      <p
+        id="toc-heading"
+        class="text-[0.6875rem] font-bold uppercase tracking-widest text-brand-red-600"
+      >
+        Trong bài này
+      </p>
+
+      {/*
+        Danh sách chặn chiều cao và tự cuộn: bài chia nhiều mục thì mục lục dài hơn màn
+        hình, không chặn thì phần cuối nằm ngoài vùng thấy được và không cách nào tới.
+      */}
+      <ol
+        data-toc
+        class="toc-list mt-4 flex max-h-[calc(100vh-13rem)] flex-col gap-1 overflow-y-auto"
+      >
+        {
+          toc.map((entry) => (
+            <li class:list={[entry.level === 3 && "pl-4"]}>
+              {/*
+                Trạng thái đang đọc chỉ đổi màu và viền trái, KHÔNG đổi độ đậm chữ.
+
+                Chữ đậm rộng hơn chữ thường, mục nào dài gần hết cột sẽ xuống thêm một
+                dòng — cuộn qua từng mục là danh sách cao thấp liên tục, cả cột giật theo.
+                Màu và viền đổi mà không chạm tới khung chữ.
+              */}
+              <a
+                href={`#${entry.id}`}
+                data-toc-link={entry.id}
+                class:list={[
+                  "block border-l-2 py-1.5 pl-3 leading-snug transition-colors",
+                  "border-transparent text-muted-foreground hover:border-border hover:text-brand-ink-900",
+                  "data-[active=true]:border-brand-red-600 data-[active=true]:text-brand-ink-900",
+                  entry.level === 3 ? "text-[0.8125rem]" : "text-sm",
+                ]}
+              >
+                {entry.text}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+  </div>
+</aside>
+
+<script>
+  /*
+   * Tô mục đang đọc trong mục lục.
+   *
+   * Dùng `IntersectionObserver` với `rootMargin` cắt bớt phần trên khung nhìn thay vì
+   * nghe `scroll`: chỉ chạy khi có tiêu đề đi qua vạch, không chạy mỗi khung hình.
+   *
+   * Vạch đặt ở 30% chiều cao khung nhìn — không phải đỉnh — nên mục sáng lên đúng lúc
+   * tiêu đề của nó lên tới vùng mắt đang đọc, chứ không phải lúc nó vừa chạm mép trên.
+   */
+  const BAND_TOP = 0.3;
+  const BAND_BOTTOM = 0.6;
+
+  const list = document.querySelector<HTMLElement>("[data-toc]");
+  if (list) {
+    const links = new Map(
+      [...list.querySelectorAll<HTMLAnchorElement>("[data-toc-link]")].map((link) => [
+        link.dataset.tocLink!,
+        link,
+      ]),
+    );
+
+    const headings = [...links.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((node): node is HTMLElement => node !== null);
+
+    // Giữ danh sách tiêu đề đang trong vùng đọc: cuộn nhanh có thể vào/ra nhiều cái một
+    // lúc, lấy cái trên cùng làm mục đang đọc.
+    const visible = new Set<string>();
+
+    const paint = (id: string | undefined) => {
+      for (const [key, link] of links) {
+        link.dataset.active = String(key === id);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
+        }
+
+        const current = headings.find((heading) => visible.has(heading.id));
+        if (current) {
+          paint(current.id);
+          return;
+        }
+
+        /*
+         * Không tiêu đề nào trong vùng đọc — đang ở giữa một mục dài, hoặc ở đoạn mở đầu.
+         * Lấy tiêu đề cuối cùng đã vượt qua vạch trên; chưa qua cái nào thì không tô gì.
+         *
+         * Vạch phải đúng là vạch của `rootMargin`, không phải mép trên khung nhìn: tiêu đề
+         * vừa rời vùng đọc đi lên vẫn còn nằm dưới mép trên, so với mép trên thì nó bị coi
+         * là "chưa qua" và mục sáng nhảy về lại tiêu đề trước đó. Cuộn một đoạn dài là mục
+         * sáng cứ nhảy tiến rồi lùi.
+         */
+        const line = window.innerHeight * BAND_TOP;
+        const passed = headings.filter(
+          (heading) => heading.getBoundingClientRect().top < line,
+        );
+        paint(passed.at(-1)?.id);
+      },
+      { rootMargin: `-${BAND_TOP * 100}% 0px -${BAND_BOTTOM * 100}% 0px` },
+    );
+
+    headings.forEach((heading) => observer.observe(heading));
+  }
+</script>
+
+<style>
+  /*
+   * Ẩn thanh cuộn của mục lục, giống cách dải tab làm ở WhyUs.astro.
+   *
+   * Không phải cho gọn mắt: thanh cuộn hiện/ẩn theo chiều cao danh sách sẽ hẹp lại vùng
+   * chữ đúng bằng bề rộng của nó, và mọi dòng trong mục lục nhích ngang một nhịp.
+   */
+  .toc-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .toc-list::-webkit-scrollbar {
+    display: none;
+  }
+</style>
