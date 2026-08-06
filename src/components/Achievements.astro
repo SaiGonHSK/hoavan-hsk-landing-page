@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import RailHint from "@/components/RailHint.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import { honorPosters } from "@/data/achievements";
 import { lightboxSrc } from "@/lib/images";
@@ -23,10 +24,16 @@ const posters = await Promise.all(
       highlight="của học viên SaigonHSK"
     />
 
-    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    {/* Dưới lg là dải cuộn ngang như mục hoạt động — bốn poster vuông xếp dọc
+        trên điện thoại thì phải cuộn rất lâu mới qua hết mục. */}
+    <div data-rail class="group/rail relative mt-12">
+      <div
+        data-rail-track
+        class="achievement-rail -mx-6 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+      >
       {
         posters.map((p) => (
-          <figure>
+          <figure class="w-[78vw] max-w-80 shrink-0 snap-start sm:w-80 lg:w-auto lg:max-w-none">
             {/* group đặt ở button chứ không ở figure: gợi ý "xem bảng điểm" chỉ
                 hiện khi hover đúng vào ảnh, không tính phần tên bên dưới. */}
             <button
@@ -71,6 +78,20 @@ const posters = await Promise.all(
           </figure>
         ))
       }
+      </div>
+
+      <RailHint label="thành tích" hideFrom="lg" />
     </div>
   </div>
 </section>
+
+<style>
+  .achievement-rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .achievement-rail::-webkit-scrollbar {
+    display: none;
+  }
+</style>
