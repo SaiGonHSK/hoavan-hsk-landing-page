@@ -1,7 +1,7 @@
 ---
 import { contact } from "@/data/site";
-import { courses } from "@/data/courses";
-import { onlineOfflineCourses } from "@/data/catalog";
+import { ICONS } from "@/lib/icons";
+import { courseOptions, resolveCourseOption } from "@/lib/registerLink";
 
 interface Props {
   /**
@@ -9,15 +9,23 @@ interface Props {
    * và nút gửi nên chiếm hết bề rộng thay vì bó lại giữa khung.
    */
   dense?: boolean;
+
+  /**
+   * Khoá học chọn sẵn — slug hoặc đúng nhãn trong `courseOptions`.
+   *
+   * Khách tới form từ một trang khoá cụ thể thì đã trả lời xong câu "học khoá nào";
+   * bắt chọn lại là hỏi hai lần cùng một chuyện. Slug lạ (giáo trình, trang kỹ năng)
+   * không khớp gì thì select về lại trạng thái chưa chọn như cũ.
+   */
+  course?: string;
+
+  /** Ghi chú điền sẵn — xem `registerNote` ở `lib/registerLink.ts`. */
+  note?: string;
 }
 
-const { dense = false } = Astro.props;
+const { dense = false, course, note = "" } = Astro.props;
 
-const courseOptions = [
-  ...onlineOfflineCourses.map((c) => c.title),
-  ...courses.map((c) => c.title),
-  "Chưa biết, cần tư vấn",
-];
+const selectedCourse = resolveCourseOption(course);
 
 const levels = [
   "Chưa học bao giờ",
@@ -88,8 +96,12 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
           Khoá học quan tâm <span class="text-brand-red-600">*</span>
         </label>
         <select id="rf-course" name="course" required class={field}>
-          <option value="" selected disabled>Chọn khoá học</option>
-          {courseOptions.map((c) => <option value={c}>{c}</option>)}
+          <option value="" selected={!selectedCourse} disabled>Chọn khoá học</option>
+          {
+            courseOptions.map((c) => (
+              <option value={c} selected={c === selectedCourse}>{c}</option>
+            ))
+          }
         </select>
       </div>
 
@@ -112,7 +124,8 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         rows="3"
         placeholder="Ví dụ: cần HSK4 trước tháng 12, học buổi tối sau 18h…"
         class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-brand-red-500"
-      ></textarea>
+        >{note}</textarea
+      >
     </div>
 
     <p
@@ -143,34 +156,104 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
     </p>
   </form>
 
-  <div
+  <!--
+    Báo thành công bằng modal chứ không phải panel thay chỗ form.
+
+    Form nằm ở nhiều vị trí trên trang — có chỗ ở cuối bài dài, có chỗ trong cột hẹp
+    bên phải; đổi ruột form thành một panel chữ thì lời báo có thể nằm ngoài khung
+    nhìn và khách tưởng bấm hụt. `<dialog>` nổi lên top layer nên luôn thấy, và trình
+    duyệt lo sẵn phần bẫy focus + đóng bằng Esc.
+  -->
+  <dialog
     data-register-success
-    hidden
-    class="rounded-2xl bg-brand-red-50 p-7 text-center"
+    aria-labelledby="rf-success-title"
+    class:list={[
+      // `m-auto` bắt buộc: preflight của Tailwind đặt `margin: 0` cho mọi thẻ, mà
+      // `dialog:modal` canh giữa màn hình bằng đúng `margin: auto` của trình duyệt —
+      // thiếu dòng này modal dính góc trên bên trái.
+      "m-auto w-[min(29rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto",
+      "rounded-3xl border border-border bg-background p-0 text-foreground shadow-2xl",
+    ]}
   >
-    <p class="text-xl font-extrabold text-brand-red-800">
-      Đã ghi nhận thông tin của bạn!
-    </p>
-    <p class="mt-2.5 text-sm leading-relaxed text-brand-red-900/80">
-      Trung tâm sẽ liên hệ để tư vấn lộ trình và xếp lớp. Nếu cần gấp, bạn gọi
-      <a href={`tel:${contact.phonePrimaryRaw}`} class="font-bold underline">
-        {contact.phonePrimary}
+    <div class="p-7 text-center md:p-9">
+      <span
+        class="mx-auto grid size-14 place-items-center rounded-full bg-emerald-500 text-white [&>svg]:size-7"
+        set:html={ICONS.check}
+      />
+
+      <p
+        id="rf-success-title"
+        class="mt-5 text-xl font-black text-brand-ink-900 md:text-2xl"
+      >
+        Chúc mừng bạn đã đăng ký thành công!
+      </p>
+
+      <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
+        Trung tâm đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất
+        để tư vấn lộ trình, xếp lớp và báo học phí.
+      </p>
+
+      <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
+        Cần gấp thì bạn gọi
+        <a
+          href={`tel:${contact.phonePrimaryRaw}`}
+          class="font-bold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+        >
+        hoặc
+        <a
+          href={contact.zalo}
+          target="_blank"
+          rel="noopener"
+          class="font-bold text-brand-red-600 hover:underline">chat Zalo</a
+        > nhé.
+      </p>
+
+      <!--
+        Thẻ `<a>` chứ không phải `<button>`: đóng modal là về trang chủ, nên để nó là
+        một liên kết thật — bấm giữ / chuột giữa vẫn mở tab mới được, và không có JS
+        thì nó vẫn đi đúng chỗ.
+      -->
+      <a
+        href="/"
+        data-register-close
+        class="mt-7 flex w-full items-center justify-center rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
+      >
+        Đã hiểu
       </a>
-      hoặc
-      <a href={contact.zalo} target="_blank" rel="noopener" class="font-bold underline">
-        chat Zalo
-      </a>
-      nhé.
-    </p>
-    <button
-      type="button"
-      data-register-reset
-      class="mt-5 cursor-pointer text-sm font-semibold text-brand-red-700 underline-offset-4 hover:underline"
-    >
-      Gửi thêm một đăng ký khác
-    </button>
-  </div>
+    </div>
+  </dialog>
 </div>
+
+<style>
+  /*
+    Nền mờ viết bằng màu thẳng, không qua token của theme: `::backdrop` nằm ở top
+    layer nên không phải trình duyệt nào cũng cho nó kế thừa custom property khai ở
+    `:root` — dùng `var(--color-brand-ink-900)` thì màu ra rỗng và nền không tối đi.
+    Giá trị lấy đúng `--brand-ink-900` trong global.css.
+  */
+  dialog[data-register-success]::backdrop {
+    background-color: rgb(18 19 22 / 0.6);
+  }
+
+  /* Modal mở ra là một thay đổi đột ngột giữa trang; nhích lên một chút để mắt bắt
+     được nó vừa xuất hiện thay vì tự hỏi trang đã đổi cái gì. */
+  dialog[data-register-success][open] {
+    animation: register-success-in 180ms ease-out;
+  }
+
+  @keyframes register-success-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    dialog[data-register-success][open] {
+      animation: none;
+    }
+  }
+</style>
 
 <script>
   import { LEADS_ENDPOINT, submitLead, type LeadPayload } from "@/lib/leads";
@@ -180,15 +263,30 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 
   document.querySelectorAll<HTMLElement>("[data-register-root]").forEach((root) => {
     const form = root.querySelector<HTMLFormElement>("[data-register-form]");
-    const success = root.querySelector<HTMLElement>("[data-register-success]");
+    const success = root.querySelector<HTMLDialogElement>("[data-register-success]");
     const error = root.querySelector<HTMLElement>("[data-register-error]");
-    const reset = root.querySelector<HTMLButtonElement>("[data-register-reset]");
     if (!form || !success) return;
 
+    /*
+      Đóng modal là kết thúc luồng đăng ký → đưa khách về trang chủ.
+
+      Bắt ở sự kiện `close` của dialog chứ không phải ở cú bấm nút: nút "Đã hiểu" đã
+      là một `<a href="/">` tự đi rồi, còn đây lo nốt đường thoát bằng Esc — không thì
+      nhấn Esc lại rơi về đúng cái form vừa gửi xong, trông như đăng ký chưa ăn.
+    */
+    success.addEventListener("close", () => window.location.assign("/"));
+
     const showSuccess = () => {
-      form.hidden = true;
-      success.hidden = false;
+      // Reset trước khi mở: form ở lại trên trang (chỉ bị modal che), nên phải sạch
+      // để lần gửi sau không mang theo thông tin của người vừa gửi. `reset()` trả về
+      // giá trị mặc định của HTML, tức khoá học chọn sẵn theo trang vẫn còn.
       form.reset();
+      if (error) error.hidden = true;
+
+      // `showModal` không có ở trình duyệt quá cũ — vẫn phải hiện được lời báo, chỉ
+      // là không có backdrop và bẫy focus.
+      if (typeof success.showModal === "function") success.showModal();
+      else success.setAttribute("open", "");
     };
 
     /** Xoá viền đỏ do lần gửi trước để lỗi cũ không dính vào field đã sửa. */
@@ -271,11 +369,6 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         `Đăng ký tư vấn khoá học — ${data.name}`,
       )}&body=${encodeURIComponent(body)}`;
       showSuccess();
-    });
-
-    reset?.addEventListener("click", () => {
-      success.hidden = true;
-      form.hidden = false;
     });
   });
 </script>

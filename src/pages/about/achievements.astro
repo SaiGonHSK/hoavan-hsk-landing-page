@@ -12,6 +12,7 @@ import { honorPosters } from "@/data/achievements";
 import { contact, commitments } from "@/data/site";
 import { lightboxSrc } from "@/lib/images";
 import { ICONS } from "@/lib/icons";
+import { aboutPageSchema } from "@/lib/schema";
 
 const posters = await Promise.all(
   honorPosters.map(async (p) => ({
@@ -40,12 +41,17 @@ const heroStats = [
   { value: `${best.total}/${best.max}`, label: `Điểm cao nhất — ${best.exam}` },
   { value: "100%", label: "Cam kết đầu ra mọi khoá học" },
 ];
+
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
   title="Thành tích học viên — bảng điểm HSK & chuẩn đầu ra | SaigonHSK"
   description="Bảng điểm HSK5, HSK6 của học viên Hoa văn SaigonHSK và chuẩn đầu ra cam kết theo từng nhóm lớp: 100% đậu HSK1–HSK5, không đạt được học lại miễn phí."
   keywords="thành tích học viên HSK, điểm thi HSK5, điểm thi HSK6, trung tâm tiếng Trung cam kết đầu ra"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
@@ -74,7 +80,6 @@ const heroStats = [
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <SectionHeading
-          align="left"
           title="Bảng vinh danh"
           highlight="học viên thi đỗ HSK"
           inlineHighlight
@@ -98,7 +103,7 @@ const heroStats = [
                     width={352}
                     densities={[1, 2]}
                     format="webp"
-                    quality={78}
+                    quality={88}
                     loading="lazy"
                     decoding="async"
                     class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
@@ -158,7 +163,6 @@ const heroStats = [
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <SectionHeading
-          align="left"
           title="Chuẩn đầu ra"
           highlight="cam kết theo từng lớp"
           inlineHighlight
@@ -213,7 +217,7 @@ const heroStats = [
     <section class="bg-background">
       <div class="container mx-auto px-6">
         {/* Kiểu nhãn viết tay như `note` của SectionHeading: viền nét đứt, hơi
-            nghiêng, chữ Caveat — chỉ đổi nền sang vàng cho khác khối đỏ ở trên. */}
+            nghiêng, chữ Fuzzy Bubbles — chỉ đổi nền sang vàng cho khác khối đỏ ở trên. */}
         <div
           class="flex -rotate-1 flex-col gap-5 rounded-2xl border border-dashed border-amber-300 bg-amber-50 px-6 py-7 sm:flex-row sm:items-center sm:justify-between"
         >

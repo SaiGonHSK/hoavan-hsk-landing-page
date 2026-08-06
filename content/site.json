@@ -88,7 +88,7 @@
       "id": "ung-dung-hoc-tap",
       "icon": "phone",
       "title": "Ứng dụng học tập riêng",
-      "desc": "Học viên có ứng dụng riêng của trung tâm để ôn từ vựng, luyện đề HSK và theo dõi tiến độ mỗi ngày — lớp học, bài tập và điểm số đồng bộ cùng giảng viên.",
+      "desc": "Học viên có ứng dụng riêng của trung tâm để ôn từ vựng, luyện đề HSK và theo dõi tiến độ mỗi ngày, kèm AI luyện nói – luyện nghe để tập phát âm và phản xạ ngoài giờ lên lớp — lớp học, bài tập và điểm số đồng bộ cùng giảng viên.",
       "image": "/images/values/tiet-kiem-thoi-gian.svg"
     },
     {
@@ -394,12 +394,12 @@
         "title": "Ứng dụng học tập độc quyền – Học mọi lúc, tiến bộ mỗi ngày",
         "desc": "Học viên tại Hoa văn SaigonHSK được sử dụng ứng dụng học tập và ôn luyện độc quyền, tích hợp bài giảng, tài liệu, bài tập và hệ thống ôn luyện HSK theo từng cấp độ. Ứng dụng giúp việc học không còn giới hạn trong lớp học, mà có thể diễn ra mọi lúc, mọi nơi, góp phần nâng cao hiệu quả tiếp thu và rút ngắn thời gian đạt mục tiêu.",
         "bullets": [
-          "📱 Ôn luyện mọi lúc, mọi nơi trên điện thoại hoặc máy tính",
-          "📚 Truy cập bài giảng, tài liệu và bài tập theo từng khóa học",
-          "✍️ Luyện tập và củng cố kiến thức sau mỗi buổi học",
-          "🎯 Ôn luyện HSK, HSKK với hệ thống đề và bài tập được cập nhật thường xuyên",
-          "🔔 Theo dõi tiến độ học tập và nhận thông báo từ trung tâm",
-          "💬 Kết nối nhanh với giảng viên và bộ phận giáo vụ khi cần hỗ trợ"
+          "Ôn luyện mọi lúc, mọi nơi trên điện thoại hoặc máy tính",
+          "Truy cập bài giảng, tài liệu và bài tập theo từng khóa học",
+          "Luyện tập và củng cố kiến thức sau mỗi buổi học",
+          "Ôn luyện HSK, HSKK với hệ thống đề và bài tập được cập nhật thường xuyên",
+          "Theo dõi tiến độ học tập và nhận thông báo từ trung tâm",
+          "Kết nối nhanh với giảng viên và bộ phận giáo vụ khi cần hỗ trợ"
         ]
       }
     ],

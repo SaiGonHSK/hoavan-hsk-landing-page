@@ -16,6 +16,11 @@ pnpm-debug.log*
 # environment variables
 .env
 
+# Ghi đè cấu hình theo từng máy. `.env.production.local` là cách chạy thử bản build
+# production ở local mà vẫn trỏ API về localhost:9909 thay vì "/" (không có nginx).
+.env.*.local
+.env.local
+
 # .env.production CÓ trong git là cố ý: site build tĩnh nên mọi biến PUBLIC_* đều
 # nằm sẵn trong JS gửi cho browser, không thứ gì trong đó là bí mật. Đổi lại,
 # `git pull && yarn build` trên VPS ra đúng cấu hình production mà không cần

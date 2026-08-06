@@ -1,7 +1,7 @@
-import poster1 from "@/assets/archivements/a1.jpg";
-import poster2 from "@/assets/archivements/a2.jpg";
-import poster3 from "@/assets/archivements/a3.jpg";
-import poster4 from "@/assets/archivements/a4.jpg";
+import poster1 from "@/assets/archivements/a1.webp";
+import poster2 from "@/assets/archivements/a2.webp";
+import poster3 from "@/assets/archivements/a3.webp";
+import poster4 from "@/assets/archivements/a4.webp";
 
 /**
  * Poster vinh danh học viên do trung tâm công bố — điểm bên dưới chép lại

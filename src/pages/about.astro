@@ -14,6 +14,7 @@ import { ICONS } from "@/lib/icons";
 import classroom from "@/assets/facility/classroom.webp";
 import facility1 from "@/assets/facility/facility-1.webp";
 import facility2 from "@/assets/facility/facility-2.webp";
+import { aboutPageSchema } from "@/lib/schema";
 
 const gallery = [
   {
@@ -52,12 +53,17 @@ const sections = [
     href: "/about/commitments",
   },
 ];
+
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
   title="Giới thiệu trung tâm tiếng Trung SaigonHSK TPHCM"
   description="Trung tâm Hoa văn SaigonHSK đào tạo tiếng Trung, luyện thi HSK tại TP.HCM từ năm 2019. Giảng viên Thạc sĩ – Tiến sĩ, lớp 10–15 học viên, cam kết đầu ra."
   keywords="trung tâm tiếng Trung uy tín TPHCM, review trung tâm tiếng Trung, giới thiệu SaigonHSK, trung tâm tiếng Trung có cam kết đầu ra"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
@@ -133,32 +139,55 @@ const sections = [
       </div>
     </section>
 
-    <section class="bg-background">
+    <section class="bg-brand-ink-50 py-14 lg:py-20">
       <div class="container mx-auto px-6">
-        <SectionHeading
-          title="Giá trị"
-          highlight="cốt lõi"
-          inlineHighlight
-          description="Năm giá trị định hướng mọi hoạt động đào tạo và dịch vụ của Hoa văn SaigonHSK."
-        />
+        <div
+          class="grid gap-12 rounded-[2.5rem] bg-background px-7 py-12 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)] md:px-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20 lg:px-20"
+        >
+          <div>
+            <SectionHeading
+              align="left"
+              title="Giá trị"
+              highlight="cốt lõi"
+              inlineHighlight
+              description="Năm giá trị định hướng mọi hoạt động đào tạo và dịch vụ của Hoa văn SaigonHSK."
+            />
+            <a
+              href="/about/differences"
+              class="group mt-8 inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+            >
+              Tìm hiểu thêm
+              <span
+                class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+                set:html={ICONS.arrow}
+              />
+            </a>
+          </div>
 
-        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {
-            coreValues.map((v) => (
-              <article class="flex flex-col rounded-3xl bg-brand-ink-50 p-7">
-                <span
-                  class="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-red-600 text-white [&>svg]:size-5"
-                  set:html={ICONS[v.icon as keyof typeof ICONS]}
-                />
-                <h2 class="mt-5 text-lg font-extrabold leading-snug text-brand-ink-900">
-                  {v.title}
-                </h2>
-                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                  {v.desc}
-                </p>
-              </article>
-            ))
-          }
+          <ul class="flex flex-col gap-5">
+            {
+              coreValues.map((v, i) => (
+                <li class="flex items-start gap-4 sm:gap-5">
+                  <Image
+                    src={v.image}
+                    alt={v.imageAlt}
+                    width={176}
+                    height={176}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    class="size-18 shrink-0 rounded-xl object-cover sm:size-22"
+                  />
+                  <div class="pt-0.5">
+                    <h2 class="text-base font-extrabold leading-snug text-brand-ink-900 sm:text-lg">
+                      {v.title}
+                    </h2>
+                    <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      {v.desc}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
         </div>
       </div>
     </section>
@@ -221,7 +250,7 @@ const sections = [
                       : "(min-width: 768px) 50vw, 100vw"
                   }
                   format="webp"
-                  quality={78}
+                  quality={88}
                   loading="lazy"
                   decoding="async"
                   class:list={[

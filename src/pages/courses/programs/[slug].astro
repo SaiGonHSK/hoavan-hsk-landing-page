@@ -12,6 +12,7 @@ import { teachers } from "@/data/teachers";
 import { testimonials } from "@/data/testimonials";
 import { commitments, contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { registerHref } from "@/lib/registerLink";
 import {
   clampDescription,
   courseSchema,
@@ -20,6 +21,7 @@ import {
   pickTitle,
   toIsoDuration,
 } from "@/lib/seo";
+import { programSchema } from "@/lib/schema";
 
 // Tra cứu theo params — xem ghi chú ở src/pages/courses/[...slug].astro. Chín chương
 // trình này vẫn sinh từ repo (`src/data/courses.ts`), chưa nằm trong bảng `courses`.
@@ -66,6 +68,22 @@ const schemas: Record<string, unknown>[] = [
         }
       : {}),
   },
+  /*
+    `EducationalOccupationalProgram` bên cạnh `Course` — không phải khai trùng.
+
+    `Course` trả lời "môn này dạy gì"; node này trả lời "chương trình dài bao lâu,
+    tuyển ai, học xong được chứng chỉ gì" — đúng câu người đi tìm nơi học hỏi, và là
+    loại node Google dành riêng cho chương trình đào tạo. Khi AI so sánh các trung tâm,
+    nó đọc được thời lượng và chuẩn đầu ra ở đây mà không phải parse văn xuôi.
+  */
+  programSchema({
+    name: course.title,
+    description: course.summary,
+    url,
+    origin,
+    duration: course.levels[0]?.duration?.[0],
+    credential: course.goal.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/g, ""),
+  }),
 ];
 
 // FAQ lấy từ chính dữ liệu khoá học, trả lời đúng ba câu người học hỏi nhiều nhất:
@@ -254,7 +272,7 @@ const heroFacts = [
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a
-          href="/register"
+          href={registerHref({ course: course.slug })}
           class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
         >
           Đăng ký khóa này
@@ -590,8 +608,10 @@ const heroFacts = [
                           {row.code}
                         </span>
                       </td>
+                      {/* `name`, không phải `className`: ScheduleRow không có trường
+                          đó nên cột "Lớp" đang in ra rỗng. */}
                       <td class="px-5 py-4 text-sm font-bold text-brand-ink-900">
-                        {row.className}
+                        {row.name}
                       </td>
                       <td class="px-5 py-4 text-sm leading-relaxed text-muted-foreground">
                         {row.cadence}
@@ -604,7 +624,10 @@ const heroFacts = [
                       </td>
                       <td class="px-5 py-4 text-right">
                         <a
-                          href="/register"
+                          href={registerHref({
+                            course: course.slug,
+                            classCode: row.code,
+                          })}
                           class="inline-flex shrink-0 rounded-full bg-brand-red-600 px-4 py-2 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
                         >
                           Đăng ký
@@ -650,6 +673,7 @@ const heroFacts = [
 
     {/* 7 — CTA ghi danh sớm */}
     <EnrollCta
+      href={registerHref({ course: course.slug })}
       subtitle={`chọn đúng lớp ${course.title}, đúng nhịp học`}
       lines={[
         "Test trình độ đầu vào miễn phí, xếp lớp đúng sức học",
@@ -771,7 +795,7 @@ const heroFacts = [
       </div>
     </section>
 
-    <RegisterSection />
+    <RegisterSection course={course.slug} />
   </main>
 
   {/* Thanh đăng ký dính đáy — chừa chỗ cho nút liên hệ nổi ở góc phải */}
@@ -801,7 +825,7 @@ const heroFacts = [
           {contact.phonePrimary}
         </a>
         <a
-          href="/register"
+          href={registerHref({ course: course.slug })}
           class="inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-6 py-2.5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
         >
           Đăng ký khóa này

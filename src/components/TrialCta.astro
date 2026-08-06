@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import { activities } from "@/data/activities";
+import { dailyMoments } from "@/data/activities";
 import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 
@@ -77,8 +77,22 @@ const avatars = [
   { initial: "L", tint: "bg-brand-ink-400" },
 ];
 
-// 2 hàng ảnh lớp học làm nền mờ phía sau.
-const mosaic = Array.from({ length: 14 }, (_, i) => activities[i % activities.length]);
+// 2 hàng ảnh sinh hoạt thường ngày ở trung tâm làm nền mờ phía sau.
+const mosaic = Array.from(
+  { length: 14 },
+  (_, i) => dailyMoments[i % dailyMoments.length],
+);
+
+/*
+  Ô khảm là 4:3 (`aspect-4/3`), còn ảnh chụp thì đủ kiểu 3:2 và ảnh dọc. Phải cắt
+  sẵn đúng 4:3 (`fit: "cover"`) chứ không chỉ đưa `width`: đưa mỗi `width` thì ảnh
+  3:2 ra bản 220×147 rồi CSS kéo lên cho đầy ô cao 165px, ảnh dọc thì ra bản
+  220×330 — tải gấp đôi số pixel cần dùng rồi bỏ đi một nửa.
+
+  Nhân 2 cho màn retina: mỗi ô chỉ rộng ~220px nên bản @2x vẫn rất nhẹ.
+*/
+const MOSAIC_W = 440;
+const MOSAIC_H = 330;
 
 const fadeUp =
   "mask-image: linear-gradient(to bottom, transparent, #000 55%); -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);";
@@ -102,9 +116,11 @@ const fadeUp =
           <Image
             src={p.image}
             alt=""
-            width={220}
+            width={MOSAIC_W}
+            height={MOSAIC_H}
+            fit="cover"
             format="webp"
-            quality={55}
+            quality={80}
             loading="lazy"
             decoding="async"
             class="aspect-4/3 w-full rounded-2xl object-cover"
@@ -187,13 +203,8 @@ const fadeUp =
           <ul class="mt-6 space-y-4">
             {
               includes.map((item) => (
-                <li class="flex items-start gap-3">
-                  <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-white/20 [&>svg]:size-3.5">
-                    <Fragment set:html={ICONS.check} />
-                  </span>
-                  <span class="text-[15px] font-semibold leading-relaxed text-white/95">
-                    {item}
-                  </span>
+                <li class="text-[15px] font-semibold leading-relaxed text-white/95">
+                  {item}
                 </li>
               ))
             }

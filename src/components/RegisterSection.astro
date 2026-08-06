@@ -2,6 +2,17 @@
 import SectionHeading from "@/components/SectionHeading.astro";
 import RegisterForm from "@/components/RegisterForm.astro";
 import { contact } from "@/data/site";
+
+interface Props {
+  /**
+   * Khoá học chọn sẵn khi khối này nằm trong một trang khoá cụ thể — form ngay dưới
+   * bài giới thiệu HSK3 thì không có lý do gì bắt khách tự tìm lại "HSK3" trong select.
+   */
+  course?: string;
+  note?: string;
+}
+
+const { course, note } = Astro.props;
 ---
 
 <section id="register" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -15,7 +26,7 @@ import { contact } from "@/data/site";
     <div class="mt-16 flex flex-col gap-8">
 
       <div class="rounded-3xl bg-brand-ink-50 p-6 md:p-9">
-        <RegisterForm />
+        <RegisterForm course={course} note={note} />
       </div>
 
       <div class="overflow-hidden rounded-3xl">

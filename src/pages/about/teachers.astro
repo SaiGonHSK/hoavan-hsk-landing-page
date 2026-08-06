@@ -7,11 +7,26 @@ import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
+import { teachers } from "@/data/teachers";
+import { aboutPageSchema, teacherListSchema } from "@/lib/schema";
+
+const origin = Astro.site?.origin ?? "";
+
+/*
+  Trang này là nơi `Person` của từng giảng viên có `@id` chính thức (`#tên-slug`), nên
+  các trang khác trích dẫn lại được. Khai `AboutPage` cùng `@id` với node `WebPage` của
+  Layout để gộp: trang vừa là WebPage vừa là trang giới thiệu về tổ chức.
+*/
+const schemas = [
+  aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
+  teacherListSchema(teachers, origin),
+];
 ---
 
 <Layout
   title="Đội ngũ giảng viên tiếng Trung Thạc sĩ, Tiến sĩ | SaigonHSK"
   description="Giảng viên SaigonHSK tốt nghiệp Thạc sĩ, Tiến sĩ tại ĐH Sư phạm Hoa Đông, Ngôn ngữ Bắc Kinh, Tây Nam Trùng Khánh và đang dạy tại các ĐH lớn ở TP.HCM."
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
@@ -19,7 +34,6 @@ import FloatingContact from "@/components/FloatingContact.astro";
       title="Đội ngũ giảng viên"
       description="Đội ngũ giảng viên chính là niềm tự hào của Hoa văn SaigonHSK. Phần lớn giảng viên có trình độ Thạc sĩ, Tiến sĩ, từng học tập hoặc nghiên cứu tại các trường đại học uy tín ở Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học tại Tp HCM. Với chuyên môn vững vàng, phương pháp giảng dạy hiện đại và sự tận tâm, các thầy cô không chỉ truyền đạt kiến thức mà còn truyền cảm hứng, giúp học viên tự tin chinh phục tiếng Trung và đạt được mục tiêu học tập của mình."
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Đội ngũ giảng viên" }]}
-      align="center"
       glyph="师"
     />
     <Teacher heading={false} />

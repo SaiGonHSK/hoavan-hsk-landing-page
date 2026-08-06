@@ -6,8 +6,9 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import RegisterForm from "@/components/RegisterForm.astro";
 import TrialCta from "@/components/TrialCta.astro";
 import { ICONS } from "@/lib/icons";
-import { breadcrumbSchema } from "@/lib/seo";
+import { breadcrumbGraph } from "@/lib/schema";
 import { commitments, contact } from "@/data/site";
+import { contextFromUrl, registerNote, resolveCourseOption } from "@/lib/registerLink";
 
 /**
  * Trang này là trang chuyển đổi: form phải nằm ngay trong khung nhìn đầu tiên, cạnh
@@ -16,6 +17,15 @@ import { commitments, contact } from "@/data/site";
  * lại thành hai tiêu đề trùng nội dung) mà dựng hero riêng và gọi RegisterForm.
  */
 const crumbs = [{ label: "Đăng ký" }];
+
+/**
+ * Khoá học khách đã xem, do CTA ở trang khoá / học thử / lịch khai giảng mang sang
+ * (`registerHref`). Trang render tại server nên chọn sẵn ngay trong HTML — không đợi
+ * script chạy rồi mới nhảy giá trị trước mắt người đang điền.
+ */
+const context = contextFromUrl(Astro.url);
+const selectedCourse = resolveCourseOption(context.course);
+const prefilledNote = registerNote(context);
 
 const perks = commitments.map((c) => ({
   title: c.title,
@@ -123,7 +133,7 @@ const perks = commitments.map((c) => ({
               gian học của bạn.
             </p>
 
-            <RegisterForm dense />
+            <RegisterForm dense course={selectedCourse} note={prefilledNote} />
           </div>
         </div>
       </div>
@@ -155,6 +165,6 @@ const perks = commitments.map((c) => ({
   <script
     is:inline
     type="application/ld+json"
-    set:html={JSON.stringify(breadcrumbSchema(crumbs, Astro.site?.origin ?? ""))}
+    set:html={JSON.stringify(breadcrumbGraph(crumbs, Astro.url.pathname, Astro.site))}
   />
 </Layout>

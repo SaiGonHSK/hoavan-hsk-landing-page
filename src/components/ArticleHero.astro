@@ -1,5 +1,6 @@
 ---
 import type { LibraryArticle } from "@/data/library";
+import { breadcrumbGraph } from "@/lib/schema";
 
 /**
  * Đầu trang bài viết Thư viện: chỉ tiêu đề và đoạn mở đầu.
@@ -20,22 +21,16 @@ interface Props {
 
 const { article } = Astro.props;
 
-const origin = Astro.site?.origin ?? "";
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
-    { "@type": "ListItem", position: 2, name: "Thư viện", item: `${origin}/library` },
-    {
-      "@type": "ListItem",
-      position: 3,
-      name: article.category.label,
-      item: `${origin}${article.category.slug}`,
-    },
-    { "@type": "ListItem", position: 4, name: article.title },
+const breadcrumbSchema = breadcrumbGraph(
+  [
+    { label: "Thư viện", href: "/library" },
+    { label: article.category.label, href: article.category.slug },
+    // Bài đang xem là mục cuối, không có `href`.
+    { label: article.title },
   ],
-};
+  Astro.url.pathname,
+  Astro.site,
+);
 ---
 
 {/* Không có đệm dưới: khoảng cách xuống ảnh bìa do `gap` của <main> quyết định,

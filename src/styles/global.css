@@ -2,7 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/google-sans-flex";
-@import "@fontsource-variable/caveat";
+@import "@fontsource/fuzzy-bubbles/latin-400.css";
+@import "@fontsource/fuzzy-bubbles/vietnamese-400.css";
 @import "@fontsource-variable/plus-jakarta-sans";
 
 @theme inline {
@@ -18,7 +19,7 @@
     "Helvetica Neue",
     Arial,
     sans-serif;
-  --font-hand: "Caveat Variable", "Segoe Script", cursive;
+  --font-hand: "Fuzzy Bubbles", "Segoe Script", cursive;
 
   --color-brand-red-50: var(--brand-red-50);
   --color-brand-red-100: var(--brand-red-100);

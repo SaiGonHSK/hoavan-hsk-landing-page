@@ -1,7 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
-import PageHero from "@/components/PageHero.astro";
+import ScheduleHero from "@/components/ScheduleHero.astro";
 import ScheduleCards from "@/components/ScheduleCards.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
 import EnrollCta from "@/components/EnrollCta.astro";
@@ -9,9 +9,11 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { schedule, scheduleNote, scheduleTitle } from "@/data/schedule";
 import { findProgram, visiblePrograms } from "@/data/programsApi";
-import { contact } from "@/data/site";
+import { contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
-import noticeImage from "@/assets/notice.jpg";
+// Ảnh tách nền cho hero.
+import registerTeacher from "@/assets/register-teacher.webp";
+import { openingScheduleSchema } from "@/lib/schema";
 
 /**
  * Câu mở đầu, ghép từ tên đợt đang đăng.
@@ -26,28 +28,35 @@ const heroDescription = [
   // Ghi chú của đợt, do console soạn: "Lịch dự kiến — gọi hotline để giữ chỗ." Câu chốt
   // bên dưới không còn nhắc hotline nữa để hai câu khỏi nói cùng một việc.
   scheduleNote,
-  "Chọn lớp bên dưới để xem ngày khai giảng, buổi học, giờ học, thời lượng và cam kết đầu ra.",
 ]
   .filter(Boolean)
-  .join(" ");
+  .join(" ") ||
+  // Chưa đăng đợt nào thì hai câu trên đều rỗng — hero vẫn cần một câu, không để trống
+  // dưới tiêu đề. Câu này nói việc trang làm, đúng cả khi lịch còn đang cập nhật.
+  "Lớp mở hằng tháng cho cả hình thức offline tại trung tâm và online, có lớp buổi tối và cuối tuần.";
 
-/** Số liệu tóm tắt cho hero, tính thẳng từ data để không lệch khi đổi lịch */
+/** Số lớp dùng cho chip hero, đếm thẳng từ lịch để không lệch khi đổi đợt */
 const opening = schedule.filter((row) => row.openDateISO);
 const onlineCount = opening.filter((row) =>
   row.mode === "online",
 ).length;
 
-const heroStats = [
-  { value: String(opening.length), label: "lớp khai giảng trong tháng" },
-  { value: String(onlineCount), label: "lớp học online" },
-  { value: "10–15", label: "học viên mỗi lớp" },
-];
+const hasOpening = opening.length > 0;
 
-// `openDateISO` là `YYYY-MM-DD` nên so sánh chuỗi đã ra đúng thứ tự thời gian — không
-// phải tách dd/mm/yyyy rồi đảo lại như hồi lịch còn là chuỗi người Việt đọc.
-const nextClass = [...opening].sort((a, b) =>
-  a.openDateISO.localeCompare(b.openDateISO),
-)[0];
+/**
+ * Chip nổi quanh ảnh hero — bốn câu quyết định người xem có bấm đăng ký hay không: đợt
+ * này mở mấy lớp, có lớp ngoài giờ hành chính không, có lớp online không, lớp bao nhiêu
+ * người.
+ *
+ * Ba câu đầu đọc từ lịch nên không bao giờ lệch với các lớp bên dưới. Chưa đăng đợt nào
+ * thì hai chip đếm được đổi sang điều vẫn đúng lúc đó, thay vì in "0 lớp".
+ */
+const heroChips = [
+  hasOpening ? `${opening.length} lớp đang mở đăng ký` : "Đang nhận đăng ký đợt tới",
+  "Có lớp buổi tối và cuối tuần",
+  onlineCount > 0 ? `${onlineCount} lớp học online` : "Test trình độ miễn phí",
+  "Mỗi lớp 10–15 học viên",
+];
 
 /**
  * Thứ tự các khối trên trang = thứ tự chương trình người quản trị sắp trong console.
@@ -106,77 +115,59 @@ const groups = schedule
   // `sort` sau `reduce`, không sắp sẵn `schedule`: gom nhóm cần thứ tự ngày để lớp trong
   // mỗi khối đúng thứ tự, còn thứ tự khối là chuyện của chương trình.
   .sort((a, b) => a.rank - b.rank);
+
+/*
+  Lịch khai giảng dạng dữ liệu có cấu trúc.
+
+  Đây là thông tin "hết hạn" nhanh nhất trên site, và cũng là thứ AI hay trả lời bằng
+  lịch cũ nó nhớ được. Khai `Course` kèm `CourseInstance` có `startDate` thật để bot
+  đọc được ngày khai giảng của đợt đang đăng chứ không đoán.
+*/
+const scheduleSchemas = [
+  openingScheduleSchema(schedule, Astro.site?.origin ?? "", {
+    name: site.fullName,
+    address: contact.address,
+  }),
+].filter(Boolean) as Record<string, unknown>[];
 ---
 
 <Layout
   title="Lịch khai giảng lớp tiếng Trung TPHCM | SaigonHSK"
   description="Lịch khai giảng lớp tiếng Trung tại TP.HCM: sơ cấp, trung cấp, luyện thi HSK, giao tiếp cấp tốc, VIP 1 kèm 1. Có lớp buổi tối và cuối tuần, mở lớp hằng tháng."
   keywords="lịch khai giảng tiếng Trung TPHCM, lớp tiếng Trung buổi tối, lớp tiếng Trung cuối tuần, học phí tiếng Trung TPHCM"
+  schemas={scheduleSchemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
-    <PageHero
-      title="Lịch khai giảng các lớp tiếng Trung"
+    <ScheduleHero
+      title="Học tiếng Trung ở TP.HCM:"
+      titleAccent="chọn lớp khai giảng của bạn"
       description={heroDescription}
       crumbs={[{ label: "Lịch khai giảng" }]}
-      glyph="开"
-      image={noticeImage}
-      imageAlt="Nhân viên Hoa văn SaigonHSK thông báo lịch khai giảng các lớp tiếng Trung"
+      image={registerTeacher}
+      imageAlt="Giảng viên Hoa văn SaigonHSK giới thiệu lịch khai giảng các lớp tiếng Trung"
+      chips={heroChips}
     >
-      {
-        nextClass && (
-          <div
-            slot="image-overlay"
-            class="absolute inset-x-4 bottom-4 flex items-center gap-4 rounded-2xl border border-white/60 bg-white/75 p-4 shadow-[0_24px_50px_-30px_rgb(17_24_39/0.6)] backdrop-blur-md sm:inset-x-5 sm:bottom-5"
-          >
-            <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-red-600 text-white [&>svg]:size-5" set:html={ICONS.calendar} />
-            <span class="min-w-0">
-              <span class="block text-[0.625rem] font-bold uppercase tracking-[0.14em] text-brand-red-700">
-                Khai giảng gần nhất
-              </span>
-              <span class="mt-1 block truncate text-base font-black leading-tight text-brand-ink-900">
-                {nextClass.openDate} · {nextClass.name}
-              </span>
-            </span>
-          </div>
-        )
-      }
-
-      <div class="mt-8 flex flex-wrap items-center gap-3">
+      <div class="mt-8 flex flex-col items-center gap-4">
         <a
           href="/register"
-          class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+          class="group inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
         >
           Đăng ký giữ chỗ
           <span
-            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
-            set:html={ICONS.arrow}
+            class="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 [&>svg]:size-4"
+            set:html={ICONS.arrowUpRight}
           />
         </a>
         <a
           href={`tel:${contact.phonePrimaryRaw}`}
-          class="inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-4 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
+          class="inline-flex items-center gap-2 text-sm font-bold text-brand-ink-700 transition-colors hover:text-brand-red-600"
         >
           <span class="text-brand-ink-400 [&>svg]:size-4" set:html={ICONS.phone} />
-          {contact.phonePrimary}
+          Hoặc gọi {contact.phonePrimary} để được xếp lớp
         </a>
       </div>
-
-      <dl class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-border">
-        {
-          heroStats.map((s, i) => (
-            <div class:list={[i === 0 ? "pr-5" : "px-5"]}>
-              <dt class="font-heading text-3xl font-black leading-none text-brand-red-600 md:text-4xl">
-                {s.value}
-              </dt>
-              <dd class="mt-2.5 text-xs leading-snug text-muted-foreground">
-                {s.label}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </PageHero>
+    </ScheduleHero>
 
     {
       /*
@@ -211,7 +202,24 @@ const groups = schedule
     <!-- Tìm lớp + điều hướng nhanh theo chương trình -->
     <section class:list={["scroll-mt-24", schedule.length === 0 && "hidden"]}>
       <div class="container mx-auto px-6">
-        <div class="rounded-lg border border-border bg-background p-6 md:p-8">
+        {/* Tiêu đề canh giữa mở phần chọn lớp: hero nói đợt này mở gì, từ đây trở xuống
+            là việc của người xem — tìm và so lớp. */}
+        <div class="mx-auto max-w-2xl text-center">
+          <h2
+            class="font-heading text-[1.75rem] font-black leading-tight tracking-tight text-balance text-brand-ink-900 md:text-[2.5rem]"
+          >
+            Chọn lớp theo trình độ và{" "}
+            <span class="text-brand-red-600">giờ học của bạn</span>
+          </h2>
+          <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            Mỗi lớp bên dưới ghi rõ ngày khai giảng, các buổi học trong tuần, giờ
+            học, thời lượng và nơi học — xem đủ rồi hãy đăng ký.
+          </p>
+        </div>
+
+        <div
+          class="mt-10 rounded-lg border border-border bg-background p-6 md:p-8"
+        >
           <label
             for="schedule-search"
             class="text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"

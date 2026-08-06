@@ -8,6 +8,17 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
 import { clampDescription } from "@/lib/seo";
+import { contactPageSchema } from "@/lib/schema";
+
+/*
+  `ContactPage` gộp vào node `WebPage` của Layout và trỏ `mainEntity` về tổ chức.
+
+  Địa chỉ, hotline và giờ mở cửa đã nằm trong node `#organization` mà mọi trang đều
+  mang, nên ở đây không khai lại — chỉ cần nói "trang này là trang liên hệ *của* tổ
+  chức đó". Khai lại địa chỉ ở trang này sẽ tạo bản thứ hai, và ngày nào đổi địa chỉ mà
+  quên một chỗ thì AI sẽ đọc được hai địa chỉ khác nhau.
+*/
+const schemas = [contactPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
@@ -16,6 +27,7 @@ import { clampDescription } from "@/lib/seo";
     `Trung tâm tiếng Trung SaigonHSK: ${contact.addressShort}. Hotline ${contact.phonePrimary}, Zalo. Mở cửa ${contact.workingHours} — gọi để nhận học phí và lịch khai giảng.`,
   )}
   keywords="địa chỉ trung tâm tiếng Trung TPHCM, hotline học tiếng Trung, trung tâm tiếng Trung gần đây, tư vấn học phí tiếng Trung"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 pb-16 lg:gap-24 lg:pb-24">

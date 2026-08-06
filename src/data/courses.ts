@@ -114,7 +114,7 @@ const hskLevel = (level: number): CourseLevel => {
 export const courses: Course[] = [
   {
     slug: "luyen-thi-hsk",
-    image: "/images/courses/luyen-thi-hsk.png",
+    image: "/images/courses/luyen-thi-hsk.webp",
     title: "Luyện thi HSK",
     summary: "Cam kết đầu ra 100% đậu HSK3, HSK4, HSK5.",
     goal: "Đậu HSK3 – HSK5",
@@ -190,7 +190,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-so-cap",
-    image: "/images/courses/tieng-hoa-so-cap.png",
+    image: "/images/courses/tieng-hoa-so-cap.webp",
     title: "Tiếng Trung Sơ cấp",
     summary: "Từ con số 0 đến HSK3: phát âm, chữ Hán và 4 kỹ năng.",
     goal: "HSK1 → HSK3",
@@ -203,7 +203,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-trung-cap",
-    image: "/images/courses/tieng-hoa-trung-cap.png",
+    image: "/images/courses/tieng-hoa-trung-cap.webp",
     title: "Tiếng Trung Trung cấp",
     summary: "Mở rộng lên 3.600 từ, đạt năng lực HSK4 và HSK5.",
     goal: "HSK4 → HSK5",
@@ -218,7 +218,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-cao-cap",
-    image: "/images/courses/tieng-hoa-cao-cap.png",
+    image: "/images/courses/tieng-hoa-cao-cap.webp",
     title: "Tiếng Trung Cao cấp",
     summary: "Nắm 5.400 từ, xử lý văn bản học thuật và chuyên ngành.",
     goal: "Hướng tới HSK6",
@@ -231,7 +231,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-giao-tiep-cap-toc",
-    image: "/images/courses/tieng-hoa-giao-tiep-cap-toc.png",
+    image: "/images/courses/tieng-hoa-giao-tiep-cap-toc.webp",
     title: "Tiếng Trung Giao tiếp Cấp tốc",
     summary: "Nói được tiếng Trung trong 3 tháng, không nặng viết chữ Hán.",
     goal: "Giao tiếp cấp tốc",
@@ -293,7 +293,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-doanh-nghiep",
-    image: "/images/courses/tieng-hoa-doanh-nghiep.png",
+    image: "/images/courses/tieng-hoa-doanh-nghiep.webp",
     title: "Tiếng Trung Doanh nghiệp",
     summary: "Lớp tiếng Trung thiết kế riêng cho doanh nghiệp.",
     goal: "Tiếng Trung công việc",
@@ -307,7 +307,7 @@ export const courses: Course[] = [
   },
   {
     slug: "tieng-hoa-vip",
-    image: "/images/courses/tieng-hoa-vip.png",
+    image: "/images/courses/tieng-hoa-vip.webp",
     title: "Tiếng Trung VIP (1 kèm 1)",
     summary: "Lớp tiếng Trung thiết kế dành cho người bận rộn.",
     goal: "Lộ trình cá nhân hóa",

@@ -1,9 +1,11 @@
 ---
 import { Image } from "astro:assets";
+import { breadcrumbGraph } from "@/lib/schema";
 
 interface Props {
   title: string;
-  description?: string;
+  /** Một đoạn, hoặc mảng nhiều đoạn khi lời dẫn dài hơn một ý. */
+  description?: string | string[];
 
   /**
    * Chỉ dùng cho schema BreadcrumbList (JSON-LD) — breadcrumb không còn hiển thị
@@ -13,7 +15,10 @@ interface Props {
 
   glyph?: string;
 
-  /** Canh giữa tiêu đề + mô tả. Bỏ qua khi hero có ảnh (bố cục 2 cột). */
+  /**
+   * Canh giữa tiêu đề + mô tả — mặc định của mọi trang. Bỏ qua khi hero có ảnh
+   * (bố cục 2 cột, canh giữa sẽ đá nhau với cột ảnh).
+   */
   align?: "left" | "center";
 
   /** Nhãn nhỏ phía trên tiêu đề, kèm chấm báo hiệu đang mở */
@@ -38,32 +43,21 @@ const {
   description,
   crumbs = [],
   glyph = "华",
-  align = "left",
+  align = "center",
   eyebrow,
   image,
   imageAlt = "",
   compactBottom = false,
 } = Astro.props;
 
+const paragraphs = [description ?? []].flat();
+
 /** Ảnh nằm đúng chỗ chữ 华 nền, có ảnh thì bỏ chữ để không chồng lên nhau. */
 const showGlyph = !image;
 
 const centered = align === "center" && !image;
 
-const origin = Astro.site?.origin ?? "";
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
-    ...crumbs.map((c, i) => ({
-      "@type": "ListItem",
-      position: i + 2,
-      name: c.label,
-      ...(c.href ? { item: `${origin}${c.href}` } : {}),
-    })),
-  ],
-};
+const breadcrumbSchema = breadcrumbGraph(crumbs, Astro.url.pathname, Astro.site);
 ---
 
 <section
@@ -109,11 +103,17 @@ const breadcrumbSchema = {
         </h1>
 
         {
-          description && (
-            <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              {description}
+          /* `data-speakable` ở đoạn đầu: đây là câu trả lời gọn nhất của trang, và
+             `speakable` trong src/lib/schema.ts trỏ vào đúng selector này. Chỉ đoạn
+             đầu — trợ lý giọng nói đọc tối đa vài câu, gắn cả khối thì nó đọc lan. */
+          paragraphs.map((p, i) => (
+            <p
+              class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg"
+              data-speakable={i === 0 ? "" : undefined}
+            >
+              {p}
             </p>
-          )
+          ))
         }
 
         <slot />
@@ -128,7 +128,7 @@ const breadcrumbSchema = {
               widths={[384, 560, 1120]}
               sizes="(min-width: 1024px) 560px, 100vw"
               format="webp"
-              quality={80}
+              quality={88}
               loading="eager"
               fetchpriority="high"
               class="w-full rounded-[2rem] object-cover"

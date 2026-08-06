@@ -1,9 +1,9 @@
 import { values } from "./site";
 import { honorPosters } from "./achievements";
-import appHome from "@/assets/mobile-app/app-home.png";
-import appSplash from "@/assets/mobile-app/app-splash.png";
-import classWriting from "@/assets/classes/hoc-vien-lam-bai.jpg";
-import faculty from "@/assets/values/doi-ngu-giang-vien.png";
+import appHome from "@/assets/mobile-app/app-home.webp";
+import appSplash from "@/assets/mobile-app/app-splash.webp";
+import textbook from "@/assets/textbooks/giao-trinh-hsk3.webp";
+import faculty from "@/assets/values/doi-ngu-giang-vien.webp";
 
 /**
  * Phần minh hoạ cho từng giá trị khác biệt: ảnh, nhãn tab và số liệu nổi bật.
@@ -34,7 +34,9 @@ const PANELS: Record<string, ValuePanel> = {
     tab: "Giáo trình riêng",
     tabNote: "Biên soạn cho người Việt",
     badge: "Giáo trình độc quyền",
-    image: classWriting,
+    // Ảnh chính bộ giáo trình của trung tâm (in tên trung tâm trên bìa) chứ không phải
+    // ảnh chụp lớp: tab này nói về giáo trình, ảnh phải cho thấy đúng cái nó nói tới.
+    image: textbook,
     strong: "Học lại miễn phí",
     note: "nếu chưa đạt đầu ra đã cam kết",
   },
@@ -55,8 +57,8 @@ const PANELS: Record<string, ValuePanel> = {
     badge: "Công nghệ học tập",
     image: appHome,
     devices: [appSplash, appHome],
-    strong: "Ôn từ vựng · Luyện đề · Theo dõi tiến độ",
-    note: "Chuỗi ngày học, điểm tích luỹ và bài tập của lớp đều nằm trong app",
+    strong: "Ôn từ vựng · Luyện đề · AI luyện nói nghe",
+    note: "Chuỗi ngày học, điểm tích luỹ, bài tập của lớp và phần luyện nói – luyện nghe với AI đều nằm trong app",
   },
   "hieu-qua-cao": {
     tab: "Đầu ra đạt chuẩn",

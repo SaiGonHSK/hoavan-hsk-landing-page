@@ -4,6 +4,7 @@ import { sessionLines, type ScheduleRow } from "@/data/schedule";
 import { findProgram } from "@/data/programsApi";
 import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { registerHref } from "@/lib/registerLink";
 
 /**
  * Lưới thẻ lịch khai giảng: badge chương trình (cùng `CourseBadge` với lưới khoá học ở
@@ -103,12 +104,23 @@ const cards = rows.map((row) => ({
     row.courseTitle ??
     row.name,
   details: detailsOf(row),
+  /**
+   * Khách bấm "Đăng ký giữ chỗ" trên đúng một lớp thì form phải biết lớp nào — mang
+   * theo cả khoá (để chọn sẵn trong select) lẫn mã lớp (vào ghi chú của lead).
+   *
+   * Khoá ưu tiên slug chương trình vì đó là thứ chắc chắn có trong danh sách chọn;
+   * lớp chưa thuộc chương trình nào thì thử khớp theo tên khoá do console đặt.
+   */
+  href: registerHref({
+    course: row.programSlug || row.courseTitle,
+    classCode: row.code,
+  }),
 }));
 ---
 
 <div class:list={["grid gap-5 md:grid-cols-2 lg:grid-cols-3", className]}>
   {
-    cards.map(({ row, courseTitle, details }) => (
+    cards.map(({ row, courseTitle, details, href }) => (
       <article
         data-class-card
         data-search={searchKey(row)}
@@ -157,7 +169,7 @@ const cards = rows.map((row) => ({
         <div class="mt-auto border-t border-border p-5">
           {row.openDate ? (
             <a
-              href="/register"
+              href={href}
               class="block rounded-lg border border-brand-red-200 py-3 text-center text-sm font-bold text-brand-red-700 transition-colors hover:border-brand-red-600 hover:bg-brand-red-600 hover:text-white"
             >
               Đăng ký giữ chỗ

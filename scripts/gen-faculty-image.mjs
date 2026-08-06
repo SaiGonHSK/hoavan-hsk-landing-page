@@ -27,10 +27,26 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const SOURCE_DIR = "src/assets/teacher";
-const OUTPUT = "src/assets/values/doi-ngu-giang-vien.png";
+const OUTPUT = "src/assets/values/doi-ngu-giang-vien.webp";
 
+/*
+ * Bố cục tính trên hệ trục 1440×760, ảnh xuất ra nhân `OUT_SCALE` lần.
+ *
+ * Vì sao phải nhân: ô ảnh của panel rộng chừng 640px khi hiện thật, màn Retina cần 1280px
+ * thật. Xuất đúng 1440 thì mỗi chân dung chỉ có 288px cho một khuôn mặt hiện ở ~256px —
+ * gần 1:1, không còn dư để `<Image>` thu nhỏ, nên mặt trông nhoè. Vẽ ở 2× rồi để Astro thu
+ * về 1440 thì bản 2× là ảnh thu nhỏ thật, nét hơn hẳn.
+ *
+ * Chỉ chân dung và khung ảnh nhân theo `OUT_SCALE`; mọi toạ độ chữ, viền, đĩa vẫn viết trên
+ * hệ trục 1440×760 vì SVG được rasterize ở khổ 2× qua `width`/`height` khác `viewBox` —
+ * chữ và đường tròn do đó vẫn vẽ vector ở khổ lớn, không bị phóng bitmap.
+ */
+const OUT_SCALE = 2;
 const W = 1440;
 const H = 760;
+
+/** Toạ độ/kích thước trên hệ trục bố cục → pixel thật của ảnh xuất ra. */
+const out = (value) => Math.round(value * OUT_SCALE);
 /*
  * Bảng màu trung tính, cố ý không có đỏ thương hiệu.
  *
@@ -114,7 +130,7 @@ const faceRectBin = build("face-rect");
  * dải đỏ thành một chủ thể nữa và ảnh ra bị dính vệt đỏ ở mép.
  */
 async function liftSubject(slug) {
-  const source = path.join(SOURCE_DIR, `${slug}.jpg`);
+  const source = path.join(SOURCE_DIR, `${slug}.webp`);
   const { width, height } = await sharp(source).metadata();
 
   // Dò mép trên panel đỏ bằng một cột pixel sát lề trái — chỗ đó luôn là nền, không có người.
@@ -144,8 +160,14 @@ async function liftSubject(slug) {
   return lifted;
 }
 
-/** Ảnh chân dung tròn đường kính `DISC`, mặt nằm đúng chỗ và đúng cỡ ở mọi người. */
-async function portrait(slug) {
+/**
+ * Ảnh chân dung tròn đường kính `size` **pixel thật**, mặt nằm đúng chỗ và đúng cỡ ở mọi người.
+ *
+ * Nhận `size` thay vì luôn xuất ở `DISC` rồi để chỗ gọi thu nhỏ tiếp: hàng thumb ở dải dưới
+ * trước đây resize hai lần (khung mặt → 288 → 96), mỗi lần thu nhỏ mất một lớp chi tiết nên
+ * mấy khuôn mặt nhỏ nhoè hơn hẳn bốn khuôn mặt lớn. Thu một lần từ ảnh gốc là đủ.
+ */
+async function portrait(slug, size) {
   const lifted = await liftSubject(slug);
   const face = JSON.parse(execFileSync(faceRectBin, [lifted], { encoding: "utf8" }));
   const centerX = face.x + face.width / 2;
@@ -184,26 +206,33 @@ async function portrait(slug) {
   // Khoét tròn: đĩa trắng làm mặt nạ `dest-in`, rồi đặt lên một đĩa trắng-xám để chỗ đã
   // tách nền không thành lỗ trong suốt.
   const mask = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${DISC}" height="${DISC}">
-      <circle cx="${DISC / 2}" cy="${DISC / 2}" r="${DISC / 2}" fill="#fff"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/>
     </svg>`,
   );
 
+  /*
+   * Khung mặt cắt ra rộng cỡ 1400px, thu về `size` là thu hơn hai tới mười lần. Lanczos
+   * (mặc định của sharp) làm đúng việc chống răng cưa nhưng ảnh ra luôn mềm hơn ảnh gốc —
+   * `sharpen` bù lại đúng phần đó. Bán kính nhỏ và `m1`/`m2` thấp để chỉ ăn vào biên (mắt,
+   * mép mũ, đường viền áo) chứ không đẩy nhiễu trên da lên.
+   */
   const circular = await sharp(square)
-    .resize(DISC, DISC)
+    .resize(size, size, { kernel: "lanczos3" })
+    .sharpen({ sigma: 0.7, m1: 0.4, m2: 1.6 })
     .composite([{ input: mask, blend: "dest-in" }])
     .png()
     .toBuffer();
 
   return sharp(Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${DISC}" height="${DISC}">
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
       <defs>
         <linearGradient id="disc" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="${DISC_TOP}"/>
           <stop offset="1" stop-color="${DISC_BOTTOM}"/>
         </linearGradient>
       </defs>
-      <circle cx="${DISC / 2}" cy="${DISC / 2}" r="${DISC / 2}" fill="url(#disc)"/>
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="url(#disc)"/>
     </svg>`,
   ))
     .composite([{ input: circular }])
@@ -291,7 +320,7 @@ const caption = ({ centerX, name, degree, school }) => {
 // ở góc. Không lưới điểm, không khung góc: ô ảnh đã có viền và bo góc riêng, thêm nữa thành
 // hai lớp khung chồng nhau.
 const background = Buffer.from(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${out(W)}" height="${out(H)}" viewBox="0 0 ${W} ${H}">
     <rect width="${W}" height="${H}" fill="${CANVAS}"/>
 
     <text x="${W - 44}" y="${H - 34}" text-anchor="end"
@@ -303,9 +332,9 @@ const background = Buffer.from(
 const layers = [];
 for (const column of columns) {
   layers.push({
-    input: await portrait(column.slug),
-    left: column.centerX - DISC / 2,
-    top: DISC_CENTER_Y - DISC / 2,
+    input: await portrait(column.slug, out(DISC)),
+    left: out(column.centerX - DISC / 2),
+    top: out(DISC_CENTER_Y - DISC / 2),
   });
 }
 
@@ -327,9 +356,9 @@ const REST_CENTER_Y = H - 92;
 
 for (const [index, slug] of REST.entries()) {
   layers.push({
-    input: await sharp(await portrait(slug)).resize(THUMB, THUMB).png().toBuffer(),
-    left: restLeft + index * THUMB_STEP,
-    top: REST_CENTER_Y - THUMB / 2,
+    input: await portrait(slug, out(THUMB)),
+    left: out(restLeft + index * THUMB_STEP),
+    top: out(REST_CENTER_Y - THUMB / 2),
   });
 }
 
@@ -339,7 +368,7 @@ for (const [index, slug] of REST.entries()) {
  */
 layers.push({
   input: Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${out(W)}" height="${out(H)}" viewBox="0 0 ${W} ${H}">
       ${columns
         .map(
           (column) => `
@@ -368,6 +397,11 @@ layers.push({
 });
 
 mkdirSync(path.dirname(OUTPUT), { recursive: true });
-await sharp(background).composite(layers).png().toFile(OUTPUT);
+/*
+ * `quality: 96` chứ không phải mức thường dùng cho ảnh chụp: đây là ảnh đồ hoạ có chữ nhỏ
+ * (tên trường 23px) và `<Image>` còn nén lại một lần nữa khi build. Nén mạnh ở bước này thì
+ * qua hai lần nén chữ rữa ra thành vệt.
+ */
+await sharp(background).composite(layers).webp({ quality: 96 }).toFile(OUTPUT);
 rmSync(work, { recursive: true, force: true });
-console.log(`wrote ${OUTPUT} — ${W}x${H}`);
+console.log(`wrote ${OUTPUT} — ${out(W)}x${out(H)}`);

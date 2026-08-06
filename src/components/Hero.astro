@@ -21,7 +21,9 @@ import { ICONS } from "@/lib/icons";
         {hero.titleLine2}
       </span>
     </h1>
-    <p class="sr-only">
+    {/* `data-speakable`: trang chủ không dùng PageHero nên câu tóm tắt của nó nằm ở
+        đây. `sr-only` vẫn là nội dung thật trong DOM, bot đọc được bình thường. */}
+    <p class="sr-only" data-speakable>
       Trung tâm Hoa văn SaigonHSK — dạy tiếng Trung và luyện thi HSK
       tại TP.HCM (Sài Gòn), cam kết 100% đầu ra.
     </p>

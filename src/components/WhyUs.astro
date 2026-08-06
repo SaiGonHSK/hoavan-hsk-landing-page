@@ -73,7 +73,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
                           width={430}
                           densities={[1, 2]}
                           format="webp"
-                          quality={80}
+                          quality={88}
                           loading="lazy"
                           decoding="async"
                           class="block w-full"
@@ -82,26 +82,44 @@ import { valuePanels as slides } from "@/data/valuePanels";
                     ))}
                   </div>
                 ) : s.contain ? (
+                  /*
+                    Hai ảnh đi qua nhánh này (ảnh ghép đội ngũ giảng viên và poster thành tích)
+                    đều có CHỮ nướng sẵn trong ảnh — tên, học vị, tên trường, điểm thi.
+
+                    Vì vậy phát một bản duy nhất khoảng 2x thay vì cặp 1x/2x qua `densities`:
+                    ô ảnh thật rộng ~550px, cặp 720w/1440w làm máy dpr=1 nhận bản 720w, tức
+                    1,3 điểm ảnh cho mỗi px CSS — ảnh thường thì không sao, ảnh có chữ thì nhoè
+                    rõ. Triệu chứng đúng như báo lại: phải zoom vào rồi zoom ra mới hết mờ, vì
+                    zoom đẩy dpr lên, trình duyệt mới đổi sang bản 1440w rồi giữ bản đó.
+
+                    1200w phủ cả dpr=1 và dpr=2 cho ô 550px (550 × 2 = 1100 ≤ 1200), và ảnh
+                    ghép phần lớn là nền phẳng nên 1200w q82 chỉ ~43 KB — nhẹ hơn cả cặp cũ.
+                  */
                   <Image
                     src={s.image}
                     alt={`${s.title} — ${s.note}`}
-                    width={720}
-                    densities={[1, 2]}
+                    width={1200}
                     format="webp"
-                    quality={78}
+                    quality={82}
                     loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
                     class="size-full rounded-2xl object-contain"
                   />
                 ) : (
-                  /* Ảnh chụp lớp học phủ kín nửa panel — cắt cạnh thay vì hiện trọn. */
+                  /*
+                    Ảnh chụp lớp học phủ kín nửa panel — cắt cạnh thay vì hiện trọn.
+
+                    Có bản 1600px vì `sizes` khai 50vw: màn 1440 rộng thì ô ảnh đã là 720px
+                    CSS, màn Retina cần 1440px thật. Dừng ở 1024 như trước thì trình duyệt
+                    phải kéo bản 1024 lên gấp rưỡi — đó là chỗ ảnh giáo trình bị nhoè.
+                  */
                   <Image
                     src={s.image}
                     alt={s.title}
-                    widths={[640, 1024]}
+                    widths={[640, 1024, 1600]}
                     sizes="(min-width: 1024px) 50vw, 100vw"
                     format="webp"
-                    quality={78}
+                    quality={88}
                     loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
                     class="absolute inset-0 size-full object-cover"

@@ -8,6 +8,7 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { site } from "@/data/site";
 import { clampDescription, itemListSchema } from "@/lib/seo";
+import { collectionPageSchema } from "@/lib/schema";
 import type { LibraryArticle } from "@/data/library";
 
 /**
@@ -50,6 +51,9 @@ const {
 
 const origin = Astro.site?.origin ?? "";
 const schemas = [
+  // Trang danh mục: `CollectionPage` gộp vào node `WebPage` của Layout để bot phân
+  // biệt trang liệt kê với trang nội dung, thay vì coi mọi URL là WebPage như nhau.
+  collectionPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
   itemListSchema(
     metaTitle ?? title,
     articles.map((article) => ({ title: article.title, href: article.slug })),

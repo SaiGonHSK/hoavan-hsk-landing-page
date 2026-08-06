@@ -21,18 +21,19 @@ const posters = await Promise.all(
     <SectionHeading
       title="Thành tích"
       highlight="của học viên SaigonHSK"
-      note="Bấm vào ảnh để xem bảng điểm"
     />
 
     <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {
         posters.map((p) => (
-          <figure class="group">
+          <figure>
+            {/* group đặt ở button chứ không ở figure: gợi ý "xem bảng điểm" chỉ
+                hiện khi hover đúng vào ảnh, không tính phần tên bên dưới. */}
             <button
               type="button"
               data-lightbox={p.full}
               data-caption={p.caption}
-              class="block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-brand-ink-50"
+              class="group/img relative block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-brand-ink-50"
             >
               <Image
                 src={p.image}
@@ -40,11 +41,23 @@ const posters = await Promise.all(
                 width={420}
                 densities={[1, 2]}
                 format="webp"
-                quality={78}
+                quality={88}
                 loading="lazy"
                 decoding="async"
-                class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                class="aspect-square w-full object-cover transition-transform duration-500 group-hover/img:scale-[1.04]"
               />
+
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-0 bg-linear-to-t from-brand-ink-950/80 via-brand-ink-950/25 to-transparent opacity-0 transition-opacity duration-300 group-hover/img:opacity-100 group-focus-visible/img:opacity-100"
+              />
+
+              {/* Máy cảm ứng không có hover nên để nhãn hiện sẵn, khỏi mất gợi ý. */}
+              <span
+                class="pointer-events-none absolute inset-x-3 bottom-3 block translate-y-2 rounded-full bg-white/95 px-3 py-2 text-center text-xs font-bold text-brand-ink-900 opacity-0 shadow-[0_10px_24px_-14px_rgb(17_24_39/0.7)] transition duration-300 group-hover/img:translate-y-0 group-hover/img:opacity-100 group-focus-visible/img:translate-y-0 group-focus-visible/img:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100"
+              >
+                Xem bảng điểm
+              </span>
             </button>
 
             <figcaption class="mt-4 px-1">

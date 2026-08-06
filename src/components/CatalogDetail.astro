@@ -9,11 +9,9 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
 import { schedule } from "@/data/schedule";
 import { ICONS } from "@/lib/icons";
-import {
-  breadcrumbSchema,
-  clampDescription,
-  courseSchema as buildCourseSchema,
-} from "@/lib/seo";
+import { registerHref, registerNote } from "@/lib/registerLink";
+import { clampDescription, courseSchema as buildCourseSchema } from "@/lib/seo";
+import { breadcrumbNodes } from "@/lib/schema";
 
 interface Props {
   title: string;
@@ -37,6 +35,18 @@ interface Props {
 
   /** Slug chương trình để lấy lịch khai giảng; bỏ trống thì ẩn bảng lịch. */
   scheduleSlug?: string;
+
+  /**
+   * Khoá tra để form đăng ký chọn sẵn đúng khoá của trang này — slug khoá
+   * (`hsk-3`, `luyen-thi-hsk-4`) hoặc slug chương trình.
+   *
+   * Layout này dùng chung cho cả thứ không bán ra (giáo trình, trang luyện kỹ năng);
+   * những trang đó không truyền gì, và form giữ nguyên trạng thái chưa chọn.
+   */
+  registerCourse?: string;
+
+  /** Trang học thử — ghi chú của lead nói rõ khách muốn học thử trước. */
+  trial?: boolean;
 
   related?: { label: string; href: string }[];
   relatedTitle?: string;
@@ -69,6 +79,8 @@ const {
   crumbs,
   glyph = "课",
   scheduleSlug,
+  registerCourse,
+  trial = false,
   related = [],
   relatedTitle = "Xem thêm",
   courseSchema = false,
@@ -87,7 +99,9 @@ const level = fact("Cấp độ");
 const entry = fact("Đầu vào");
 const mode = fact("Hình thức") ?? "Offline tại TP.HCM hoặc online";
 
-const schemas: Record<string, unknown>[] = [breadcrumbSchema(crumbs, origin)];
+const schemas: Record<string, unknown>[] = [
+  ...breadcrumbNodes(crumbs, Astro.url.pathname, Astro.site),
+];
 
 if (courseSchema) {
   schemas.push(
@@ -136,6 +150,13 @@ const heroFacts = [
 const classes = scheduleSlug
   ? schedule.filter((row) => row.programSlug === scheduleSlug)
   : [];
+
+/**
+ * Ngữ cảnh mang sang form: nút bên phải đi tới `/register` thì gửi qua query, còn form
+ * ở cuối chính trang này nhận thẳng bằng props.
+ */
+const registerContext = { course: registerCourse, trial };
+const registerNoteText = registerNote(registerContext);
 
 const sectionTitle =
   "text-[1.75rem] font-black leading-tight tracking-tight text-brand-ink-900 md:text-[2rem]";
@@ -441,7 +462,7 @@ const sectionTitle =
               </p>
 
               <a
-                href="/register"
+                href={registerHref(registerContext)}
                 class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
               >
                 Đăng ký ngay
@@ -479,9 +500,9 @@ const sectionTitle =
     </div>
 
     <div class="mt-16 flex flex-col gap-16 lg:mt-24 lg:gap-24">
-      {cta === "enroll" && <EnrollCta />}
-      <RegisterSection />
-      {cta === "default" && <CtaSection />}
+      {cta === "enroll" && <EnrollCta href={registerHref(registerContext)} />}
+      <RegisterSection course={registerCourse} note={registerNoteText} />
+      {cta === "default" && <CtaSection primaryHref={registerHref(registerContext)} />}
     </div>
   </main>
   <Footer />

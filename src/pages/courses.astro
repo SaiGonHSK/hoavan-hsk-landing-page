@@ -12,6 +12,7 @@ import { visibleCourses } from "@/data/coursesApi";
 import type { CatalogItem } from "@/data/catalog";
 import { site } from "@/data/site";
 import { clampDescription, itemListSchema } from "@/lib/seo";
+import { hskTermSetSchema } from "@/lib/schema";
 
 /** Yêu cầu đầu vào nằm trong bảng facts của khoá catalog, lấy ra để hiện trên thẻ. */
 const entryOf = (c: CatalogItem) => c.facts.find((f) => f.label === "Đầu vào")?.value;
@@ -93,6 +94,10 @@ const description =
 const origin = Astro.site?.origin ?? "";
 /* Giữ đúng schema mà CatalogHub vẫn phát cho trang này: một ItemList mọi khoá. */
 const schemas = [
+  // Thang HSK khai lại ở đây bên cạnh trang chủ: đây là trang người tìm "học HSK mấy
+  // cấp", "HSK4 khác HSK5 thế nào" đáp xuống. `@id` giống trang chủ nên với crawler đó
+  // vẫn là một thực thể, không phải hai bản.
+  hskTermSetSchema(origin),
   itemListSchema(
     "Khoá học tiếng Trung TPHCM — HSK1 đến HSK6",
     tabs.flatMap((tab) => tab.cards.map((c) => ({ title: c.title, href: c.href }))),

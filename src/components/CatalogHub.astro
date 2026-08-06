@@ -9,6 +9,7 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { ICONS } from "@/lib/icons";
 import { site } from "@/data/site";
 import { clampDescription, itemListSchema } from "@/lib/seo";
+import { collectionPageSchema } from "@/lib/schema";
 
 export type HubCard = {
   title: string;
@@ -65,6 +66,9 @@ const filledGroups = groups.filter((group) => group.cards.length > 0);
 
 const origin = Astro.site?.origin ?? "";
 const schemas = [
+  // Trang danh mục: `CollectionPage` gộp vào node `WebPage` của Layout để bot phân
+  // biệt trang liệt kê với trang nội dung, thay vì coi mọi URL là WebPage như nhau.
+  collectionPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
   itemListSchema(
     metaTitle ?? title,
     groups.flatMap((g) => g.cards.map((c) => ({ title: c.title, href: c.href }))),

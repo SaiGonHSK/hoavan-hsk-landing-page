@@ -8,11 +8,17 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { commitments, contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { aboutPageSchema } from "@/lib/schema";
+
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
   title="Cam kết đầu ra khoá học tiếng Trung | SaigonHSK"
   description="SaigonHSK cam kết 100% đầu ra: không đạt mục tiêu đã cam kết, học viên được học lại miễn phí. Kiến thức chuẩn HSK 3.0, giảng viên Thạc sĩ – Tiến sĩ."
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
