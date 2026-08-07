@@ -69,6 +69,10 @@
       "label": "Học lại nếu chưa đạt đầu ra"
     }
   ],
+  "milestones": {
+    "studentCount": 20000,
+    "description": "Học viên đã học tiếng Trung và luyện thi HSK tại Hoa văn SaigonHSK: sinh viên các trường đại học ở TP.HCM, người đi làm, học sinh và cả học viên lớn tuổi."
+  },
   "values": [
     {
       "id": "vi-nguoi-hoc",

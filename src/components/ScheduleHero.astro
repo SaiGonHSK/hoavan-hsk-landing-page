@@ -128,10 +128,14 @@ const breadcrumbSchema = breadcrumbGraph(crumbs, Astro.url.pathname, Astro.site)
       giữa hero và phần chọn lớp, không lửng lơ giữa một vùng trắng.
     -->
   <div class="container relative mx-auto mt-10 px-6 lg:mt-12">
-      <div class="relative mx-auto w-full max-w-3xl">
+      {/*
+        `overflow-hidden` cắt phần đáy khối tròn đúng bằng mép dưới hero — xem chú thích
+        ở thẻ <Image> bên dưới để biết vì sao phải cắt thay vì làm mờ dần.
+      */}
+      <div class="relative mx-auto w-full max-w-3xl overflow-hidden">
         <span
           aria-hidden="true"
-          class="absolute bottom-0 left-1/2 aspect-square w-[70%] max-w-80 -translate-x-1/2 rounded-full bg-brand-red-500 lg:max-w-96"
+          class="absolute -bottom-8 left-1/2 aspect-square w-[76%] max-w-88 -translate-x-1/2 rounded-full bg-brand-red-500 sm:-bottom-9 lg:-bottom-12 lg:max-w-104"
         ></span>
 
         {
@@ -180,6 +184,15 @@ const breadcrumbSchema = breadcrumbGraph(crumbs, Astro.url.pathname, Astro.site)
           `height={550}` + `densities` 1x/2x ⇒ hai bản 550px và 1100px. 1100 đúng bằng
           chiều cao ảnh gốc: bản 2x lấy hết chi tiết có thật mà không phóng to (phóng lên
           thì mờ), còn `quality` cao vì đây là ảnh tách nền — viền tóc là chỗ vỡ trước tiên.
+
+          Ảnh gốc cắt ngang ngang đùi. Trước đây chỗ cắt được giấu bằng một mask mờ dần
+          (`linear-gradient(to bottom, #000 86%, transparent)`) — nhưng chân váy màu đen mờ
+          dần trên nền tròn đỏ thì cho ra một vệt nâu xám loang lổ, nhìn như ảnh bị bẩn.
+
+          Nay cắt dứt khoát: mép dưới ảnh trùng mép dưới hero, còn khối tròn bị đẩy tụt
+          xuống rồi để `overflow-hidden` của khung bọc xén đi. Người và khối tròn cùng kết
+          thúc trên MỘT đường ngang sắc nét. Khối tròn phải tụt xuống (chứ không cắt đúng
+          đáy) thì dây cung tại đường cắt mới đủ rộng để ôm hết bề ngang chân váy.
         */}
         <Image
           src={image}
@@ -190,7 +203,7 @@ const breadcrumbSchema = breadcrumbGraph(crumbs, Astro.url.pathname, Astro.site)
           quality={92}
           loading="eager"
           fetchpriority="high"
-          class="relative z-10 mx-auto h-72 w-auto object-contain object-bottom mask-[linear-gradient(to_bottom,#000_86%,transparent)] sm:h-80 lg:h-104"
+          class="relative z-10 mx-auto block h-72 w-auto object-contain object-bottom sm:h-80 lg:h-104"
         />
       </div>
     </div>

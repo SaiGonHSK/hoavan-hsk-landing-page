@@ -7,7 +7,6 @@ import { ICONS } from "@/lib/icons";
 interface Props {
   title?: string;
   highlight?: string;
-  proof?: string;
   /**
    * Dòng chốt trỏ về form đăng ký ở trang chủ. Tắt khi trang đặt khối này đã có sẵn
    * form ngay trên đó — nếu không, dòng này vừa lặp lại vừa dẫn người đọc đi khỏi form.
@@ -19,7 +18,6 @@ interface Props {
 const {
   title = "Đăng ký",
   highlight = "học thử",
-  proof = "Học thật một buổi, tư vấn lộ trình, không ràng buộc đăng ký",
   showFormNote = true,
   class: className = "",
 } = Astro.props;
@@ -70,30 +68,20 @@ const channels: Channel[] = [
   },
 ];
 
-const avatars = [
-  { initial: "H", tint: "bg-brand-red-600" },
-  { initial: "T", tint: "bg-brand-ink-700" },
-  { initial: "M", tint: "bg-brand-red-400" },
-  { initial: "L", tint: "bg-brand-ink-400" },
-];
+/*
+  Khảm ảnh lớp học làm nền mờ phía sau khối.
 
-// 2 hàng ảnh sinh hoạt thường ngày ở trung tâm làm nền mờ phía sau.
+  Ảnh ở đây thuần trang trí (`alt=""`, `aria-hidden`) nên `loading="lazy"` + quality 55:
+  chúng không được tính là nội dung, không việc gì phải chặn lần vẽ đầu. Bản có chú
+  thích, đọc được cho cả người lẫn bot, nằm ở `src/components/DailyLife.astro` (trang
+  /about) — hai chỗ phục vụ hai mục đích khác nhau.
+*/
 const mosaic = Array.from(
   { length: 14 },
   (_, i) => dailyMoments[i % dailyMoments.length],
 );
 
-/*
-  Ô khảm là 4:3 (`aspect-4/3`), còn ảnh chụp thì đủ kiểu 3:2 và ảnh dọc. Phải cắt
-  sẵn đúng 4:3 (`fit: "cover"`) chứ không chỉ đưa `width`: đưa mỗi `width` thì ảnh
-  3:2 ra bản 220×147 rồi CSS kéo lên cho đầy ô cao 165px, ảnh dọc thì ra bản
-  220×330 — tải gấp đôi số pixel cần dùng rồi bỏ đi một nửa.
-
-  Nhân 2 cho màn retina: mỗi ô chỉ rộng ~220px nên bản @2x vẫn rất nhẹ.
-*/
-const MOSAIC_W = 440;
-const MOSAIC_H = 330;
-
+/** Ảnh mờ dần từ trên xuống để không cắt ngang chữ ở nửa trên khối. */
 const fadeUp =
   "mask-image: linear-gradient(to bottom, transparent, #000 55%); -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);";
 ---
@@ -116,11 +104,9 @@ const fadeUp =
           <Image
             src={p.image}
             alt=""
-            width={MOSAIC_W}
-            height={MOSAIC_H}
-            fit="cover"
+            width={220}
             format="webp"
-            quality={80}
+            quality={55}
             loading="lazy"
             decoding="async"
             class="aspect-4/3 w-full rounded-2xl object-cover"
@@ -153,26 +139,6 @@ const fadeUp =
             class="absolute inset-x-0 -bottom-1 h-[0.18em] rounded-full bg-brand-red-200"></span>
         </span>
       </h2>
-
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-        <span class="flex -space-x-2">
-          {
-            avatars.map((a) => (
-              <span
-                class:list={[
-                  "grid size-7 place-items-center rounded-full text-[11px] font-bold text-white ring-2 ring-background",
-                  a.tint,
-                ]}
-              >
-                {a.initial}
-              </span>
-            ))
-          }
-        </span>
-        <p class="text-sm font-semibold text-brand-ink-600 md:text-base">
-          {proof}
-        </p>
-      </div>
 
       <ul class="mt-6 flex flex-wrap items-center justify-center gap-2">
         {
@@ -271,8 +237,16 @@ const fadeUp =
       showFormNote && (
         <p class="mt-6 text-center text-sm text-muted-foreground">
           Hoặc
+          {/*
+            Trỏ sang trang `/register`, không phải neo `/#register`.
+
+            Neo cũ dẫn về khối `RegisterSection` ở trang chủ, mà khối đó đã bỏ khỏi trang
+            chủ — nên link nhảy về đầu trang chủ rồi đứng đó, người bấm không thấy form
+            nào. Trang `/register` có form là nội dung chính nên không phụ thuộc việc
+            trang nào còn nhúng khối đó.
+          */}
           <a
-            href="/#register"
+            href="/register"
             class="font-semibold text-brand-red-600 underline-offset-4 hover:underline"
           >
             để lại thông tin tại form đăng ký

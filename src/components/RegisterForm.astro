@@ -62,15 +62,23 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         <label class={label} for="rf-phone">
           Số điện thoại <span class="text-brand-red-600">*</span>
         </label>
+        {/*
+          Ô này chỉ nhận chữ số và tối đa 10 ký tự — script dưới lọc lại mọi thứ gõ hay
+          dán vào, `maxlength`/`pattern` ở đây là lưới chắn cho lúc JS chưa chạy.
+
+          `inputmode="numeric"` để điện thoại bật bàn phím số thuần; `type="tel"` giữ
+          nguyên cho autofill và cho iOS hiểu đây là số điện thoại.
+        */}
         <input
           id="rf-phone"
           name="phone"
           type="tel"
-          inputmode="tel"
+          inputmode="numeric"
           required
-          pattern="[0-9\s+().-]{9,}"
+          maxlength="10"
+          pattern="0[0-9]{9}"
           autocomplete="tel"
-          placeholder="09xx xxx xxx"
+          placeholder="0912345678"
           class={field}
         />
       </div>
@@ -258,6 +266,12 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 <script>
   import { LEADS_ENDPOINT, submitLead, type LeadPayload } from "@/lib/leads";
   import { SOURCE_LABELS, leadSource } from "@/lib/attribution";
+  import {
+    PHONE_ERROR,
+    isValidPhone,
+    normalizePhone,
+    sanitizePhoneInput,
+  } from "@/lib/phone";
 
   const INVALID = "border-brand-red-500";
 
@@ -266,6 +280,47 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
     const success = root.querySelector<HTMLDialogElement>("[data-register-success]");
     const error = root.querySelector<HTMLElement>("[data-register-error]");
     if (!form || !success) return;
+
+    /*
+      Số điện thoại: kiểm bằng `setCustomValidity` chứ không phải tự vẽ dòng báo lỗi.
+
+      Làm vậy thì `form.reportValidity()` ngay dưới lo hết phần còn lại — hiện bong
+      bóng đúng chỗ, cuộn tới field, chặn submit — và số điện thoại được đối xử giống
+      hệt các field bắt buộc khác thay vì có một đường báo lỗi riêng.
+    */
+    const phone = form.querySelector<HTMLInputElement>('input[name="phone"]');
+
+    const checkPhone = () => {
+      if (!phone) return;
+      // Bỏ trống thì để `required` lên tiếng — hai lời báo cho cùng một ô là thừa.
+      const invalid = phone.value.trim() !== "" && !isValidPhone(phone.value);
+      phone.setCustomValidity(invalid ? PHONE_ERROR : "");
+    };
+
+    phone?.addEventListener("input", () => {
+      /*
+        Lọc ngay trong lúc gõ: chữ cái bị bỏ, quá 10 số bị cắt.
+
+        `maxlength` chặn được phần gõ tay nhưng không chặn chữ cái, và `type="tel"` thì
+        trình duyệt cho gõ mọi ký tự. Nên phải tự lọc, và phải giữ lại vị trí con trỏ —
+        gán `value` mới là con trỏ nhảy về cuối, sửa một số ở giữa thành ra không sửa
+        được. Chỉ gán khi giá trị thật sự đổi, để lúc gõ bình thường không đụng gì.
+      */
+      const cleaned = sanitizePhoneInput(phone.value);
+      if (cleaned !== phone.value) {
+        const caret = phone.selectionStart ?? phone.value.length;
+        const removed = phone.value.length - cleaned.length;
+        phone.value = cleaned;
+        const next = Math.max(0, caret - removed);
+        phone.setSelectionRange(next, next);
+      }
+
+      // Xoá lỗi ngay khi khách sửa: giữ nguyên `customValidity` cũ thì ô vẫn bị coi là
+      // sai kể cả sau khi đã nhập đúng, vì trình duyệt không tự tính lại.
+      phone.setCustomValidity("");
+      phone.classList.remove(INVALID);
+    });
+    phone?.addEventListener("blur", checkPhone);
 
     /*
       Đóng modal là kết thúc luồng đăng ký → đưa khách về trang chủ.
@@ -313,7 +368,17 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      checkPhone();
       if (!form.reportValidity()) return;
+
+      /*
+        Ghi lại số đã chuẩn hoá vào chính ô nhập trước khi đọc FormData.
+
+        Gửi đi bản "0912 345 678" hay "+84912345678" thì cùng một người có thể vào
+        CRM thành mấy lead khác nhau, và tìm theo số cũng không ra. Ghi ngược lên ô
+        nhập chứ không chỉ sửa payload để khách thấy đúng số sắp gửi đi.
+      */
+      if (phone) phone.value = normalizePhone(phone.value);
 
       const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
       const data = Object.fromEntries(new FormData(form).entries()) as Record<

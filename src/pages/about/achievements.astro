@@ -32,16 +32,6 @@ const outcomes = [
   { label: "Luyện thi HSK5", result: "100% đậu HSK5" },
 ];
 
-// Điểm cao nhất trong bảng vinh danh — dùng làm số liệu ở hero, không gõ tay
-// để khỏi lệch khi thêm học viên mới.
-const best = posters.reduce((a, b) => (Number(b.total) > Number(a.total) ? b : a));
-
-const heroStats = [
-  { value: String(posters.length), label: "Học viên vừa được vinh danh" },
-  { value: `${best.total}/${best.max}`, label: `Điểm cao nhất — ${best.exam}` },
-  { value: "100%", label: "Cam kết đầu ra mọi khoá học" },
-];
-
 /* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
    `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
 const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
@@ -60,22 +50,7 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
       description="Thành công của học viên là minh chứng thuyết phục nhất cho chất lượng đào tạo của Hoa văn SaigonHSK. Những bảng điểm HSK dưới đây là kết quả thi thực tế của các học viên đã đồng hành cùng trung tâm. Mỗi điểm số không chỉ phản ánh sự nỗ lực của người học mà còn khẳng định hiệu quả của chương trình đào tạo, phương pháp giảng dạy khoa học và sự tận tâm của đội ngũ giảng viên. Đó cũng chính là động lực để Hoa văn SaigonHSK không ngừng nâng cao chất lượng, đồng hành cùng nhiều học viên hơn nữa trên hành trình chinh phục tiếng Trung."
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Thành tích học viên" }]}
       glyph="绩"
-    >
-      <dl class="mt-9 grid max-w-2xl gap-4 sm:grid-cols-3">
-        {
-          heroStats.map((s) => (
-            <div class="rounded-2xl border border-border bg-background px-5 py-4">
-              <dt class="text-2xl font-black leading-none text-brand-red-600">
-                {s.value}
-              </dt>
-              <dd class="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {s.label}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </PageHero>
+    />
 
     <section class="bg-background">
       <div class="container mx-auto px-6">

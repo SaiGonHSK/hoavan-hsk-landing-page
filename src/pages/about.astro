@@ -4,27 +4,16 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
-import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { site, mission, stats, contact, about } from "@/data/site";
+import DailyLife from "@/components/DailyLife.astro";
+import Milestones from "@/components/Milestones.astro";
+import { site, mission, contact, about } from "@/data/site";
 import { coreValues } from "@/data/coreValues";
 import { ICONS } from "@/lib/icons";
-import classroom from "@/assets/facility/classroom.webp";
-import facility1 from "@/assets/facility/facility-1.webp";
-import facility2 from "@/assets/facility/facility-2.webp";
 import { aboutPageSchema } from "@/lib/schema";
 
-const gallery = [
-  {
-    image: classroom,
-    alt: "Không khí một lớp học tại Trung tâm Hoa văn SaigonHSK",
-    wide: true,
-  },
-  { image: facility1, alt: "Phòng học của Trung tâm Hoa văn SaigonHSK" },
-  { image: facility2, alt: "Khu vực cầu thang tại trung tâm" },
-];
 
 const sections = [
   {
@@ -78,31 +67,10 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
       <div class="container mx-auto px-6">
         <div class="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div>
-            <SectionHeading
-              align="left"
-              title={about.heading}
-              highlight={about.headingHighlight}
-            />
-            <div class="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground">
+            <div class="space-y-5 text-base leading-relaxed text-muted-foreground">
               {about.paragraphs.map((p) => <p>{p}</p>)}
             </div>
 
-            <dl
-              class="mt-10 grid grid-cols-2 gap-6 rounded-3xl bg-brand-ink-50 p-8 sm:grid-cols-4"
-            >
-              {
-                stats.map((s) => (
-                  <div class="text-center">
-                    <dt class="text-2xl font-black text-brand-red-600">
-                      {s.value}
-                    </dt>
-                    <dd class="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                      {s.label}
-                    </dd>
-                  </div>
-                ))
-              }
-            </dl>
           </div>
 
           <div class="space-y-5">
@@ -192,6 +160,13 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
       </div>
     </section>
 
+
+
+    {/* Ảnh lớp thật, thay cho khối Cơ sở vật chất cũ (3 ảnh phòng học tĩnh). */}
+    <DailyLife />
+    {/* Số liệu chốt lại phần giới thiệu, ngay trước lời mời đăng ký. */}
+    <Milestones />
+
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <SectionHeading
@@ -200,26 +175,51 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
           description="Mỗi mục dưới đây là một trang riêng, đi sâu vào từng khía cạnh của SaigonHSK."
         />
 
-        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/*
+          Năm mục gom trong **một** khối, phân cách bằng vạch mảnh — không phải năm hộp
+          xám rời.
+
+          Năm hộp riêng đặt cạnh nhau ở khổ hẹp (~230px) thì mỗi cặp thẻ có tới bốn mép
+          liền nhau (padding + bo góc + khoảng cách + padding), nên chữ trông như bị ép
+          vào giữa các viền. Gom lại thì chỉ còn một đường viền ngoài và bốn vạch một
+          nét, chữ có chỗ thở mà khối vẫn gọn.
+
+          Đây cũng là idiom site đang dùng cho dải bốn ô: hàng tiện nghi trong
+          `Facility.astro` và dải số trong `Milestones.astro`.
+        */}
+        <div
+          class="mt-12 grid overflow-hidden rounded-3xl border border-border bg-brand-ink-50/50 lg:grid-cols-5"
+        >
           {
             sections.map((s) => (
               <a
                 href={s.href}
-                class="group flex flex-col rounded-3xl bg-brand-ink-50 p-6 transition-transform duration-300 hover:-translate-y-1.5"
+                class:list={[
+                  "group p-6 transition-colors hover:bg-background",
+                  /*
+                    Vạch ngang khi xếp dọc (mobile/tablet), vạch dọc khi thành một hàng
+                    (desktop). Viết tường minh thay vì `divide-x`: `divide-x` đặt viền
+                    trái cho mọi con từ thứ hai, nên khi lưới xuống hàng nó vẽ thêm một
+                    vạch ở đầu hàng dưới — đúng chỗ không nên có vạch.
+                  */
+                  "border-t border-brand-ink-200 first:border-t-0",
+                  "lg:border-t-0 lg:border-l lg:first:border-l-0",
+                ]}
               >
-                <h2 class="text-lg font-extrabold leading-snug text-brand-ink-900">
+                {/*
+                  Không còn dòng "Xem chi tiết": cả ô đã là một `<a>` nên dòng đó là lời
+                  mời thứ hai cho cùng một liên kết, nhân lên năm lần thì thành nhiễu. Dấu
+                  hiệu bấm được chuyển sang hành vi: ô đổi nền, tiêu đề sang màu thương
+                  hiệu.
+
+                  `h3` chứ không `h2`: tiêu đề section này (`SectionHeading`) đã là `h2`.
+                */}
+                <h3 class="text-[15px] font-extrabold leading-snug text-brand-ink-900 transition-colors group-hover:text-brand-red-600">
                   {s.title}
-                </h2>
-                <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                </h3>
+                <p class="mt-2.5 text-[13px] leading-relaxed text-muted-foreground">
                   {s.desc}
                 </p>
-                <span class="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-brand-red-600">
-                  Xem chi tiết
-                  <span
-                    class="transition-transform group-hover:translate-x-1.5 [&>svg]:size-4"
-                    set:html={ICONS.arrow}
-                  />
-                </span>
               </a>
             ))
           }
@@ -227,45 +227,19 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
       </div>
     </section>
 
-    <section class="bg-background">
-      <div class="container mx-auto px-6">
-        <SectionHeading
-          title="Cơ sở vật chất"
-          highlight="lớp nhỏ 10–15 học viên"
-          description={`Trung tâm đặt tại ${contact.address} — phòng học đầy đủ thiết bị trình chiếu và âm thanh phục vụ luyện nghe.`}
-        />
-        <div class="mt-12 grid gap-6 md:grid-cols-2">
-          {
-            gallery.map((g) => (
-              <figure
-                class:list={["overflow-hidden rounded-3xl", g.wide && "md:col-span-2"]}
-              >
-                <Image
-                  src={g.image}
-                  alt={g.alt}
-                  widths={g.wide ? [640, 1024] : [480, 768]}
-                  sizes={
-                    g.wide
-                      ? "(min-width: 1280px) 1216px, 100vw"
-                      : "(min-width: 768px) 50vw, 100vw"
-                  }
-                  format="webp"
-                  quality={88}
-                  loading="lazy"
-                  decoding="async"
-                  class:list={[
-                    "w-full object-cover",
-                    g.wide ? "aspect-16/8" : "aspect-4/3",
-                  ]}
-                />
-              </figure>
-            ))
-          }
-        </div>
-      </div>
-    </section>
 
-    <RegisterSection />
+    {/*
+      Chỉ còn `CtaSection`, bỏ `RegisterSection`.
+
+      Hai khối này nói cùng một việc: `RegisterSection` là form đầy đủ với tiêu đề "Nhận
+      tư vấn lộ trình và test trình độ miễn phí", `CtaSection` là thẻ đỏ "Đăng ký tư vấn
+      miễn phí" dẫn sang /register. Đặt liền nhau thì người đọc gặp hai lời mời giống
+      nhau trong một màn hình, và trang có hai chỗ nhận cùng một loại thông tin.
+
+      Giữ `CtaSection` vì trang này là trang giới thiệu, không phải trang chuyển đổi:
+      việc của nó là kể trung tâm là ai rồi dẫn sang /register — nơi form là nội dung
+      chính. Trang chủ cũng đang chọn đúng như vậy.
+    */}
     <CtaSection />
   </main>
   <Footer />

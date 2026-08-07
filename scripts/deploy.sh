@@ -194,11 +194,16 @@ say "Dọn bản cũ, giữ $KEEP bản"
 # script deploy không nên phụ thuộc phiên bản bash. Process substitution (không phải
 # pipe) để `kept` giữ được giá trị giữa các vòng — qua pipe thì thân vòng lặp chạy trong
 # subshell và biến đếm luôn về 0.
+# Canonical hoá cả hai phía trước khi so chuỗi. `$abs` luôn đi qua `readlink -f`, nên
+# nếu phía kia chưa canonical (một mắt xích trong đường dẫn là symlink, ví dụ /var →
+# /private/var) thì hai chuỗi khác nhau dù trỏ cùng thư mục — nhánh bảo vệ lặng lẽ
+# không khớp và bản dùng để rollback bị xoá. Test tay bắt được đúng ca này.
 current_abs="$(readlink -f "$CURRENT")"
+previous_abs="${PREVIOUS:+$(readlink -f "$PREVIOUS" 2>/dev/null || echo "$PREVIOUS")}"
 kept=0
 while IFS= read -r dir; do
   abs="$(readlink -f "$dir")"
-  if [[ "$abs" == "$current_abs" || "$abs" == "$PREVIOUS" ]]; then
+  if [[ "$abs" == "$current_abs" || ( -n "$previous_abs" && "$abs" == "$previous_abs" ) ]]; then
     continue
   fi
   if (( kept < KEEP )); then

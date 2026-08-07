@@ -1,7 +1,7 @@
 import { values } from "./site";
 import { honorPosters } from "./achievements";
 import appHome from "@/assets/mobile-app/app-home.webp";
-import appSplash from "@/assets/mobile-app/app-splash.webp";
+import appPractice from "@/assets/mobile-app/app-practice.webp";
 import textbook from "@/assets/textbooks/giao-trinh-hsk3.webp";
 import faculty from "@/assets/values/doi-ngu-giang-vien.webp";
 
@@ -55,8 +55,15 @@ const PANELS: Record<string, ValuePanel> = {
     tab: "Ứng dụng luyện đề",
     tabNote: "Ôn tập mọi lúc",
     badge: "Công nghệ học tập",
+    /*
+      Hai màn thật của app, chụp từ bản đang chạy.
+
+      Trước đây ô bên trái là màn splash — chỉ có logo, không nói được app làm gì.
+      Đổi sang màn luyện đề: cặp ảnh giờ kể đúng một vòng dùng app, trang chủ có
+      chuỗi ngày học và khoá đang theo, bên cạnh là một câu đang làm dở.
+    */
     image: appHome,
-    devices: [appSplash, appHome],
+    devices: [appPractice, appHome],
     strong: "Ôn từ vựng · Luyện đề · AI luyện nói nghe",
     note: "Chuỗi ngày học, điểm tích luỹ, bài tập của lớp và phần luyện nói – luyện nghe với AI đều nằm trong app",
   },

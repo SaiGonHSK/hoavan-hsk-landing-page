@@ -17,6 +17,7 @@ export const values = staticContent.values;
 export const mission = staticContent.mission;
 export const model = staticContent.model;
 export const stats = staticContent.stats;
+export const milestones = staticContent.milestones;
 export const teacher = staticContent.teacher;
 export const about = staticContent.about;
 export const reasons = staticContent.reasons;
