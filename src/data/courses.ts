@@ -115,13 +115,14 @@ export const courses: Course[] = [
   {
     slug: "luyen-thi-hsk",
     image: "/images/courses/luyen-thi-hsk.webp",
-    title: "Luyện thi HSK",
-    summary: "Cam kết đầu ra 100% đậu HSK3, HSK4, HSK5.",
-    goal: "Đậu HSK3 – HSK5",
+    title: "Luyện thi HSK/HSKK",
+    summary:
+      "Cam kết đầu ra 100% đậu HSK3, HSK4, HSK5, kèm luyện phần thi khẩu ngữ HSKK.",
+    goal: "Đậu HSK3 – HSK5 · HSKK",
     entry: "Từ trình độ HSK2 trở lên",
     icon: "hsk",
     featured: true,
-    tags: ["3 khóa học", "Chuẩn HSK 3.0", "Cam kết đầu ra"],
+    tags: ["3 khóa học", "Chuẩn HSK 3.0", "Có luyện HSKK", "Cam kết đầu ra"],
     // Mỗi cấp chỉ còn một lớp luyện thi: HSK3 2 tháng, HSK4 3 tháng, HSK5 4 tháng.
     courseKeys: ["luyen-thi-hsk-3", "luyen-thi-hsk-4", "luyen-thi-hsk-5"],
     levels: [

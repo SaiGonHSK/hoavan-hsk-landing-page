@@ -18,11 +18,14 @@ import { valuePanels as slides } from "@/data/valuePanels";
     >
       {
         /*
-          `min-h` của panel phải cao hơn panel cao nhất thì bốn tab mới bằng nhau, đổi
-          tab không xê dịch. Dưới `lg`, "Ứng dụng luyện đề" là panel cao nhất (đoạn
-          `note` của nó dài nhất): đo được ~708px ở khổ 430 và ~787px ở khổ 768, nên
-          chốt sàn 45rem / 50rem. Hẹp hơn ~360px thì chữ xuống dòng nhiều, panel đó vẫn
-          vượt sàn — đánh đổi để các khổ máy phổ biến không thừa một mảng trống.
+          Sàn `min-h` chỉ đặt từ `lg` — nơi dải tab nằm DƯỚI panel, nên panel cao thấp
+          khác nhau là bốn tab xê dịch mỗi lần đổi tab.
+
+          Dưới `lg` tab nằm TRÊN panel: đổi tab thì phần trên đứng yên, chỉ nội dung
+          bên dưới dài ngắn khác nhau — đúng như mọi khối tab trên mobile. Ép sàn theo
+          panel cao nhất ("Ứng dụng luyện đề", ~708px ở khổ 430) thì ba panel còn lại
+          phải độn thêm 100–200px trống giữa ảnh và chữ, đổi một mảng trống thấy rõ
+          lấy một thứ không ai thấy.
         */
         slides.map((s, i) => (
           <div
@@ -31,9 +34,9 @@ import { valuePanels as slides } from "@/data/valuePanels";
             id={`why-panel-${i}`}
             aria-labelledby={`why-tab-${i}`}
             hidden={i !== 0}
-            class="grid min-h-180 sm:min-h-200 lg:min-h-128 lg:grid-cols-[1fr_1.05fr]"
+            class="grid lg:min-h-128 lg:grid-cols-[1fr_1.05fr]"
           >
-            <div class="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
+            <div class="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
               <span class="inline-flex w-fit items-center rounded-full bg-brand-ink-900 px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-white">
                 {s.badge}
               </span>
@@ -67,7 +70,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
             */}
             <div
               class:list={[
-                "relative order-first min-h-72 sm:min-h-96 lg:order-0 lg:min-h-0",
+                "relative order-first min-h-64 sm:min-h-96 lg:order-0 lg:min-h-0",
                 (s.contain || s.devices) && "bg-brand-ink-50",
               ]}
             >
@@ -125,7 +128,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
                     1200w phủ cả dpr=1 và dpr=2 cho ô 550px (550 × 2 = 1100 ≤ 1200), và ảnh
                     ghép phần lớn là nền phẳng nên 1200w q82 chỉ ~43 KB — nhẹ hơn cả cặp cũ.
                   */
-                  <div class="absolute inset-0 p-6 lg:p-10">
+                  <div class="absolute inset-0 p-4 sm:p-6 lg:p-10">
                     <Image
                       src={s.image}
                       alt={`${s.title} — ${s.note}`}
@@ -173,13 +176,18 @@ import { valuePanels as slides } from "@/data/valuePanels";
       }
 
       {/*
-        Dưới lg dải tab nằm TRÊN panel và cuộn ngang: xếp dọc 4 tab chiếm gần hết
-        màn hình, còn để dưới panel thì bấm tab xong nội dung nhảy khỏi khung nhìn.
+        Dưới lg dải tab nằm TRÊN panel: để dưới thì bấm tab xong nội dung nhảy khỏi
+        khung nhìn.
+
+        Lưới 2×2 chứ không cuộn ngang. Cuộn ngang thì tab thứ ba luôn bị mép thẻ cắt
+        ngang chữ ("Ứng dụ…") — trông như lỗi dựng trang chứ không như một gợi ý là
+        còn tab bên phải, mà tab bị cắt thì cũng không đọc được để mà muốn cuộn. Hai
+        hàng cao ~140px, đổi lại là thấy đủ bốn lựa chọn ngay.
       */}
       <div
         role="tablist"
         aria-label="Giá trị khác biệt của SaigonHSK"
-        class="why-tabs order-first flex snap-x snap-mandatory gap-px overflow-x-auto border-b border-border bg-border sm:grid sm:grid-cols-2 sm:overflow-visible lg:order-0 lg:grid-cols-4 lg:border-b-0 lg:border-t"
+        class="grid grid-cols-2 gap-px border-b border-border bg-border order-first lg:order-0 lg:grid-cols-4 lg:border-b-0 lg:border-t"
       >
         {
           slides.map((s, i) => (
@@ -191,16 +199,16 @@ import { valuePanels as slides } from "@/data/valuePanels";
               data-active={i === 0 ? "true" : "false"}
               aria-controls={`why-panel-${i}`}
               aria-selected={i === 0}
-              class="group relative shrink-0 snap-start cursor-pointer bg-background px-5 py-4 text-center transition-colors data-[active=true]:bg-brand-ink-50/60 sm:px-6 sm:py-5"
+              class="group relative cursor-pointer bg-background px-3 py-3.5 text-center transition-colors data-[active=true]:bg-brand-ink-50/60 sm:px-6 sm:py-5"
             >
               <span
                 aria-hidden="true"
                 class="absolute inset-x-0 bottom-0 h-0.5 bg-brand-red-600 opacity-0 transition-opacity group-data-[active=true]:opacity-100 lg:bottom-auto lg:top-0"
               />
-              <span class="block whitespace-nowrap text-sm font-bold text-muted-foreground transition-colors group-hover:text-brand-ink-900 group-data-[active=true]:text-brand-ink-900 sm:whitespace-normal">
+              <span class="block text-[0.8125rem] font-bold leading-snug text-muted-foreground transition-colors group-hover:text-brand-ink-900 group-data-[active=true]:text-brand-ink-900 sm:text-sm">
                 {s.tab}
               </span>
-              <span class="mt-1 block whitespace-nowrap text-xs text-muted-foreground sm:whitespace-normal">
+              <span class="mt-0.5 block text-[0.6875rem] leading-snug text-muted-foreground sm:mt-1 sm:text-xs">
                 {s.tabNote}
               </span>
             </button>
@@ -225,22 +233,8 @@ import { valuePanels as slides } from "@/data/valuePanels";
       panels.forEach((panel, i) => {
         panel.hidden = i !== index;
       });
-
-      // Trên mobile dải tab cuộn ngang nên tab vừa bấm có thể đang bị cắt ở mép.
-      tabs[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
     };
 
     tabs.forEach((tab, i) => tab.addEventListener("click", () => show(i)));
   });
 </script>
-
-<style>
-  .why-tabs {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .why-tabs::-webkit-scrollbar {
-    display: none;
-  }
-</style>
