@@ -1,4 +1,4 @@
-import christmasCenter from "@/assets/activities/giang-sinh-tai-trung-tam.webp";
+import christmasClassPhoto from "@/assets/activities/giang-sinh-lop-chup-anh.webp";
 import midAutumn from "@/assets/activities/trung-thu-goc-check-in.webp";
 import teachersDay from "@/assets/activities/ngay-nha-giao-viet-nam.webp";
 import tet from "@/assets/activities/a1.webp";
@@ -31,8 +31,9 @@ export type ActivityPoster = {
 
 export const activityPosters: ActivityPoster[] = [
   {
-    image: christmasCenter,
-    caption: "Học viên các lớp về trung tâm check-in Giáng sinh",
+    image: christmasClassPhoto,
+    caption:
+      "圣诞节快乐 — cả lớp chụp ảnh cùng cây thông ở góc check-in Giáng sinh của trung tâm",
   },
   {
     image: midAutumn,

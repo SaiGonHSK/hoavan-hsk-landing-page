@@ -1,6 +1,13 @@
 /**
- * Client cho API "đăng ký tư vấn" của `hoavan-hsk-server`:
- * `POST {PUBLIC_API_BASE}/api/v1/leads`.
+ * Client cho hai write công khai của `hoavan-hsk-server`:
+ *
+ * - `POST {PUBLIC_API_BASE}/api/v1/leads` — "đăng ký tư vấn", CRM inbox.
+ * - `POST {PUBLIC_API_BASE}/api/v1/schedule/classes/:id/register` — "đăng ký giữ chỗ"
+ *   một lớp cụ thể trên lịch khai giảng.
+ *
+ * Cùng một file vì chúng là **một lần bấm của khách**: nút trên thẻ lớp gọi lần lượt
+ * cả hai (xem `submitClassRegistration`), dùng chung base URL, chung envelope, chung
+ * bảng dịch lỗi. Tách hai file thì hai nửa của một hành động nằm hai chỗ.
  *
  * Endpoint này là write duy nhất của API không cần token, nên nó có rate limit
  * riêng theo IP (`AUTH_RATE_LIMIT`/`AUTH_RATE_WINDOW`, mặc định 60 lần / 5 phút).
@@ -81,11 +88,53 @@ const GENERIC =
   "Gửi chưa thành công. Bạn vui lòng gọi hotline hoặc chat Zalo để được hỗ trợ ngay.";
 
 export async function submitLead(payload: LeadPayload): Promise<LeadResult> {
-  if (!LEADS_ENDPOINT) return { ok: false, message: GENERIC };
+  return postPublic(LEADS_ENDPOINT, payload);
+}
+
+/**
+ * URL đăng ký giữ chỗ một lớp. Rỗng khi chưa cấu hình API base, giống `LEADS_ENDPOINT`.
+ *
+ * Không đi qua `PUBLIC_REGISTER_ENDPOINT`: biến đó là đường tắt trỏ form sang một chỗ
+ * nhận lead khác (form service, staging), mà chỗ đó không có bảng lớp nào để ghi vào.
+ */
+const classRegisterEndpoint = (classId: string): string =>
+  RAW_BASE ? `${BASE}/api/v1/schedule/classes/${encodeURIComponent(classId)}/register` : "";
+
+export type ClassRegistrationPayload = {
+  /** Id lớp trong bảng `classes` — `ScheduleRow.id`, không phải mã lớp. */
+  classId: string;
+  name: string;
+  phone: string;
+  email?: string;
+  note?: string;
+};
+
+/**
+ * Ghi khách vào danh sách chờ của đúng một lớp.
+ *
+ * Gọi SAU `submitLead` và chỗ gọi phải giữ đúng thứ tự đó: server tra lead đang mở theo
+ * số điện thoại để gắn `lead_id` cho dòng này, nên lead phải tồn tại trước. Gọi ngược
+ * lại thì dòng đăng ký vẫn được ghi, chỉ mất đường lần từ lớp về cuộc hội thoại.
+ */
+export async function submitClassRegistration(
+  payload: ClassRegistrationPayload,
+): Promise<LeadResult> {
+  const { classId, ...body } = payload;
+  return postPublic(classRegisterEndpoint(classId), body);
+}
+
+/**
+ * POST một JSON tới endpoint công khai và dịch mọi kiểu thất bại thành `LeadResult`.
+ *
+ * Hai endpoint trả cùng một envelope và cùng chịu một rate limiter, nên phần xử lý lỗi
+ * — mất mạng, 429, lỗi theo field — giống nhau từng dòng.
+ */
+async function postPublic(endpoint: string, payload: unknown): Promise<LeadResult> {
+  if (!endpoint) return { ok: false, message: GENERIC };
 
   let res: Response;
   try {
-    res = await fetch(LEADS_ENDPOINT, {
+    res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

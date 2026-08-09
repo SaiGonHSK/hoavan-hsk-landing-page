@@ -18,9 +18,9 @@ import { getPageContents, type MenuEntry, type PageContent } from "./pages";
 const PREFIX = "/library/";
 
 export type LibraryCategory = {
-  /** Phần sau `/library/`, tức tham số route — "tu-vung-theo-chu-de". */
+  /** Phần sau `/library/`, tức tham số route — "thematic-vocabulary". */
   key: string;
-  /** Slug đầy đủ để đặt link — "/library/tu-vung-theo-chu-de". */
+  /** Slug đầy đủ để đặt link — "/library/thematic-vocabulary". */
   slug: string;
   label: string;
 };

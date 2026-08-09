@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import ScheduleHero from "@/components/ScheduleHero.astro";
 import ScheduleCards from "@/components/ScheduleCards.astro";
+import ClassRegisterDialog from "@/components/ClassRegisterDialog.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
 import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
@@ -319,6 +320,13 @@ const scheduleSchemas = [
     <EnrollCta />
 
     <RegisterSection />
+
+    <!--
+      Một modal cho cả trang, không phải một cái mỗi thẻ: các nút "Đăng ký giữ chỗ" chỉ
+      mang `data-class-id` và script điền nội dung lớp vào đây lúc mở. Hai mươi lớp mà
+      mỗi lớp một <dialog> là hai mươi bản form trong DOM.
+    -->
+    <ClassRegisterDialog />
   </main>
   <Footer />
   <FloatingContact />

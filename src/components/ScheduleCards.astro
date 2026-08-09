@@ -110,17 +110,24 @@ const cards = rows.map((row) => ({
    *
    * Khoá ưu tiên slug chương trình vì đó là thứ chắc chắn có trong danh sách chọn;
    * lớp chưa thuộc chương trình nào thì thử khớp theo tên khoá do console đặt.
+   *
+   * Vẫn giữ dù trang lịch đã có modal (`ClassRegisterDialog`): nút là `<a>` thật, và
+   * script chỉ chặn khi modal dựng được. Không JS thì khách vẫn tới được form.
    */
   href: registerHref({
     course: row.programSlug || row.courseTitle,
     classCode: row.code,
   }),
+  /** Dòng phụ trong modal, nhắc lại lớp nào để khách không phải nhớ mình vừa bấm gì. */
+  meta: [row.openDate && `Khai giảng ${row.openDate}`, row.cadence, placeOf(row)]
+    .filter(Boolean)
+    .join(" · "),
 }));
 ---
 
 <div class:list={["grid gap-5 md:grid-cols-2 lg:grid-cols-3", className]}>
   {
-    cards.map(({ row, courseTitle, details, href }) => (
+    cards.map(({ row, courseTitle, details, href, meta }) => (
       <article
         data-class-card
         data-search={searchKey(row)}
@@ -168,8 +175,22 @@ const cards = rows.map((row) => ({
 
         <div class="mt-auto border-t border-border p-5">
           {row.openDate ? (
+            /*
+              `<a>` thật, không phải `<button>`: `ClassRegisterDialog` chặn cú bấm và mở
+              modal ngay tại trang, nhưng chỉ khi modal dựng được — không JS, hoặc trình
+              duyệt không có `dialog.showModal`, thì link vẫn đưa khách tới `/register`.
+
+              `data-class-id` là thứ script cần nhất: id lớp trong bảng `classes`, để dòng
+              đăng ký vào đúng ca. Mã lớp không dùng được vì nhiều ca chung một mã.
+            */
             <a
               href={href}
+              data-class-register
+              data-class-id={row.id}
+              data-class-name={row.name}
+              data-class-code={row.code}
+              data-course={row.programSlug || row.courseTitle}
+              data-class-meta={meta}
               class="block rounded-lg border border-brand-red-200 py-3 text-center text-sm font-bold text-brand-red-700 transition-colors hover:border-brand-red-600 hover:bg-brand-red-600 hover:text-white"
             >
               Đăng ký giữ chỗ

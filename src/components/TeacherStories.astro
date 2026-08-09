@@ -40,6 +40,10 @@ import { teacherStories } from "@/data/teacherStories";
                   i % 2 === 1 && "lg:order-last",
                 ]}
               >
+                {/* Chiều cao để `auto` cho `aspect-square` quyết định. Đặt `size-full`
+                    là height:100% ăn theo ô grid — ô này bị đoạn chia sẻ bên cạnh kéo
+                    cao nên khung thành dọc, và ảnh card đã nướng sẵn tên + học vị vào
+                    trong sẽ bị object-cover cắt mất logo bên trái, chữ bên phải. */}
                 {teacher.image && (
                   <img
                     src={teacher.image}
@@ -48,7 +52,7 @@ import { teacherStories } from "@/data/teacherStories";
                     height="480"
                     loading="lazy"
                     decoding="async"
-                    class="size-20 shrink-0 rounded-2xl object-cover lg:aspect-square lg:size-full"
+                    class="size-20 shrink-0 rounded-2xl object-cover lg:aspect-square lg:h-auto lg:w-full"
                   />
                 )}
 

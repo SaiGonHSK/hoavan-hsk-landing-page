@@ -2,7 +2,7 @@ import { values } from "./site";
 import { honorPosters } from "./achievements";
 import appHome from "@/assets/mobile-app/app-home.webp";
 import appPractice from "@/assets/mobile-app/app-practice.webp";
-import textbook from "@/assets/textbooks/giao-trinh-hsk3.webp";
+import textbook from "@/assets/textbooks/giao-trinh-hsk1.webp";
 import faculty from "@/assets/values/doi-ngu-giang-vien.webp";
 
 /**
@@ -34,9 +34,17 @@ const PANELS: Record<string, ValuePanel> = {
     tab: "Giáo trình riêng",
     tabNote: "Biên soạn cho người Việt",
     badge: "Giáo trình độc quyền",
-    // Ảnh chính bộ giáo trình của trung tâm (in tên trung tâm trên bìa) chứ không phải
-    // ảnh chụp lớp: tab này nói về giáo trình, ảnh phải cho thấy đúng cái nó nói tới.
+    /*
+      Ảnh chụp chính bộ giáo trình của trung tâm (in tên trung tâm trên bìa) chứ không
+      phải ảnh chụp lớp: tab này nói về giáo trình, ảnh phải cho thấy đúng cái nó nói tới.
+
+      `contain` chứ không phủ kín ô như trước: ô ảnh của panel rộng và thấp, `object-cover`
+      cắt vào đúng vùng chụp thiếu nét ở góc trên bên trái rồi lớp phủ trắng rửa tiếp nửa
+      đó — nhìn ra là ảnh mờ chứ không ra là chồng giáo trình. Hiện trọn thì phần nét nhất
+      (ba bìa HSK1) chiếm gần hết khung.
+    */
     image: textbook,
+    contain: true,
     strong: "Học lại miễn phí",
     note: "nếu chưa đạt đầu ra đã cam kết",
   },

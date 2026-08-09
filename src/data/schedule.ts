@@ -94,6 +94,15 @@ export function sessionLines(slots: readonly ScheduleSlot[]): string[] {
  * tay — mọi thứ suy từ bảng `classes`.
  */
 export type ScheduleRow = {
+  /**
+   * Id của lớp trong bảng `classes` — thứ duy nhất nhận diện được một lớp.
+   *
+   * Có ở đây vì nút "Đăng ký giữ chỗ" gửi nó lên `POST /api/v1/schedule/classes/:id/register`
+   * để dòng đăng ký vào đúng lớp. Không dùng `code` được: server nói rõ mã không unique —
+   * "Lớp HSK1 (ca 1)" và "(ca 2)" cùng mã HSK1 — nên đăng ký theo mã là đăng ký vào ca nào
+   * cũng được.
+   */
+  id: string;
   code: string;
   name: string;
   courseCode: string;
@@ -128,6 +137,7 @@ const toScheduleRow = (row: ApiClass): ScheduleRow => {
   const catalogKey = apiCourseByID(row.courseId)?.catalogKey ?? "";
 
   return {
+    id: row.id,
     code: row.code,
     // Tên lớp là cột thật trong bảng ("Lớp HSK1 (ca 1)"), không suy từ mã nữa. Chỉ dòng
     // nào để trống mới rơi về mã, để thẻ không hiện tiêu đề rỗng.
