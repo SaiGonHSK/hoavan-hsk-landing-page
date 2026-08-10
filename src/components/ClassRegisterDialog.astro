@@ -396,8 +396,10 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       if (!LEADS_ENDPOINT) {
         // Chưa cấu hình API: nút thẻ lớp vẫn là link thật, nên đẩy khách qua trang
         // `/register` — ở đó có nhánh lùi về mailto. Thà đi đường dài còn hơn mất lead.
+        // `classId` đi cùng để trang kia chọn sẵn đúng ca — khách đã bấm trên một lớp cụ
+        // thể thì không nên phải chọn lại lớp đó lần nữa ở form.
         window.location.assign(
-          `/register?course=${encodeURIComponent(current.course)}&class=${encodeURIComponent(current.code)}`,
+          `/register?course=${encodeURIComponent(current.course)}&class=${encodeURIComponent(current.code)}&classId=${encodeURIComponent(current.id)}`,
         );
         return;
       }

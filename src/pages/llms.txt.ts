@@ -97,6 +97,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
         `- Email: ${contact.email}`,
         `- Giờ làm việc: ${contact.workingHours}`,
         `- Thành lập: ${site.foundedYear}`,
+        `- Pháp lý: ${site.license.text}`,
         `- Khẩu hiệu: ${site.slogan} — ${site.sloganVi}`,
         `- Ngôn ngữ dạy: tiếng Việt, tiếng Trung giản thể`,
         `- Hình thức: lớp trực tiếp tại TP.HCM, lớp online, lớp VIP 1 kèm 1, lớp doanh nghiệp`,

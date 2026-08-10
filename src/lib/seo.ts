@@ -24,6 +24,8 @@ export const keywords = {
     "học tiếng Trung ở đâu tốt",
     "học tiếng Trung ở đâu tốt TPHCM",
     "trung tâm tiếng Trung uy tín",
+    "trung tâm tiếng Trung có giấy phép",
+    "trung tâm tiếng Trung được Sở Giáo dục cấp phép",
     "học phí học tiếng Trung",
   ],
   exam: [

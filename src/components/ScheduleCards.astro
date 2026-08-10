@@ -117,6 +117,9 @@ const cards = rows.map((row) => ({
   href: registerHref({
     course: row.programSlug || row.courseTitle,
     classCode: row.code,
+    // `classId` để `/register` chọn sẵn đúng ca trong ô "Lớp muốn giữ chỗ" và ghi được
+    // dòng đăng ký. Mã lớp một mình không đủ: nhiều ca dùng chung một mã.
+    classId: row.id,
   }),
   /** Dòng phụ trong modal, nhắc lại lớp nào để khách không phải nhớ mình vừa bấm gì. */
   meta: [row.openDate && `Khai giảng ${row.openDate}`, row.cadence, placeOf(row)]

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-04T00:00:00.000Z",
+  "updatedAt": "2026-08-10T00:00:00.000Z",
   "site": {
     "name": "Hoa văn SaigonHSK",
     "fullName": "Trung tâm Hoa văn SaigonHSK",
@@ -9,8 +9,14 @@
     "slogan": "为你的成功",
     "sloganVi": "Vì sự thành công của bạn",
     "tagline": "Trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
-    "description": "Trung tâm Hoa văn SaigonHSK đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK với giảng viên Thạc sĩ, Tiến sĩ. Cam kết đầu ra, không đạt học lại miễn phí.",
-    "foundedYear": 2019
+    "description": "Trung tâm Hoa văn SaigonHSK — có giấy phép của Sở Giáo dục, đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK. Cam kết đầu ra, không đạt học lại miễn phí.",
+    "foundedYear": 2019,
+    "license": {
+      "label": "Có giấy phép của Sở Giáo dục",
+      "short": "Giấy phép Sở GD&ĐT TP.HCM",
+      "authority": "Sở Giáo dục và Đào tạo TP. Hồ Chí Minh",
+      "text": "Hoa văn SaigonHSK là trung tâm có giấy phép của Sở Giáo dục — hoạt động đào tạo, bồi dưỡng tiếng Trung theo giấy phép do Sở Giáo dục và Đào tạo TP. Hồ Chí Minh cấp."
+    }
   },
   "contact": {
     "address": "384/8 Lý Thái Tổ, Phường Vườn Lài, TP Hồ Chí Minh",
@@ -28,7 +34,7 @@
     "mapsUrl": "https://www.google.com/maps/search/?api=1&query=384%2F8+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ph%C6%B0%E1%BB%9Dng+V%C6%B0%E1%BB%9Dn+L%C3%A0i%2C+TP+H%E1%BB%93+Ch%C3%AD+Minh",
     "mapEmbedUrl": "https://www.google.com/maps?q=384%2F8%20L%C3%BD%20Th%C3%A1i%20T%E1%BB%95%2C%20Ph%C6%B0%E1%BB%9Dng%20V%C6%B0%E1%BB%9Dn%20L%C3%A0i%2C%20TP%20H%E1%BB%93%20Ch%C3%AD%20Minh&output=embed",
     "workingHours": "Thứ 2 – Chủ nhật: 8:00 – 21:00",
-    "tiktok": "https://www.tiktok.com/business-suite/messages"
+    "tiktok": "https://www.tiktok.com/@hoavansaigonhsk"
   },
   "hero": {
     "titleLine1": "Học tiếng Trung",
@@ -303,6 +309,10 @@
       "answer": "Trung tâm cam kết 100% đầu ra khoá học. Với các lớp luyện thi, học viên hoàn thành chương trình được đảm bảo đậu HSK4 hoặc HSK5 tùy khóa; với các lớp sơ cấp, đầu ra tương ứng là HSK1, HSK2, HSK3. Nếu không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí."
     },
     {
+      "question": "Trung tâm có giấy phép hoạt động không?",
+      "answer": "Có. Hoa văn SaigonHSK là trung tâm có giấy phép của Sở Giáo dục — trung tâm hoạt động đào tạo, bồi dưỡng tiếng Trung theo giấy phép do Sở Giáo dục và Đào tạo TP. Hồ Chí Minh cấp, có địa chỉ và cơ sở vật chất cố định tại 384/8 Lý Thái Tổ, Phường Vườn Lài, TP.HCM. Học viên có thể đến trực tiếp trung tâm để xem giấy phép, tham quan phòng học và nhận tư vấn lộ trình."
+    },
+    {
       "question": "Tôi chưa biết gì về tiếng Trung thì bắt đầu từ lớp nào?",
       "answer": "Bạn bắt đầu từ lớp HSK1 — lớp dành cho người chưa từng học tiếng Trung, học từ phát âm và quy tắc viết chữ Hán, kéo dài 2,5 tháng. Nếu bạn chỉ cần nói được nhanh và không có nhiều thời gian tập viết chữ Hán, lớp Giao tiếp Cấp tốc 1 (GT1) là lựa chọn phù hợp hơn."
     },
@@ -343,7 +353,7 @@
     "heading": "Chào mừng đến với",
     "headingHighlight": "Hoa văn SaigonHSK",
     "paragraphs": [
-      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
+      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, có giấy phép của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
       "SaigonHSK đào tạo đầy đủ các chương trình từ Sơ cấp đến Cao cấp, dành cho mọi đối tượng học viên: từ người mới bắt đầu, mất gốc đến luyện thi HSK, HSKK và tiếng Trung giao tiếp. Chương trình được thiết kế bài bản, lộ trình rõ ràng, chú trọng thực hành và cam kết đầu ra. Nếu học viên chưa đạt mục tiêu theo đúng lộ trình đã cam kết, trung tâm sẽ hỗ trợ học lại hoàn toàn miễn phí.",
       "Đội ngũ giảng viên của SaigonHSK là những thầy cô giàu kinh nghiệm, tận tâm và luôn cập nhật phương pháp giảng dạy hiện đại. Phần lớn giảng viên có trình độ Thạc sĩ, Tiến sĩ tốt nghiệp từ các trường đại học danh tiếng tại Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam. Sự am hiểu chuyên môn cùng tinh thần trách nhiệm chính là nền tảng giúp hàng nghìn học viên đạt được mục tiêu học tập và chinh phục các chứng chỉ tiếng Trung."
     ]
@@ -351,7 +361,7 @@
   "reasons": {
     "title": "8 lý do học viên tin tưởng",
     "highlight": "lựa chọn Hoa văn SaigonHSK",
-    "intro": "Hoa văn SaigonHSK tự hào là địa chỉ đào tạo tiếng Trung chất lượng cao tại TP. Hồ Chí Minh, nơi đã đồng hành cùng hàng nghìn học viên chinh phục tiếng Trung từ trình độ cơ bản đến các chứng chỉ HSK, HSKK và ứng dụng ngôn ngữ trong học tập, công việc.",
+    "intro": "Hoa văn SaigonHSK tự hào là địa chỉ đào tạo tiếng Trung chất lượng cao tại TP. Hồ Chí Minh — trung tâm có giấy phép của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh, nơi đã đồng hành cùng hàng nghìn học viên chinh phục tiếng Trung từ trình độ cơ bản đến các chứng chỉ HSK, HSKK và ứng dụng ngôn ngữ trong học tập, công việc.",
     "items": [
       {
         "title": "Đội ngũ giảng viên giàu kinh nghiệm và chuyên môn cao",

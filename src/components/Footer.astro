@@ -76,6 +76,12 @@ const [coursesGroup, , centerGroup] = footerLinks;
             cam kết 100% đầu ra.
           </p>
 
+          {/* Dòng pháp lý đặt ở footer nên có mặt trên MỌI trang: đây là tín hiệu tin
+              cậy mà cả người đọc lẫn bot tìm kiếm đều tìm ở chân trang. */}
+          <p class="mt-3 text-sm font-semibold leading-relaxed text-white">
+            {site.license.label} — {site.license.authority}.
+          </p>
+
           <div class="mt-6 flex items-center gap-3">
             {
               socials.map(({ href, label, icon }) => (

@@ -81,6 +81,26 @@ const organizationSchema = {
   email: contact.email,
   telephone: contact.phones,
   foundingDate: String(site.foundedYear),
+  /*
+    Giấy phép hoạt động khai bằng `hasCredential` + `recognizedBy`, không nhét vào
+    `description`.
+
+    "Trung tâm này có được cấp phép không, ai cấp" là câu hỏi AI trả lời bằng cách tìm
+    một dữ kiện có nguồn, chứ không bằng cách trích một câu quảng cáo. `credentialCategory`
+    là "license" (giấy phép hoạt động) — khác `degree` dùng cho bằng cấp giảng viên ở
+    `personSchema` — và `recognizedBy` trỏ vào cơ quan cấp dưới dạng thực thể nhà nước,
+    thứ mô hình nối được sang tri thức nó đã có.
+  */
+  hasCredential: {
+    "@type": "EducationalOccupationalCredential",
+    name: `Giấy phép hoạt động đào tạo — ${site.license.authority}`,
+    description: site.license.text,
+    credentialCategory: "license",
+    recognizedBy: {
+      "@type": "GovernmentOrganization",
+      name: site.license.authority,
+    },
+  },
   priceRange: "$$",
   currenciesAccepted: "VND",
   address: {
@@ -146,7 +166,7 @@ const organizationSchema = {
       itemOffered: { "@type": "Course", name, inLanguage: "vi-VN" },
     })),
   },
-  sameAs: [contact.facebook, contact.zalo],
+  sameAs: [contact.facebook, contact.zalo, contact.tiktok],
   // Lối đăng ký khai tường minh: AI trả lời "đăng ký thế nào" cần biết cả form,
   // hotline và Zalo, không chỉ URL trang chủ. Node đầy đủ nằm ở `#enroll`.
   potentialAction: { "@id": `${canonical.origin}/#enroll` },

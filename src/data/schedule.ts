@@ -177,6 +177,20 @@ export let schedule: ScheduleRow[] = [];
 export let scheduleTitle = "";
 export let scheduleNote = "";
 
+/**
+ * Lớp theo id, trong đúng đợt đang đăng.
+ *
+ * Tra thẳng `schedule` chứ không gọi API riêng: mảng này *là* đợt đang đăng, được
+ * `middleware.ts` làm mới mỗi request. Nên tra được ở đây đồng nghĩa lớp đó đang
+ * `recruiting` và thuộc đợt đã đăng — đúng bằng điều kiện server kiểm lại khi nhận đăng
+ * ký (`classes.Service.RegisterPublic`). Tra không ra thì trả `undefined`, không phải
+ * lỗi: link cũ, đợt vừa đổi, hay id ai đó tự gõ đều rơi vào đây và chỗ gọi bỏ qua.
+ *
+ * Hàm chứ không phải hằng: `schedule` được gán lại mỗi lần đồng bộ, nên phải đọc lúc gọi.
+ */
+export const findClassById = (id?: string | null): ScheduleRow | undefined =>
+  id ? schedule.find((row) => row.id === id) : undefined;
+
 export function syncFromClasses(): void {
   const published = publishedSchedule();
   schedule = published.classes.map(toScheduleRow);

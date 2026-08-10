@@ -9,6 +9,7 @@ import { ICONS } from "@/lib/icons";
 import { breadcrumbGraph } from "@/lib/schema";
 import { commitments, contact } from "@/data/site";
 import { contextFromUrl, registerNote, resolveCourseOption } from "@/lib/registerLink";
+import { findClassById } from "@/data/schedule";
 
 /**
  * Trang này là trang chuyển đổi: form phải nằm ngay trong khung nhìn đầu tiên, cạnh
@@ -24,8 +25,38 @@ const crumbs = [{ label: "Đăng ký" }];
  * script chạy rồi mới nhảy giá trị trước mắt người đang điền.
  */
 const context = contextFromUrl(Astro.url);
-const selectedCourse = resolveCourseOption(context.course);
-const prefilledNote = registerNote(context);
+
+/**
+ * Lớp khách bấm trên lịch khai giảng, giải từ `?classId=` sang một dòng có thật của đợt
+ * đang đăng. `undefined` khi id không tra được — link cũ, đợt vừa đổi, hay số ai đó tự
+ * gõ — và khi đó trang chạy đúng như khi không có tham số nào.
+ */
+const pickedClass = findClassById(context.classId);
+
+/*
+  `?course=` của link được ưu tiên, lớp chỉ là đường lùi.
+
+  Ngược lại thì tệ hơn: khoá của link là thứ trang trước đó biết chính xác ("HSK3"),
+  còn suy từ lớp chỉ ra được tên chương trình bao ngoài ("Tiếng Trung Sơ cấp"). Lấy
+  lớp đè lên link là đổi một nhãn cụ thể lấy một nhãn rộng hơn.
+
+  `resolveCourseOption` trả `undefined` cho slug không phải khoá bán ra (giáo trình,
+  trang kỹ năng), nên `??` mới là thứ bắt đúng "link không nói được khoá nào".
+*/
+const selectedCourse =
+  resolveCourseOption(context.course) ??
+  resolveCourseOption(pickedClass?.programSlug || pickedClass?.courseTitle);
+
+/*
+  Mã lớp chỉ nhét vào ghi chú khi KHÔNG giải được lớp.
+
+  Giải được thì lớp đã nằm ở ô "Lớp muốn giữ chỗ", và chính ô đó dựng câu "Đăng ký giữ
+  chỗ lớp X." lúc gửi — để cả hai cùng viết là ghi chú in hai lần cùng một câu, mà khách
+  đổi lớp trong select thì câu cũ vẫn nằm nguyên trong ô ghi chú.
+*/
+const prefilledNote = registerNote(
+  pickedClass ? { trial: context.trial } : context,
+);
 
 const perks = commitments.map((c) => ({
   title: c.title,
@@ -133,7 +164,12 @@ const perks = commitments.map((c) => ({
               gian học của bạn.
             </p>
 
-            <RegisterForm dense course={selectedCourse} note={prefilledNote} />
+            <RegisterForm
+              dense
+              course={selectedCourse}
+              classId={pickedClass?.id}
+              note={prefilledNote}
+            />
           </div>
         </div>
       </div>

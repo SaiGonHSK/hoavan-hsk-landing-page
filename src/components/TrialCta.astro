@@ -89,7 +89,7 @@ const fadeUp =
 <section
   id="trial-cta"
   class:list={[
-    "relative isolate overflow-hidden bg-background py-16 lg:py-24 scroll-mt-24",
+    "relative isolate overflow-hidden bg-background scroll-mt-24",
     className,
   ]}
 >
@@ -98,7 +98,9 @@ const fadeUp =
     class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-90 overflow-hidden opacity-[0.22] md:h-105"
     style={fadeUp}
   >
-    <div class="grid grid-cols-4 gap-3 px-3 sm:grid-cols-5 lg:grid-cols-7 lg:gap-4 lg:px-6">
+    <div
+      class="grid grid-cols-4 gap-3 px-3 sm:grid-cols-5 lg:grid-cols-7 lg:gap-4 lg:px-6"
+    >
       {
         mosaic.map((p) => (
           <Image
@@ -132,12 +134,7 @@ const fadeUp =
         class="mt-6 font-heading text-[2.1rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-[3.25rem]"
       >
         {title}{" "}
-        <span class="relative whitespace-nowrap text-brand-red-600">
-          {highlight}
-          <span
-            aria-hidden="true"
-            class="absolute inset-x-0 -bottom-1 h-[0.18em] rounded-full bg-brand-red-200"></span>
-        </span>
+        <span class="whitespace-nowrap text-brand-red-600">{highlight}</span>
       </h2>
 
       <ul class="mt-6 flex flex-wrap items-center justify-center gap-2">
@@ -154,7 +151,9 @@ const fadeUp =
     <div
       class="mx-auto mt-12 grid max-w-5xl overflow-hidden rounded-[2rem] border border-border bg-background/90 shadow-[0_40px_90px_-60px_rgb(17_24_39/0.55)] backdrop-blur-sm lg:grid-cols-[1.05fr_1fr]"
     >
-      <div class="relative overflow-hidden bg-brand-red-600 p-8 text-white sm:p-10">
+      <div
+        class="relative overflow-hidden bg-brand-red-600 p-8 text-white sm:p-10"
+      >
         <span
           aria-hidden="true"
           class="pointer-events-none absolute -bottom-12 -right-3 select-none text-[9rem] font-black leading-none text-white/10"
@@ -162,7 +161,9 @@ const fadeUp =
         >
 
         <div class="relative z-10">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
+          <p
+            class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70"
+          >
             Một buổi học thử gồm
           </p>
 
