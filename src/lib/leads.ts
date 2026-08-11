@@ -5,9 +5,13 @@
  * - `POST {PUBLIC_API_BASE}/api/v1/schedule/classes/:id/register` — "đăng ký giữ chỗ"
  *   một lớp cụ thể trên lịch khai giảng.
  *
- * Cùng một file vì chúng là **một lần bấm của khách**: nút trên thẻ lớp gọi lần lượt
- * cả hai (xem `submitClassRegistration`), dùng chung base URL, chung envelope, chung
- * bảng dịch lỗi. Tách hai file thì hai nửa của một hành động nằm hai chỗ.
+ * Cùng một file vì chúng dùng chung base URL, chung envelope, chung bảng dịch lỗi.
+ *
+ * Ai gọi cái nào: modal "Đăng ký giữ chỗ" trên trang Lịch khai giảng chỉ gọi
+ * `submitClassRegistration` — giữ chỗ **không** sinh lead, để người đã vào lớp không
+ * nằm trong danh sách gửi chương trình tuyển sinh. Form "Đăng ký tư vấn" ở `/register`
+ * thì gọi `submitLead`, và gọi thêm `submitClassRegistration` khi khách có chọn lớp;
+ * ở đó lead mới là mục đích chính nên vẫn là một lần bấm hai lần ghi.
  *
  * Endpoint này là write duy nhất của API không cần token, nên nó có rate limit
  * riêng theo IP (`AUTH_RATE_LIMIT`/`AUTH_RATE_WINDOW`, mặc định 60 lần / 5 phút).
@@ -100,6 +104,16 @@ export async function submitLead(payload: LeadPayload): Promise<LeadResult> {
 const classRegisterEndpoint = (classId: string): string =>
   RAW_BASE ? `${BASE}/api/v1/schedule/classes/${encodeURIComponent(classId)}/register` : "";
 
+/**
+ * Có gọi được đường giữ chỗ hay không — dùng làm guard trước khi submit.
+ *
+ * Phải là cờ riêng chứ không dùng lại `LEADS_ENDPOINT`: hai đường phụ thuộc hai biến môi
+ * trường khác nhau. Cấu hình chỉ có `PUBLIC_REGISTER_ENDPOINT` mà thiếu `PUBLIC_API_BASE`
+ * sẽ khiến `LEADS_ENDPOINT` khác rỗng trong khi `classRegisterEndpoint` vẫn rỗng — guard
+ * cho đi tiếp rồi `postPublic` trả câu lỗi chung, và khách mất chỗ mà không hiểu vì sao.
+ */
+export const CLASS_REGISTER_READY = Boolean(RAW_BASE);
+
 export type ClassRegistrationPayload = {
   /** Id lớp trong bảng `classes` — `ScheduleRow.id`, không phải mã lớp. */
   classId: string;
@@ -112,9 +126,12 @@ export type ClassRegistrationPayload = {
 /**
  * Ghi khách vào danh sách chờ của đúng một lớp.
  *
- * Gọi SAU `submitLead` và chỗ gọi phải giữ đúng thứ tự đó: server tra lead đang mở theo
- * số điện thoại để gắn `lead_id` cho dòng này, nên lead phải tồn tại trước. Gọi ngược
- * lại thì dòng đăng ký vẫn được ghi, chỉ mất đường lần từ lớp về cuộc hội thoại.
+ * Đứng một mình được: từ modal Lịch khai giảng đây là request DUY NHẤT của lần bấm đó.
+ *
+ * Server vẫn tra lead đang mở theo số điện thoại để gắn `lead_id` — nhưng chỉ là *nối*
+ * vào lead đã có sẵn, không tạo mới. Nên chỗ nào cũng gọi `submitLead` trước (`/register`)
+ * thì phải giữ đúng thứ tự đó để có link; chỗ không gọi thì `lead_id` rỗng, và dòng đăng
+ * ký vẫn đủ dùng vì nó tự mang tên, số điện thoại, email của khách.
  */
 export async function submitClassRegistration(
   payload: ClassRegistrationPayload,

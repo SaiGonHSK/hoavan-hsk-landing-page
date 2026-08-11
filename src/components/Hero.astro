@@ -1,66 +1,34 @@
 ---
-import { Image } from "astro:assets";
 import { hero, stats } from "@/data/site";
+import HeroIllustration from "@/components/HeroIllustration.astro";
 import { ICONS } from "@/lib/icons";
-// Ảnh tách nền: bố cục này đặt người đứng trên khối tròn, ảnh có nền sẽ che mất khối.
-import registerTeacher from "@/assets/register-teacher.webp";
-
-/*
-  Hero trang chủ đi theo đúng bố cục của hero trang lịch khai giảng: một cột canh giữa,
-  tiêu đề có nét gạch vẽ tay dưới mệnh đề được nhấn, bên dưới là giảng viên tách nền đứng
-  trên khối tròn đỏ.
-
-  Không tái dùng thẳng `ScheduleHero` vì component đó luôn in JSON-LD `BreadcrumbList` —
-  trang chủ là gốc của breadcrumb, khai thêm một cái ở đây là khai thừa.
-*/
 ---
 
-<section id="hero" class="relative overflow-hidden bg-background pt-12 lg:pt-16">
+<section id="hero" class="relative overflow-hidden bg-background pt-10 lg:pt-14">
   <div class="container relative z-10 mx-auto px-6 text-center">
+
     <span
       class="inline-flex items-center rounded-full border border-border bg-background px-6 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
     >
       {hero.noteTitle}
     </span>
 
-    <h1
-      class="mx-auto mt-7 max-w-3xl font-heading text-[2.125rem] font-black leading-[1.06] tracking-tight text-balance text-brand-ink-900 md:text-5xl lg:text-[3.5rem]"
-    >
-      <span class="block">{hero.titleLine1}</span>
-      {/*
-        Mệnh đề nhấn nằm trong `inline-block` riêng để nét gạch bám đúng bề rộng của nó,
-        không kéo dài hết cả dòng tiêu đề. Dòng trên là `block` để hai vế luôn xuống dòng
-        đúng chỗ: nếu để chữ tự ngắt, ở một số bề ngang màn hình vế nhấn bị chia hai dòng
-        và nét gạch — vốn đặt tuyệt đối theo cả khối — chạy dài dưới cả hai dòng đó.
-      */}
-      <span class="relative mt-1 inline-block">
+    <h1 class="mt-6 text-balance">
+      <span class="block text-[6.2vw] font-black uppercase leading-[1.05] tracking-[-0.02em] text-brand-ink-900 lg:text-[3.1rem]">
+        {hero.titleLine1}
+      </span>
+      <span class="block text-[6.2vw] font-black uppercase leading-[1.05] tracking-[-0.02em] text-brand-red-600 lg:text-[3.1rem]">
         {hero.titleLine2}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 300 16"
-          preserveAspectRatio="none"
-          fill="none"
-          class="absolute -bottom-3 left-0 h-2.5 w-full text-brand-red-500 md:-bottom-4 md:h-3.5"
-        >
-          <path
-            d="M3 11.5C58 5 152 3.5 297 8.5"
-            stroke="currentColor"
-            stroke-width="5"
-            stroke-linecap="round"></path>
-        </svg>
       </span>
     </h1>
-
     {/* `data-speakable`: trang chủ không dùng PageHero nên câu tóm tắt của nó nằm ở
         đây. `sr-only` vẫn là nội dung thật trong DOM, bot đọc được bình thường. */}
     <p class="sr-only" data-speakable>
-      Trung tâm Hoa văn SaigonHSK — dạy tiếng Trung và luyện thi HSK tại TP.HCM
-      (Sài Gòn), cam kết 100% đầu ra.
+      Trung tâm Hoa văn SaigonHSK — dạy tiếng Trung và luyện thi HSK
+      tại TP.HCM (Sài Gòn), cam kết 100% đầu ra.
     </p>
 
-    <ul
-      class="mx-auto mt-10 grid max-w-4xl grid-cols-1 items-start sm:grid-cols-3"
-    >
+    <ul class="mx-auto mt-9 grid max-w-4xl grid-cols-1 items-start sm:grid-cols-3">
       {
         stats.map((s, i) => (
           <li
@@ -88,62 +56,14 @@ import registerTeacher from "@/assets/register-teacher.webp";
       >
         Đăng ký giữ chỗ ngay
         <span
-          class="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 [&>svg]:size-4"
-          set:html={ICONS.arrowUpRight}
+          class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+          set:html={ICONS.arrow}
         />
       </a>
     </div>
   </div>
 
-  <!--
-    Sân khấu ảnh: khối tròn đỏ neo đáy, người tách nền đứng trên khối. Ảnh chạm mép dưới
-    hero (section không có đệm dưới) nên người như đứng trên đường ranh giữa hero và khối
-    tiếp theo, không lửng lơ giữa một vùng trắng.
-  -->
-  <div class="container relative mx-auto mt-10 px-6 lg:mt-12">
-    {/* `overflow-hidden` cắt phần đáy khối tròn đúng bằng mép dưới hero — xem chú thích
-        ở thẻ <Image> bên dưới để biết vì sao phải cắt thay vì làm mờ dần. */}
-    <div class="relative mx-auto w-full max-w-3xl overflow-hidden">
-      <span
-        aria-hidden="true"
-        class="absolute -bottom-8 left-1/2 aspect-square w-[76%] max-w-88 -translate-x-1/2 rounded-full bg-brand-red-500 sm:-bottom-9 lg:-bottom-12 lg:max-w-104"
-      ></span>
-
-      {/* Trái tim vẽ tay — chi tiết duy nhất không mang thông tin, chỉ hiện từ lg. */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 40 38"
-        fill="none"
-        class="absolute left-[33%] top-[4%] z-20 hidden w-9 -rotate-12 text-brand-ink-900 lg:block"
-      >
-        <path
-          d="M20 34.5C7 26 3.5 19.5 3.5 13.5 3.5 8 7.5 3.5 12.5 3.5c3.2 0 5.9 1.8 7.5 4.4 1.6-2.6 4.3-4.4 7.5-4.4 5 0 9 4.5 9 10 0 6-3.5 12.5-16.5 21z"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linejoin="round"></path>
-      </svg>
-
-      {/*
-        `height={550}` + `densities` 1x/2x ⇒ hai bản 550px và 1100px. 1100 đúng bằng chiều
-        cao ảnh gốc: bản 2x lấy hết chi tiết có thật mà không phóng to, còn `quality` cao
-        vì đây là ảnh tách nền — viền tóc là chỗ vỡ trước tiên.
-
-        Ảnh gốc cắt ngang đùi, và chỗ cắt được xử lý dứt khoát chứ không làm mờ dần: mép
-        dưới ảnh trùng mép dưới hero, còn khối tròn bị đẩy tụt xuống rồi để `overflow-hidden`
-        của khung bọc xén đi, nên người và khối tròn cùng kết thúc trên MỘT đường ngang sắc
-        nét. (Mask mờ dần cho ra một vệt nâu xám loang lổ ở chân váy đen trên nền đỏ.)
-      */}
-      <Image
-        src={registerTeacher}
-        alt="Giảng viên Hoa văn SaigonHSK giới thiệu lộ trình học tiếng Trung và luyện thi HSK"
-        height={550}
-        densities={[1, 2]}
-        format="webp"
-        quality={92}
-        loading="eager"
-        fetchpriority="high"
-        class="relative z-10 mx-auto block h-72 w-auto object-contain object-bottom sm:h-80 lg:h-104"
-      />
-    </div>
+  <div class="relative z-20 mt-8 hidden md:block lg:mt-10">
+    <HeroIllustration class="mx-auto w-full max-w-3xl" />
   </div>
 </section>

@@ -37,12 +37,20 @@ const badgeOf = (quote: string) => {
         class="flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {
-        list.map((t) => {
+        list.map((t, i) => {
           const image = t.image;
+
+          /*
+            Chỉ cặp thẻ nhìn thấy khi khối lọt vào khung mới có nét trượt ngang: thẻ đầu
+            vào từ trái, thẻ thứ hai vào từ phải. Các thẻ sau nằm ngoài khung ngang, người
+            xem phải kéo mới thấy — lúc đó nét vào đã chạy xong nên có gán cũng vô nghĩa.
+          */
+          const slide = i === 0 ? "left" : i === 1 ? "right" : undefined;
 
           return (
             <figure
               data-review-card
+              data-review-slide={slide}
               class="flex w-[min(88vw,34rem)] shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border border-border bg-background lg:w-[calc((100%-1.5rem)/2)]"
             >
               <div class="flex flex-1 gap-6 p-7 md:p-8">
@@ -133,4 +141,27 @@ const badgeOf = (quote: string) => {
       <RailHint label="đánh giá" />
     </div>
   </div>
+
+  {/*
+    Lớp `reveal` phải do script gắn, không viết sẵn trong HTML: nó đặt `opacity: 0`, hễ
+    JS không chạy là thẻ mất luôn. Đây cũng là cách khối reveal chung trong `Layout.astro`
+    làm — script đó chạy cuối `<body>`, sau script này, nên khi nó gọi `show()` cho cả
+    section thì hai thẻ đã mang sẵn `reveal-child` và nhận được `reveal-in`.
+
+    `is:inline` (chứ không để Astro gói thành module) đúng vì lý do trên: module bị hoãn
+    tới sau khi phân tích xong tài liệu, thứ tự với script cuối `<body>` sẽ không chắc.
+  */}
+  <script is:inline>
+    (() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      document.querySelectorAll("[data-review-slide]").forEach((el) => {
+        el.classList.add(
+          "reveal",
+          "reveal-child",
+          "reveal-x-" + el.dataset.reviewSlide
+        );
+      });
+    })();
+  </script>
 </section>

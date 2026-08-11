@@ -3,14 +3,17 @@ import { Image } from "astro:assets";
 import { breadcrumbGraph } from "@/lib/schema";
 
 /**
- * Hero riêng của trang lịch khai giảng: nền sáng, tiêu đề canh giữa có nét gạch vẽ tay,
- * bên dưới là giảng viên tách nền đứng trên một khối tròn đỏ, các chip thông tin bay hai
- * bên người.
+ * Hero chân dung: nền sáng, tiêu đề canh giữa có nét gạch vẽ tay, bên dưới là giảng viên
+ * tách nền đứng trên một khối tròn đỏ, các chip thông tin bay hai bên người.
  *
- * Vì sao không dùng `PageHero`: `PageHero` là hero hai cột dùng chung cho mọi trang phụ.
- * Trang lịch là trang đích của quảng cáo tuyển sinh nên đi theo bố cục riêng — một cột
- * canh giữa, ảnh người tách nền làm trung tâm, và những điều người xem cần biết trước khi
- * chọn lớp (số lớp đang mở, giờ học, sĩ số) nằm ngay quanh ảnh thay vì trong một đoạn văn.
+ * Vì sao không dùng `PageHero`: `PageHero` là hero hai cột mặc định của mọi trang phụ —
+ * một đoạn văn cạnh chữ 华 mờ. Bố cục này dành cho hai trang mà người xem đến để *quyết
+ * định* chứ không để đọc (/schedule: chọn lớp; /about: có nên tin trung tâm này) — ảnh
+ * người làm trung tâm, và mấy điều quyết định nằm thành chip quanh ảnh thay vì chìm trong
+ * đoạn văn.
+ *
+ * Dùng ở: `src/pages/schedule.astro`, `src/pages/about.astro`. Trang chủ có hero riêng
+ * (`Hero.astro`) — xem chú thích ở đó.
  */
 interface Props {
   title: string;

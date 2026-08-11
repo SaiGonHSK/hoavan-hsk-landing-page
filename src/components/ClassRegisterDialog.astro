@@ -11,10 +11,15 @@ import { ICONS } from "@/lib/icons";
  * giữ được **id lớp** đi kèm chắc chắn, thay vì qua query string — mã lớp trên URL
  * không unique (nhiều ca dùng chung mã) nên không nói được là ca nào.
  *
- * **Một lần bấm, hai lần ghi.** Submit gọi `POST /api/v1/leads` (CRM inbox của tư vấn)
- * rồi `POST /api/v1/schedule/classes/:id/register` (danh sách chờ của đúng lớp đó).
- * Thứ tự bắt buộc: server gắn `lead_id` cho dòng đăng ký bằng cách tra lead theo số
- * điện thoại, nên lead phải có trước. Xem `lib/leads.ts`.
+ * **Chỉ ghi vào danh sách lớp, không vào CRM.** Submit gọi đúng một request:
+ * `POST /api/v1/schedule/classes/:id/register`. Giữ chỗ KHÔNG sinh "đăng ký tư vấn".
+ *
+ * Vì sao: người giữ chỗ rồi đi học vẫn nằm trong CRM ở trạng thái "Mới" — không có gì
+ * đẩy nó sang "Đã đăng ký" — nên tháng sau lọc nhóm gửi ưu đãi khai giảng là gửi chương
+ * trình tuyển sinh cho chính người đang ngồi trong lớp. Để họ ngoài CRM thì không bao
+ * giờ gửi nhầm, và giáo vụ vẫn có đủ tên/số/email ngay trong danh sách giữ chỗ của lớp.
+ *
+ * Form ở `/register` thì khác và vẫn tạo lead: đó là khách chủ động xin tư vấn.
  *
  * **Chỉ có một cái trên trang.** Đặt một lần ở `schedule.astro`; các thẻ lớp chỉ mang
  * data attribute, script điền nội dung lớp vào modal lúc mở. Hai mươi thẻ mà mỗi thẻ
@@ -243,13 +248,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 </style>
 
 <script>
-  import { leadSource } from "@/lib/attribution";
-  import {
-    LEADS_ENDPOINT,
-    submitClassRegistration,
-    submitLead,
-    type LeadPayload,
-  } from "@/lib/leads";
+  import { CLASS_REGISTER_READY, submitClassRegistration } from "@/lib/leads";
   import { PHONE_ERROR, isValidPhone, normalizePhone, sanitizePhoneInput } from "@/lib/phone";
 
   const INVALID = "border-brand-red-500";
@@ -387,15 +386,15 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       if (!form.reportValidity()) return;
 
       // Ghi số đã chuẩn hoá ngược lên ô nhập: khách thấy đúng số sắp gửi, và server tra
-      // lead theo số này để gắn `lead_id` cho dòng đăng ký — hai bên phải khớp từng ký tự.
+      // lead ĐANG CÓ theo số này để gắn `lead_id` — hai bên phải khớp từng ký tự.
       if (phone) phone.value = normalizePhone(phone.value);
 
       const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
       if (error) error.hidden = true;
 
-      if (!LEADS_ENDPOINT) {
+      if (!CLASS_REGISTER_READY) {
         // Chưa cấu hình API: nút thẻ lớp vẫn là link thật, nên đẩy khách qua trang
-        // `/register` — ở đó có nhánh lùi về mailto. Thà đi đường dài còn hơn mất lead.
+        // `/register` — ở đó có nhánh lùi về mailto. Thà đi đường dài còn hơn mất khách.
         // `classId` đi cùng để trang kia chọn sẵn đúng ca — khách đã bấm trên một lớp cụ
         // thể thì không nên phải chọn lại lớp đó lần nữa ở form.
         window.location.assign(
@@ -410,41 +409,16 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       }
 
       /*
-        Ghi chú gộp mã lớp vào trước phần khách tự viết. Lead không có cột lớp (nó dedupe
-        theo số điện thoại, một người đăng ký hai lớp sẽ gộp thành một dòng), nên với CRM
-        thì mã lớp nằm trong ghi chú là đủ; dòng thật cho lớp là request thứ hai.
+        Ghi chú gửi đi đúng phần khách tự viết, không kèm mã lớp: dòng này đã gắn `class_id`
+        nên lớp là thứ nó biết sẵn, nhét thêm vào ghi chú chỉ làm giáo vụ đọc lại thứ đang
+        hiện ngay trên đầu danh sách.
       */
-      const noteFromUser = (data.note ?? "").trim();
-      const lead: LeadPayload = {
-        name: data.name ?? "",
-        phone: data.phone ?? "",
-        email: data.email,
-        course: current.course,
-        note: [current.code ? `Đăng ký giữ chỗ lớp ${current.code}.` : "", noteFromUser]
-          .filter(Boolean)
-          .join(" "),
-        source: leadSource(),
-      };
-
-      const leadResult = await submitLead(lead);
-
-      if (!leadResult.ok) {
-        // Dừng ở đây, không gọi tiếp: hai request dùng chung rate limiter nên lần hai
-        // gần như chắc chắn cũng trượt, và khách đang thấy báo lỗi sẽ gửi lại.
-        if (submit) {
-          submit.disabled = false;
-          submit.textContent = "Gửi đăng ký";
-        }
-        showError(leadResult.message, leadResult.fields);
-        return;
-      }
-
       const classResult = await submitClassRegistration({
         classId: current.id,
         name: data.name ?? "",
         phone: data.phone ?? "",
         email: data.email,
-        note: noteFromUser,
+        note: (data.note ?? "").trim(),
       });
 
       if (submit) {
@@ -453,20 +427,19 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       }
 
       /*
-        Lead đã vào là báo thành công, kể cả khi dòng đăng ký lớp trượt.
+        Một request nên nó là sự thật duy nhất: trượt thì báo lỗi và ở lại form.
 
-        Từ phía khách, trung tâm ĐÃ có thông tin của họ và mã lớp nằm trong ghi chú của
-        lead, nên giáo vụ vẫn gọi lại đúng việc. Báo lỗi ở đây chỉ khiến họ gửi lại và
-        sinh thêm một lead trùng. Chỉ đổi câu chữ: "sẽ liên hệ" thay vì "đã giữ chỗ".
+        Trước đây chỗ này nuốt lỗi và vẫn báo thành công, vì lead đã vào rồi nên trung tâm
+        vẫn có thông tin khách. Giờ không còn lead nào để đỡ: nuốt lỗi là khách tưởng đã
+        giữ được chỗ trong khi không có dòng nào được ghi.
       */
-      if (successDetail) {
-        successDetail.textContent = classResult.ok
-          ? `Trung tâm đã ghi bạn vào danh sách ${current.name || "lớp này"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`
-          : "Trung tâm đã nhận được thông tin của bạn và sẽ liên hệ trong thời gian sớm nhất để xác nhận lớp và báo học phí.";
-      }
       if (!classResult.ok) {
-        // Không hiện cho khách, nhưng phải có dấu vết: đây là nửa sau của một lần bấm.
-        console.warn("class registration failed:", classResult.message);
+        showError(classResult.message, classResult.fields);
+        return;
+      }
+
+      if (successDetail) {
+        successDetail.textContent = `Trung tâm đã ghi bạn vào danh sách ${current.name || "lớp này"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`;
       }
 
       showPanel("success");

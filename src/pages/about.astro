@@ -9,7 +9,7 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import DailyLife from "@/components/DailyLife.astro";
 import Milestones from "@/components/Milestones.astro";
-import { site, mission, contact, about } from "@/data/site";
+import { mission, contact, about } from "@/data/site";
 import { coreValues } from "@/data/coreValues";
 import { ICONS } from "@/lib/icons";
 import { aboutPageSchema } from "@/lib/schema";
@@ -58,14 +58,21 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <PageHero
       title="Trung tâm Hoa văn SaigonHSK"
-      description={`${site.slogan} — Vì sự thành công của bạn. Địa chỉ đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM với cam kết 100% đầu ra.`}
       crumbs={[{ label: "Giới thiệu" }]}
       glyph="华"
     />
 
     <section class="bg-background">
       <div class="container mx-auto px-6">
-        <div class="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+        {/*
+          Ba khối Sứ mệnh / Phương châm / Tầm nhìn xếp dọc *dưới* phần văn xuôi ở mọi
+          khổ, không còn làm cột phải ở desktop.
+
+          Đặt cạnh cột chữ thì ba thẻ màu nằm ngang tầm mắt với đoạn mở đầu và tranh
+          chú ý với nó; đưa xuống dưới thì người đọc đi hết phần kể về trung tâm rồi
+          mới gặp ba lời khẳng định — đúng thứ tự đọc.
+        */}
+        <div class="flex flex-col gap-12 lg:gap-16">
           <div>
             <div class="space-y-5 text-base leading-relaxed text-muted-foreground">
               {about.paragraphs.map((p) => <p>{p}</p>)}

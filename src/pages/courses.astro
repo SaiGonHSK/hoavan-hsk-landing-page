@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
+import CatalogTabs from "@/components/CatalogTabs.astro";
 import CourseCatalog, { type CatalogTab } from "@/components/CourseCatalog.astro";
 import EnrollCta from "@/components/EnrollCta.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
@@ -14,8 +15,20 @@ import { site } from "@/data/site";
 import { clampDescription, itemListSchema } from "@/lib/seo";
 import { hskTermSetSchema } from "@/lib/schema";
 
-/** Yêu cầu đầu vào nằm trong bảng facts của khoá catalog, lấy ra để hiện trên thẻ. */
-const entryOf = (c: CatalogItem) => c.facts.find((f) => f.label === "Đầu vào")?.value;
+/*
+  Chân thẻ khoá học: hai dòng nhãn – giá trị lấy từ bảng `facts` của khoá.
+
+  Ưu tiên **thời lượng** và **đầu vào** — hai câu hỏi đầu tiên của người đang chọn khoá.
+  Khoá nào không có hai mục đó (các khoá giao tiếp, ngữ pháp) thì lấy tiếp mục tiêu hoặc
+  trọng tâm, để thẻ nào cũng có chân thay vì thẻ có thẻ không.
+*/
+const META_LABELS = ["Thời lượng", "Đầu vào", "Mục tiêu", "Trọng tâm", "Cấp độ"];
+const metaOf = (c: CatalogItem) =>
+  META_LABELS.flatMap((label) => {
+    const value = c.facts.find((f) => f.label === label)?.value;
+    return value ? [{ label, value }] : [];
+  }).slice(0, 2);
+
 /*
   Khoá học lấy từ trang quản trị: khoá nào không "Đang mở" thì không hiện ở đây và trang
   chi tiết của nó cũng 404. Khoá chưa được đưa vào menu cũng không hiện — nó chưa có
@@ -34,6 +47,15 @@ const otherCourses = courses.filter(
     !examCourses.includes(c) &&
     !textbookApiCourses.includes(c),
 );
+/*
+  Thứ tự nhóm là thứ tự đọc của trang: thang HSK trước (thứ người tìm "học tiếng Trung"
+  cần đầu tiên), rồi luyện thi, rồi các khoá lẻ, rồi chương trình. Giáo trình xếp cuối —
+  bốn khoá đó console chưa nhập tóm tắt và đầu vào nên thẻ của chúng chỉ có tên khoá.
+
+  Không còn nhãn cố định cho cả nhóm ("Chuẩn HSK 3.0", "Luyện đề"): tiêu đề mục đã nói
+  đúng điều đó một lần, in lại trên từng thẻ chỉ là sáu dòng đỏ giống nhau. Chỉ chương
+  trình giữ nhãn, vì `goal` của nó khác nhau theo từng chương trình ("HSK4 → HSK5").
+*/
 const tabs: CatalogTab[] = [
   {
     key: "hsk",
@@ -42,8 +64,7 @@ const tabs: CatalogTab[] = [
       title: c.title,
       summary: c.summary,
       href: c.href,
-      tag: "Chuẩn HSK 3.0",
-      entry: entryOf(c),
+      meta: metaOf(c),
     })),
   },
   {
@@ -53,8 +74,7 @@ const tabs: CatalogTab[] = [
       title: c.title,
       summary: c.summary,
       href: c.href,
-      tag: "Luyện đề",
-      entry: entryOf(c),
+      meta: metaOf(c),
     })),
   },
   {
@@ -64,17 +84,7 @@ const tabs: CatalogTab[] = [
       title: c.title,
       summary: c.summary,
       href: c.href,
-      entry: entryOf(c),
-    })),
-  },
-  {
-    key: "textbook",
-    label: "Theo giáo trình",
-    cards: textbookApiCourses.map((c) => ({
-      title: c.title,
-      summary: c.summary,
-      href: c.href,
-      entry: entryOf(c),
+      meta: metaOf(c),
     })),
   },
   {
@@ -85,7 +95,17 @@ const tabs: CatalogTab[] = [
       summary: c.summary,
       href: `/courses/programs/${c.slug}`,
       tag: c.goal,
-      entry: c.entry,
+      meta: c.entry ? [{ label: "Đầu vào", value: c.entry }] : [],
+    })),
+  },
+  {
+    key: "textbook",
+    label: "Theo giáo trình",
+    cards: textbookApiCourses.map((c) => ({
+      title: c.title,
+      summary: c.summary,
+      href: c.href,
+      meta: metaOf(c),
     })),
   },
 ];
@@ -112,16 +132,23 @@ const schemas = [
   schemas={schemas}
 >
   <Header />
-  <main id="main" class="flex flex-col gap-16 lg:gap-24">
+  {/* Không dùng `gap` chung như các hub khác: hàng chip lọc nằm trong hero, nên phần
+      lưới phải bám sát bên dưới nó thay vì cách một nhịp section. */}
+  <main id="main" class="flex flex-col">
     <PageHero
       title="Các khoá học tiếng Trung tại SaigonHSK"
       description={description}
       crumbs={[{ label: "Các khoá học" }]}
       glyph="课"
-    />
-    <CourseCatalog tabs={tabs} />
-    <EnrollCta />
-    <RegisterSection />
+      compactBottom
+    >
+      <CatalogTabs tabs={tabs} />
+    </PageHero>
+    <CourseCatalog tabs={tabs} class="pt-10 pb-16 lg:pt-12 lg:pb-24" />
+    <div class="flex flex-col gap-16 lg:gap-24">
+      <EnrollCta />
+      <RegisterSection />
+    </div>
   </main>
   <Footer />
   <FloatingContact />

@@ -445,4 +445,25 @@
     transform: none;
     will-change: auto;
   }
+
+  /*
+    Biến thể trượt ngang thay cho nét trồi lên mặc định — dùng cho cặp thẻ cảm nhận đầu
+    tiên: thẻ trái vào từ mép trái, thẻ phải vào từ mép phải.
+
+    Trạng thái cuối phải khai lại ở đây chứ không nhờ được `.reveal-in`: chọn theo hai lớp
+    nên các quy tắc này ưu tiên cao hơn `.reveal-in` (một lớp), để nguyên thì thẻ đứng im
+    ở vị trí lệch.
+  */
+  .reveal-child.reveal-x-left {
+    transform: translateX(-4rem);
+  }
+
+  .reveal-child.reveal-x-right {
+    transform: translateX(4rem);
+  }
+
+  .reveal-child.reveal-x-left.reveal-in,
+  .reveal-child.reveal-x-right.reveal-in {
+    transform: none;
+  }
 }
