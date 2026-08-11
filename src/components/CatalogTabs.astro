@@ -1,0 +1,123 @@
+---
+import type { CatalogTab } from "@/components/CourseCatalog.astro";
+
+/**
+ * Hàng chip nhóm khoá học, đặt trong hero của `/courses` — "Tất cả 28 · Theo cấp HSK 6 · …".
+ *
+ * Cùng hình dáng với hàng chip của Thư viện (`LibraryFilters`) để hai trang danh mục
+ * đọc như một hệ. Khác một điểm: đây là **nút lọc client**, không phải link. Thư viện
+ * có `/library/<chuyên-mục>` nên mỗi chuyên mục lọc bằng điều hướng được; các khoá học
+ * chỉ có một URL `/courses`, và cả 28 thẻ đã nằm sẵn trong HTML nên lọc tại chỗ.
+ *
+ * Nằm trong hero chứ không nằm trên đầu lưới: hero canh giữa, đệm dưới của nó cộng với
+ * khoảng cách giữa các section đẩy hàng chip trôi lơ lửng giữa hai khối. Đây cũng là
+ * cách Thư viện làm — xem `compactBottom` trong `PageHero`.
+ *
+ * Số trên chip là số khoá trong nhóm: người xem biết trước bấm vào sẽ thấy bao nhiêu.
+ */
+interface Props {
+  tabs: CatalogTab[];
+  /** Nhãn của chip đầu tiên, chip gộp mọi nhóm. */
+  allLabel?: string;
+}
+
+const { tabs, allLabel = "Tất cả" } = Astro.props;
+
+/** Bỏ nhóm rỗng — `CourseCatalog` cũng không vẽ chúng, chip sẽ trỏ vào chỗ trống. */
+const filled = tabs.filter((tab) => tab.cards.length > 0);
+
+const chips = [
+  { key: "all", label: allLabel, count: filled.reduce((n, tab) => n + tab.cards.length, 0) },
+  ...filled.map((tab) => ({ key: tab.key, label: tab.label, count: tab.cards.length })),
+];
+---
+
+{/* `w-full` + `justify-center`: hero canh giữa dàn con theo cột, nên nếu không ép
+    full width thì <nav> co lại bằng bề rộng nội dung và hàng chip ngắt dòng sớm. */}
+<nav aria-label="Nhóm khoá học" class="mt-8 w-full">
+  <ul class="flex flex-wrap justify-center gap-2.5">
+    {
+      chips.map((chip, index) => {
+        const active = index === 0;
+
+        return (
+          <li>
+            <button
+              type="button"
+              data-catalog-tab={chip.key}
+              aria-pressed={active ? "true" : "false"}
+              class:list={[
+                "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+                active
+                  ? "border-brand-ink-900 bg-brand-ink-900 text-white"
+                  : "border-border text-foreground hover:border-brand-ink-900 hover:bg-brand-ink-50",
+              ]}
+            >
+              {chip.label}
+              <span
+                data-catalog-count
+                class:list={[
+                  "rounded-full px-1.5 py-0.5 text-[0.6875rem] font-bold tabular-nums",
+                  active ? "bg-white/15 text-white" : "bg-brand-ink-50 text-muted-foreground",
+                ]}
+              >
+                {chip.count}
+              </span>
+            </button>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<script>
+  /*
+    Lọc bằng cách bật/tắt `hidden` trên các mục nhóm đã render sẵn của `CourseCatalog`.
+    Không dùng framework: cả hành vi của trang này là một phép lọc trên một danh sách
+    tĩnh.
+
+    Các lớp dưới đây phải xuất hiện trong markup ở trên (chip đầu ở trạng thái sáng,
+    các chip còn lại ở trạng thái mờ) — Tailwind chỉ sinh CSS cho lớp nó thấy trong
+    template, lớp chỉ nằm trong chuỗi JS thì không có style.
+
+    Tên thuộc tính riêng (`data-catalog-*`) chứ không phải `data-tab`/`data-group`:
+    `WhyUs.astro` và `schedule.astro` cũng dùng hai tên đó cho bộ lọc của chúng, và
+    script này quét trên cả document.
+  */
+  const ACTIVE = ["border-brand-ink-900", "bg-brand-ink-900", "text-white"];
+  const IDLE = [
+    "border-border",
+    "text-foreground",
+    "hover:border-brand-ink-900",
+    "hover:bg-brand-ink-50",
+  ];
+  const ACTIVE_COUNT = ["bg-white/15", "text-white"];
+  const IDLE_COUNT = ["bg-brand-ink-50", "text-muted-foreground"];
+
+  const tabs = document.querySelectorAll<HTMLButtonElement>("[data-catalog-tab]");
+  const groups = document.querySelectorAll<HTMLElement>("[data-catalog-group]");
+
+  const select = (key: string) => {
+    for (const tab of tabs) {
+      const on = tab.dataset.catalogTab === key;
+      tab.setAttribute("aria-pressed", String(on));
+      for (const cls of ACTIVE) tab.classList.toggle(cls, on);
+      for (const cls of IDLE) tab.classList.toggle(cls, !on);
+
+      const count = tab.querySelector<HTMLElement>("[data-catalog-count]");
+      if (count) {
+        for (const cls of ACTIVE_COUNT) count.classList.toggle(cls, on);
+        for (const cls of IDLE_COUNT) count.classList.toggle(cls, !on);
+      }
+    }
+
+    for (const group of groups) {
+      group.hidden = key !== "all" && group.dataset.catalogGroup !== key;
+    }
+  };
+
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => select(tab.dataset.catalogTab ?? "all"));
+  }
+</script>

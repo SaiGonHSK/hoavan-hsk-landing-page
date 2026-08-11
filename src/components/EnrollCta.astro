@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import { ICONS } from "@/lib/icons";
+import registerTeacher from "@/assets/register-teacher.webp";
 
 /**
  * CTA ghi danh: panel đỏ hai cột, badge khai giảng + gạch đầu dòng cam kết bên
@@ -13,8 +15,13 @@ interface Props {
   lines?: string[];
   href?: string;
   label?: string;
-  image?: string;
+  image?: ImageMetadata;
   imageAlt?: string;
+  /**
+   * Ảnh đã tách nền, neo đáy panel thay vì nằm trong cột phải. Mặc định bật khi
+   * dùng ảnh giảng viên tách nền sẵn của component.
+   */
+  cutout?: boolean;
   class?: string;
 }
 
@@ -28,8 +35,9 @@ const {
   ],
   href = "/register",
   label = "Đăng ký ngay",
-  image = "/images/register-teacher.webp",
+  image = registerTeacher,
   imageAlt = "Giảng viên Hoa văn SaigonHSK mời đăng ký khoá học tiếng Trung",
+  cutout,
   class: className = "",
 } = Astro.props;
 
@@ -37,7 +45,7 @@ const {
  * Ảnh giảng viên đã tách nền và mặc áo đỏ trùng màu panel, nên phải đặt trên khung
  * sáng thì mới nổi. Các ảnh khác (ảnh lớp học chụp thường) thì hiển thị full-bleed.
  */
-const isCutout = image.includes("register-teacher");
+const isCutout = cutout ?? image === registerTeacher;
 ---
 
 <section class:list={[className]}>
@@ -125,14 +133,16 @@ const isCutout = image.includes("register-teacher");
 
         {
           !isCutout && (
-            <img
+            <Image
               src={image}
               alt={imageAlt}
-              width="1024"
-              height="577"
+              width={480}
+              densities={[1, 2]}
+              format="webp"
+              quality={88}
               loading="lazy"
               decoding="async"
-              class="hidden aspect-[4/3] w-full rounded-lg object-cover lg:block"
+              class="hidden aspect-4/3 w-full rounded-lg object-cover lg:block"
             />
           )
         }
@@ -145,11 +155,13 @@ const isCutout = image.includes("register-teacher");
       */}
       {
         isCutout && (
-          <img
+          <Image
             src={image}
             alt={imageAlt}
-            width="594"
-            height="1100"
+            height={416}
+            densities={[1, 2]}
+            format="webp"
+            quality={88}
             loading="lazy"
             decoding="async"
             class="pointer-events-none absolute bottom-0 right-6 hidden h-[26rem] w-auto object-contain object-bottom [filter:drop-shadow(0_0_2px_rgb(255_255_255/0.5))_drop-shadow(0_18px_30px_rgb(0_0_0/0.28))] lg:block xl:right-20"

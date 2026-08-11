@@ -1,0 +1,186 @@
+---
+import type { ScheduleRow } from "@/data/schedule";
+
+/**
+ * Lịch khai giảng dạng bảng tuần — bố cục "cuộn giấy" theo mẫu infographic tiếng
+ * Trung: thanh trục trên/dưới, biển tên ở giữa, hàng tiêu đề là pill, các thứ chạy
+ * ngang, mỗi lớp một dòng.
+ *
+ * Dữ liệu vào từ `@/data/schedule`, tức từ bảng `classes` trên server (các lớp đang
+ * tuyển sinh, đọc qua `GET /api/v1/classes`) — không có dòng nào viết cứng ở đây.
+ *
+ * Vì sao một dòng là một LỚP chứ không phải một TUẦN như ảnh mẫu: lịch của trung tâm
+ * lặp y nhau mỗi tuần (`slots` không có khái niệm tuần thứ mấy), nên bốn dòng tuần sẽ
+ * là bốn dòng giống hệt nhau — cấu trúc giả. Trục dọc đổi thành lớp thì bảng trả lời
+ * đúng câu người xem hỏi: lớp này học những buổi nào trong tuần.
+ *
+ * Giữ tiết chế theo memory/design-restraint-preference.md: mượn bố cục của ảnh mẫu
+ * nhưng không thêm hoạ tiết nền, watermark hay gradient; nhấn chỉ một màu đỏ.
+ */
+interface Props {
+  title: string;
+  /** Dòng chữ nhỏ dưới biển tên; bỏ trống thì không hiện. */
+  note?: string;
+  rows: ScheduleRow[];
+}
+
+const { title, note, rows } = Astro.props;
+
+/** Thứ tự cột: Thứ 2 trước, Chủ nhật cuối. `weekday` theo `time.Weekday` của Go. */
+const COLUMNS = [
+  { weekday: 1, label: "Thứ 2" },
+  { weekday: 2, label: "Thứ 3" },
+  { weekday: 3, label: "Thứ 4" },
+  { weekday: 4, label: "Thứ 5" },
+  { weekday: 5, label: "Thứ 6" },
+  { weekday: 6, label: "Thứ 7", weekend: true },
+  { weekday: 0, label: "CN", weekend: true },
+];
+
+const MODE_LABELS: Record<string, string> = {
+  online: "Online",
+  hybrid: "Kết hợp",
+};
+
+
+/**
+ * Lớp có buổi cố định mới lên được bảng. GT1, GT2, VIP xếp lịch theo học viên nên
+ * `slots` rỗng — nhét vào bảng thì cả bảy cột đều trống, đọc ra thành "lớp này không
+ * học ngày nào". Chúng được liệt kê thành một dòng riêng bên dưới.
+ */
+const fixed = rows.filter((row) => row.slots.length > 0);
+const flexible = rows.filter((row) => row.slots.length === 0);
+
+/** Các buổi của một lớp trong đúng một thứ, đã sắp theo giờ bắt đầu. */
+const slotsOn = (row: ScheduleRow, weekday: number) =>
+  row.slots
+    .filter((slot) => slot.weekday === weekday)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+/* Khung cuộn: kem + viền đỏ nhạt, bo `rounded-lg` theo chuẩn của site. */
+const cellBase = "border-t border-brand-red-100 px-3 py-3.5 align-middle";
+---
+
+<section class="scroll-mt-24">
+  <div class="container mx-auto px-6">
+    <div class="overflow-hidden rounded-lg border border-brand-red-200 bg-[#fdf8ef]">
+      <!-- thanh trục trên của cuộn giấy -->
+      <div class="h-2.5 bg-brand-red-600"></div>
+
+      <div class="px-5 py-8 md:px-9 md:py-10">
+        <!-- biển tên: gạch mảnh hai bên như ảnh mẫu -->
+        <div class="flex items-center justify-center gap-4">
+          <span class="hidden h-px w-16 bg-brand-red-200 sm:block"></span>
+          <h2
+            class="rounded-lg bg-brand-red-600 px-6 py-2.5 text-center text-lg font-black tracking-tight text-white md:text-xl"
+          >
+            {title}
+          </h2>
+          <span class="hidden h-px w-16 bg-brand-red-200 sm:block"></span>
+        </div>
+
+        {
+          note && (
+            <p class="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-brand-ink-700">
+              {note}
+            </p>
+          )
+        }
+
+        <!-- Bảng cuộn ngang trên máy nhỏ: 7 cột thứ + cột lớp không nén xuống dưới
+             400px mà vẫn đọc được. -->
+        <div class="mt-8 overflow-x-auto">
+          <table class="w-full min-w-208 border-collapse text-sm">
+            <thead>
+              <tr>
+                <th class="w-56 px-3 pb-3 text-left">
+                  <span
+                    class="inline-block rounded-full bg-brand-red-50 px-4 py-1.5 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-brand-red-700"
+                  >
+                    Lớp
+                  </span>
+                </th>
+                {
+                  COLUMNS.map((column) => (
+                    <th class="px-2 pb-3">
+                      <span class="inline-block w-full rounded-full bg-brand-red-600 px-3 py-1.5 text-xs font-bold text-white">
+                        {column.label}
+                      </span>
+                    </th>
+                  ))
+                }
+              </tr>
+            </thead>
+
+            <tbody>
+              {
+                fixed.map((row) => (
+                  <tr>
+                    <th class:list={[cellBase, "text-left"]} scope="row">
+                      <span class="block font-mono text-[0.6875rem] font-bold text-brand-red-700">
+                        {row.code}
+                      </span>
+                      <span class="mt-1 block font-bold leading-snug text-brand-ink-900">
+                        {row.name}
+                      </span>
+                      {row.openDate && (
+                        <span class="mt-1 block text-xs font-bold text-brand-red-600">
+                          Khai giảng {row.openDate}
+                        </span>
+                      )}
+                      {MODE_LABELS[row.mode] && (
+                        <span class="mt-1 block text-xs text-muted-foreground">
+                          {MODE_LABELS[row.mode]}
+                        </span>
+                      )}
+                    </th>
+
+                    {COLUMNS.map((column) => {
+                      const slots = slotsOn(row, column.weekday);
+
+                      return (
+                        <td
+                          class:list={[
+                            cellBase,
+                            "text-center",
+                            column.weekend && "bg-[#fbf2e2]",
+                          ]}
+                        >
+                          {slots.length === 0 ? (
+                            /* Dấu gạch thay vì ô trống hẳn: mắt lần theo hàng ngang
+                               không bị mất dòng khi gặp nhiều ô liền nhau. */
+                            <span class="text-brand-red-200" aria-hidden="true">
+                              —
+                            </span>
+                          ) : (
+                            slots.map((slot) => (
+                              <span class="block font-bold leading-snug text-brand-ink-900">
+                                {slot.startTime}–{slot.endTime}
+                              </span>
+                            ))
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        {
+          flexible.length > 0 && (
+            <p class="mt-6 rounded-lg border border-brand-red-100 bg-background px-5 py-4 text-sm leading-relaxed text-brand-ink-700">
+              <span class="font-bold text-brand-ink-900">Xếp lịch theo học viên:</span>{" "}
+              {flexible.map((row) => `${row.name} (${row.cadence || "gọi hotline"})`).join(" · ")}
+            </p>
+          )
+        }
+      </div>
+
+      <!-- thanh trục dưới -->
+      <div class="h-2.5 bg-brand-red-600"></div>
+    </div>
+  </div>
+</section>

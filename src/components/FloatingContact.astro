@@ -3,63 +3,97 @@ import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 ---
 
-<div class="fixed bottom-5 right-5 z-40 flex flex-col items-center gap-3 print:hidden">
+<div
+  class="group fixed bottom-5 right-5 z-40 flex flex-col items-center gap-3 print:hidden"
+  data-floating-contact
+  data-open="false"
+>
+  <div
+    data-contact-actions
+    class="flex flex-col items-center gap-3 transition-[opacity,transform] duration-300 max-sm:invisible max-sm:translate-y-3 max-sm:opacity-0 max-sm:group-data-[open=true]:visible max-sm:group-data-[open=true]:translate-y-0 max-sm:group-data-[open=true]:opacity-100"
+  >
+    <button
+      type="button"
+      data-scroll-top
+      aria-label="Lên đầu trang"
+      class="group/item pointer-events-none relative flex size-13 translate-y-2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-brand-ink-900 opacity-0 shadow-lg shadow-black/10 transition-[opacity,transform] duration-300 hover:scale-105 data-[visible=true]:pointer-events-auto data-[visible=true]:translate-y-0 data-[visible=true]:opacity-100"
+    >
+      <span class="[&>svg]:size-5 [&>svg]:-rotate-90" set:html={ICONS.arrow} />
+      <span
+        class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover/item:opacity-100"
+      >
+        Lên đầu trang
+      </span>
+    </button>
+
+    <a
+      href={contact.zalo}
+      target="_blank"
+      rel="noopener"
+      aria-label="Nhắn SaiGonHSK qua Zalo"
+      class="group/item relative flex size-13 items-center justify-center transition-transform hover:scale-105"
+    >
+      <span class="relative [&>svg]:size-13" set:html={ICONS.zalo} />
+      <span
+        class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover/item:opacity-100"
+      >
+        Nhắn SaiGonHSK qua Zalo
+      </span>
+    </a>
+
+    <a
+      href={contact.tiktok}
+      target="_blank"
+      rel="noopener"
+      aria-label="Xem SaiGonHSK trên TikTok"
+      class="group/item relative flex size-13 items-center justify-center rounded-full bg-brand-ink-950 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
+    >
+      <span class="[&>svg]:size-6" set:html={ICONS.tiktok} />
+      <span
+        class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover/item:opacity-100"
+      >
+        Xem SaiGonHSK trên TikTok
+      </span>
+    </a>
+
+    {/*
+      Chỉ hiện dưới `sm` — cùng ngưỡng với nút bung dải liên hệ.
+
+      `tel:` trên máy tính để bàn phần lớn là mở hộp thoại "chọn ứng dụng" rồi không có
+      gì xảy ra, nên nút gọi ở đó chỉ chiếm chỗ. Người dùng desktop cần số để bấm máy
+      thì đã có nó ở đầu trang, chân trang và khối FAQ; đường liên hệ nhanh thật sự trên
+      desktop là Zalo, vốn vẫn nằm ngay trên.
+    */}
+    <a
+      href={`tel:${contact.phonePrimaryRaw}`}
+      aria-label={`Gọi ${contact.phonePrimary}`}
+      class="group/item relative flex size-13 items-center justify-center rounded-full bg-brand-red-600 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105 sm:hidden"
+    >
+      <span class="[&>svg]:size-6" set:html={ICONS.phone} />
+      <span
+        class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover/item:opacity-100"
+      >
+        {contact.phonePrimary}
+      </span>
+    </a>
+  </div>
+
   <button
     type="button"
-    data-scroll-top
-    aria-label="Lên đầu trang"
-    class="group pointer-events-none relative flex size-13 translate-y-2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-brand-ink-900 opacity-0 shadow-lg shadow-black/10 transition-[opacity,transform] duration-300 hover:scale-105 data-[visible=true]:pointer-events-auto data-[visible=true]:translate-y-0 data-[visible=true]:opacity-100"
+    data-contact-toggle
+    aria-expanded="false"
+    aria-label="Mở liên hệ nhanh"
+    class="relative flex size-13 cursor-pointer items-center justify-center rounded-full bg-brand-red-600 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105 sm:hidden"
   >
-    <span class="[&>svg]:size-5 [&>svg]:-rotate-90" set:html={ICONS.arrow} />
     <span
-      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
-    >
-      Lên đầu trang
-    </span>
+      class="absolute transition-[opacity,transform] duration-200 group-data-[open=true]:rotate-90 group-data-[open=true]:opacity-0 [&>svg]:size-6"
+      set:html={ICONS.chat}
+    />
+    <span
+      class="absolute -rotate-90 opacity-0 transition-[opacity,transform] duration-200 group-data-[open=true]:rotate-0 group-data-[open=true]:opacity-100 [&>svg]:size-6"
+      set:html={ICONS.close}
+    />
   </button>
-
-  <a
-    href={contact.zalo}
-    target="_blank"
-    rel="noopener"
-    aria-label="Nhắn SaiGonHSK qua Zalo"
-    class="group relative flex size-13 items-center justify-center transition-transform hover:scale-105"
-  >
-    <span class="relative [&>svg]:size-13" set:html={ICONS.zalo} />
-    <span
-      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
-    >
-      Nhắn SaiGonHSK qua Zalo
-    </span>
-  </a>
-
-  <a
-    href={contact.tiktok}
-    target="_blank"
-    rel="noopener"
-    aria-label="Xem SaiGonHSK trên TikTok"
-    class="group relative flex size-13 items-center justify-center rounded-full bg-brand-ink-950 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
-  >
-    <span class="[&>svg]:size-6" set:html={ICONS.tiktok} />
-    <span
-      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
-    >
-      Xem SaiGonHSK trên TikTok
-    </span>
-  </a>
-
-  <a
-    href={`tel:${contact.phonePrimaryRaw}`}
-    aria-label={`Gọi ${contact.phonePrimary}`}
-    class="group relative flex size-13 items-center justify-center rounded-full bg-brand-red-600 text-white shadow-lg shadow-black/20 transition-transform hover:scale-105"
-  >
-    <span class="[&>svg]:size-6" set:html={ICONS.phone} />
-    <span
-      class="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100"
-    >
-      {contact.phonePrimary}
-    </span>
-  </a>
 </div>
 
 <script>
@@ -75,5 +109,37 @@ import { ICONS } from "@/lib/icons";
     );
     window.addEventListener("scroll", sync, { passive: true });
     sync();
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-floating-contact]");
+  const toggle = root?.querySelector<HTMLButtonElement>(
+    "[data-contact-toggle]",
+  );
+  const actions = root?.querySelector<HTMLElement>("[data-contact-actions]");
+
+  if (root && toggle && actions) {
+    const setOpen = (open: boolean) => {
+      root.dataset.open = String(open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute(
+        "aria-label",
+        open ? "Đóng liên hệ nhanh" : "Mở liên hệ nhanh",
+      );
+    };
+
+    toggle.addEventListener("click", () =>
+      setOpen(root.dataset.open !== "true"),
+    );
+
+    actions.addEventListener("click", () => setOpen(false));
+
+    document.addEventListener("click", (event) => {
+      if (root.dataset.open !== "true") return;
+      if (!root.contains(event.target as Node)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
+    });
   }
 </script>

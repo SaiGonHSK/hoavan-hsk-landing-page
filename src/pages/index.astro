@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Hero from "@/components/Hero.astro";
-import Banners from "@/components/Banners.astro";
 import WhyUs from "@/components/WhyUs.astro";
 import Courses from "@/components/Courses.astro";
 import Roadmap from "@/components/Roadmap.astro";
@@ -17,17 +16,48 @@ import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
+import { visiblePrograms } from "@/data/programsApi";
+import { teachers } from "@/data/teachers";
+import { itemListSchema } from "@/lib/seo";
+import { hskTermSetSchema, teacherListSchema } from "@/lib/schema";
+
+const origin = Astro.site?.origin ?? "";
+
+/*
+  Trang chủ là trang bot ghé nhiều nhất, nên nó gánh phần dữ kiện nền của cả site.
+
+  `hskTermSetSchema` khai sáu cấp HSK kèm số liệu chuẩn HSK 3.0 — thứ mà mô hình hay
+  trả lời sai vì dữ liệu huấn luyện phần lớn là chuẩn 2.0 cũ. `teacherListSchema` đưa
+  bằng cấp giảng viên ra dạng máy đọc, là bằng chứng chuyên môn duy nhất có thể kiểm
+  chứng được của trung tâm.
+
+  `ItemList` liệt kê **toàn bộ** chương trình dù khối trên trang chỉ hiện 4 mục nổi
+  bật: khác `FAQPage`, `ItemList` không đòi nội dung phải hiển thị hết trên trang, và
+  mọi mục trong danh sách đều là trang thật có liên kết từ trang này.
+*/
+const schemas = [
+  hskTermSetSchema(origin),
+  itemListSchema(
+    "Chương trình đào tạo tiếng Trung tại SaigonHSK",
+    visiblePrograms().map((p) => ({
+      title: p.title,
+      href: `/courses/programs/${p.slug}`,
+    })),
+    origin,
+  ),
+  teacherListSchema(teachers, origin),
+];
 ---
 
 <Layout
   title="Trung tâm tiếng Trung TPHCM — luyện thi HSK | SaigonHSK"
-  description="Trung tâm tiếng Trung uy tín tại TP.HCM: học từ con số 0 đến HSK6, luyện thi HSK. Lớp 10–15 học viên, cam kết 100% đầu ra, học thử miễn phí."
-  keywords="trung tâm tiếng Trung TPHCM, học tiếng Trung ở đâu tốt, trung tâm tiếng Trung Sài Gòn, luyện thi HSK TPHCM, học tiếng Trung cho người mới bắt đầu"
+  description="Trung tâm tiếng Trung uy tín tại TP.HCM, có giấy phép của Sở Giáo dục: học từ con số 0 đến HSK6, luyện thi HSK. Lớp 10–15 học viên, cam kết 100% đầu ra."
+  keywords="trung tâm tiếng Trung TPHCM, học tiếng Trung ở đâu tốt, trung tâm tiếng Trung Sài Gòn, luyện thi HSK TPHCM, học tiếng Trung cho người mới bắt đầu, trung tâm tiếng Trung có giấy phép Sở Giáo dục"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <Hero />
-    <!-- <Banners /> -->
     <Achievements />
     <WhyUs />
     <Courses limit={4} />
@@ -38,7 +68,7 @@ import FloatingContact from "@/components/FloatingContact.astro";
     <Testimonials />
     <TrialCta />
     <FAQ limit={5} />
-    <RegisterSection />
+    <!-- <RegisterSection /> -->
     <CtaSection />
   </main>
   <Footer />

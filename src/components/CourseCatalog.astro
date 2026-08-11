@@ -1,0 +1,136 @@
+---
+import { ICONS } from "@/lib/icons";
+
+export type CatalogCard = {
+  title: string;
+  summary: string;
+  href: string;
+  /** Nhãn nhỏ phía trên tên khoá — chỉ khi nó nói thêm điều gì, xem `CourseCatalog`. */
+  tag?: string;
+  /**
+   * Hai dòng thông tin ở chân thẻ, dạng nhãn – giá trị ("Thời lượng", "Đầu vào").
+   * Cùng cặp `dt`/`dd` với bảng thông tin của trang chi tiết khoá.
+   */
+  meta?: { label: string; value: string }[];
+};
+
+export type CatalogTab = {
+  /** Khoá lọc, dùng cho `data-group` — không hiện ra ngoài. */
+  key: string;
+  label: string;
+  cards: CatalogCard[];
+};
+
+/**
+ * Danh sách khoá học của `/courses`: mỗi nhóm một mục có tiêu đề riêng.
+ *
+ * Trước đây trang này là **một lưới 28 thẻ giống nhau** với một hàng tab gạch chân ở
+ * trên: HSK1–HSK6 nằm lẫn giữa các khoá giáo trình, mỗi thẻ có một thumbnail hồng viết
+ * chữ ("6 QUYỂN", "KÈM 1") và một dòng "Tìm hiểu thêm →" đỏ, tức 28 lời mời bấm chen
+ * nhau và không có gì nói cho người xem biết họ đang xem nhóm nào. Giờ mỗi nhóm là một
+ * `<section>` có `<h2>` và số khoá — cấu trúc trang khớp với chip lọc ở hero, và Google
+ * đọc được năm tiêu đề nhóm thay vì một lưới phẳng.
+ *
+ * Không còn thumbnail: nhãn ba chữ cắt từ tên khoá không phân biệt được khoá nào với
+ * khoá nào, chỉ làm 28 ô màu giống nhau. Thẻ để tên khoá và tóm tắt tự đứng ra, giống
+ * lưới bài của Thư viện (`ArticleGrid`).
+ *
+ * Mọi thẻ đều render sẵn trong HTML và chỉ ẩn bằng `hidden` khi lọc (xem
+ * `CatalogTabs`): Google đọc được cả năm nhóm, còn người dùng không chờ request nào
+ * khi đổi nhóm.
+ *
+ * `data-catalog-group` chứ không phải `data-group`: `schedule.astro` cũng có một script
+ * quét `[data-group]` trên cả document, tên riêng để hai bộ lọc không với sang nhau nếu
+ * sau này hai khối cùng nằm trên một trang.
+ */
+interface Props {
+  tabs: CatalogTab[];
+  class?: string;
+}
+
+const { tabs, class: className = "" } = Astro.props;
+
+/** Bỏ nhóm rỗng: một mục có tiêu đề mà không có gì bên dưới trông như trang lỗi. */
+const filled = tabs.filter((tab) => tab.cards.length > 0);
+---
+
+<section id="catalog" class:list={["scroll-mt-24", className]}>
+  <div class="container mx-auto space-y-14 px-6 lg:space-y-20">
+    {
+      filled.map((tab) => (
+        <section data-catalog-group={tab.key} aria-labelledby={`nhom-${tab.key}`}>
+          <div class="flex items-baseline justify-between gap-4 border-b border-border pb-4">
+            <h2
+              id={`nhom-${tab.key}`}
+              class="text-xl font-black tracking-tight text-brand-ink-900 md:text-2xl"
+            >
+              {tab.label}
+            </h2>
+            <span class="shrink-0 text-sm text-muted-foreground tabular-nums">
+              {tab.cards.length} khoá
+            </span>
+          </div>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {tab.cards.map((card) => (
+              <a
+                href={card.href}
+                class="group flex flex-col rounded-lg border border-border bg-background p-5 transition-colors hover:border-brand-ink-900"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    {card.tag && (
+                      <span class="block text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-brand-red-600">
+                        {card.tag}
+                      </span>
+                    )}
+                    <h3
+                      class:list={[
+                        "text-lg font-extrabold leading-snug text-balance text-brand-ink-900 transition-colors group-hover:text-brand-red-600",
+                        card.tag && "mt-1",
+                      ]}
+                    >
+                      {card.title}
+                    </h3>
+                  </div>
+
+                  {/* Mũi tên thay cho dòng "Tìm hiểu thêm" trên từng thẻ: cả thẻ đã
+                      là một liên kết, và tên khoá trong <h3> mới là anchor text nói
+                      cho Google biết trang đích viết về gì. */}
+                  <span
+                    aria-hidden="true"
+                    class="mt-1 shrink-0 text-brand-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-red-600 [&>svg]:size-4"
+                    set:html={ICONS.arrow}
+                  />
+                </div>
+
+                {card.summary && (
+                  <p class="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                    {card.summary}
+                  </p>
+                )}
+
+                {/* `mt-auto`: bảng thông tin tụt xuống đáy thẻ để mọi thẻ trong cùng
+                    một hàng thẳng chân nhau, dù tóm tắt dài ngắn khác nhau. */}
+                {card.meta && card.meta.length > 0 && (
+                  <div class="mt-auto pt-5">
+                    <dl class="space-y-2 border-t border-border pt-3.5">
+                      {card.meta.map((row) => (
+                        <div class="flex gap-3 text-xs leading-relaxed">
+                          <dt class="w-20 shrink-0 text-muted-foreground">{row.label}</dt>
+                          <dd class="min-w-0 flex-1 font-semibold text-brand-ink-900">
+                            {row.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</section>

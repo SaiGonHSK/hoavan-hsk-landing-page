@@ -1,7 +1,8 @@
 ---
 import { contact } from "@/data/site";
-import { courses } from "@/data/courses";
-import { onlineOfflineCourses } from "@/data/catalog";
+import { ICONS } from "@/lib/icons";
+import { courseOptions, resolveCourseOption } from "@/lib/registerLink";
+import { schedule } from "@/data/schedule";
 
 interface Props {
   /**
@@ -9,15 +10,46 @@ interface Props {
    * và nút gửi nên chiếm hết bề rộng thay vì bó lại giữa khung.
    */
   dense?: boolean;
+
+  /**
+   * Khoá học chọn sẵn — slug hoặc đúng nhãn trong `courseOptions`.
+   *
+   * Khách tới form từ một trang khoá cụ thể thì đã trả lời xong câu "học khoá nào";
+   * bắt chọn lại là hỏi hai lần cùng một chuyện. Slug lạ (giáo trình, trang kỹ năng)
+   * không khớp gì thì select về lại trạng thái chưa chọn như cũ.
+   */
+  course?: string;
+
+  /**
+   * Lớp chọn sẵn ở ô "Lớp muốn giữ chỗ" — id trong bảng `classes`.
+   *
+   * Chỗ gọi phải truyền id đã giải được thành một lớp có thật của đợt đang đăng (xem
+   * `findClassById`), không phải chuỗi thô từ URL: id không khớp dòng nào thì select
+   * lặng lẽ về "Chưa chọn" và khách tưởng mình đã giữ chỗ.
+   */
+  classId?: string;
+
+  /** Ghi chú điền sẵn — xem `registerNote` ở `lib/registerLink.ts`. */
+  note?: string;
 }
 
-const { dense = false } = Astro.props;
+const { dense = false, course, classId, note = "" } = Astro.props;
 
-const courseOptions = [
-  ...onlineOfflineCourses.map((c) => c.title),
-  ...courses.map((c) => c.title),
-  "Chưa biết, cần tư vấn",
-];
+const selectedCourse = resolveCourseOption(course);
+
+/**
+ * Các lớp khách có thể giữ chỗ ngay trên form này.
+ *
+ * Lấy thẳng từ `schedule` (đợt đang đăng) chứ không nhận qua prop, giống cách file lấy
+ * `courseOptions`: mọi chỗ đặt form đều muốn cùng một danh sách, và truyền tay thì có
+ * chỗ quên. API nội dung chết thì `schedule` rỗng — select chỉ còn dòng "Chưa chọn" và
+ * form vẫn gửi được lead, đúng thứ tự ưu tiên: mất ô chọn lớp còn hơn mất cả lead.
+ *
+ * Chỉ lớp có ngày khai giảng: lớp lịch linh hoạt (GT1, GT2, VIP) trên thẻ lịch cũng
+ * không có nút đăng ký mà là "Gọi để xếp lớp" — giữ chỗ một lớp chưa có ngày là hứa một
+ * thứ trung tâm chưa chốt.
+ */
+const openingClasses = schedule.filter((row) => row.openDateISO);
 
 const levels = [
   "Chưa học bao giờ",
@@ -54,15 +86,23 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         <label class={label} for="rf-phone">
           Số điện thoại <span class="text-brand-red-600">*</span>
         </label>
+        {/*
+          Ô này chỉ nhận chữ số và tối đa 10 ký tự — script dưới lọc lại mọi thứ gõ hay
+          dán vào, `maxlength`/`pattern` ở đây là lưới chắn cho lúc JS chưa chạy.
+
+          `inputmode="numeric"` để điện thoại bật bàn phím số thuần; `type="tel"` giữ
+          nguyên cho autofill và cho iOS hiểu đây là số điện thoại.
+        */}
         <input
           id="rf-phone"
           name="phone"
           type="tel"
-          inputmode="tel"
+          inputmode="numeric"
           required
-          pattern="[0-9\s+().-]{9,}"
+          maxlength="10"
+          pattern="0[0-9]{9}"
           autocomplete="tel"
-          placeholder="09xx xxx xxx"
+          placeholder="0912345678"
           class={field}
         />
       </div>
@@ -88,8 +128,12 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
           Khoá học quan tâm <span class="text-brand-red-600">*</span>
         </label>
         <select id="rf-course" name="course" required class={field}>
-          <option value="" selected disabled>Chọn khoá học</option>
-          {courseOptions.map((c) => <option value={c}>{c}</option>)}
+          <option value="" selected={!selectedCourse} disabled>Chọn khoá học</option>
+          {
+            courseOptions.map((c) => (
+              <option value={c} selected={c === selectedCourse}>{c}</option>
+            ))
+          }
         </select>
       </div>
 
@@ -104,6 +148,43 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       </div>
     </div>
 
+    {
+      /*
+        Ô chọn lớp — thứ biến form này từ "để lại số điện thoại" thành "giữ chỗ đúng một
+        lớp". Có nó thì mọi CTA đổ về `/register` (hero, footer, trang khoá) đều ghi được
+        vào danh sách chờ của lớp, chứ không chỉ nút trên thẻ lịch khai giảng.
+
+        Không `required`: giữ chỗ là bước thêm, không phải điều kiện để gửi lead. Khách
+        chưa biết học lớp nào vẫn phải gửi được — đó là phần lớn người vào trang này.
+
+        Cả khối biến mất khi chưa có lớp nào đang tuyển: một select chỉ có đúng dòng
+        "Chưa chọn" là một câu hỏi không có câu trả lời nào.
+      */
+      openingClasses.length > 0 && (
+        <div>
+          <label class={label} for="rf-class">
+            Lớp muốn giữ chỗ{" "}
+            <span class="font-normal text-muted-foreground">(không bắt buộc)</span>
+          </label>
+          <select id="rf-class" name="classId" class={field}>
+            <option value="" selected={!classId}>
+              Chưa chọn — để trung tâm tư vấn xếp lớp
+            </option>
+            {openingClasses.map((row) => (
+              <option
+                value={row.id}
+                data-class-code={row.code}
+                data-class-name={row.name}
+                selected={row.id === classId}
+              >
+                {row.code} · {row.name} · Khai giảng {row.openDate}
+              </option>
+            ))}
+          </select>
+        </div>
+      )
+    }
+
     <div>
       <label class={label} for="rf-note">Mục tiêu / thời gian học mong muốn</label>
       <textarea
@@ -112,7 +193,8 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         rows="3"
         placeholder="Ví dụ: cần HSK4 trước tháng 12, học buổi tối sau 18h…"
         class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-brand-red-500"
-      ></textarea>
+        >{note}</textarea
+      >
     </div>
 
     <p
@@ -143,52 +225,226 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
     </p>
   </form>
 
-  <div
+  <!--
+    Báo thành công bằng modal chứ không phải panel thay chỗ form.
+
+    Form nằm ở nhiều vị trí trên trang — có chỗ ở cuối bài dài, có chỗ trong cột hẹp
+    bên phải; đổi ruột form thành một panel chữ thì lời báo có thể nằm ngoài khung
+    nhìn và khách tưởng bấm hụt. `<dialog>` nổi lên top layer nên luôn thấy, và trình
+    duyệt lo sẵn phần bẫy focus + đóng bằng Esc.
+  -->
+  <dialog
     data-register-success
-    hidden
-    class="rounded-2xl bg-brand-red-50 p-7 text-center"
+    aria-labelledby="rf-success-title"
+    class:list={[
+      // `m-auto` bắt buộc: preflight của Tailwind đặt `margin: 0` cho mọi thẻ, mà
+      // `dialog:modal` canh giữa màn hình bằng đúng `margin: auto` của trình duyệt —
+      // thiếu dòng này modal dính góc trên bên trái.
+      "m-auto w-[min(29rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto",
+      "rounded-3xl border border-border bg-background p-0 text-foreground shadow-2xl",
+    ]}
   >
-    <p class="text-xl font-extrabold text-brand-red-800">
-      Đã ghi nhận thông tin của bạn!
-    </p>
-    <p class="mt-2.5 text-sm leading-relaxed text-brand-red-900/80">
-      Trung tâm sẽ liên hệ để tư vấn lộ trình và xếp lớp. Nếu cần gấp, bạn gọi
-      <a href={`tel:${contact.phonePrimaryRaw}`} class="font-bold underline">
-        {contact.phonePrimary}
+    <div class="p-7 text-center md:p-9">
+      <span
+        class="mx-auto grid size-14 place-items-center rounded-full bg-emerald-500 text-white [&>svg]:size-7"
+        set:html={ICONS.check}
+      />
+
+      <p
+        id="rf-success-title"
+        class="mt-5 text-xl font-black text-brand-ink-900 md:text-2xl"
+      >
+        Chúc mừng bạn đã đăng ký thành công!
+      </p>
+
+      {/*
+        Câu này đổi theo việc dòng giữ chỗ lớp có ghi được hay không — xem cuối script.
+        Chữ ở đây là bản mặc định, dùng cho lượt gửi không chọn lớp và cho cả trường hợp
+        JS chưa kịp chạy.
+      */}
+      <p
+        data-register-success-detail
+        class="mt-3 text-sm leading-relaxed text-muted-foreground"
+      >
+        Trung tâm đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất
+        để tư vấn lộ trình, xếp lớp và báo học phí.
+      </p>
+
+      <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
+        Cần gấp thì bạn gọi
+        <a
+          href={`tel:${contact.phonePrimaryRaw}`}
+          class="font-bold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+        >
+        hoặc
+        <a
+          href={contact.zalo}
+          target="_blank"
+          rel="noopener"
+          class="font-bold text-brand-red-600 hover:underline">chat Zalo</a
+        > nhé.
+      </p>
+
+      <!--
+        Thẻ `<a>` chứ không phải `<button>`: đóng modal là về trang chủ, nên để nó là
+        một liên kết thật — bấm giữ / chuột giữa vẫn mở tab mới được, và không có JS
+        thì nó vẫn đi đúng chỗ.
+      -->
+      <a
+        href="/"
+        data-register-close
+        class="mt-7 flex w-full items-center justify-center rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
+      >
+        Đã hiểu
       </a>
-      hoặc
-      <a href={contact.zalo} target="_blank" rel="noopener" class="font-bold underline">
-        chat Zalo
-      </a>
-      nhé.
-    </p>
-    <button
-      type="button"
-      data-register-reset
-      class="mt-5 cursor-pointer text-sm font-semibold text-brand-red-700 underline-offset-4 hover:underline"
-    >
-      Gửi thêm một đăng ký khác
-    </button>
-  </div>
+    </div>
+  </dialog>
 </div>
 
+<style>
+  /*
+    Nền mờ viết bằng màu thẳng, không qua token của theme: `::backdrop` nằm ở top
+    layer nên không phải trình duyệt nào cũng cho nó kế thừa custom property khai ở
+    `:root` — dùng `var(--color-brand-ink-900)` thì màu ra rỗng và nền không tối đi.
+    Giá trị lấy đúng `--brand-ink-900` trong global.css.
+  */
+  dialog[data-register-success]::backdrop {
+    background-color: rgb(18 19 22 / 0.6);
+  }
+
+  /* Modal mở ra là một thay đổi đột ngột giữa trang; nhích lên một chút để mắt bắt
+     được nó vừa xuất hiện thay vì tự hỏi trang đã đổi cái gì. */
+  dialog[data-register-success][open] {
+    animation: register-success-in 180ms ease-out;
+  }
+
+  @keyframes register-success-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    dialog[data-register-success][open] {
+      animation: none;
+    }
+  }
+</style>
+
 <script>
-  import { LEADS_ENDPOINT, submitLead, type LeadPayload } from "@/lib/leads";
+  import {
+    LEADS_ENDPOINT,
+    submitClassRegistration,
+    submitLead,
+    type LeadPayload,
+  } from "@/lib/leads";
   import { SOURCE_LABELS, leadSource } from "@/lib/attribution";
+  import {
+    PHONE_ERROR,
+    isValidPhone,
+    normalizePhone,
+    sanitizePhoneInput,
+  } from "@/lib/phone";
 
   const INVALID = "border-brand-red-500";
 
   document.querySelectorAll<HTMLElement>("[data-register-root]").forEach((root) => {
     const form = root.querySelector<HTMLFormElement>("[data-register-form]");
-    const success = root.querySelector<HTMLElement>("[data-register-success]");
+    const success = root.querySelector<HTMLDialogElement>("[data-register-success]");
     const error = root.querySelector<HTMLElement>("[data-register-error]");
-    const reset = root.querySelector<HTMLButtonElement>("[data-register-reset]");
+    const successDetail = root.querySelector<HTMLElement>(
+      "[data-register-success-detail]",
+    );
     if (!form || !success) return;
 
-    const showSuccess = () => {
-      form.hidden = true;
-      success.hidden = false;
+    /** Câu mặc định trong modal báo thành công, giữ lại để trả về sau mỗi lượt gửi. */
+    const successDefault = successDetail?.textContent ?? "";
+
+    /**
+     * Lớp đang chọn ở ô "Lớp muốn giữ chỗ", đọc tại thời điểm gửi.
+     *
+     * Trả cả mã lẫn tên chứ không chỉ id: id là thứ `POST /schedule/classes/:id/register`
+     * cần, mã đi vào ghi chú của lead (bảng `leads` không có cột lớp), còn tên để viết câu
+     * báo thành công. `null` khi khách để "Chưa chọn", hoặc khi đợt không có lớp nào nên
+     * cả ô cũng không được render — khi đó form chạy đúng như trước, chỉ ghi lead.
+     */
+    const pickedClass = () => {
+      const select = form.querySelector<HTMLSelectElement>('select[name="classId"]');
+      const id = select?.value.trim();
+      if (!select || !id) return null;
+
+      const option = select.selectedOptions[0];
+      return {
+        id,
+        code: option?.dataset.classCode ?? "",
+        name: option?.dataset.className ?? "",
+      };
+    };
+
+    /*
+      Số điện thoại: kiểm bằng `setCustomValidity` chứ không phải tự vẽ dòng báo lỗi.
+
+      Làm vậy thì `form.reportValidity()` ngay dưới lo hết phần còn lại — hiện bong
+      bóng đúng chỗ, cuộn tới field, chặn submit — và số điện thoại được đối xử giống
+      hệt các field bắt buộc khác thay vì có một đường báo lỗi riêng.
+    */
+    const phone = form.querySelector<HTMLInputElement>('input[name="phone"]');
+
+    const checkPhone = () => {
+      if (!phone) return;
+      // Bỏ trống thì để `required` lên tiếng — hai lời báo cho cùng một ô là thừa.
+      const invalid = phone.value.trim() !== "" && !isValidPhone(phone.value);
+      phone.setCustomValidity(invalid ? PHONE_ERROR : "");
+    };
+
+    phone?.addEventListener("input", () => {
+      /*
+        Lọc ngay trong lúc gõ: chữ cái bị bỏ, quá 10 số bị cắt.
+
+        `maxlength` chặn được phần gõ tay nhưng không chặn chữ cái, và `type="tel"` thì
+        trình duyệt cho gõ mọi ký tự. Nên phải tự lọc, và phải giữ lại vị trí con trỏ —
+        gán `value` mới là con trỏ nhảy về cuối, sửa một số ở giữa thành ra không sửa
+        được. Chỉ gán khi giá trị thật sự đổi, để lúc gõ bình thường không đụng gì.
+      */
+      const cleaned = sanitizePhoneInput(phone.value);
+      if (cleaned !== phone.value) {
+        const caret = phone.selectionStart ?? phone.value.length;
+        const removed = phone.value.length - cleaned.length;
+        phone.value = cleaned;
+        const next = Math.max(0, caret - removed);
+        phone.setSelectionRange(next, next);
+      }
+
+      // Xoá lỗi ngay khi khách sửa: giữ nguyên `customValidity` cũ thì ô vẫn bị coi là
+      // sai kể cả sau khi đã nhập đúng, vì trình duyệt không tự tính lại.
+      phone.setCustomValidity("");
+      phone.classList.remove(INVALID);
+    });
+    phone?.addEventListener("blur", checkPhone);
+
+    /*
+      Đóng modal là kết thúc luồng đăng ký → đưa khách về trang chủ.
+
+      Bắt ở sự kiện `close` của dialog chứ không phải ở cú bấm nút: nút "Đã hiểu" đã
+      là một `<a href="/">` tự đi rồi, còn đây lo nốt đường thoát bằng Esc — không thì
+      nhấn Esc lại rơi về đúng cái form vừa gửi xong, trông như đăng ký chưa ăn.
+    */
+    success.addEventListener("close", () => window.location.assign("/"));
+
+    /** `detail` để trống thì dùng lại câu mặc định của modal. */
+    const showSuccess = (detail?: string) => {
+      // Reset trước khi mở: form ở lại trên trang (chỉ bị modal che), nên phải sạch
+      // để lần gửi sau không mang theo thông tin của người vừa gửi. `reset()` trả về
+      // giá trị mặc định của HTML, tức khoá học chọn sẵn theo trang vẫn còn.
       form.reset();
+      if (error) error.hidden = true;
+      if (successDetail) successDetail.textContent = detail || successDefault;
+
+      // `showModal` không có ở trình duyệt quá cũ — vẫn phải hiện được lời báo, chỉ
+      // là không có backdrop và bẫy focus.
+      if (typeof success.showModal === "function") success.showModal();
+      else success.setAttribute("open", "");
     };
 
     /** Xoá viền đỏ do lần gửi trước để lỗi cũ không dính vào field đã sửa. */
@@ -215,7 +471,17 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      checkPhone();
       if (!form.reportValidity()) return;
+
+      /*
+        Ghi lại số đã chuẩn hoá vào chính ô nhập trước khi đọc FormData.
+
+        Gửi đi bản "0912 345 678" hay "+84912345678" thì cùng một người có thể vào
+        CRM thành mấy lead khác nhau, và tìm theo số cũng không ra. Ghi ngược lên ô
+        nhập chứ không chỉ sửa payload để khách thấy đúng số sắp gửi đi.
+      */
+      if (phone) phone.value = normalizePhone(phone.value);
 
       const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
       const data = Object.fromEntries(new FormData(form).entries()) as Record<
@@ -225,6 +491,8 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
       // Kênh khách vào site (Facebook/Zalo/website) — bắt từ lúc đáp trang, xem
       // lib/attribution.ts. Không phải field khách nhập nên nằm ngoài FormData.
       const source = leadSource();
+      // Đọc trước khi `showSuccess` gọi `form.reset()` — sau reset thì select về mặc định.
+      const picked = pickedClass();
       if (error) error.hidden = true;
       clearFieldErrors();
 
@@ -240,18 +508,82 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
           email: data.email,
           course: data.course,
           level: data.level,
-          note: data.note,
+          /*
+            Mã lớp ghép vào trước phần khách tự viết. Lead dedupe theo số điện thoại nên
+            không có cột lớp (một người đăng ký hai lớp sẽ gộp thành một dòng); với CRM
+            thì mã lớp nằm trong ghi chú là đủ, dòng thật cho lớp là request thứ hai.
+
+            `data.classId` không có mặt ở đây: payload dựng từng field nên ô chọn lớp
+            không lọt vào body của `/leads`, nơi không biết field đó là gì.
+          */
+          note: [
+            picked?.code ? `Đăng ký giữ chỗ lớp ${picked.code}.` : "",
+            data.note,
+          ]
+            .filter(Boolean)
+            .join(" "),
           source,
         };
         const result = await submitLead(payload);
+
+        if (!result.ok) {
+          /*
+            Lead trượt thì dừng hẳn, không gọi tiếp sang đăng ký lớp.
+
+            Ghi tiếp sẽ đặt một người vào danh sách chờ của lớp mà CRM không có dòng nào
+            để gọi — server tra lead theo số điện thoại để gắn `lead_id`, không có lead
+            thì dòng đó mồ côi. Mà khách đang nhìn thấy báo lỗi và sẽ tự gửi lại, nên
+            lượt sau ghi đủ cả hai.
+
+            Luật kiểm của hai endpoint soi gương nhau (tên, số điện thoại, email), nên
+            lỗi theo field ở đây thì bên kia cũng trượt y hệt.
+          */
+          if (button) {
+            button.disabled = false;
+            button.textContent = "Gửi đăng ký tư vấn";
+          }
+          showError(result.message, result.fields);
+          return;
+        }
+
+        /*
+          Lead đã vào thì mới ghi dòng giữ chỗ, và đúng thứ tự này: server tra lead đang
+          mở theo số điện thoại để gắn `lead_id` cho dòng đăng ký, nên lead phải có trước.
+          Gọi ngược lại thì dòng vẫn được ghi, chỉ mất đường lần từ lớp về cuộc hội thoại.
+        */
+        const classResult = picked
+          ? await submitClassRegistration({
+              classId: picked.id,
+              name: data.name ?? "",
+              phone: data.phone ?? "",
+              email: data.email,
+              note: data.note,
+            })
+          : null;
 
         if (button) {
           button.disabled = false;
           button.textContent = "Gửi đăng ký tư vấn";
         }
 
-        if (result.ok) showSuccess();
-        else showError(result.message, result.fields);
+        if (classResult && !classResult.ok) {
+          // Không hiện cho khách, nhưng phải có dấu vết: đây là nửa sau của một lần bấm.
+          console.warn("class registration failed:", classResult.message);
+        }
+
+        /*
+          Lead vào được là báo thành công, kể cả khi dòng giữ chỗ trượt.
+
+          Từ phía khách, trung tâm ĐÃ có thông tin của họ và mã lớp nằm trong ghi chú của
+          lead, nên giáo vụ vẫn gọi lại đúng việc. Báo lỗi ở đây chỉ khiến họ gửi lại và
+          sinh thêm một lead trùng. Chỉ đổi câu chữ: "đã ghi vào danh sách" thay vì "sẽ
+          liên hệ xếp lớp".
+        */
+        showSuccess(
+          classResult?.ok
+            ? `Trung tâm đã ghi bạn vào danh sách ${picked?.name || "lớp bạn chọn"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`
+            : undefined,
+        );
         return;
       }
 
@@ -261,6 +593,9 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         data.email ? `Email: ${data.email}` : null,
         `Khoá học quan tâm: ${data.course}`,
         `Trình độ hiện tại: ${data.level}`,
+        // Không có API thì mail là tất cả những gì tới được trung tâm — lớp khách chọn
+        // phải nằm trong đó, không thì giáo vụ đọc mail xong vẫn phải hỏi lại.
+        picked ? `Lớp muốn giữ chỗ: ${picked.code} — ${picked.name}` : null,
         data.note ? `Ghi chú: ${data.note}` : null,
         `Nguồn: ${SOURCE_LABELS[source]}`,
       ]
@@ -271,11 +606,6 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         `Đăng ký tư vấn khoá học — ${data.name}`,
       )}&body=${encodeURIComponent(body)}`;
       showSuccess();
-    });
-
-    reset?.addEventListener("click", () => {
-      success.hidden = true;
-      form.hidden = false;
     });
   });
 </script>

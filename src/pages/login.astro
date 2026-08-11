@@ -1,11 +1,12 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
-import markUrl from "@/assets/logo-mark.png";
+import logoMark from "@/assets/logo-mark.webp";
 
 const endpoint = import.meta.env.PUBLIC_LOGIN_ENDPOINT ?? "";
 
@@ -43,11 +44,14 @@ const affix =
         <div
           class="rounded-3xl border border-border/70 bg-brand-ink-50 p-7 shadow-sm md:p-9"
         >
-          <img
-            src={markUrl.src}
+          <Image
+            src={logoMark}
             alt={`Logo ${site.fullName}`}
-            width="192"
-            height="192"
+            width={56}
+            densities={[1, 2]}
+            format="webp"
+            quality={90}
+            loading="eager"
             class="mx-auto size-14 object-contain"
           />
 

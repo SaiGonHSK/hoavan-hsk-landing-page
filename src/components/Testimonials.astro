@@ -12,15 +12,13 @@ const initials = (name: string) =>
     .toUpperCase();
 
 const list = [...testimonials].sort(
-  (a, b) =>
-    Number(Boolean((b as { image?: string }).image)) -
-    Number(Boolean((a as { image?: string }).image)),
+  (a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)),
 );
 
+// `quote` là chữ thuần nên không còn thẻ HTML để bỏ; vẫn dò trên chuỗi thô.
 const badgeOf = (quote: string) => {
-  const text = quote.replace(/<[^>]+>/g, "");
-  const hsk = text.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/, "");
-  const tocfl = text.match(/TOCFL(\s+Band\s+[A-C]\d?)?/i)?.[0];
+  const hsk = quote.match(/HSK\s?[1-6]/i)?.[0].replace(/\s+/, "");
+  const tocfl = quote.match(/TOCFL(\s+Band\s+[A-C]\d?)?/i)?.[0];
   if (hsk && tocfl) return `${hsk.toUpperCase()} · TOCFL`;
   return hsk?.toUpperCase() ?? tocfl ?? "Học viên SaigonHSK";
 };
@@ -29,8 +27,8 @@ const badgeOf = (quote: string) => {
 <section id="reviews" class="overflow-hidden bg-background scroll-mt-24">
   <div class="container mx-auto px-6">
     <SectionHeading
-      title="Học viên nói gì"
-      highlight="về Hoa văn SaigonHSK"
+      title="Chuyện của"
+      highlight="học viên SaigonHSK"
     />
 
     <div data-rail class="group/rail relative mt-16">
@@ -39,12 +37,20 @@ const badgeOf = (quote: string) => {
         class="flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {
-        list.map((t) => {
-          const image = (t as { image?: string }).image;
+        list.map((t, i) => {
+          const image = t.image;
+
+          /*
+            Chỉ cặp thẻ nhìn thấy khi khối lọt vào khung mới có nét trượt ngang: thẻ đầu
+            vào từ trái, thẻ thứ hai vào từ phải. Các thẻ sau nằm ngoài khung ngang, người
+            xem phải kéo mới thấy — lúc đó nét vào đã chạy xong nên có gán cũng vô nghĩa.
+          */
+          const slide = i === 0 ? "left" : i === 1 ? "right" : undefined;
 
           return (
             <figure
               data-review-card
+              data-review-slide={slide}
               class="flex w-[min(88vw,34rem)] shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border border-border bg-background lg:w-[calc((100%-1.5rem)/2)]"
             >
               <div class="flex flex-1 gap-6 p-7 md:p-8">
@@ -55,10 +61,14 @@ const badgeOf = (quote: string) => {
                   >
                     &ldquo;
                   </span>
-                  <blockquote
-                    class="rich mt-5 text-[0.95rem] leading-[1.85] text-brand-ink-700"
-                    set:html={t.quote}
-                  />
+                  {/*
+                    Nội suy chứ không `set:html`: `quote` là chữ thuần do người soạn
+                    nhập, in như HTML thì dấu < và & của họ thành thẻ. `whitespace-pre-line`
+                    để chỗ họ xuống dòng vẫn xuống dòng.
+                  */}
+                  <blockquote class="mt-5 whitespace-pre-line text-[0.95rem] leading-[1.85] text-brand-ink-700">
+                    {t.quote}
+                  </blockquote>
                 </div>
 
                 {image && (
@@ -102,9 +112,25 @@ const badgeOf = (quote: string) => {
                   </div>
                 </div>
 
-                <span class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900">
-                  {badgeOf(t.quote)}
-                </span>
+                {/*
+                  Có link nguồn thì huy hiệu thành liên kết tới bài đăng gốc để người
+                  xem tự kiểm chứng; không có thì vẫn là nhãn tĩnh như trước.
+                */}
+                {t.link ? (
+                  <a
+                    href={t.link}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900 transition-colors hover:border-brand-red-300 hover:text-brand-red-700"
+                  >
+                    {badgeOf(t.quote)}
+                    <span class="sr-only"> — xem bài đăng gốc của {t.name}</span>
+                  </a>
+                ) : (
+                  <span class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900">
+                    {badgeOf(t.quote)}
+                  </span>
+                )}
               </figcaption>
             </figure>
           );
@@ -115,4 +141,27 @@ const badgeOf = (quote: string) => {
       <RailHint label="đánh giá" />
     </div>
   </div>
+
+  {/*
+    Lớp `reveal` phải do script gắn, không viết sẵn trong HTML: nó đặt `opacity: 0`, hễ
+    JS không chạy là thẻ mất luôn. Đây cũng là cách khối reveal chung trong `Layout.astro`
+    làm — script đó chạy cuối `<body>`, sau script này, nên khi nó gọi `show()` cho cả
+    section thì hai thẻ đã mang sẵn `reveal-child` và nhận được `reveal-in`.
+
+    `is:inline` (chứ không để Astro gói thành module) đúng vì lý do trên: module bị hoãn
+    tới sau khi phân tích xong tài liệu, thứ tự với script cuối `<body>` sẽ không chắc.
+  */}
+  <script is:inline>
+    (() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      document.querySelectorAll("[data-review-slide]").forEach((el) => {
+        el.classList.add(
+          "reveal",
+          "reveal-child",
+          "reveal-x-" + el.dataset.reviewSlide
+        );
+      });
+    })();
+  </script>
 </section>

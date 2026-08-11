@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-04T00:00:00.000Z",
+  "updatedAt": "2026-08-10T00:00:00.000Z",
   "site": {
     "name": "Hoa văn SaigonHSK",
     "fullName": "Trung tâm Hoa văn SaigonHSK",
@@ -9,8 +9,14 @@
     "slogan": "为你的成功",
     "sloganVi": "Vì sự thành công của bạn",
     "tagline": "Trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
-    "description": "Trung tâm Hoa văn SaigonHSK đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK với giảng viên Thạc sĩ, Tiến sĩ. Cam kết đầu ra, không đạt học lại miễn phí.",
-    "foundedYear": 2019
+    "description": "Trung tâm Hoa văn SaigonHSK — có giấy phép của Sở Giáo dục, đào tạo tiếng Trung từ Sơ cấp đến Cao cấp, luyện thi HSK. Cam kết đầu ra, không đạt học lại miễn phí.",
+    "foundedYear": 2019,
+    "license": {
+      "label": "Có giấy phép của Sở Giáo dục",
+      "short": "Giấy phép Sở GD&ĐT TP.HCM",
+      "authority": "Sở Giáo dục và Đào tạo TP. Hồ Chí Minh",
+      "text": "Hoa văn SaigonHSK là trung tâm có giấy phép của Sở Giáo dục — hoạt động đào tạo, bồi dưỡng tiếng Trung theo giấy phép do Sở Giáo dục và Đào tạo TP. Hồ Chí Minh cấp."
+    }
   },
   "contact": {
     "address": "384/8 Lý Thái Tổ, Phường Vườn Lài, TP Hồ Chí Minh",
@@ -28,7 +34,7 @@
     "mapsUrl": "https://www.google.com/maps/search/?api=1&query=384%2F8+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ph%C6%B0%E1%BB%9Dng+V%C6%B0%E1%BB%9Dn+L%C3%A0i%2C+TP+H%E1%BB%93+Ch%C3%AD+Minh",
     "mapEmbedUrl": "https://www.google.com/maps?q=384%2F8%20L%C3%BD%20Th%C3%A1i%20T%E1%BB%95%2C%20Ph%C6%B0%E1%BB%9Dng%20V%C6%B0%E1%BB%9Dn%20L%C3%A0i%2C%20TP%20H%E1%BB%93%20Ch%C3%AD%20Minh&output=embed",
     "workingHours": "Thứ 2 – Chủ nhật: 8:00 – 21:00",
-    "tiktok": "https://www.tiktok.com/business-suite/messages"
+    "tiktok": "https://www.tiktok.com/@hoavansaigonhsk"
   },
   "hero": {
     "titleLine1": "Học tiếng Trung",
@@ -69,6 +75,10 @@
       "label": "Học lại nếu chưa đạt đầu ra"
     }
   ],
+  "milestones": {
+    "studentCount": 20000,
+    "description": "Học viên đã học tiếng Trung và luyện thi HSK tại Hoa văn SaigonHSK: sinh viên các trường đại học ở TP.HCM, người đi làm, học sinh và cả học viên lớn tuổi."
+  },
   "values": [
     {
       "id": "vi-nguoi-hoc",
@@ -88,7 +98,7 @@
       "id": "ung-dung-hoc-tap",
       "icon": "phone",
       "title": "Ứng dụng học tập riêng",
-      "desc": "Học viên có ứng dụng riêng của trung tâm để ôn từ vựng, luyện đề HSK và theo dõi tiến độ mỗi ngày — lớp học, bài tập và điểm số đồng bộ cùng giảng viên.",
+      "desc": "Học viên có ứng dụng riêng của trung tâm để ôn từ vựng, luyện đề HSK và theo dõi tiến độ mỗi ngày, kèm AI luyện nói – luyện nghe để tập phát âm và phản xạ ngoài giờ lên lớp — lớp học, bài tập và điểm số đồng bộ cùng giảng viên.",
       "image": "/images/values/tiet-kiem-thoi-gian.svg"
     },
     {
@@ -216,44 +226,6 @@
       ]
     }
   ],
-  "banners": [
-    {
-      "title": "Lịch khai giảng mới nhất",
-      "desc": "Các lớp offline và online khai giảng liên tục hằng tháng, chuẩn HSK 3.0 với cam kết 100% đầu ra.",
-      "image": "/images/banners/class-schedule.webp",
-      "href": "/schedule",
-      "cta": "Xem lịch khai giảng",
-      "wide": true
-    },
-    {
-      "title": "Sứ mệnh của SaigonHSK",
-      "desc": "Truyền cảm hứng và tạo động lực cho người học không ngừng nâng trình độ tiếng Trung.",
-      "image": "/images/banners/mission.webp",
-      "href": "/about",
-      "cta": "Về trung tâm"
-    },
-    {
-      "title": "Phương châm hoạt động",
-      "desc": "为你的成功 — Vì sự thành công của bạn. Nơi khơi nguồn cảm hứng học tiếng Trung, nhanh chóng đưa người học đến trình độ mong muốn.",
-      "image": "/images/banners/motto.webp",
-      "href": "/about/differences",
-      "cta": "Sự khác biệt"
-    },
-    {
-      "title": "Mô hình đào tạo",
-      "desc": "Lớp 10–15 học viên, học bù và phụ đạo miễn phí, kho tài liệu mở, cam kết đầu ra — không đạt học lại miễn phí.",
-      "image": "/images/banners/training-model.webp",
-      "href": "/courses",
-      "cta": "Xem khóa học"
-    },
-    {
-      "title": "Feedback học viên",
-      "desc": "Những phản hồi tích cực từ học viên là động lực để trung tâm không ngừng hoàn thiện.",
-      "image": "/images/banners/student-feedback.webp",
-      "href": "/about/reviews",
-      "cta": "Đọc phản hồi"
-    }
-  ],
   "testimonials": [
     {
       "name": "Hiển Hoàng",
@@ -337,6 +309,10 @@
       "answer": "Trung tâm cam kết 100% đầu ra khoá học. Với các lớp luyện thi, học viên hoàn thành chương trình được đảm bảo đậu HSK4 hoặc HSK5 tùy khóa; với các lớp sơ cấp, đầu ra tương ứng là HSK1, HSK2, HSK3. Nếu không đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí."
     },
     {
+      "question": "Trung tâm có giấy phép hoạt động không?",
+      "answer": "Có. Hoa văn SaigonHSK là trung tâm có giấy phép của Sở Giáo dục — trung tâm hoạt động đào tạo, bồi dưỡng tiếng Trung theo giấy phép do Sở Giáo dục và Đào tạo TP. Hồ Chí Minh cấp, có địa chỉ và cơ sở vật chất cố định tại 384/8 Lý Thái Tổ, Phường Vườn Lài, TP.HCM. Học viên có thể đến trực tiếp trung tâm để xem giấy phép, tham quan phòng học và nhận tư vấn lộ trình."
+    },
+    {
       "question": "Tôi chưa biết gì về tiếng Trung thì bắt đầu từ lớp nào?",
       "answer": "Bạn bắt đầu từ lớp HSK1 — lớp dành cho người chưa từng học tiếng Trung, học từ phát âm và quy tắc viết chữ Hán, kéo dài 2,5 tháng. Nếu bạn chỉ cần nói được nhanh và không có nhiều thời gian tập viết chữ Hán, lớp Giao tiếp Cấp tốc 1 (GT1) là lựa chọn phù hợp hơn."
     },
@@ -373,535 +349,19 @@
       "answer": "Trung tâm ở 384/8 Lý Thái Tổ, Phường Vườn Lài, TP Hồ Chí Minh. Bạn có thể đến trực tiếp để tham quan cơ sở vật chất và nhận tư vấn lộ trình, hoặc liên hệ trước qua Zalo/điện thoại 0345.20.44.99."
     }
   ],
-  "schedule": [
-    {
-      "code": "HSK1",
-      "className": "Lớp HSK1 (ca 1)",
-      "courseCode": "HSK1",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "offline",
-      "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 3,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 5,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "10/08/2026"
-    },
-    {
-      "code": "HSK1",
-      "className": "Lớp HSK1 (ca 2)",
-      "courseCode": "HSK1",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "offline",
-      "target": "100% đậu HSK1 chuẩn HSK 3.0 · Giao tiếp cơ bản 1",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "24/08/2026"
-    },
-    {
-      "code": "HSK2",
-      "className": "Lớp HSK2 (ca 1)",
-      "courseCode": "HSK2",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "offline",
-      "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "slots": [
-        {
-          "weekday": 2,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        },
-        {
-          "weekday": 4,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "11/08/2026"
-    },
-    {
-      "code": "HSK2",
-      "className": "Lớp HSK2 (ca 2)",
-      "courseCode": "HSK2",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "offline",
-      "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:45",
-          "endTime": "21:15"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "31/08/2026"
-    },
-    {
-      "code": "HSK3",
-      "className": "Lớp HSK3",
-      "courseCode": "HSK3",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "offline",
-      "target": "Đạt trình độ HSK3 chuẩn HSK 3.0 · Giao tiếp cơ bản 3",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 3,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 5,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "4,5 tháng",
-      "openDate": "26/08/2026"
-    },
-    {
-      "code": "HSK4.1",
-      "className": "Lớp HSK4.1",
-      "courseCode": "HSK4",
-      "courseSlug": "tieng-hoa-trung-cap",
-      "mode": "offline",
-      "target": "Tiền HSK4",
-      "slots": [
-        {
-          "weekday": 2,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        },
-        {
-          "weekday": 4,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "11/08/2026"
-    },
-    {
-      "code": "HSK4.2",
-      "className": "Lớp HSK4.2",
-      "courseCode": "HSK4",
-      "courseSlug": "tieng-hoa-trung-cap",
-      "mode": "offline",
-      "target": "Hoàn thành HSK4 · HSKK Sơ cấp",
-      "slots": [
-        {
-          "weekday": 2,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        },
-        {
-          "weekday": 4,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "25/08/2026"
-    },
-    {
-      "code": "HSK5.1",
-      "className": "Lớp HSK5.1",
-      "courseCode": "HSK5",
-      "courseSlug": "tieng-hoa-trung-cap",
-      "mode": "offline",
-      "target": "Tiền HSK5",
-      "slots": [
-        {
-          "weekday": 2,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        },
-        {
-          "weekday": 4,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "20/08/2026"
-    },
-    {
-      "code": "HSK5.2",
-      "className": "Lớp HSK5.2",
-      "courseCode": "HSK5",
-      "courseSlug": "tieng-hoa-trung-cap",
-      "mode": "offline",
-      "target": "Hoàn thành HSK5 · HSKK Trung cấp 5",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "03/08/2026"
-    },
-    {
-      "code": "LT-HSK3",
-      "className": "Luyện thi HSK3",
-      "courseCode": "LT-HSK3",
-      "courseSlug": "luyen-thi-hsk",
-      "mode": "offline",
-      "target": "Cam kết 100% đậu HSK3 và HSKK Sơ cấp",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 3,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        },
-        {
-          "weekday": 5,
-          "startTime": "18:15",
-          "endTime": "19:45"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2 tháng",
-      "openDate": "28/08/2026"
-    },
-    {
-      "code": "LT-HSK4",
-      "className": "Luyện thi HSK4",
-      "courseCode": "LT-HSK4",
-      "courseSlug": "luyen-thi-hsk",
-      "mode": "offline",
-      "target": "Cam kết 100% đậu HSK4 và HSKK Trung cấp",
-      "slots": [
-        {
-          "weekday": 2,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        },
-        {
-          "weekday": 4,
-          "startTime": "18:15",
-          "endTime": "20:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3 tháng",
-      "openDate": "27/08/2026"
-    },
-    {
-      "code": "LT-HSK5",
-      "className": "Luyện thi HSK5",
-      "courseCode": "LT-HSK5",
-      "courseSlug": "luyen-thi-hsk",
-      "mode": "offline",
-      "target": "Cam kết 100% đậu HSK5 và HSKK Cao cấp",
-      "slots": [
-        {
-          "weekday": 6,
-          "startTime": "13:30",
-          "endTime": "16:30"
-        },
-        {
-          "weekday": 0,
-          "startTime": "13:30",
-          "endTime": "16:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "4 tháng",
-      "openDate": "22/08/2026"
-    },
-    {
-      "code": "HSK1-ON",
-      "className": "Lớp HSK1 Online",
-      "courseCode": "HSK1",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "online",
-      "target": "100% đậu HSK1 · Giao tiếp cơ bản 1",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "10/08/2026"
-    },
-    {
-      "code": "HSK2-ON",
-      "className": "Lớp HSK2 Online",
-      "courseCode": "HSK2",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "online",
-      "target": "100% đậu HSK2 chuẩn HSK 3.0 · Giao tiếp cơ bản 2",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        },
-        {
-          "weekday": 3,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        },
-        {
-          "weekday": 5,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "2,5 tháng",
-      "openDate": "17/08/2026"
-    },
-    {
-      "code": "HSK3-ON",
-      "className": "Lớp HSK3 Online",
-      "courseCode": "HSK3",
-      "courseSlug": "tieng-hoa-so-cap",
-      "mode": "online",
-      "target": "Đạt trình độ HSK3 chuẩn HSK 3.0 · Giao tiếp cơ bản 3",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        },
-        {
-          "weekday": 3,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        },
-        {
-          "weekday": 5,
-          "startTime": "18:00",
-          "endTime": "19:30"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "24/08/2026"
-    },
-    {
-      "code": "HSK4.2-ON",
-      "className": "Lớp HSK4.2 Online",
-      "courseCode": "HSK4",
-      "courseSlug": "tieng-hoa-trung-cap",
-      "mode": "online",
-      "target": "Tiền HSK4",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "26/08/2026"
-    },
-    {
-      "code": "HSK6.1-ON",
-      "className": "Lớp HSK6.1 Online",
-      "courseCode": "HSK6",
-      "courseSlug": "tieng-hoa-cao-cap",
-      "mode": "online",
-      "target": "Hoàn thành HSK6 · HSKK Trung cấp 6",
-      "slots": [
-        {
-          "weekday": 1,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 3,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        },
-        {
-          "weekday": 5,
-          "startTime": "19:30",
-          "endTime": "21:00"
-        }
-      ],
-      "cadenceNote": "",
-      "duration": "3,5 tháng",
-      "openDate": "03/08/2026"
-    },
-    {
-      "code": "GT1",
-      "className": "Giao tiếp Cấp tốc 1",
-      "courseCode": "GT1",
-      "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
-      "mode": "offline",
-      "target": "200–300 từ, giao tiếp cơ bản",
-      "slots": [],
-      "cadenceNote": "3 buổi/tuần · 1,5h/buổi",
-      "duration": "36 buổi · 3 tháng",
-      "openDate": ""
-    },
-    {
-      "code": "GT2",
-      "className": "Giao tiếp Cấp tốc 2",
-      "courseCode": "GT2",
-      "courseSlug": "tieng-hoa-giao-tiep-cap-toc",
-      "mode": "offline",
-      "target": "300–400 từ, giao tiếp nâng cao",
-      "slots": [],
-      "cadenceNote": "3 buổi/tuần · 1,5h/buổi",
-      "duration": "36 buổi · 3 tháng",
-      "openDate": ""
-    },
-    {
-      "code": "VIP",
-      "className": "Tiếng Trung VIP 1 kèm 1",
-      "courseCode": "VIP",
-      "courseSlug": "tieng-hoa-vip",
-      "mode": "offline",
-      "target": "Theo mục tiêu học viên",
-      "slots": [],
-      "cadenceNote": "Lịch linh hoạt theo học viên",
-      "duration": "Theo lộ trình cá nhân",
-      "openDate": ""
-    }
-  ],
   "about": {
     "heading": "Chào mừng đến với",
     "headingHighlight": "Hoa văn SaigonHSK",
     "paragraphs": [
-      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
+      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, có giấy phép của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
       "SaigonHSK đào tạo đầy đủ các chương trình từ Sơ cấp đến Cao cấp, dành cho mọi đối tượng học viên: từ người mới bắt đầu, mất gốc đến luyện thi HSK, HSKK và tiếng Trung giao tiếp. Chương trình được thiết kế bài bản, lộ trình rõ ràng, chú trọng thực hành và cam kết đầu ra. Nếu học viên chưa đạt mục tiêu theo đúng lộ trình đã cam kết, trung tâm sẽ hỗ trợ học lại hoàn toàn miễn phí.",
       "Đội ngũ giảng viên của SaigonHSK là những thầy cô giàu kinh nghiệm, tận tâm và luôn cập nhật phương pháp giảng dạy hiện đại. Phần lớn giảng viên có trình độ Thạc sĩ, Tiến sĩ tốt nghiệp từ các trường đại học danh tiếng tại Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam. Sự am hiểu chuyên môn cùng tinh thần trách nhiệm chính là nền tảng giúp hàng nghìn học viên đạt được mục tiêu học tập và chinh phục các chứng chỉ tiếng Trung."
     ]
   },
-  "coreValues": [
-    {
-      "id": "chat-luong",
-      "icon": "shield",
-      "title": "Chất lượng",
-      "desc": "Không ngừng nâng cao chất lượng giảng dạy, chương trình đào tạo và dịch vụ để mang đến hiệu quả học tập tốt nhất cho mỗi học viên."
-    },
-    {
-      "id": "tan-tam",
-      "icon": "heart",
-      "title": "Tận tâm",
-      "desc": "Lấy học viên làm trung tâm, luôn lắng nghe, đồng hành và hỗ trợ trong suốt quá trình học tập nhằm giúp mỗi học viên phát huy tối đa năng lực của mình."
-    },
-    {
-      "id": "chuyen-nghiep",
-      "icon": "cap",
-      "title": "Chuyên nghiệp",
-      "desc": "Xây dựng môi trường học tập hiện đại với đội ngũ giảng viên giàu chuyên môn, phương pháp giảng dạy khoa học và lộ trình học tập rõ ràng."
-    },
-    {
-      "id": "doi-moi",
-      "icon": "sparkle",
-      "title": "Đổi mới",
-      "desc": "Liên tục cập nhật kiến thức, công nghệ và phương pháp giảng dạy tiên tiến nhằm nâng cao trải nghiệm học tập và đáp ứng nhu cầu ngày càng đa dạng của người học."
-    },
-    {
-      "id": "uy-tin",
-      "icon": "target",
-      "title": "Uy tín",
-      "desc": "Giữ vững cam kết về chất lượng đào tạo, lấy kết quả học tập và sự hài lòng của học viên làm thước đo cho sự phát triển bền vững của trung tâm."
-    }
-  ],
   "reasons": {
     "title": "8 lý do học viên tin tưởng",
     "highlight": "lựa chọn Hoa văn SaigonHSK",
-    "intro": "Hoa văn SaigonHSK tự hào là địa chỉ đào tạo tiếng Trung chất lượng cao tại TP. Hồ Chí Minh, nơi đã đồng hành cùng hàng nghìn học viên chinh phục tiếng Trung từ trình độ cơ bản đến các chứng chỉ HSK, HSKK và ứng dụng ngôn ngữ trong học tập, công việc.",
+    "intro": "Hoa văn SaigonHSK tự hào là địa chỉ đào tạo tiếng Trung chất lượng cao tại TP. Hồ Chí Minh — trung tâm có giấy phép của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh, nơi đã đồng hành cùng hàng nghìn học viên chinh phục tiếng Trung từ trình độ cơ bản đến các chứng chỉ HSK, HSKK và ứng dụng ngôn ngữ trong học tập, công việc.",
     "items": [
       {
         "title": "Đội ngũ giảng viên giàu kinh nghiệm và chuyên môn cao",
@@ -948,12 +408,12 @@
         "title": "Ứng dụng học tập độc quyền – Học mọi lúc, tiến bộ mỗi ngày",
         "desc": "Học viên tại Hoa văn SaigonHSK được sử dụng ứng dụng học tập và ôn luyện độc quyền, tích hợp bài giảng, tài liệu, bài tập và hệ thống ôn luyện HSK theo từng cấp độ. Ứng dụng giúp việc học không còn giới hạn trong lớp học, mà có thể diễn ra mọi lúc, mọi nơi, góp phần nâng cao hiệu quả tiếp thu và rút ngắn thời gian đạt mục tiêu.",
         "bullets": [
-          "📱 Ôn luyện mọi lúc, mọi nơi trên điện thoại hoặc máy tính",
-          "📚 Truy cập bài giảng, tài liệu và bài tập theo từng khóa học",
-          "✍️ Luyện tập và củng cố kiến thức sau mỗi buổi học",
-          "🎯 Ôn luyện HSK, HSKK với hệ thống đề và bài tập được cập nhật thường xuyên",
-          "🔔 Theo dõi tiến độ học tập và nhận thông báo từ trung tâm",
-          "💬 Kết nối nhanh với giảng viên và bộ phận giáo vụ khi cần hỗ trợ"
+          "Ôn luyện mọi lúc, mọi nơi trên điện thoại hoặc máy tính",
+          "Truy cập bài giảng, tài liệu và bài tập theo từng khóa học",
+          "Luyện tập và củng cố kiến thức sau mỗi buổi học",
+          "Ôn luyện HSK, HSKK với hệ thống đề và bài tập được cập nhật thường xuyên",
+          "Theo dõi tiến độ học tập và nhận thông báo từ trung tâm",
+          "Kết nối nhanh với giảng viên và bộ phận giáo vụ khi cần hỗ trợ"
         ]
       }
     ],

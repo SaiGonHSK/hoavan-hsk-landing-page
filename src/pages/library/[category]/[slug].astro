@@ -1,0 +1,137 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import ArticleHero from "@/components/ArticleHero.astro";
+import ArticleAside from "@/components/ArticleAside.astro";
+import ArticleGrid from "@/components/ArticleGrid.astro";
+import CtaSection from "@/components/CtaSection.astro";
+import Footer from "@/components/Footer.astro";
+import FloatingContact from "@/components/FloatingContact.astro";
+import { articlesInCategory, findLibraryArticle, getLibrary } from "@/data/library";
+import { buildToc } from "@/lib/articleToc";
+import { site } from "@/data/site";
+
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro. Bài viết do
+// trang quản trị soạn, nên danh sách đổi giữa hai lần xem là chuyện thường.
+const item = await findLibraryArticle(
+  Astro.params.category ?? "",
+  Astro.params.slug ?? "",
+);
+if (!item) return new Response(null, { status: 404 });
+
+/*
+ * Ba bài gợi ý: ưu tiên cùng chuyên mục, thiếu thì lấy bài mới nhất của Thư viện.
+ *
+ * Chuyên mục mới mở thường chỉ có một bài, và một bài viết kết thúc bằng khoảng
+ * trắng là chỗ người đọc rời trang. Bù bằng bài mới nhất giữ được mạch đọc mà không
+ * cần chuyên mục nào phải "đủ bài" trước.
+ */
+const sameCategory = (await articlesInCategory(item.category.key)).filter(
+  (entry) => entry.slug !== item.slug,
+);
+const fallback = (await getLibrary()).filter(
+  (entry) => entry.slug !== item.slug && !sameCategory.some((s) => s.slug === entry.slug),
+);
+const related = [...sameCategory, ...fallback].slice(0, 3);
+
+/*
+ * Mục lục rút từ chính thân bài — xem src/lib/articleToc.ts.
+ *
+ * Bài chỉ có một mục (hoặc không mục nào) thì không mở cột phụ: một mục lục một dòng
+ * không giúp gì mà lại cắt cột chữ hẹp đi.
+ */
+const { html: body, toc } = buildToc(item.body);
+const hasToc = toc.length > 1;
+
+const schemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: item.title,
+    description: item.summary,
+    inLanguage: "vi-VN",
+    ...(item.publishedAt ? { datePublished: item.publishedAt } : {}),
+    ...(item.updatedAt ? { dateModified: item.updatedAt } : {}),
+    ...(item.coverImage
+      ? { image: new URL(item.coverImage, Astro.site).href }
+      : {}),
+    articleSection: item.category.label,
+    author: { "@type": "Organization", name: site.fullName },
+    publisher: { "@id": `${Astro.site?.origin ?? ""}/#organization` },
+  },
+];
+---
+
+<Layout
+  title={`${item.title} | ${site.shortName}`}
+  description={item.summary}
+  image={item.coverImage || undefined}
+  ogType="article"
+  schemas={schemas}
+>
+  <Header />
+  <main id="main" class="flex flex-col gap-10 lg:gap-14">
+    <ArticleHero article={item} />
+
+    {
+      item.coverImage && (
+        <div class="container mx-auto px-6">
+          {/* `eager` vì đây là LCP của trang. */}
+          <img
+            src={item.coverImage}
+            alt={item.title}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="aspect-video w-full rounded-3xl object-cover"
+          />
+        </div>
+      )
+    }
+
+    {/*
+      Thân bài và mục lục chia hai cột từ `lg`.
+
+      Cột chữ chặn ở `max-w-208` cho dòng chữ dài vừa tầm đọc; phần dôi ra giữa hai
+      cột thành lề trắng, không nống cột chữ ra thêm. Khung ngoài vẫn là `container mx-auto
+      px-6` như tiêu đề và ảnh bìa nên thân bài vẫn thẳng lề với chúng.
+    */}
+    <div
+      class:list={[
+        "container mx-auto grid gap-12 px-6 lg:gap-16",
+        hasToc && "lg:grid-cols-[minmax(0,1fr)_20rem]",
+      ]}
+    >
+      <article>
+        {/*
+          `set:html` là cố ý: `body` là HTML do trang quản trị soạn bằng trình soạn
+          thảo, và chỉ admin/staff vào được console. `buildToc` chỉ gắn thêm `id` vào
+          H2/H3 của chính chuỗi đó, không đưa nội dung nào mới vào.
+        */}
+        <div
+          class="rich max-w-208 text-base leading-[1.75] text-muted-foreground md:text-[1.0625rem]"
+          set:html={body}
+        />
+      </article>
+
+      {hasToc && <ArticleAside toc={toc} />}
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="bg-background">
+          <div class="container mx-auto px-6">
+            <h2 class="mb-6 text-2xl font-black text-brand-ink-900 md:text-3xl">
+              Bài viết liên quan
+            </h2>
+            <ArticleGrid articles={related} eagerFirst={false} />
+          </div>
+        </section>
+      )
+    }
+
+    <CtaSection />
+  </main>
+  <Footer />
+  <FloatingContact />
+</Layout>

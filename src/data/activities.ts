@@ -1,14 +1,28 @@
-import poster1 from "@/assets/activities/a1.jpg";
-import poster2 from "@/assets/activities/a2.jpg";
-import poster3 from "@/assets/activities/a3.jpg";
-import poster4 from "@/assets/activities/a4.jpg";
-import poster5 from "@/assets/activities/a5.jpg";
-import poster6 from "@/assets/activities/a6.jpg";
+import christmasClassPhoto from "@/assets/activities/giang-sinh-lop-chup-anh.webp";
+import midAutumn from "@/assets/activities/trung-thu-goc-check-in.webp";
+import teachersDay from "@/assets/activities/ngay-nha-giao-viet-nam.webp";
+import tet from "@/assets/activities/a1.webp";
+import dailyClassExercise from "@/assets/daily/lop-lam-bai-tap.webp";
+import dailyTeacherRounds from "@/assets/daily/giang-vien-di-quanh-lop.webp";
+import dailyAoDaiLesson from "@/assets/daily/co-giao-ao-dai-giang-bai.webp";
+import dailyMilkTea from "@/assets/daily/lop-uong-tra-sua.webp";
+import dailyMilkTeaHandout from "@/assets/daily/giang-vien-phat-tra-sua.webp";
+import dailyFrontDesk from "@/assets/daily/quay-le-tan-trang-tri.webp";
+import dailyWaitingRoom from "@/assets/daily/hoc-vien-cho-vao-lop.webp";
 
 /**
- * Poster hoạt động do trung tâm thiết kế (ảnh vuông).
- * Ảnh nằm ở src/assets/activities/ để Astro nén và xuất WebP lúc build —
- * bản gốc 2526×2526 nặng ~1,5MB nên không được nhúng thẳng.
+ * Bốn dịp lễ trung tâm tổ chức cho học viên, mỗi dịp đúng một ảnh:
+ * Giáng sinh, Trung thu, Tết, Ngày Nhà giáo Việt Nam.
+ *
+ * Mỗi dịp một ảnh chứ không phải cả album: lưới vừa đúng một hàng 4 ô, người xem
+ * nắm ngay "trung tâm có tổ chức bốn dịp này" mà không phải cuộn qua chục tấm
+ * cùng phông cùng tông đỏ.
+ *
+ * Ảnh nằm ở src/assets/activities/ để Astro nén và xuất WebP theo đúng khổ hiển thị —
+ * bản gốc tới 2526px, nhúng thẳng thì mỗi ô 280px vẫn phải tải nguyên bản.
+ *
+ * Trong mỗi dịp chọn bản gốc lớn nhất đang có: ô ảnh cắt vuông nên giới hạn thật là
+ * cạnh ngắn, cạnh ngắn không đủ gấp đôi bề rộng ô thì màn Retina nhìn mờ.
  */
 export type ActivityPoster = {
   image: ImageMetadata;
@@ -17,89 +31,65 @@ export type ActivityPoster = {
 
 export const activityPosters: ActivityPoster[] = [
   {
-    image: poster1,
+    image: christmasClassPhoto,
+    caption:
+      "圣诞节快乐 — cả lớp chụp ảnh cùng cây thông ở góc check-in Giáng sinh của trung tâm",
+  },
+  {
+    image: midAutumn,
+    caption: "Góc Trung thu 中秋 với bánh, trà và đèn lồng do trung tâm bày",
+  },
+  {
+    image: tet,
     caption:
       "Minigame Check-in Tết — học viên trao nhau lời chúc năm mới bằng tiếng Trung",
   },
   {
-    image: poster2,
-    caption: "Lớp HSK2 của thầy Tín gửi lời chúc Tết bằng tiếng Trung",
-  },
-  {
-    image: poster3,
-    caption: "Lớp HSK2 của cô Huyền cùng nhau check-in Tết tại trung tâm",
-  },
-  {
-    image: poster4,
-    caption: "Bạn Hằng Nga kể về mùa xuân đoàn viên bên gia đình",
-  },
-  {
-    image: poster5,
-    caption: "Bạn Kim Phụng check-in Tết trong tà áo dài",
-  },
-  {
-    image: poster6,
-    caption: "Bạn Quang Minh gửi lời chúc năm mới đến thầy cô và cả lớp",
+    image: teachersDay,
+    caption:
+      "Góc chúc mừng Ngày Nhà giáo Việt Nam — học viên viết lời chúc gửi từng giảng viên",
   },
 ];
 
 export type Activity = {
-
-  src: string;
-
+  image: ImageMetadata;
   caption: string;
-  width?: number;
-  height?: number;
 };
 
-/** Ảnh lớp học trong public/ — dùng làm nền mờ ở mục Học thử miễn phí. */
-export const activities: Activity[] = [
+/**
+ * Ảnh sinh hoạt thường ngày ở trung tâm — lớp đang học, giảng viên đi quanh lớp,
+ * học viên chờ vào lớp. Dùng làm khảm nền mờ ở mục Học thử.
+ *
+ * Nằm ở src/assets/daily/ chứ không phải public/: chỗ dùng chỉ hiện mỗi ô ~220px,
+ * để trong public/ thì trình duyệt phải tải nguyên bản 2048px cho từng ô.
+ */
+export const dailyMoments: Activity[] = [
   {
-    src: "/images/activities/lop-luyen-thi-hsk.jpg",
-    caption: "Lớp luyện thi HSK với giáo trình ôn thi từ HanBan",
-    width: 1024,
-    height: 768,
+    image: dailyClassExercise,
+    caption: "Lớp kín chỗ, cả lớp cùng làm bài trên lớp",
   },
   {
-    src: "/images/activities/hoat-dong-giang-sinh.jpg",
-    caption: "Hoạt động Giáng sinh cùng học viên tại trung tâm",
-    width: 1024,
-    height: 683,
+    image: dailyTeacherRounds,
+    caption: "Giảng viên đi quanh lớp xem từng bạn làm bài",
   },
   {
-    src: "/images/activities/hoat-dong-tet.jpg",
-    caption: "Không khí Tết Trung Hoa tại Hoa văn SaigonHSK",
-    width: 1024,
-    height: 768,
+    image: dailyAoDaiLesson,
+    caption: "Giảng viên giảng bài trong lớp buổi tối",
   },
   {
-    src: "/images/activities/hoc-vien-lam-bai.jpg",
-    caption: "Học viên luyện viết chữ Hán tại lớp",
-    width: 1024,
-    height: 683,
+    image: dailyMilkTea,
+    caption: "Trung tâm mời trà sữa cả lớp giữa buổi học",
   },
   {
-    src: "/images/activities/giang-vien-chua-bai.jpg",
-    caption: "Giảng viên chữa bài trên lớp",
-    width: 1024,
-    height: 683,
+    image: dailyMilkTeaHandout,
+    caption: "Giảng viên phát nước cho học viên trong lớp",
   },
   {
-    src: "/images/activities/lop-hoc-buoi-toi.jpg",
-    caption: "Lớp học buổi tối dành cho học viên đi làm",
-    width: 1024,
-    height: 767,
+    image: dailyFrontDesk,
+    caption: "Quầy lễ tân trang trí theo mùa, luôn có người trực tư vấn",
   },
   {
-    src: "/images/activities/lop-hoc-nho.jpg",
-    caption: "Lớp 10–15 học viên, ai cũng được nói và được sửa",
-    width: 1024,
-    height: 768,
-  },
-  {
-    src: "/images/activities/tu-van-lo-trinh.jpg",
-    caption: "Tư vấn lộ trình học cho học viên mới",
-    width: 1024,
-    height: 683,
+    image: dailyWaitingRoom,
+    caption: "Học viên chờ tới giờ vào lớp ở khu tiếp đón",
   },
 ];

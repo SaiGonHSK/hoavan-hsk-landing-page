@@ -4,22 +4,60 @@ import BrandHeading from "@/components/BrandHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import { activityPosters } from "@/data/activities";
 
+/**
+ * Bề rộng ô ảnh lớn nhất trên desktop: lưới 4 cột trong `container` (rộng nhất
+ * 96rem = 1536px), trừ `px-6` hai bên và 3 khoảng `gap-5` → (1536-48-60)/4 ≈ 357px.
+ * Lấy 360 cho chẵn — ô hẹp hơn thì trình duyệt thu nhỏ xuống, chỉ nét thêm.
+ */
+const CARD = 360;
+
 /*
   Lightbox nhận URL dạng chuỗi nên phải tạo sẵn bản phóng to đã nén —
-  nếu trỏ thẳng vào ảnh gốc 2526px thì mỗi lần mở phải tải ~1,5MB.
+  nếu trỏ thẳng vào ảnh gốc 2526px thì mỗi lần mở phải tải cả MB.
 */
 const posters = await Promise.all(
-  activityPosters.map(async (p) => ({
-    ...p,
-    full: (
-      await getImage({
-        src: p.image,
-        width: 1200,
-        format: "webp",
-        quality: 78,
-      })
-    ).src,
-  })),
+  activityPosters.map(async (p) => {
+    /*
+      Ô ảnh là hình vuông (`aspect-square` + `object-cover`), mà ảnh chụp phần lớn là
+      ảnh ngang. Chỉ đưa `width` thì Astro giữ nguyên tỉ lệ: ảnh 2048×1366 ra bản
+      480×320, rồi CSS kéo bản 320px cao đó lên cho đầy ô vuông 480px — nhìn mờ hẳn,
+      trong khi mấy poster Tết vốn vuông 2526×2526 thì lại nét. Nên phải xin sharp
+      cắt vuông sẵn (`width` = `height` + `fit: "cover"`), trình duyệt không còn phải
+      phóng to gì nữa.
+
+      Chiều ngắn hơn của ảnh gốc là giới hạn thật: cắt vuông 800px từ ảnh
+      2048×1366 chỉ cần 1366px, nhưng từ ảnh 414×414 thì phải nội suy. Ảnh nhỏ lấy
+      đúng cỡ nó có, còn nét ở 1x, thay vì mờ ở 2x.
+    */
+    const shortest = Math.min(p.image.width, p.image.height);
+    const card = Math.min(CARD, shortest);
+
+    /*
+      Trước đây chỗ này là `shortest >= CARD * 2 ? [1, 2] : [1]` — được ăn cả ngã về
+      không. Ảnh gốc thiếu dù chỉ một chút so với mốc 2x là rơi thẳng xuống 1x, màn
+      Retina phóng đôi lên nên mờ hẳn; phóng to/thu nhỏ trình duyệt thì đỡ vì lúc đó
+      ô thu lại, bản 1x mới đủ điểm ảnh.
+
+      Giờ lấy đúng mức ảnh gốc gánh được, tối đa 2x: 1.5x vẫn nét hơn 1x nhiều, và
+      srcset chấp nhận bội số lẻ. Dưới 1.05x thì bỏ — thêm một file tải về mà mắt
+      không phân biệt nổi.
+    */
+    const density = Math.min(2, shortest / card);
+
+    return {
+      ...p,
+      card,
+      densities: density >= 1.05 ? [1, Number(density.toFixed(2))] : [1],
+      full: (
+        await getImage({
+          src: p.image,
+          width: Math.min(1400, p.image.width),
+          format: "webp",
+          quality: 90,
+        })
+      ).src,
+    };
+  }),
 );
 ---
 
@@ -31,15 +69,15 @@ const posters = await Promise.all(
     >
       <div class="container relative z-10 mx-auto px-6">
         <BrandHeading
-          title="Hoạt động học viên "
+          title="Sự kiện tại "
           highlight="SaigonHSK"
-          note="Minigame Check-in Tết 2026"
+          note="Tết · Trung thu · Giáng sinh · 20/11"
         />
 
         <div data-rail class="group/rail relative mt-12">
           <div
             data-rail-track
-            class="activity-rail -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+            class="activity-rail -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
           >
           {posters.map((p) => (
             <button
@@ -51,10 +89,12 @@ const posters = await Promise.all(
               <Image
                 src={p.image}
                 alt={p.caption}
-                width={480}
-                densities={[1, 2]}
+                width={p.card}
+                height={p.card}
+                fit="cover"
+                densities={p.densities}
                 format="webp"
-                quality={76}
+                quality={90}
                 loading="lazy"
                 decoding="async"
                 class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"

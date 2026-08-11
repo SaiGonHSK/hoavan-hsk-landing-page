@@ -1,8 +1,6 @@
+import { staticContent, type SiteContent } from "./content";
 
-import { content } from "./content";
+export type Teacher = SiteContent["teachers"][number];
 
-export type Teacher = (typeof content.teachers)[number];
-export type Banner = (typeof content.banners)[number];
-
-export const teachers = content.teachers;
-export const banners = content.banners;
+/** Tĩnh — sửa `content/site.json` rồi deploy. Xem `DYNAMIC_KEYS` trong `content.ts`. */
+export const teachers: Teacher[] = staticContent.teachers;

@@ -91,7 +91,9 @@ const sectionsOf = (level: CourseLevel, spec: LevelSpec | undefined): CourseSect
   outcome: [...level.outcomes],
   // Chỉ HSK1 có phần vỡ lòng phát âm và bút thuận.
   foundation: spec && "foundation" in spec ? [...spec.foundation] : [],
-  grammar_point: spec ? [...spec.grammar] : [],
+  // Danh sách điểm ngữ pháp mẫu đã bị bỏ khỏi HSK_LEVELS — trang khoá chỉ nêu tổng số
+  // điểm, không liệt kê từng điểm nữa.
+  grammar_point: [],
   topic_item: spec ? [...spec.topics.items] : [],
 });
 

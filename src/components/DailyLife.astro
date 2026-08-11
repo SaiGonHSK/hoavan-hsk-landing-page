@@ -1,0 +1,129 @@
+---
+import { Image } from "astro:assets";
+import BrandHeading from "@/components/BrandHeading.astro";
+import { dailyMoments } from "@/data/activities";
+import { ICONS } from "@/lib/icons";
+import { lightboxSrc } from "@/lib/images";
+
+/**
+ * Ảnh sinh hoạt thường ngày ở trung tâm, hiển thị thành khối riêng.
+ *
+ * Bảy tấm này trước đây là khảm nền của mục Học thử: `opacity-[0.22]`, `alt=""`,
+ * `aria-hidden` — nghĩa là người xem không nhìn ra được gì và bot cũng không đọc được
+ * gì. Chúng lại đúng là loại ảnh người đang chọn trung tâm muốn xem nhất: lớp thật
+ * đang học, đông bao nhiêu người, giảng viên có đi quanh lớp không. Để làm hoạ tiết mờ
+ * là bỏ đi phần bằng chứng thuyết phục nhất mà trung tâm đang có.
+ *
+ * `Facility` nói về **phòng** (thiết bị, tiện nghi, địa chỉ); khối này nói về **không
+ * khí lớp**. Hai chuyện khác nhau nên tách hai khối, không dồn chung một dải ảnh.
+ */
+interface Props {
+  title?: string;
+  highlight?: string;
+  note?: string;
+  class?: string;
+}
+
+const {
+  title = "Một buổi học ở",
+  highlight = "SaigonHSK",
+  note = "Ảnh thật, không dàn dựng",
+  class: className = "",
+} = Astro.props;
+
+/*
+  Lưới ô đều nhau, không có ô "nổi bật" chiếm 2 cột.
+
+  Bản đầu cho tấm đầu chiếm 2 cột: nó cao gấp đôi (2 cột × tỉ lệ 4:3) trong khi hai ô
+  cạnh nó vẫn cao 4:3 của một cột, nên dưới hai ô đó hở ra một vùng trắng bằng cả một ô
+  ảnh. Muốn giữ ô rộng mà hàng vẫn đều thì ô đó phải đổi sang tỉ lệ rộng hơn (≈8:3), và
+  lúc ấy trên màn hẹp — nơi nó chiếm trọn bề ngang — `object-cover` phải cắt hai bên rất
+  sâu, ảnh mất nét. Ô đều nhau tránh được cả hai chuyện.
+
+  Bảy tấm trên lưới 4 cột thành 4 + 3, hàng cuối hụt một ô ở cuối dãy. Chỗ hụt ở cuối
+  hàng cuối là bình thường; chỗ hở giữa lưới mới là lỗi.
+*/
+
+/*
+  Khổ ô ở desktop: `container` rộng nhất 96rem (1536px), trừ `px-6` hai bên còn 1488,
+  trừ 3 khoảng `gap-5` (60px) → mỗi cột ≈ 357px. Lấy 360 cho chẵn.
+
+  Cắt sẵn đúng 4:3 bằng `fit: "cover"` kèm cả `width` và `height` — cùng lý do đã ghi
+  ở `Facility.astro`: chỉ đưa `width` thì Astro giữ tỉ lệ gốc rồi CSS kéo giãn cho đầy
+  khung, ảnh mờ mà vẫn tải đủ pixel.
+*/
+const CARD_W = 360;
+const CARD_H = 270;
+
+const photos = await Promise.all(
+  dailyMoments.map(async (p) => {
+    // Bội số điểm ảnh lấy đúng mức ảnh gốc gánh được, tối đa 2x; cả hai chiều đều phải
+    // đủ nên lấy chiều eo hẹp hơn. Dưới 1,05x thì bỏ — thêm một file tải về mà mắt
+    // không phân biệt nổi.
+    const density = Math.min(2, p.image.width / CARD_W, p.image.height / CARD_H);
+
+    return {
+      ...p,
+      densities: density >= 1.05 ? [1, Number(density.toFixed(2))] : [1],
+      // Ô ảnh chỉ 360px, bấm vào phải có bản đủ to để nhìn được lớp học.
+      full: await lightboxSrc(p.image),
+    };
+  }),
+);
+---
+
+<section
+  id="daily-life"
+  class:list={["relative overflow-hidden bg-background scroll-mt-24", className]}
+>
+  <div class="container relative z-10 mx-auto px-6">
+    <BrandHeading title={title} highlight={highlight} note={note} />
+
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+      {
+        photos.map((p) => (
+          <li>
+            {/*
+              `figure` + `figcaption` chứ không phải div + span: chú thích ở đây là chú
+              thích thật của ảnh, và cặp thẻ này cho trình đọc màn hình biết chữ nào
+              thuộc ảnh nào. `alt` để nguyên nội dung chú thích — ảnh sinh hoạt không có
+              cách mô tả nào ngắn hơn mà vẫn đúng.
+            */}
+            <figure class="h-full">
+              <button
+                type="button"
+                data-lightbox={p.full}
+                data-caption={p.caption}
+                class="group relative block w-full cursor-zoom-in overflow-hidden rounded-[1.75rem] bg-brand-ink-100 text-left"
+              >
+                <Image
+                  src={p.image}
+                  alt={p.caption}
+                  width={CARD_W}
+                  height={CARD_H}
+                  fit="cover"
+                  densities={p.densities}
+                  format="webp"
+                  quality={88}
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-4/3 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+
+                {/* Máy cảm ứng không có hover nên để nhãn hiện sẵn, khỏi mất gợi ý. */}
+                <span class="pointer-events-none absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-brand-ink-900 opacity-0 shadow-[0_10px_24px_-14px_rgb(17_24_39/0.7)] transition duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
+                  <span class="[&>svg]:size-3.5" set:html={ICONS.search} />
+                  Xem ảnh lớn
+                </span>
+              </button>
+
+              <figcaption class="mt-3 px-1 text-sm leading-snug text-muted-foreground">
+                {p.caption}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

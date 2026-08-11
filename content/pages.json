@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Cấu trúc menu của landing — sửa bằng tay trong repo. Trang quản trị chỉ đọc, không ghi.",
+  "note": "Bản dự phòng khi API chết. Nguồn thật là bảng menu_entries trên server, sửa ở console /landing/menu.",
   "menu": [
     {
       "label": "Giới thiệu",
@@ -241,55 +241,54 @@
     {
       "label": "Thư viện",
       "slug": "/library",
-      "hidden": true,
       "children": [
         {
           "label": "Từ vựng theo chủ đề",
-          "slug": "/library/tu-vung-theo-chu-de"
+          "slug": "/library/thematic-vocabulary"
         },
         {
           "label": "Văn hoá Trung Quốc",
-          "slug": "/library/van-hoa-trung-quoc"
+          "slug": "/library/chinese-culture"
         },
         {
           "label": "Thành ngữ tiếng Trung Quốc",
-          "slug": "/library/thanh-ngu"
+          "slug": "/library/idioms"
         },
         {
           "label": "Quán dụng ngữ tiếng Trung Quốc",
-          "slug": "/library/quan-dung-ngu"
+          "slug": "/library/colloquial-phrases"
         },
         {
           "label": "Yết hậu ngữ tiếng Trung Quốc",
-          "slug": "/library/yet-hau-ngu"
+          "slug": "/library/allegorical-sayings"
         },
         {
           "label": "Câu chuyện Hán tự",
-          "slug": "/library/cau-chuyen-han-tu"
+          "slug": "/library/character-stories"
         },
         {
           "label": "Tài liệu ngữ pháp tiếng Trung Quốc",
-          "slug": "/library/tai-lieu-ngu-phap"
+          "slug": "/library/grammar-resources"
         },
         {
           "label": "Câu đố",
-          "slug": "/library/cau-do"
+          "slug": "/library/riddles"
         },
         {
           "label": "Truyện cười",
-          "slug": "/library/truyen-cuoi"
+          "slug": "/library/jokes"
         },
         {
           "label": "Kiến thức từ vựng",
-          "slug": "/library/kien-thuc-tu-vung"
+          "slug": "/library/vocabulary-guides"
         },
         {
           "label": "Kiến thức ngữ pháp",
-          "slug": "/library/kien-thuc-ngu-phap"
+          "slug": "/library/grammar-guides"
         },
         {
           "label": "Tiếng Trung chuyên ngành",
-          "slug": "/library/tieng-trung-chuyen-nganh"
+          "slug": "/library/specialized-chinese"
         }
       ]
     },

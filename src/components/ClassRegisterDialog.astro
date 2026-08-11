@@ -1,0 +1,448 @@
+---
+import { contact } from "@/data/site";
+import { ICONS } from "@/lib/icons";
+
+/**
+ * Modal "Đăng ký giữ chỗ" của một lớp cụ thể trên lịch khai giảng.
+ *
+ * **Vì sao là modal chứ không phải sang `/register`.** Khách bấm trên đúng một thẻ lớp
+ * là đã trả lời xong "học lớp nào"; đưa họ sang một trang khác rồi bắt chọn lại khoá
+ * trong select là hỏi lại thứ vừa trả lời, ngay chỗ dễ bỏ cuộc nhất. Ở lại trang cũng
+ * giữ được **id lớp** đi kèm chắc chắn, thay vì qua query string — mã lớp trên URL
+ * không unique (nhiều ca dùng chung mã) nên không nói được là ca nào.
+ *
+ * **Chỉ ghi vào danh sách lớp, không vào CRM.** Submit gọi đúng một request:
+ * `POST /api/v1/schedule/classes/:id/register`. Giữ chỗ KHÔNG sinh "đăng ký tư vấn".
+ *
+ * Vì sao: người giữ chỗ rồi đi học vẫn nằm trong CRM ở trạng thái "Mới" — không có gì
+ * đẩy nó sang "Đã đăng ký" — nên tháng sau lọc nhóm gửi ưu đãi khai giảng là gửi chương
+ * trình tuyển sinh cho chính người đang ngồi trong lớp. Để họ ngoài CRM thì không bao
+ * giờ gửi nhầm, và giáo vụ vẫn có đủ tên/số/email ngay trong danh sách giữ chỗ của lớp.
+ *
+ * Form ở `/register` thì khác và vẫn tạo lead: đó là khách chủ động xin tư vấn.
+ *
+ * **Chỉ có một cái trên trang.** Đặt một lần ở `schedule.astro`; các thẻ lớp chỉ mang
+ * data attribute, script điền nội dung lớp vào modal lúc mở. Hai mươi thẻ mà mỗi thẻ
+ * một `<dialog>` là hai mươi bản form trong DOM.
+ *
+ * **Không có JS thì nút vẫn đi được.** Nút trên thẻ vẫn là `<a href="/register?…">`
+ * thật; script chỉ `preventDefault` khi modal dựng được. Xem `ScheduleCards.astro`.
+ */
+const field =
+  "h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-brand-red-500";
+const label = "mb-1.5 block text-sm font-semibold text-foreground";
+---
+
+<dialog
+  data-class-register-dialog
+  aria-labelledby="crd-title"
+  class:list={[
+    // `m-auto` bắt buộc: preflight của Tailwind đặt `margin: 0` cho mọi thẻ, mà
+    // `dialog:modal` canh giữa bằng đúng `margin: auto` của trình duyệt — thiếu dòng
+    // này modal dính góc trên bên trái.
+    "m-auto w-[min(32rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto",
+    "rounded-3xl border border-border bg-background p-0 text-foreground shadow-2xl",
+  ]}
+>
+  <!-- Khối form. Ẩn đi khi gửi xong, để chỗ cho khối báo thành công bên dưới. -->
+  <div data-crd-form-panel class="p-6 md:p-8">
+    <div class="flex items-start justify-between gap-4">
+      <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-ink-900">
+        Đăng ký giữ chỗ
+      </p>
+
+      {/*
+        Nút đóng ở góc: modal này mở từ một thẻ lớp giữa trang, người bấm nhầm cần lối ra
+        thấy ngay. Nút "Để sau" nằm tận cuối form, phải cuộn hết mới tới.
+
+        `-mr-1 -mt-1` kéo vùng bấm ra sát mép trong của modal mà không phải bỏ `p-6`:
+        vùng bấm 32px vẫn đủ rộng, icon vẫn thẳng hàng với dòng chữ bên trái.
+      */}
+      <button
+        type="button"
+        data-crd-close
+        aria-label="Đóng"
+        class="-mr-1 -mt-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-full text-brand-ink-400 transition-colors hover:bg-brand-ink-50 hover:text-brand-ink-900 [&>svg]:size-4"
+        set:html={ICONS.close}
+      />
+    </div>
+
+    <p id="crd-title" data-crd-class-name class="mt-1.5 text-base font-black text-brand-ink-900">
+    </p>
+    <p data-crd-class-meta class="mt-1 text-sm leading-relaxed text-muted-foreground"></p>
+
+    <form data-crd-form class="mt-6 space-y-4">
+      <!--
+        Id lớp là input hidden chứ không phải biến trong script: `new FormData(form)`
+        lấy được cùng lúc với các field khác, và devtools soi ra ngay lớp nào đang gửi.
+      -->
+      <input type="hidden" name="classId" data-crd-class-id />
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class={label} for="crd-name">
+            Họ và tên <span class="text-brand-red-600">*</span>
+          </label>
+          <input
+            id="crd-name"
+            name="name"
+            required
+            minlength="2"
+            autocomplete="name"
+            placeholder="Nguyễn Văn A"
+            class={field}
+          />
+        </div>
+
+        <div>
+          <label class={label} for="crd-phone">
+            Số điện thoại <span class="text-brand-red-600">*</span>
+          </label>
+          {/*
+            Cùng luật với RegisterForm: script lọc mọi thứ gõ/dán vào, còn
+            `maxlength`/`pattern` là lưới chắn cho lúc JS chưa chạy.
+          */}
+          <input
+            id="crd-phone"
+            name="phone"
+            type="tel"
+            inputmode="numeric"
+            required
+            maxlength="10"
+            pattern="0[0-9]{9}"
+            autocomplete="tel"
+            placeholder="0912345678"
+            class={field}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class={label} for="crd-email">
+          Email <span class="font-normal text-muted-foreground">(không bắt buộc)</span>
+        </label>
+        <input
+          id="crd-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="email@example.com"
+          class={field}
+        />
+      </div>
+
+      <div>
+        <label class={label} for="crd-note">Ghi chú cho trung tâm</label>
+        <textarea
+          id="crd-note"
+          name="note"
+          rows="2"
+          placeholder="Ví dụ: cần học buổi tối sau 18h, muốn học thử một buổi…"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-brand-red-500"
+        ></textarea>
+      </div>
+
+      <p
+        data-crd-error
+        role="alert"
+        hidden
+        data-fallback={`Gửi chưa thành công. Bạn vui lòng gọi ${contact.phonePrimary} hoặc chat Zalo để được hỗ trợ ngay.`}
+        class="rounded-xl bg-brand-red-50 px-4 py-3 text-sm font-medium text-brand-red-700"
+      >
+      </p>
+
+      <div class="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          data-crd-cancel
+          class="cursor-pointer rounded-full border border-border px-6 py-3 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
+        >
+          Để sau
+        </button>
+        <button
+          type="submit"
+          class="cursor-pointer rounded-full bg-brand-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-70"
+        >
+          Gửi đăng ký
+        </button>
+      </div>
+
+      <p class="text-center text-xs leading-relaxed text-muted-foreground">
+        Thông tin của bạn chỉ dùng để tư vấn và xếp lớp. Hoặc gọi trực tiếp
+        <a
+          href={`tel:${contact.phonePrimaryRaw}`}
+          class="font-semibold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+        >.
+      </p>
+    </form>
+  </div>
+
+  <!--
+    Báo thành công thay chỗ form trong cùng modal, không phải modal thứ hai: khách đang
+    ở giữa trang lịch và sẽ còn xem tiếp, nên đóng lại là về chỗ cũ — khác với
+    `/register`, nơi đóng modal là kết thúc luồng và đưa về trang chủ.
+  -->
+  <div data-crd-success-panel hidden class="p-7 text-center md:p-9">
+    <span
+      class="mx-auto grid size-14 place-items-center rounded-full bg-emerald-500 text-white [&>svg]:size-7"
+      set:html={ICONS.check}
+    />
+
+    <p class="mt-5 text-xl font-black text-brand-ink-900 md:text-2xl">
+      Đã ghi nhận chỗ của bạn!
+    </p>
+
+    <p data-crd-success-detail class="mt-3 text-sm leading-relaxed text-muted-foreground"></p>
+
+    <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
+      Cần gấp thì bạn gọi
+      <a
+        href={`tel:${contact.phonePrimaryRaw}`}
+        class="font-bold text-brand-red-600 hover:underline">{contact.phonePrimary}</a
+      >
+      hoặc
+      <a
+        href={contact.zalo}
+        target="_blank"
+        rel="noopener"
+        class="font-bold text-brand-red-600 hover:underline">chat Zalo</a
+      > nhé.
+    </p>
+
+    <button
+      type="button"
+      data-crd-close
+      class="mt-7 flex w-full cursor-pointer items-center justify-center rounded-full bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
+    >
+      Xem tiếp lịch khai giảng
+    </button>
+  </div>
+</dialog>
+
+<style>
+  /*
+    Nền mờ viết bằng màu thẳng, không qua token của theme: `::backdrop` ở top layer nên
+    không phải trình duyệt nào cũng cho nó kế thừa custom property khai ở `:root`. Giá
+    trị lấy đúng `--brand-ink-900` trong global.css.
+  */
+  dialog[data-class-register-dialog]::backdrop {
+    background-color: rgb(18 19 22 / 0.6);
+  }
+
+  dialog[data-class-register-dialog][open] {
+    animation: crd-in 180ms ease-out;
+  }
+
+  @keyframes crd-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    dialog[data-class-register-dialog][open] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { CLASS_REGISTER_READY, submitClassRegistration } from "@/lib/leads";
+  import { PHONE_ERROR, isValidPhone, normalizePhone, sanitizePhoneInput } from "@/lib/phone";
+
+  const INVALID = "border-brand-red-500";
+
+  const dialog = document.querySelector<HTMLDialogElement>("[data-class-register-dialog]");
+  const form = dialog?.querySelector<HTMLFormElement>("[data-crd-form]");
+
+  /*
+    Không có modal, hoặc trình duyệt không có `showModal` (bản quá cũ): để nguyên các
+    nút thẻ lớp là `<a href="/register?…">`. Khách vẫn đăng ký được, chỉ là qua một
+    trang nữa — thà thế còn hơn một modal mở ra rồi không đóng được.
+  */
+  if (dialog && form && typeof dialog.showModal === "function") {
+    const formPanel = dialog.querySelector<HTMLElement>("[data-crd-form-panel]");
+    const successPanel = dialog.querySelector<HTMLElement>("[data-crd-success-panel]");
+    const successDetail = dialog.querySelector<HTMLElement>("[data-crd-success-detail]");
+    const nameEl = dialog.querySelector<HTMLElement>("[data-crd-class-name]");
+    const metaEl = dialog.querySelector<HTMLElement>("[data-crd-class-meta]");
+    const idEl = dialog.querySelector<HTMLInputElement>("[data-crd-class-id]");
+    const error = dialog.querySelector<HTMLElement>("[data-crd-error]");
+    const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const phone = form.querySelector<HTMLInputElement>('input[name="phone"]');
+
+    /** Ngữ cảnh lớp đang mở — script cần lại lúc gửi (khoá cho lead, mã cho ghi chú). */
+    let current = { id: "", name: "", code: "", course: "" };
+
+    const showPanel = (which: "form" | "success") => {
+      if (formPanel) formPanel.hidden = which !== "form";
+      if (successPanel) successPanel.hidden = which !== "success";
+    };
+
+    /* ── Số điện thoại: cùng luật với RegisterForm ────────────────────── */
+
+    const checkPhone = () => {
+      if (!phone) return;
+      // Bỏ trống thì để `required` lên tiếng — hai lời báo cho một ô là thừa.
+      const invalid = phone.value.trim() !== "" && !isValidPhone(phone.value);
+      phone.setCustomValidity(invalid ? PHONE_ERROR : "");
+    };
+
+    phone?.addEventListener("input", () => {
+      // Lọc trong lúc gõ nhưng giữ vị trí con trỏ: gán `value` mới là con trỏ nhảy về
+      // cuối, sửa một số ở giữa thành ra không sửa được.
+      const cleaned = sanitizePhoneInput(phone.value);
+      if (cleaned !== phone.value) {
+        const caret = phone.selectionStart ?? phone.value.length;
+        const removed = phone.value.length - cleaned.length;
+        phone.value = cleaned;
+        const next = Math.max(0, caret - removed);
+        phone.setSelectionRange(next, next);
+      }
+      // Trình duyệt không tự tính lại `customValidity`, phải tự xoá khi khách sửa.
+      phone.setCustomValidity("");
+      phone.classList.remove(INVALID);
+    });
+    phone?.addEventListener("blur", checkPhone);
+
+    /* ── Mở / đóng ────────────────────────────────────────────────────── */
+
+    const open = (trigger: HTMLElement) => {
+      current = {
+        id: trigger.dataset.classId ?? "",
+        name: trigger.dataset.className ?? "",
+        code: trigger.dataset.classCode ?? "",
+        course: trigger.dataset.course ?? "",
+      };
+
+      form.reset();
+      if (idEl) idEl.value = current.id;
+      /*
+        "Lớp " ghép ở đây chứ không nằm trong dữ liệu: `data-class-name` là tên khoá
+        ("Luyện thi HSK4"), dùng chung cho cả tiêu đề modal lẫn ghi chú gửi về CRM. Nhét
+        chữ "Lớp" vào dữ liệu thì ghi chú cũng dính theo.
+      */
+      if (nameEl) nameEl.textContent = current.name ? `Lớp ${current.name}` : "";
+      if (metaEl) metaEl.textContent = trigger.dataset.classMeta ?? "";
+      if (error) error.hidden = true;
+      form
+        .querySelectorAll<HTMLElement>(`.${INVALID}`)
+        .forEach((el) => el.classList.remove(INVALID));
+
+      showPanel("form");
+      dialog.showModal();
+    };
+
+    dialog.querySelector("[data-crd-cancel]")?.addEventListener("click", () => dialog.close());
+
+    // `querySelectorAll`: có hai nút mang `data-crd-close` — dấu × ở góc khối form và nút
+    // "Xem tiếp lịch khai giảng" ở khối báo thành công. `querySelector` chỉ gắn cho cái đầu.
+    dialog
+      .querySelectorAll("[data-crd-close]")
+      .forEach((el) => el.addEventListener("click", () => dialog.close()));
+
+    /*
+      Bấm ra ngoài thì đóng. `<dialog>` không có sẵn hành vi này, và click trên backdrop
+      báo về chính thẻ dialog — nên so `event.target` với dialog là đủ để phân biệt với
+      click vào ruột modal.
+    */
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    /*
+      Bắt click ở tầng document chứ không gắn từng nút: lưới thẻ lịch được lọc lại bằng
+      JS khi khách gõ vào ô tìm kiếm, nên số nút có thể đổi sau khi script đã chạy.
+    */
+    document.addEventListener("click", (event) => {
+      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        "[data-class-register]",
+      );
+      if (!trigger) return;
+      // Không có id lớp thì để `<a>` đi sang /register như cũ, đừng mở modal rỗng.
+      if (!trigger.dataset.classId) return;
+
+      event.preventDefault();
+      open(trigger);
+    });
+
+    /* ── Gửi ──────────────────────────────────────────────────────────── */
+
+    const showError = (message: string, fields?: Record<string, string>) => {
+      if (error) {
+        error.textContent = message || (error.dataset.fallback ?? "");
+        error.hidden = false;
+      }
+      const first = Object.keys(fields ?? {})[0];
+      const input = first ? form.querySelector<HTMLElement>(`[name="${first}"]`) : null;
+      input?.classList.add(INVALID);
+      (input as HTMLInputElement | null)?.focus();
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      checkPhone();
+      if (!form.reportValidity()) return;
+
+      // Ghi số đã chuẩn hoá ngược lên ô nhập: khách thấy đúng số sắp gửi, và server tra
+      // lead ĐANG CÓ theo số này để gắn `lead_id` — hai bên phải khớp từng ký tự.
+      if (phone) phone.value = normalizePhone(phone.value);
+
+      const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+      if (error) error.hidden = true;
+
+      if (!CLASS_REGISTER_READY) {
+        // Chưa cấu hình API: nút thẻ lớp vẫn là link thật, nên đẩy khách qua trang
+        // `/register` — ở đó có nhánh lùi về mailto. Thà đi đường dài còn hơn mất khách.
+        // `classId` đi cùng để trang kia chọn sẵn đúng ca — khách đã bấm trên một lớp cụ
+        // thể thì không nên phải chọn lại lớp đó lần nữa ở form.
+        window.location.assign(
+          `/register?course=${encodeURIComponent(current.course)}&class=${encodeURIComponent(current.code)}&classId=${encodeURIComponent(current.id)}`,
+        );
+        return;
+      }
+
+      if (submit) {
+        submit.disabled = true;
+        submit.textContent = "Đang gửi…";
+      }
+
+      /*
+        Ghi chú gửi đi đúng phần khách tự viết, không kèm mã lớp: dòng này đã gắn `class_id`
+        nên lớp là thứ nó biết sẵn, nhét thêm vào ghi chú chỉ làm giáo vụ đọc lại thứ đang
+        hiện ngay trên đầu danh sách.
+      */
+      const classResult = await submitClassRegistration({
+        classId: current.id,
+        name: data.name ?? "",
+        phone: data.phone ?? "",
+        email: data.email,
+        note: (data.note ?? "").trim(),
+      });
+
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = "Gửi đăng ký";
+      }
+
+      /*
+        Một request nên nó là sự thật duy nhất: trượt thì báo lỗi và ở lại form.
+
+        Trước đây chỗ này nuốt lỗi và vẫn báo thành công, vì lead đã vào rồi nên trung tâm
+        vẫn có thông tin khách. Giờ không còn lead nào để đỡ: nuốt lỗi là khách tưởng đã
+        giữ được chỗ trong khi không có dòng nào được ghi.
+      */
+      if (!classResult.ok) {
+        showError(classResult.message, classResult.fields);
+        return;
+      }
+
+      if (successDetail) {
+        successDetail.textContent = `Trung tâm đã ghi bạn vào danh sách ${current.name || "lớp này"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`;
+      }
+
+      showPanel("success");
+    });
+  }
+</script>

@@ -4,24 +4,29 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
-import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { mission, reasons } from "@/data/site";
+import { reasons } from "@/data/site";
 import { valuePanels } from "@/data/valuePanels";
 import { ICONS } from "@/lib/icons";
+import { aboutPageSchema } from "@/lib/schema";
+
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
   title="Điểm khác biệt của trung tâm tiếng Trung SaigonHSK"
   description="Giáo trình biên soạn riêng cho người Việt, giảng viên Thạc sĩ – Tiến sĩ, ứng dụng luyện đề riêng của trung tâm và cam kết đầu ra HSK — những điểm khác biệt của Hoa văn SaigonHSK."
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <PageHero
-      title="Điểm khác biệt của chúng tôi"
-      description={mission.motto}
+      title={reasons.closingTitle}
+      description={reasons.closingParagraphs}
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Điểm khác biệt" }]}
       glyph="异"
     />
@@ -38,14 +43,9 @@ import { ICONS } from "@/lib/icons";
                     i % 2 === 1 && "lg:order-last",
                   ]}
                 >
-                  <div class="flex flex-wrap items-center gap-3">
-                    <span class="inline-flex items-center rounded-full bg-brand-ink-900 px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-white">
-                      {v.badge}
-                    </span>
-                    <span class="text-[0.6875rem] font-bold uppercase tracking-widest text-muted-foreground">
-                      0{i + 1}
-                    </span>
-                  </div>
+                  <span class="inline-flex w-fit items-center rounded-full bg-brand-ink-900 px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-widest text-white">
+                    {v.badge}
+                  </span>
 
                   <h2 class="mt-6 max-w-md text-2xl font-black leading-tight text-brand-ink-900 sm:text-3xl">
                     {v.title}
@@ -88,7 +88,7 @@ import { ICONS } from "@/lib/icons";
                             width={430}
                             densities={[1, 2]}
                             format="webp"
-                            quality={80}
+                            quality={88}
                             loading="lazy"
                             decoding="async"
                             class="block w-full"
@@ -96,25 +96,30 @@ import { ICONS } from "@/lib/icons";
                         </div>
                       ))}
                     </div>
-                  ) : typeof v.image === "string" ? (
-                    <img
-                      src={v.image}
-                      alt={v.title}
-                      loading="lazy"
-                      decoding="async"
-                      class="absolute inset-0 size-full object-cover"
-                    />
-                  ) : (
+                  ) : v.contain ? (
                     <Image
                       src={v.image}
                       alt={`${v.title} — ${v.note}`}
                       width={720}
                       densities={[1, 2]}
                       format="webp"
-                      quality={78}
+                      quality={88}
                       loading="lazy"
                       decoding="async"
                       class="size-full rounded-2xl object-contain"
+                    />
+                  ) : (
+                    /* Ảnh chụp lớp học phủ kín nửa thẻ — cắt cạnh thay vì hiện trọn. */
+                    <Image
+                      src={v.image}
+                      alt={v.title}
+                      widths={[640, 1024]}
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      format="webp"
+                      quality={88}
+                      loading="lazy"
+                      decoding="async"
+                      class="absolute inset-0 size-full object-cover"
                     />
                   )}
                 </div>
@@ -135,12 +140,9 @@ import { ICONS } from "@/lib/icons";
 
         <ol class="mt-12 grid gap-5 lg:grid-cols-2">
           {
-            reasons.items.map((r, i) => (
+            reasons.items.map((r) => (
               <li class="flex flex-col rounded-3xl border border-border bg-background p-7">
-                <span class="text-sm font-black text-brand-red-600">
-                  0{i + 1}
-                </span>
-                <h3 class="mt-3 text-lg font-extrabold leading-snug text-brand-ink-900">
+                <h3 class="text-lg font-extrabold leading-snug text-brand-ink-900">
                   {r.title}
                 </h3>
                 <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -172,21 +174,9 @@ import { ICONS } from "@/lib/icons";
             ))
           }
         </ol>
-
-        <div class="mt-6 rounded-3xl bg-brand-ink-50 p-8 md:p-10">
-          <p class="text-2xl font-black leading-tight text-brand-ink-900 md:text-3xl">
-            {reasons.closingTitle}
-          </p>
-          <div
-            class="mt-4 max-w-3xl space-y-3 text-sm leading-relaxed text-muted-foreground"
-          >
-            {reasons.closingParagraphs.map((p) => <p>{p}</p>)}
-          </div>
-        </div>
       </div>
     </section>
 
-    <RegisterSection />
     <CtaSection />
   </main>
   <Footer />

@@ -1,0 +1,101 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import { teacherStories } from "@/data/teacherStories";
+
+/**
+ * Chia sẻ của giảng viên về con đường giảng dạy.
+ *
+ * Dải ảnh `Teacher` trả lời "họ là ai" bằng học vị và trường; khối này trả lời "vì sao
+ * họ đi dạy" — thứ mà bằng cấp không nói được, và cũng là thứ người đang chọn trung tâm
+ * đọc để đoán xem mình sẽ học với người thế nào.
+ *
+ * Chưa có chia sẻ nào thì không dựng gì cả: một tiêu đề to đứng trên khoảng trống nhìn
+ * như trang lỗi.
+ */
+---
+
+{
+  teacherStories.length > 0 && (
+    <section id="teacher-stories" class="scroll-mt-24 bg-background">
+      <div class="container mx-auto px-6">
+        <SectionHeading
+          title="Chia sẻ của giảng viên"
+          highlight="về con đường giảng dạy"
+          inlineHighlight
+          description="Vì sao các thầy cô chọn tiếng Trung, và điều gì giữ họ lại với bục giảng."
+        />
+
+        <div class="mt-14 flex flex-col gap-6">
+          {teacherStories.map(({ teacher, story }, i) => (
+            <article
+              class:list={[
+                "grid gap-8 rounded-3xl border border-border bg-background p-6 md:p-10 lg:gap-12",
+                // So le trái–phải để dãy thẻ dài không thành một cột ảnh chạy thẳng đuột.
+                i % 2 === 1 ? "lg:grid-cols-[1fr_15rem]" : "lg:grid-cols-[15rem_1fr]",
+              ]}
+            >
+              <div
+                class:list={[
+                  "flex items-center gap-5 lg:block",
+                  i % 2 === 1 && "lg:order-last",
+                ]}
+              >
+                {/* Chiều cao để `auto` cho `aspect-square` quyết định. Đặt `size-full`
+                    là height:100% ăn theo ô grid — ô này bị đoạn chia sẻ bên cạnh kéo
+                    cao nên khung thành dọc, và ảnh card đã nướng sẵn tên + học vị vào
+                    trong sẽ bị object-cover cắt mất logo bên trái, chữ bên phải. */}
+                {teacher.image && (
+                  <img
+                    src={teacher.image}
+                    alt={teacher.name}
+                    width="480"
+                    height="480"
+                    loading="lazy"
+                    decoding="async"
+                    class="size-20 shrink-0 rounded-2xl object-cover lg:aspect-square lg:h-auto lg:w-full"
+                  />
+                )}
+
+                <div class="min-w-0 lg:mt-5">
+                  <p class="text-base font-extrabold leading-snug text-brand-ink-900">
+                    {teacher.name}
+                  </p>
+                  <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {teacher.title}
+                  </p>
+                  {(teacher as { role?: string }).role && (
+                    <p class="mt-2 text-xs font-bold leading-relaxed text-brand-red-700">
+                      {(teacher as { role?: string }).role}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <blockquote class="relative">
+                {/* Ngoặc kép chữ Hán, cùng họ với các chữ nền 课 / 师 của site. */}
+                <span
+                  aria-hidden="true"
+                  class="pointer-events-none absolute -left-2 -top-6 select-none text-[5rem] font-black leading-none text-brand-red-900/6 md:text-[7rem]"
+                >
+                  「
+                </span>
+
+                <p class="relative text-xl font-black leading-snug tracking-tight text-balance text-brand-ink-900 md:text-2xl">
+                  {story.headline}
+                </p>
+
+                <div class="relative mt-6 space-y-4 border-t border-border pt-6">
+                  {story.paragraphs.map((p) => (
+                    <p class="text-sm leading-relaxed text-brand-ink-700 md:text-base">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </blockquote>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

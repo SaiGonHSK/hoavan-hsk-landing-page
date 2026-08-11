@@ -1,8 +1,16 @@
 ---
+import { Image } from "astro:assets";
 import BrandHeading from "@/components/BrandHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { lightboxSrc } from "@/lib/images";
+import classroom from "@/assets/infrastructure/phong-hoc-trong.webp";
+import facility1 from "@/assets/facility/facility-1.webp";
+import facility2 from "@/assets/facility/facility-2.webp";
+import classSmall from "@/assets/classes/lop-hoc-nho.webp";
+import classEvening from "@/assets/classes/lop-hoc-buoi-toi.webp";
+import classConsult from "@/assets/classes/tu-van-lo-trinh.webp";
 
 interface Props {
   class?: string;
@@ -19,50 +27,50 @@ const amenities = [
 ];
 
 type Space = {
-  src: string;
+  image: ImageMetadata;
   name: string;
-  width: number;
-  height: number;
 };
 
 const spaces: Space[] = [
-  {
-    src: "/images/classroom.webp",
-    name: "Phòng học chính",
-    width: 1024,
-    height: 577,
-  },
-  {
-    src: "/images/facility-2.webp",
-    name: "Sảnh lễ tân & lối lên lớp",
-    width: 768,
-    height: 1024,
-  },
-  {
-    src: "/images/facility-1.webp",
-    name: "Không gian sinh hoạt chung",
-    width: 1024,
-    height: 768,
-  },
-  {
-    src: "/images/activities/lop-hoc-nho.jpg",
-    name: "Lớp 10–15 học viên",
-    width: 1024,
-    height: 768,
-  },
-  {
-    src: "/images/activities/lop-hoc-buoi-toi.jpg",
-    name: "Lớp tối cho người đi làm",
-    width: 1024,
-    height: 767,
-  },
-  {
-    src: "/images/activities/tu-van-lo-trinh.jpg",
-    name: "Góc tư vấn lộ trình",
-    width: 1024,
-    height: 683,
-  },
+  { image: classroom, name: "Phòng học chính" },
+  { image: facility2, name: "Sảnh lễ tân & lối lên lớp" },
+  { image: facility1, name: "Không gian sinh hoạt chung" },
+  { image: classSmall, name: "Lớp 10–15 học viên" },
+  { image: classEvening, name: "Lớp tối cho người đi làm" },
+  { image: classConsult, name: "Góc tư vấn lộ trình" },
 ];
+
+/** Khổ ô ảnh lớn nhất: `sm:w-80` (320px) với `aspect-4/3` → 320×240. */
+const CARD_W = 320;
+const CARD_H = 240;
+
+/*
+  Ô ảnh là khung 4:3 cắt `object-cover`, còn ảnh gốc đủ mọi tỉ lệ. Chỉ đưa `width`
+  thì Astro giữ nguyên tỉ lệ gốc: ảnh 1024×577 ra bản 640×361, rồi CSS kéo cao lên
+  480 cho đầy khung — phóng 1,33 lần, nhìn mờ hẳn. Nên xin sharp cắt sẵn đúng 4:3
+  (`fit: "cover"` kèm cả `width` và `height`), trình duyệt hết phải phóng.
+
+  Bội số điểm ảnh lấy đúng mức ảnh gốc gánh được, tối đa 2x — cả hai chiều đều phải
+  đủ nên lấy chiều eo hẹp hơn. Ảnh 1024×577 chỉ cho được 1,2x; 1,2x vẫn nét hơn hẳn
+  bản 1x bị kéo giãn.
+*/
+const cards = await Promise.all(
+  spaces.map(async (s) => {
+    const density = Math.min(
+      2,
+      s.image.width / CARD_W,
+      s.image.height / CARD_H,
+    );
+
+    return {
+      ...s,
+      densities: density >= 1.05 ? [1, Number(density.toFixed(2))] : [1],
+      // Bản phóng to cho Lightbox — ô ảnh trong dải chỉ 320px, bấm vào phải có bản đủ to
+      // để nhìn được phòng học, chứ không phải phóng đúng tấm 320px lên cho mờ.
+      full: await lightboxSrc(s.image),
+    };
+  }),
+);
 ---
 
 <section
@@ -100,27 +108,50 @@ const spaces: Space[] = [
         class="facility-rail -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:gap-5"
       >
         {
-        spaces.map((s) => (
-          <figure class="group relative w-64 shrink-0 snap-start overflow-hidden rounded-[1.75rem] bg-brand-ink-100 sm:w-80">
-            <img
-              src={s.src}
+        cards.map((s) => (
+          /*
+            Bấm vào ảnh mở Lightbox — cùng cách với thẻ giảng viên và poster thành tích: một
+            <button> mang data-lightbox, phần script dùng chung ở components/Lightbox.astro
+            (mount trong Layout) bắt click. Ô ảnh trong dải chỉ 320px, không xem được cái gì
+            trong phòng học, mà đây lại đúng là chỗ người ta muốn nhìn kỹ.
+          */
+          <button
+            type="button"
+            data-lightbox={s.full}
+            data-caption={s.name}
+            class="group relative block w-64 shrink-0 cursor-zoom-in snap-start overflow-hidden rounded-[1.75rem] bg-brand-ink-100 text-left sm:w-80"
+          >
+            <Image
+              src={s.image}
               alt={s.name}
-              width={s.width}
-              height={s.height}
+              width={CARD_W}
+              height={CARD_H}
+              fit="cover"
+              densities={s.densities}
+              format="webp"
+              quality={88}
               loading="lazy"
               decoding="async"
-              class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              class="aspect-4/3 w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
             <span
               aria-hidden="true"
-              class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-ink-950/85 to-transparent"
+              class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-linear-to-t from-brand-ink-950/85 to-transparent"
             />
 
-            <figcaption class="absolute inset-x-0 bottom-0 p-5 text-[15px] font-extrabold leading-snug text-white">
+            <span class="absolute inset-x-0 bottom-0 block p-5 text-[15px] font-extrabold leading-snug text-white">
               {s.name}
-            </figcaption>
-          </figure>
+            </span>
+
+            {/* Máy cảm ứng không có hover nên để nhãn hiện sẵn, khỏi mất gợi ý. */}
+            <span
+              class="pointer-events-none absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-brand-ink-900 opacity-0 shadow-[0_10px_24px_-14px_rgb(17_24_39/0.7)] transition duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100 [&>svg]:size-3.5"
+            >
+              <span class="[&>svg]:size-3.5" set:html={ICONS.search} />
+              Xem ảnh lớn
+            </span>
+          </button>
         ))
         }
       </div>

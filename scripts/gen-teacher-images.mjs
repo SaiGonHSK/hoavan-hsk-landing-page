@@ -23,7 +23,7 @@ const OUT_SIZE = 1080;
 
 await mkdir(OUTPUT_DIR, { recursive: true });
 
-const files = (await readdir(SOURCE_DIR)).filter((f) => /\.(jpe?g|png)$/i.test(f));
+const files = (await readdir(SOURCE_DIR)).filter((f) => /\.(jpe?g|png|webp)$/i.test(f));
 if (files.length === 0) throw new Error(`Không tìm thấy ảnh nguồn trong ${SOURCE_DIR}`);
 
 for (const file of files.sort()) {

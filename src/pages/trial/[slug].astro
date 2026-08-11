@@ -2,14 +2,9 @@
 import CatalogDetail from "@/components/CatalogDetail.astro";
 import { trialClasses } from "@/data/catalog";
 
-export function getStaticPaths() {
-  return trialClasses.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
-}
-
-const { item } = Astro.props;
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
+const item = trialClasses.find((entry) => entry.slug === Astro.params.slug);
+if (!item) return new Response(null, { status: 404 });
 
 const related = trialClasses
   .filter((c) => c.slug !== item.slug)
@@ -27,6 +22,8 @@ const related = trialClasses
   contentTitle="Buổi học thử gồm những gì"
   outcomes={item.outcomes}
   glyph="试"
+  registerCourse={item.slug}
+  trial
   crumbs={[{ label: "Học thử trải nghiệm", href: "/trial" }, { label: item.title }]}
   related={related}
   relatedTitle="Cấp độ khác"

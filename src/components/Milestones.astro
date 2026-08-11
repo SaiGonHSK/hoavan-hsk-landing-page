@@ -1,0 +1,98 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import { milestones, site } from "@/data/site";
+import { teachers } from "@/data/teachers";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/*
+  Ba con số phụ được **tính ra**, không gõ tay.
+
+  Số năm hoạt động gõ tay là con số tự sai mỗi tháng Giêng, và không ai nhớ ra để sửa
+  — kiểu lỗi làm cả khối số liệu mất tin cậy. Tính từ `foundedYear` thì trang render ở
+  server nên nó đúng mãi. Số giảng viên đếm từ `content/site.json`: thêm một thầy cô
+  vào danh sách là con số ở đây đổi theo, không có cách nào để hai chỗ lệch nhau.
+
+  Riêng số học viên không suy ra được từ dữ liệu nào trên site nên nằm trong
+  `content/site.json` để trung tâm tự sửa.
+*/
+const yearsActive = new Date().getFullYear() - site.foundedYear;
+
+// toLocaleString("vi-VN"): 20000 → "20.000". Người Việt dùng dấu chấm phân cách hàng
+// nghìn; để nguyên "20000" thì mắt phải tự đếm chữ số.
+const studentCount = milestones.studentCount.toLocaleString("vi-VN");
+
+const figures = [
+  {
+    value: `${studentCount}+`,
+    label: "Học viên đã theo học",
+  },
+  {
+    value: `${yearsActive} năm`,
+    label: `Đào tạo liên tục từ ${site.foundedYear}`,
+  },
+  {
+    value: String(teachers.length),
+    label: "Giảng viên Thạc sĩ – Tiến sĩ",
+  },
+  {
+    value: "HSK 1–6",
+    label: "Trọn lộ trình, chuẩn HSK 3.0",
+  },
+];
+---
+
+{/*
+  Nền sáng, số in đỏ, ô bọc `bg-brand-ink-50` — đúng hệ mà site đang dùng cho số liệu
+  (khối `stats` ở đầu trang /about) và cho dải 4 ô (hàng tiện nghi trong `Facility`).
+
+  Bản đầu của khối này là một dải `bg-brand-ink-900` gần như đen: nó nổi thật, nhưng
+  toàn bộ trang còn lại là nền trắng với điểm nhấn đỏ, nên một khối đen ở giữa đọc như
+  của website khác dán vào. Nổi bật ở đây nên đến từ khổ chữ của con số, không phải từ
+  việc đảo màu nền.
+*/}
+<section id="milestones" class:list={["bg-background scroll-mt-24", className]}>
+  <div class="container mx-auto px-6">
+    <SectionHeading
+      title="Đã có hơn"
+      highlight={`${studentCount} học viên`}
+      inlineHighlight
+      description={milestones.description}
+    />
+
+    {/*
+      Dải số trần, phân cách bằng vạch dọc mảnh — không ô bọc, không icon.
+
+      Icon đã bỏ: bốn ô vuông chứa icon chiếm gần bằng chỗ của chính con số, mà con số
+      mới là thứ cần đọc trước. Bỏ chúng thì mắt đi thẳng vào "20.000+".
+
+      `divide-x` chỉ bật từ `sm`: ở 2 cột trên màn hẹp, vạch dọc giữa hai cột cắt ngang
+      giữa khối trông như lỗi hiển thị; hàng ngang 4 cột mới là chỗ vạch có nghĩa.
+    */}
+    <dl
+      class="mt-10 grid grid-cols-2 gap-y-9 sm:mx-auto sm:flex sm:w-fit sm:items-start sm:gap-y-0 sm:divide-x sm:divide-border"
+    >
+      {
+        figures.map((f) => (
+          /*
+            `flex-col-reverse` để con số hiện trước nhãn trên màn hình, còn thứ tự thẻ
+            vẫn là `dt` (thuật ngữ = nhãn) rồi `dd` (giá trị = con số) cho đúng nghĩa
+            danh sách định nghĩa.
+          */
+          <div class="flex flex-col-reverse px-4 text-center sm:px-8">
+            <dt class="mt-2 whitespace-nowrap text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-muted-foreground">
+              {f.label}
+            </dt>
+            <dd class="font-heading text-3xl font-black leading-none text-brand-ink-900 sm:text-[2.25rem]">
+              {f.value}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>

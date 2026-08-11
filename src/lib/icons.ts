@@ -44,6 +44,7 @@ import zalo from "@/assets/icons/zalo.svg?raw";
 
 export const ICONS = {
   phone,
+  chat,
   pin,
   mail,
   clock,

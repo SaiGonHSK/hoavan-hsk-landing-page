@@ -1,10 +1,13 @@
 ---
 import "@/styles/global.css";
-import Analytics from "@vercel/analytics/astro";
 import Lightbox from "@/components/Lightbox.astro";
 import { site, contact } from "@/data/site";
 import { contentUpdatedAt } from "@/data/content";
 import { keywordString } from "@/lib/seo";
+import { canonicalUrl, enrollActionSchema, graph, speakable } from "@/lib/schema";
+import classroom from "@/assets/facility/classroom.webp";
+import facility1 from "@/assets/facility/facility-1.webp";
+import facility2 from "@/assets/facility/facility-2.webp";
 
 interface Props {
   title?: string;
@@ -36,7 +39,9 @@ const {
   keywords,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", Astro.site);
+// Quy tắc bỏ dấu `/` cuối nằm trong `canonicalUrl` để `@id` của các node loại trang
+// (ContactPage, AboutPage…) trỏ đúng vào node `WebPage` sinh ở dưới.
+const canonical = canonicalUrl(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site).href;
 
 const organizationSchema = {
@@ -63,15 +68,39 @@ const organizationSchema = {
     width: 192,
     height: 192,
   },
-  // Google Business Profile/Local ưu tiên nhiều ảnh thật của cơ sở.
-  image: [
-    new URL("/images/classroom.webp", Astro.site).href,
-    new URL("/images/facility-1.webp", Astro.site).href,
-    new URL("/images/facility-2.webp", Astro.site).href,
-  ],
+  /*
+    Google Business Profile/Local ưu tiên nhiều ảnh thật của cơ sở.
+
+    Lấy `.src` của ảnh import thay vì gõ tay đường dẫn public/: ảnh cơ sở đã chuyển
+    vào src/assets để Astro nén cho các chỗ hiển thị, nên đường dẫn public/ cũ không
+    còn tồn tại. `.src` là URL có hash nội dung — chỉ đổi khi ảnh thật sự đổi.
+  */
+  image: [classroom, facility1, facility2].map(
+    (asset) => new URL(asset.src, Astro.site).href,
+  ),
   email: contact.email,
   telephone: contact.phones,
   foundingDate: String(site.foundedYear),
+  /*
+    Giấy phép hoạt động khai bằng `hasCredential` + `recognizedBy`, không nhét vào
+    `description`.
+
+    "Trung tâm này có được cấp phép không, ai cấp" là câu hỏi AI trả lời bằng cách tìm
+    một dữ kiện có nguồn, chứ không bằng cách trích một câu quảng cáo. `credentialCategory`
+    là "license" (giấy phép hoạt động) — khác `degree` dùng cho bằng cấp giảng viên ở
+    `personSchema` — và `recognizedBy` trỏ vào cơ quan cấp dưới dạng thực thể nhà nước,
+    thứ mô hình nối được sang tri thức nó đã có.
+  */
+  hasCredential: {
+    "@type": "EducationalOccupationalCredential",
+    name: `Giấy phép hoạt động đào tạo — ${site.license.authority}`,
+    description: site.license.text,
+    credentialCategory: "license",
+    recognizedBy: {
+      "@type": "GovernmentOrganization",
+      name: site.license.authority,
+    },
+  },
   priceRange: "$$",
   currenciesAccepted: "VND",
   address: {
@@ -137,7 +166,10 @@ const organizationSchema = {
       itemOffered: { "@type": "Course", name, inLanguage: "vi-VN" },
     })),
   },
-  sameAs: [contact.facebook, contact.zalo],
+  sameAs: [contact.facebook, contact.zalo, contact.tiktok],
+  // Lối đăng ký khai tường minh: AI trả lời "đăng ký thế nào" cần biết cả form,
+  // hotline và Zalo, không chỉ URL trang chủ. Node đầy đủ nằm ở `#enroll`.
+  potentialAction: { "@id": `${canonical.origin}/#enroll` },
 };
 
 const websiteSchema = {
@@ -164,9 +196,31 @@ const webPageSchema = {
   about: { "@id": `${canonical.origin}/#organization` },
   dateModified: contentUpdatedAt,
   primaryImageOfPage: { "@type": "ImageObject", url: ogImage },
+  // Tiêu đề + đoạn mô tả dưới nó là câu trả lời gọn nhất của trang; xem `speakable`
+  // trong src/lib/schema.ts.
+  speakable,
 };
 
-const allSchemas = [organizationSchema, websiteSchema, webPageSchema, ...schemas];
+/*
+  Một tài liệu JSON-LD cho cả trang, không phải mỗi node một thẻ `<script>`.
+
+  Các node ở đây trỏ vào nhau bằng `@id` (`WebPage` → `WebSite` → `Organization`,
+  `Course.provider` → `#organization`). Khi chúng nằm chung một `@graph`, tham chiếu
+  được nối ngay trong tài liệu; tách ra nhiều thẻ thì crawler phải tự suy luận rằng
+  `#organization` ở thẻ này là cái tổ chức khai ở thẻ khác — Google làm được, nhưng
+  các bot đọc AI khác thì không chắc.
+
+  Trang truyền `schemas` có thể khai lại chính `@id` của `WebPage`
+  (`contactPageSchema`, `aboutPageSchema`) để thêm loại trang; trùng `@id` trong một
+  graph là cách JSON-LD gộp thuộc tính, không phải lỗi.
+*/
+const jsonLd = graph([
+  organizationSchema,
+  enrollActionSchema(canonical.origin, contact.phonePrimary),
+  websiteSchema,
+  webPageSchema,
+  ...schemas,
+]);
 
 const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
 ---
@@ -221,11 +275,7 @@ const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={title} />
 
-    {
-      allSchemas.map((schema) => (
-        <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
-      ))
-    }
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   </head>
   <body>
@@ -237,7 +287,6 @@ const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
     </a>
     <slot />
     <Lightbox />
-    <Analytics />
 
     {/* Bắt nguồn (fbclid/utm/referrer) ngay ở trang đáp: tới lúc submit form thì
         referrer đã là chính landing, không còn thấy Facebook nữa. */}

@@ -6,6 +6,6 @@ import { getImage } from "astro:assets";
  * src/assets/ thường vài trăm KB đến vài MB, phải qua đây trước khi mở.
  */
 export async function lightboxSrc(src: ImageMetadata, width = 1400) {
-  const image = await getImage({ src, width, format: "webp", quality: 80 });
+  const image = await getImage({ src, width, format: "webp", quality: 90 });
   return image.src;
 }

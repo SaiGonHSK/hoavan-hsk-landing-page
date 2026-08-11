@@ -6,13 +6,45 @@ import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { commitments, contact } from "@/data/site";
+import { commitments, contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { aboutPageSchema } from "@/lib/schema";
+
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
+
+/*
+  Bốn dữ kiện của giấy phép, tách khỏi đoạn văn xuôi bên cạnh.
+
+  Cam kết đầu ra là lời hứa của trung tâm, giấy phép là thứ do bên ngoài cấp — nên nó
+  đứng thành khối riêng chứ không thành thẻ thứ tư trong lưới cam kết (lưới đó là
+  `md:grid-cols-3`, thêm một thẻ nữa là mồ côi một ô ở hàng dưới).
+
+  Không ghi số quyết định vì trung tâm chưa cung cấp: khai một con số sai trên trang
+  pháp lý còn tệ hơn là không khai. Thêm được thì bổ sung vào `site.license` trong
+  `content/site.json`, dòng dưới đây tự hiện.
+*/
+const licenseFacts = [
+  { label: "Cơ quan cấp phép", value: site.license.authority },
+  {
+    label: "Phạm vi hoạt động",
+    value:
+      "Đào tạo, bồi dưỡng tiếng Trung từ sơ cấp đến cao cấp, luyện thi HSK và HSKK",
+  },
+  { label: "Địa điểm hoạt động", value: contact.address },
+  {
+    label: "Xem giấy phép",
+    value: `Học viên tới trung tâm có thể xem trực tiếp — gọi trước ${contact.phonePrimary} để được hướng dẫn.`,
+  },
+];
 ---
 
 <Layout
   title="Cam kết đầu ra khoá học tiếng Trung | SaigonHSK"
-  description="SaigonHSK cam kết 100% đầu ra: không đạt mục tiêu đã cam kết, học viên được học lại miễn phí. Kiến thức chuẩn HSK 3.0, giảng viên Thạc sĩ – Tiến sĩ."
+  description="SaigonHSK cam kết 100% đầu ra: không đạt mục tiêu đã cam kết, học viên được học lại miễn phí. Trung tâm có giấy phép của Sở Giáo dục, chuẩn HSK 3.0."
+  keywords="cam kết đầu ra HSK, trung tâm tiếng Trung có giấy phép Sở Giáo dục, trung tâm tiếng Trung uy tín TPHCM"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
@@ -35,7 +67,61 @@ import { ICONS } from "@/lib/icons";
             ))
           }
         </div>
+      </div>
+    </section>
 
+    <section id="license" class="bg-background scroll-mt-24">
+      <div class="container mx-auto px-6">
+        <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div class="rounded-3xl border border-border bg-background p-8 md:p-10">
+            <h2
+              class="font-heading text-[1.75rem] font-black leading-tight tracking-tight text-brand-ink-900 md:text-4xl"
+            >
+              {site.license.label}
+            </h2>
+
+            <p class="mt-5 text-base leading-relaxed text-muted-foreground">
+              {site.license.text}
+            </p>
+
+            <p class="mt-4 text-base leading-relaxed text-muted-foreground">
+              Giấy phép nghĩa là chương trình đào tạo, đội ngũ giảng viên và cơ sở vật
+              chất của trung tâm đều phải đạt điều kiện do cơ quan quản lý giáo dục quy
+              định, và chịu sự kiểm tra của cơ quan đó trong suốt quá trình hoạt động.
+              Với học viên, đây là cơ sở để mọi cam kết trong bài — từ lộ trình, học phí
+              đến chính sách học lại miễn phí — được thực hiện bởi một đơn vị đào tạo hợp
+              pháp, có địa chỉ và trách nhiệm rõ ràng.
+            </p>
+          </div>
+
+          <dl class="rounded-3xl bg-brand-ink-50 p-8 md:p-10">
+            {
+              licenseFacts.map((f, i) => (
+                <div
+                  class:list={[
+                    i > 0 && "mt-6 border-t border-border pt-6",
+                  ]}
+                >
+                  <dt class="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                    {f.label}
+                  </dt>
+                  <dd class="mt-2 text-[15px] font-semibold leading-relaxed text-brand-ink-900">
+                    {f.value}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+
+        {/*
+          Lời mời tới xem lớp đặt SAU phần cam kết và giấy phép, không chen vào giữa.
+
+          Thứ tự của trang là chuỗi lập luận: trung tâm hứa gì → có đủ tư cách pháp lý
+          để hứa → mời tới kiểm chứng tận nơi. Đặt nút "Đăng ký học thử" ngay sau lưới
+          cam kết như trước là cắt ngang lập luận ở giữa, và người đọc gặp CTA trước khi
+          đọc xong phần chứng minh.
+        */}
         <div
           class="mt-6 flex flex-col items-center justify-between gap-6 rounded-3xl bg-brand-ink-50 p-8 md:flex-row md:p-10"
         >

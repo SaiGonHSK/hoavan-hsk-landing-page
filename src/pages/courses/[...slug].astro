@@ -1,0 +1,112 @@
+---
+import CatalogDetail from "@/components/CatalogDetail.astro";
+import { curriculumOf, findVisibleCourse, visibleCourses } from "@/data/coursesApi";
+import { clampDescription, keywordsFor, pickTitle } from "@/lib/seo";
+
+/*
+  Một route bắt-tất-cả cho mọi trang khoá học.
+
+  Trước đây có ba route riêng — `/courses/[slug]`, `/courses/textbooks/[slug]`,
+  `/courses/programs/[slug]` — vì đường dẫn của khoá nằm cứng trong repo. Giờ đường
+  dẫn do mục menu quyết định nên nó sâu bao nhiêu tầng cũng được, và chỉ có bảng tra
+  từ menu mới biết `/courses/textbooks/giao-trinh-boya` ứng với khoá nào.
+
+  Trang render tại server (`output: "server"`) nên tra theo params. Trả Response 404
+  body rỗng để Astro dựng 404.astro kèm đúng mã — `Astro.rewrite("/404")` ra mã 200,
+  tức soft-404.
+*/
+const path = `/courses/${(Astro.params.slug ?? "").replace(/^\/+|\/+$/g, "")}`;
+const item = findVisibleCourse(path);
+if (!item) return new Response(null, { status: 404 });
+
+// Khối "Chương trình học" soạn từ console; rỗng thì dùng nội dung sinh từ repo.
+const curriculum = curriculumOf(item.id);
+
+// `slug` ở đây là **khoá tra sang repo**, không phải đường dẫn — xem `coursesApi.ts`.
+const examLevel = item.slug.match(/^luyen-thi-hsk-([3-5])$/)?.[1];
+
+const related = [
+  // Lớp luyện thi trỏ sang bộ tài liệu miễn phí cùng cấp — bổ trợ nhau chứ không
+  // tranh nhau cùng một truy vấn.
+  ...(examLevel
+    ? [
+        {
+          label: `Tài liệu & từ vựng HSK${examLevel} miễn phí`,
+          href: `/practice/exam-prep/hsk-${examLevel}`,
+        },
+      ]
+    : []),
+  // "Khoá học khác" chỉ trỏ tới khoá đang mở và đã có mục menu — link sang khoá
+  // không có trang là link 404.
+  ...visibleCourses()
+    .filter((c) => c.href !== item.href)
+    .slice(0, 8)
+    .map((c) => ({ label: c.title, href: c.href })),
+];
+
+const fact = (label: string) =>
+  item.facts.find((f) => f.label.startsWith(label))?.value;
+
+const vocab = fact("Từ vựng");
+const months = fact("Thời lượng");
+const isExamPrep = item.slug.startsWith("luyen-thi-");
+
+/**
+ * Title mặc định ("Khoá học HSK1 tại TPHCM") chỉ dùng ~35/60 ký tự Google hiển thị.
+ * Với lớp theo cấp HSK, thêm thời lượng và số từ vựng vừa lấp chỗ trống vừa bắt
+ * đúng hai truy vấn dạng câu hỏi phổ biến nhất ở Việt Nam: "HSK 1 học bao lâu" và
+ * "HSK 1 bao nhiêu từ".
+ */
+const seoTitle =
+  vocab && months
+    ? pickTitle(
+        `Khoá học ${item.title} TPHCM — ${months}, ${vocab} vựng | SaigonHSK`,
+        `Khoá học ${item.title} TPHCM — ${months}, ${vocab} | SaigonHSK`,
+        `Khoá học ${item.title} TPHCM — ${vocab} | SaigonHSK`,
+      )
+    : isExamPrep
+      ? pickTitle(
+          `${item.title} TPHCM — luyện đề, cam kết đầu ra | SaigonHSK`,
+          `${item.title} tại TPHCM — luyện đề | SaigonHSK`,
+        )
+      : pickTitle(
+          `Khoá học ${item.title} tại TPHCM | SaigonHSK`,
+          `${item.title} tại TPHCM | SaigonHSK`,
+          `${item.title} | SaigonHSK`,
+        );
+
+const seoDescription = clampDescription(
+  `${item.intro} Học tại TP.HCM hoặc online, lớp 10–15 học viên. Gọi hotline để nhận học phí và lịch khai giảng.`,
+);
+
+// Người Việt gõ cả "HSK4" và "HSK 4"; khai báo cả hai biến thể.
+const spacedLevel = item.title.replace(/HSK\s?([1-6])/i, "HSK $1");
+const keywords = keywordsFor(
+  `khoá học ${item.title} TPHCM`,
+  spacedLevel !== item.title ? `${spacedLevel} TPHCM` : "",
+  isExamPrep ? `lớp ${item.title.toLowerCase()}` : "",
+  vocab ? `${spacedLevel} bao nhiêu từ vựng` : "",
+  months ? `${spacedLevel} học bao lâu` : "",
+);
+---
+
+<CatalogDetail
+  seoTitle={seoTitle}
+  seoDescription={seoDescription}
+  keywords={keywords}
+  courseSchema
+  title={item.title}
+  summary={item.summary}
+  intro={item.intro}
+  facts={item.facts}
+  content={item.content}
+  contentTitle="Nội dung khoá học"
+  outcomes={item.outcomes}
+  topics={item.topics}
+  curriculum={curriculum}
+  registerCourse={item.slug}
+  crumbs={[{ label: "Các khoá học", href: "/courses" }, { label: item.title }]}
+  related={related}
+  relatedTitle="Khoá học khác"
+  cta="enroll"
+/>

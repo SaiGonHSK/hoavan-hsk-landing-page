@@ -4,6 +4,7 @@ import FaqAccordion from "@/components/FaqAccordion.astro";
 import { faqs } from "@/data/faq";
 import { contact } from "@/data/site";
 import { ICONS } from "@/lib/icons";
+import { webPageId } from "@/lib/schema";
 
 interface Props {
 
@@ -14,9 +15,22 @@ const { limit } = Astro.props;
 const items = limit ? faqs.slice(0, limit) : faqs;
 const hasMore = items.length < faqs.length;
 
+/*
+  Schema nằm ở component chứ không truyền qua `Layout.schemas` như các trang khác.
+
+  Lý do: `FAQPage` là loại schema Google *bắt buộc* mọi câu hỏi khai ra phải hiển thị
+  trên trang. `items` ở đây vừa là thứ được render vừa là thứ được khai, nên hai bên
+  không thể lệch. Nếu tách sang trang gọi thì `limit` sẽ tồn tại ở hai chỗ và lần nào
+  ai đó sửa một chỗ là schema khai thừa câu hỏi không có trên trang.
+
+  `@id` trùng node `WebPage` của Layout để JSON-LD gộp lại: trang mang cả hai `@type`
+  và danh sách câu hỏi trở thành `mainEntity` của chính trang đó, thay vì một node
+  FAQPage lơ lửng không gắn vào URL nào.
+*/
 const schema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  "@id": webPageId(Astro.url.pathname, Astro.site),
   mainEntity: items.map((f) => ({
     "@type": "Question",
     name: f.question,

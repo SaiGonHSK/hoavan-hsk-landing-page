@@ -15,9 +15,6 @@ export type CatalogItem = {
 
   audience?: string[];
 
-  /** Điểm ngữ pháp tiêu biểu của cấp độ, kèm tổng số điểm học trong khoá. */
-  grammar?: { count: number; points: string[] };
-
   /** Chủ đề giao tiếp (cấp thấp) hoặc lĩnh vực đọc hiểu (cấp cao). */
   topics?: { title: string; note?: string; items: string[] };
 };
@@ -35,20 +32,6 @@ export const HSK_LEVELS = [
     words: "300 từ",
     chars: "300 chữ Hán",
     grammarCount: 26,
-    grammar: [
-      "Câu động từ 是, 有",
-      "Trợ từ 的、吗、呢",
-      "Phó từ 也",
-      "Đại từ nghi vấn 谁、什么、几、多少、哪",
-      "Cấu trúc biểu đạt số lượng",
-      "Biểu đạt thời gian",
-      "Phương vị từ",
-      "Câu hỏi lựa chọn 还是",
-      "Câu hỏi chính phản",
-      "Câu liên động",
-      "Giới từ 在、跟、给",
-      "Liên từ 或者",
-    ],
     topics: {
       title: "13 chủ đề giao tiếp cơ bản",
       note: "Một số chủ đề tiêu biểu trong khoá:",
@@ -85,18 +68,6 @@ export const HSK_LEVELS = [
     words: "500 từ",
     chars: "600 chữ Hán",
     grammarCount: 60,
-    grammar: [
-      "Trợ động từ 想、要、能",
-      "Giới từ 从、往、对",
-      "Tiền tố 第",
-      "Cấu trúc 在……呢 biểu thị hành động đang diễn ra",
-      "Cấu trúc 先……然后……",
-      "Câu so sánh với 比",
-      "Câu so sánh bằng",
-      "Câu so sánh kém",
-      "Cấu trúc 要……了 biểu thị hành động sắp xảy ra",
-      "Bổ ngữ trạng thái",
-    ],
     topics: {
       title: "15 chủ đề giao tiếp quen thuộc",
       note: "Một số chủ đề tiêu biểu trong khoá:",
@@ -129,19 +100,6 @@ export const HSK_LEVELS = [
     words: "1.000 từ",
     chars: "900 chữ Hán",
     grammarCount: 130,
-    grammar: [
-      "Trợ từ ngữ khí 了",
-      "Trợ từ kết cấu 了",
-      "Phó từ 还是",
-      "Câu chữ 把",
-      "Câu bị động",
-      "Bổ ngữ thời lượng",
-      "Bổ ngữ kết quả",
-      "Bổ ngữ động lượng",
-      "Bổ ngữ xu hướng",
-      "Phó từ 又 / 再",
-      "Phó từ 才 / 就",
-    ],
     topics: {
       title: "18 chủ đề giao tiếp thực tế",
       note: "Một số chủ đề tiêu biểu trong khoá:",
@@ -174,19 +132,6 @@ export const HSK_LEVELS = [
     words: "2.000 từ",
     chars: "1.200 chữ Hán",
     grammarCount: 215,
-    grammar: [
-      "Trợ từ kết cấu 地",
-      "Phó từ 却",
-      "Trợ từ 来",
-      "Phó từ 竟然",
-      "Cấu trúc 又……又……",
-      "Cấu trúc 要么……要么……",
-      "Cấu trúc 别看……（可是/但是）……",
-      "Cấu trúc 连……带……",
-      "Cấu trúc ……，再说……",
-      "Cấu trúc 一点儿……（也/都）不（没）……",
-      "Cấu trúc 之所以……是因为……",
-    ],
     topics: {
       title: "Năng lực đọc hiểu và trình bày quan điểm",
       note: "Sau khoá học, học viên đọc hiểu, phân tích và trình bày quan điểm về các dạng văn bản:",
@@ -213,19 +158,6 @@ export const HSK_LEVELS = [
     words: "3.600 từ",
     chars: "1.500 chữ Hán",
     grammarCount: 350,
-    grammar: [
-      "Tính từ dạng ABB",
-      "毫不",
-      "幸亏",
-      "几乎",
-      "竟然",
-      "不禁",
-      "Cấu trúc 所谓……，是指……",
-      "Cấu trúc A里AB",
-      "Cấu trúc 非……不可",
-      "Cấu trúc 别说……就连……",
-      "Cấu trúc 各 V 各的……",
-    ],
     topics: {
       title: "Năng lực đọc hiểu, phân tích và đánh giá",
       note: "Xử lý văn bản độ dài trung bình đến dài thuộc nhiều lĩnh vực:",
@@ -252,14 +184,6 @@ export const HSK_LEVELS = [
     words: "5.400 từ",
     chars: "1.800 chữ Hán",
     grammarCount: 450,
-    grammar: [
-      "Phó từ 再三、一再、一向、迟早、万万",
-      "Cấu trúc 既……又……",
-      "Cấu trúc ……来……去",
-      "Cấu trúc 为……所……",
-      "Cấu trúc 不要说……",
-      "Cấu trúc 这样一来，……",
-    ],
     topics: {
       title: "Năng lực xử lý văn bản chuyên sâu",
       note: "Đọc hiểu, phân tích, tổng hợp và trình bày quan điểm về nội dung chuyên sâu:",
@@ -325,7 +249,6 @@ export const hskCourses: CatalogItem[] = HSK_LEVELS.map((l) => ({
     "Luyện đọc hiểu và viết theo dạng bài của đề thi HSK.",
     "Kiểm tra định kỳ, thi thử cuối khóa và nhận xét riêng cho từng học viên.",
   ],
-  grammar: { count: l.grammarCount, points: [...l.grammar] },
   topics: {
     title: l.topics.title,
     ...("note" in l.topics ? { note: l.topics.note } : {}),
@@ -802,7 +725,9 @@ export const trialClasses: CatalogItem[] = [1, 2, 3, 4].map((level) => ({
   ],
 }));
 
-export { getLibrary, findLibrary } from "./library";
+// Thư viện đã tách sang `./library` (blog theo chuyên mục). Re-export lại để chỗ nào
+// còn import từ `catalog` vẫn chạy; nhập mới thì import thẳng `@/data/library`.
+export { getLibrary, findLibraryArticle, libraryCategories } from "./library";
 
 export const onlineOfflineCourses: CatalogItem[] = [
   ...hskCourses,

@@ -9,16 +9,27 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { findParent, getPageContents } from "@/data/pages";
 import { site } from "@/data/site";
 
-export async function getStaticPaths() {
-  const pages = await getPageContents();
+// Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
+//
+// `getPageContents()` chỉ trả về trang có slug nằm trong menu và có nội dung thật,
+// nên route bắt-tất-cả này không thể biến một URL bất kỳ thành một trang.
+const wanted = `/${(Astro.params.slug ?? "").replace(/^\/+|\/+$/g, "")}`;
+const page = (await getPageContents()).find((entry) => entry.slug === wanted);
+if (!page) return new Response(null, { status: 404 });
 
-  return pages.map((page) => ({
-    params: { slug: page.slug.replace(/^\/+/, "") },
-    props: { page, parent: findParent(page.slug) },
-  }));
-}
+const parent = findParent(page.slug);
 
-const { page, parent } = Astro.props;
+/**
+ * Thư viện không có khối ghi danh và CTA cuối trang.
+ *
+ * Đó là trang đọc tài liệu miễn phí — chèn lời mời ghi danh vào cuối bài làm loãng
+ * nội dung, người đọc vẫn có thanh liên hệ nổi khi cần. Giống `showCta={false}` ở
+ * các trang /library dựng bằng CatalogHub.
+ *
+ * Cần cả ở route bắt-tất-cả này vì bài Thư viện lồng sâu hơn ba cấp
+ * (`/library/<chuyên-mục>/<bài>`) sẽ rơi xuống đây chứ không vào route riêng.
+ */
+const inLibrary = page.slug.startsWith("/library/");
 
 const crumbs = parent
   ? [{ label: parent.label, href: parent.slug }, { label: page.title }]
@@ -93,8 +104,14 @@ const schemas = [
       )
     }
 
-    <RegisterSection />
-    <CtaSection />
+    {
+      !inLibrary && (
+        <>
+          <RegisterSection />
+          <CtaSection />
+        </>
+      )
+    }
   </main>
   <Footer />
   <FloatingContact />

@@ -1,18 +1,26 @@
 
-import { content } from "./content";
+import { staticContent } from "./content";
 
-export const site = content.site;
-export const contact = content.contact;
-export const hero = content.hero;
-export const commitments = content.commitments;
-export const values = content.values;
-export const mission = content.mission;
-export const model = content.model;
-export const stats = content.stats;
-export const teacher = content.teacher;
-export const about = content.about;
-export const coreValues = content.coreValues;
-export const reasons = content.reasons;
+/**
+ * Các khối nội dung **tĩnh** của landing, đọc từ `content/site.json` trong repo.
+ *
+ * `const` chứ không `let`: mấy khối này không do trang quản trị soạn — xem
+ * `DYNAMIC_KEYS` trong `content.ts` để biết cái gì mới lấy từ API. Muốn đổi thương
+ * hiệu, liên hệ, khối đầu trang, sứ mệnh, khác biệt, cam kết, số liệu, giảng viên hay
+ * trang giới thiệu thì sửa `content/site.json` rồi deploy.
+ */
+export const site = staticContent.site;
+export const contact = staticContent.contact;
+export const hero = staticContent.hero;
+export const commitments = staticContent.commitments;
+export const values = staticContent.values;
+export const mission = staticContent.mission;
+export const model = staticContent.model;
+export const stats = staticContent.stats;
+export const milestones = staticContent.milestones;
+export const teacher = staticContent.teacher;
+export const about = staticContent.about;
+export const reasons = staticContent.reasons;
 
 export const footerLinks = [
   {

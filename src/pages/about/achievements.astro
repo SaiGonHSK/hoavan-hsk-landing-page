@@ -10,9 +10,9 @@ import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { honorPosters } from "@/data/achievements";
 import { contact, commitments } from "@/data/site";
-import { testimonials } from "@/data/testimonials";
 import { lightboxSrc } from "@/lib/images";
 import { ICONS } from "@/lib/icons";
+import { aboutPageSchema } from "@/lib/schema";
 
 const posters = await Promise.all(
   honorPosters.map(async (p) => ({
@@ -32,23 +32,16 @@ const outcomes = [
   { label: "Luyện thi HSK5", result: "100% đậu HSK5" },
 ];
 
-// Điểm cao nhất trong bảng vinh danh — dùng làm số liệu ở hero, không gõ tay
-// để khỏi lệch khi thêm học viên mới.
-const best = posters.reduce((a, b) => (Number(b.total) > Number(a.total) ? b : a));
-
-const heroStats = [
-  { value: String(posters.length), label: "Học viên vừa được vinh danh" },
-  { value: `${best.total}/${best.max}`, label: `Điểm cao nhất — ${best.exam}` },
-  { value: "100%", label: "Cam kết đầu ra mọi khoá học" },
-];
-
-const quotes = testimonials.slice(0, 3);
+/* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
+const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
 ---
 
 <Layout
   title="Thành tích học viên — bảng điểm HSK & chuẩn đầu ra | SaigonHSK"
   description="Bảng điểm HSK5, HSK6 của học viên Hoa văn SaigonHSK và chuẩn đầu ra cam kết theo từng nhóm lớp: 100% đậu HSK1–HSK5, không đạt được học lại miễn phí."
   keywords="thành tích học viên HSK, điểm thi HSK5, điểm thi HSK6, trung tâm tiếng Trung cam kết đầu ra"
+  schemas={schemas}
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
@@ -56,29 +49,12 @@ const quotes = testimonials.slice(0, 3);
       title="Thành tích học viên"
       description="Thành công của học viên là minh chứng thuyết phục nhất cho chất lượng đào tạo của Hoa văn SaigonHSK. Những bảng điểm HSK dưới đây là kết quả thi thực tế của các học viên đã đồng hành cùng trung tâm. Mỗi điểm số không chỉ phản ánh sự nỗ lực của người học mà còn khẳng định hiệu quả của chương trình đào tạo, phương pháp giảng dạy khoa học và sự tận tâm của đội ngũ giảng viên. Đó cũng chính là động lực để Hoa văn SaigonHSK không ngừng nâng cao chất lượng, đồng hành cùng nhiều học viên hơn nữa trên hành trình chinh phục tiếng Trung."
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Thành tích học viên" }]}
-      eyebrow="Kết quả thi mới nhất"
       glyph="绩"
-    >
-      <dl class="mt-9 grid max-w-2xl gap-4 sm:grid-cols-3">
-        {
-          heroStats.map((s) => (
-            <div class="rounded-2xl border border-border bg-background px-5 py-4">
-              <dt class="text-2xl font-black leading-none text-brand-red-600">
-                {s.value}
-              </dt>
-              <dd class="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {s.label}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </PageHero>
+    />
 
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <SectionHeading
-          align="left"
           title="Bảng vinh danh"
           highlight="học viên thi đỗ HSK"
           inlineHighlight
@@ -102,7 +78,7 @@ const quotes = testimonials.slice(0, 3);
                     width={352}
                     densities={[1, 2]}
                     format="webp"
-                    quality={78}
+                    quality={88}
                     loading="lazy"
                     decoding="async"
                     class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
@@ -162,7 +138,6 @@ const quotes = testimonials.slice(0, 3);
     <section class="bg-background">
       <div class="container mx-auto px-6">
         <SectionHeading
-          align="left"
           title="Chuẩn đầu ra"
           highlight="cam kết theo từng lớp"
           inlineHighlight
@@ -216,80 +191,21 @@ const quotes = testimonials.slice(0, 3);
 
     <section class="bg-background">
       <div class="container mx-auto px-6">
-        <SectionHeading
-          align="left"
-          title="Học viên"
-          highlight="nói gì sau khi thi"
-          inlineHighlight
-        />
-
-        <div class="mt-10 grid gap-5 lg:grid-cols-3">
-          {
-            quotes.map((q, i) => (
-              <figure
-                class:list={[
-                  "flex flex-col rounded-3xl p-8",
-                  i === 0
-                    ? "bg-brand-ink-900 text-white lg:col-span-3 lg:p-10"
-                    : "border border-border bg-background",
-                ]}
-              >
-                <span
-                  aria-hidden="true"
-                  class:list={[
-                    "text-5xl font-black leading-none",
-                    i === 0 ? "text-white/25" : "text-brand-red-200",
-                  ]}
-                >
-                  “
-                </span>
-
-                <blockquote
-                  class:list={[
-                    "mt-4 flex-1 leading-[1.6]",
-                    i === 0
-                      ? "text-lg font-bold md:text-xl"
-                      : "text-sm text-muted-foreground",
-                  ]}
-                >
-                  {q.quote}
-                </blockquote>
-
-                <figcaption
-                  class:list={[
-                    "mt-6 text-sm",
-                    i === 0 ? "text-white/70" : "text-muted-foreground",
-                  ]}
-                >
-                  <span
-                    class:list={[
-                      "font-bold",
-                      i === 0 ? "text-white" : "text-brand-ink-900",
-                    ]}
-                  >
-                    {q.name}
-                  </span>
-                  {" — "}
-                  {q.role}
-                </figcaption>
-              </figure>
-            ))
-          }
-        </div>
-
+        {/* Kiểu nhãn viết tay như `note` của SectionHeading: viền nét đứt, hơi
+            nghiêng, chữ Fuzzy Bubbles — chỉ đổi nền sang vàng cho khác khối đỏ ở trên. */}
         <div
-          class="mt-10 flex flex-col gap-5 rounded-3xl border-2 border-dashed border-brand-red-200 bg-brand-red-50/60 px-6 py-7 sm:flex-row sm:items-center sm:justify-between"
+          class="flex -rotate-1 flex-col gap-5 rounded-2xl border border-dashed border-amber-300 bg-amber-50 px-6 py-7 sm:flex-row sm:items-center sm:justify-between"
         >
           <div class="flex items-start gap-4 sm:items-center">
             <span
-              class="mt-0.5 grid size-11 shrink-0 place-items-center rounded-2xl bg-background text-brand-ink-700 sm:mt-0 [&>svg]:size-5"
+              class="mt-0.5 grid size-11 shrink-0 place-items-center rounded-2xl bg-background text-amber-700 sm:mt-0 [&>svg]:size-5"
               set:html={ICONS.mail}
             />
             <div>
-              <p class="text-base font-black leading-snug text-brand-ink-900">
+              <p class="font-hand text-xl leading-tight text-amber-800 md:text-2xl">
                 Bạn là học viên cũ và đã có kết quả thi?
               </p>
-              <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+              <p class="mt-1.5 font-hand text-lg leading-tight text-amber-700/80 md:text-xl">
                 Gửi bảng điểm về email của trung tâm để được cập nhật vào bảng vinh
                 danh.
               </p>

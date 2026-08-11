@@ -8,10 +8,18 @@ import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { testimonials } from "@/data/testimonials";
+import { aboutPageSchema } from "@/lib/schema";
 
 const origin = Astro.site?.origin ?? "";
 
+/*
+  `Review` ở đây cố tình KHÔNG có `reviewRating`, và trang không khai
+  `aggregateRating`: trung tâm chưa thu điểm số nào từ học viên. Bịa điểm là vi phạm
+  chính sách dữ liệu có cấu trúc của Google và hậu quả áp lên cả tên miền, không chỉ
+  node này. Cảm nhận dạng văn xuôi vẫn được AI trích dẫn bình thường.
+*/
 const schemas = [
+  aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
   {
     "@context": "https://schema.org",
     "@type": "ItemList",

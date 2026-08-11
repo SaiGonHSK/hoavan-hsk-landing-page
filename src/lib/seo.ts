@@ -24,6 +24,8 @@ export const keywords = {
     "học tiếng Trung ở đâu tốt",
     "học tiếng Trung ở đâu tốt TPHCM",
     "trung tâm tiếng Trung uy tín",
+    "trung tâm tiếng Trung có giấy phép",
+    "trung tâm tiếng Trung được Sở Giáo dục cấp phép",
     "học phí học tiếng Trung",
   ],
   exam: [
@@ -148,23 +150,8 @@ export function courseFaqs(input: {
   return faqs;
 }
 
-/** Dùng chung cho PageHero và hero của trang chi tiết khoá học. */
-export const breadcrumbSchema = (
-  crumbs: { label: string; href?: string }[],
-  origin: string,
-) => ({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Trang chủ", item: `${origin}/` },
-    ...crumbs.map((c, i) => ({
-      "@type": "ListItem",
-      position: i + 2,
-      name: c.label,
-      ...(c.href ? { item: `${origin}${c.href}` } : {}),
-    })),
-  ],
-});
+/* Breadcrumb đã chuyển sang `breadcrumbNodes` trong src/lib/schema.ts: bản ở đây không
+   sinh `@id` nên BreadcrumbList không gắn được vào node `WebPage` của trang. */
 
 export const faqSchema = (faqs: { question: string; answer: string }[]) => ({
   "@context": "https://schema.org",
