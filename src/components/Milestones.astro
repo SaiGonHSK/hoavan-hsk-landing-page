@@ -22,28 +22,45 @@ const { class: className = "" } = Astro.props;
 */
 const yearsActive = new Date().getFullYear() - site.foundedYear;
 
-// toLocaleString("vi-VN"): 20000 → "20.000". Người Việt dùng dấu chấm phân cách hàng
-// nghìn; để nguyên "20000" thì mắt phải tự đếm chữ số.
-const studentCount = milestones.studentCount.toLocaleString("vi-VN");
+/**
+ * 20000 → "20.000". Người Việt dùng dấu chấm phân cách hàng nghìn; để nguyên
+ * "20000" thì mắt phải tự đếm chữ số.
+ *
+ * Tự ghép thay vì `toLocaleString("vi-VN")` vì phần đếm số ở cuối file phải in ra
+ * **đúng cùng một dạng** với bản render sẵn — mà nó chạy trong trình duyệt, còn hàm
+ * này chạy ở Node. Hai `Intl` khác nhau (Node thiếu ICU thì `vi-VN` lặng lẽ rơi về
+ * `en-US`, ra "20,000") là số nhảy dấu ngay khi đếm xong.
+ */
+const groupDigits = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
+const studentCount = groupDigits(milestones.studentCount);
+
+/*
+  Mỗi con số tách làm `prefix + count + suffix` chứ không phải một chuỗi: phần `count`
+  là thứ chạy từ 0 lên khi khối lọt vào tầm mắt, phần chữ hai bên đứng yên. Ô cuối
+  không có số đếm riêng nên mượn đuôi của nó — "HSK 1–" đứng yên, số 6 chạy lên.
+*/
 const figures = [
   {
-    value: `${studentCount}+`,
+    count: milestones.studentCount,
+    suffix: "+",
     label: "Học viên đã theo học",
   },
   {
-    value: `${yearsActive} năm`,
+    count: yearsActive,
+    suffix: " năm",
     label: `Đào tạo liên tục từ ${site.foundedYear}`,
   },
   {
-    value: String(teachers.length),
+    count: teachers.length,
     label: "Giảng viên Thạc sĩ – Tiến sĩ",
   },
   {
-    value: "HSK 1–6",
+    prefix: "HSK 1–",
+    count: 6,
     label: "Trọn lộ trình, chuẩn HSK 3.0",
   },
-];
+] satisfies { prefix?: string; count: number; suffix?: string; label: string }[];
 ---
 
 {/*
@@ -70,29 +87,162 @@ const figures = [
       Icon đã bỏ: bốn ô vuông chứa icon chiếm gần bằng chỗ của chính con số, mà con số
       mới là thứ cần đọc trước. Bỏ chúng thì mắt đi thẳng vào "20.000+".
 
-      `divide-x` chỉ bật từ `sm`: ở 2 cột trên màn hẹp, vạch dọc giữa hai cột cắt ngang
+      Vạch dọc chỉ bật từ `sm`: ở 2 cột trên màn hẹp, vạch giữa hai cột cắt ngang
       giữa khối trông như lỗi hiển thị; hàng ngang 4 cột mới là chỗ vạch có nghĩa.
+
+      Vạch là thẻ riêng chứ không phải `divide-x` của Tailwind vì nó cũng chạy: mỗi
+      vạch kéo dài từ trên xuống khi khối lọt vào tầm mắt (`scaleY`), viền thì không
+      làm được vậy.
     */}
     <dl
-      class="mt-10 grid grid-cols-2 gap-y-9 sm:mx-auto sm:flex sm:w-fit sm:items-start sm:gap-y-0 sm:divide-x sm:divide-border"
+      data-milestones
+      class="mt-10 grid grid-cols-2 gap-y-9 sm:mx-auto sm:flex sm:w-fit sm:items-start sm:gap-y-0"
     >
       {
-        figures.map((f) => (
+        figures.map((f, i) => (
           /*
             `flex-col-reverse` để con số hiện trước nhãn trên màn hình, còn thứ tự thẻ
             vẫn là `dt` (thuật ngữ = nhãn) rồi `dd` (giá trị = con số) cho đúng nghĩa
             danh sách định nghĩa.
           */
-          <div class="flex flex-col-reverse px-4 text-center sm:px-8">
+          <div class="relative flex flex-col-reverse px-4 text-center sm:px-8">
+            {i > 0 && (
+              <span
+                aria-hidden="true"
+                style={`--milestone-delay:${i * 130}ms`}
+                class="milestone-rule pointer-events-none absolute inset-y-0 left-0 hidden w-px bg-border sm:block"
+              />
+            )}
+
             <dt class="mt-2 whitespace-nowrap text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-muted-foreground">
               {f.label}
             </dt>
-            <dd class="font-heading text-3xl font-black leading-none text-brand-ink-900 sm:text-[2.25rem]">
-              {f.value}
+
+            {/*
+              Giá trị render sẵn ở server là giá trị **cuối cùng**: không JS, không
+              IntersectionObserver hay người xem tắt hiệu ứng chuyển động thì con số
+              vẫn đứng đó đúng. Phần đếm bên dưới mới hạ nó về 0 rồi chạy lên.
+
+              `tabular-nums`: chữ số cùng bề rộng nên con số không co giãn từng khung
+              hình lúc đếm — không có nó, cả hàng rung suốt 1,5 giây.
+
+              `font-sans` (Google Sans Flex) chứ không phải `font-heading` như các
+              con số khác trên site: chữ số của nó thẳng và mở, đọc nhanh hơn ở khổ
+              lớn — mà đây là chỗ người xem chỉ liếc qua một nhịp.
+            */}
+            <dd
+              data-count={f.count}
+              data-prefix={"prefix" in f ? f.prefix : ""}
+              data-suffix={"suffix" in f ? f.suffix : ""}
+              class="font-sans text-3xl font-black leading-none tabular-nums text-brand-ink-900 sm:text-[2.25rem]"
+            >
+              {`${"prefix" in f ? f.prefix : ""}${groupDigits(f.count)}${"suffix" in f ? f.suffix : ""}`}
             </dd>
           </div>
         ))
       }
     </dl>
   </div>
+
+  {/*
+    Số chạy từ 0 lên khi khối lọt vào tầm mắt, mỗi ô trễ hơn ô trước một nhịp.
+
+    `is:inline` (không để Astro gói thành module) vì hạ con số về 0 phải xong **trước
+    khung hình đầu tiên**: module bị hoãn tới sau khi phân tích xong tài liệu, người
+    xem sẽ thấy "20.000+" hiện ra rồi giật về "0+" mới đếm — đúng kiểu lỗi chứ không
+    phải hiệu ứng. Cùng lý do với script trong `Testimonials.astro`.
+
+    Đây cũng là chỗ quyết định không đếm: tắt hiệu ứng chuyển động, hoặc trình duyệt
+    không có IntersectionObserver, thì thoát ngay và giá trị render sẵn ở lại nguyên.
+  */}
+  <script is:inline>
+    (() => {
+      const dl = document.querySelector("[data-milestones]");
+      if (!dl) return;
+
+      if (
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        !("IntersectionObserver" in window)
+      ) {
+        return;
+      }
+
+      const cells = Array.from(dl.querySelectorAll("[data-count]"));
+      if (!cells.length) return;
+
+      // Bản sao của `groupDigits` phía server — hai bên phải in ra cùng một dạng, nếu
+      // không thì đếm xong con số lại nhảy dấu.
+      const group = (value) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      const paint = (cell, value) => {
+        cell.textContent =
+          (cell.dataset.prefix || "") + group(value) + (cell.dataset.suffix || "");
+      };
+
+      for (const cell of cells) paint(cell, 0);
+
+      /** 1,5 giây: đủ để mắt bắt được nhịp đếm, chưa đủ lâu để phải ngồi chờ số dừng. */
+      const DURATION = 1500;
+
+      const countUp = (cell) => {
+        const target = Number(cell.dataset.count) || 0;
+        let started = 0;
+
+        const frame = (now) => {
+          started ||= now;
+
+          const t = Math.min(1, (now - started) / DURATION);
+          if (t < 1) {
+            // easeOutExpo: bung rất nhanh rồi hãm dần — nhịp "máy đếm dừng lại" quen
+            // mắt hơn tuyến tính. Khung cuối gán thẳng `target`: hàm này về tới
+            // 0,999 chứ không tới 1, làm tròn sẽ thiếu vài đơn vị ở số lớn.
+            paint(cell, Math.round(target * (1 - Math.pow(2, -10 * t))));
+            requestAnimationFrame(frame);
+          } else {
+            paint(cell, target);
+          }
+        };
+
+        requestAnimationFrame(frame);
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+
+            io.disconnect();
+            // Kéo các vạch dọc xuống cùng lúc — xem khối <style> bên dưới.
+            dl.classList.add("milestones-in");
+            cells.forEach((cell, i) => setTimeout(() => countUp(cell), i * 130));
+          }
+        },
+        // Đợi thấy hơn một phần ba khối rồi mới đếm: bắt đầu ngay lúc mép trên vừa ló
+        // ra thì số chạy xong trước khi người xem cuộn tới nơi.
+        { threshold: 0.35 },
+      );
+
+      io.observe(dl);
+    })();
+  </script>
 </section>
+
+<style>
+  /*
+    Vạch dọc kéo từ trên xuống khi khối vào tầm mắt. Chỉ trong `no-preference`: ở chế
+    độ tắt chuyển động, vạch không mang `scaleY(0)` nên hiện sẵn — script cũng thoát
+    sớm và không bao giờ gắn `milestones-in`.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .milestone-rule {
+      transform: scaleY(0);
+      transform-origin: top center;
+      transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: var(--milestone-delay, 0ms);
+    }
+
+    .milestones-in .milestone-rule {
+      transform: scaleY(1);
+    }
+  }
+</style>

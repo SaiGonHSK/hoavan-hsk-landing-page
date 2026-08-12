@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
-import LibraryFilters from "@/components/LibraryFilters.astro";
 import ArticleGrid from "@/components/ArticleGrid.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
@@ -14,9 +13,9 @@ import type { LibraryArticle } from "@/data/library";
 /**
  * Khung chung của `/library` và `/library/<chuyên-mục>`.
  *
- * Hai trang chỉ khác nhau ở chip nào đang sáng và danh sách bài, nên chúng dùng
- * chung một khung: hàng chip phải giống hệt nhau ở mọi trang, nếu không nó không
- * còn là bộ lọc mà thành hai thanh điều hướng khác nhau.
+ * Hai trang chỉ khác nhau ở tiêu đề và danh sách bài, nên chúng dùng chung một
+ * khung. Chuyên mục chọn ở menu header (`/library/<chuyên-mục>`) chứ không còn ở
+ * hàng chip trong hero: mỗi trang chỉ nạp và liệt kê đúng chuyên mục đang xem.
  *
  * Không có `EnrollCta`/`RegisterSection` ở cuối như các hub khác — Thư viện là tài
  * liệu đọc miễn phí, chèn lời mời ghi danh vào giữa đường đọc làm loãng nội dung.
@@ -29,11 +28,8 @@ interface Props {
   crumbs: { label: string; href?: string }[];
   glyph?: string;
 
-  /** Toàn bộ bài đã xuất bản — dùng để đếm số bài trên từng chip. */
-  allArticles: LibraryArticle[];
-  /** Bài hiện trong lưới; ở trang chuyên mục là tập con của `allArticles`. */
+  /** Bài hiện trong lưới; ở trang chuyên mục chỉ có bài của chuyên mục đó. */
   articles: LibraryArticle[];
-  activeKey?: string;
   emptyMessage?: string;
 }
 
@@ -43,9 +39,7 @@ const {
   description,
   crumbs,
   glyph = "书",
-  allArticles,
   articles,
-  activeKey = "",
   emptyMessage,
 } = Astro.props;
 
@@ -75,10 +69,7 @@ const schemas = [
       crumbs={crumbs}
       glyph={glyph}
       align="center"
-      compactBottom
-    >
-      <LibraryFilters articles={allArticles} activeKey={activeKey} />
-    </PageHero>
+    />
 
     <section class="bg-background pb-16 lg:pb-20">
       <div class="container mx-auto px-6">

@@ -3,11 +3,11 @@ import LibraryHub from "@/components/LibraryHub.astro";
 import { getLibrary } from "@/data/library";
 
 /**
- * Trang chủ Thư viện = chip "Tất cả": liệt kê mọi bài, mới nhất trước.
+ * Trang chủ Thư viện: liệt kê mọi bài, mới nhất trước.
  *
  * Trước đây trang này liệt kê 12 **chuyên mục**, tức bắt người đọc bấm hai lần mới
- * thấy bài viết đầu tiên. Chuyên mục giờ nằm ở hàng chip ngay dưới tiêu đề, nên
- * trang mở ra là đã có nội dung để đọc.
+ * thấy bài viết đầu tiên. Chuyên mục giờ chọn ở menu header, nên trang mở ra là đã
+ * có nội dung để đọc.
  */
 
 const articles = await getLibrary();
@@ -19,7 +19,6 @@ const articles = await getLibrary();
   description="Kho tài liệu mở của SaigonHSK: từ vựng theo chủ đề, ngữ pháp, thành ngữ, văn hoá Trung Hoa và nhiều chuyên mục khác — học viên dùng miễn phí."
   crumbs={[{ label: "Thư viện" }]}
   glyph="书"
-  allArticles={articles}
   articles={articles}
   emptyMessage="Thư viện đang được biên soạn. Bạn quay lại sau nhé — trung tâm đăng bài mới hằng tuần."
 />
