@@ -18,9 +18,5 @@ export type Testimonial = {
   link?: string;
 };
 
-/** `let` + `syncFromContent`: nội dung động, xem `content.ts`. */
-export let testimonials: Testimonial[] = getContent().testimonials;
-
-export function syncFromContent(): void {
-  testimonials = getContent().testimonials;
-}
+/** Động — admin soạn ở console, landing đọc qua API (cache 60s). */
+export const testimonials = (): Testimonial[] => getContent().testimonials;

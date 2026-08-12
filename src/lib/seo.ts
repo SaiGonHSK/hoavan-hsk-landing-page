@@ -56,6 +56,17 @@ export const keywords = {
     "học tiếng Trung online",
     "học tiếng Trung 1 kèm 1",
   ],
+  /** Biến thể không dấu — phủ tìm kiếm trên Cốc Cốc và mobile keyboard. */
+  nodiacritics: [
+    "hoc tieng trung",
+    "trung tam hoc tieng trung",
+    "trung tam tieng trung tphcm",
+    "luyen thi hsk",
+    "khoa hoc tieng trung",
+    "tieng trung giao tiep",
+    "hoc tieng trung o dau",
+    "hoc tieng trung tphcm",
+  ],
 } as const;
 
 export const keywordString = [
@@ -63,6 +74,7 @@ export const keywordString = [
   ...keywords.exam,
   ...keywords.level,
   ...keywords.purpose,
+  ...keywords.nodiacritics,
 ].join(", ");
 
 /** Gộp bộ từ khoá chung với các từ khoá riêng của trang, bỏ trùng lặp. */

@@ -24,8 +24,8 @@ const schemas = [
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Cảm nhận của học viên Hoa văn SaigonHSK",
-    numberOfItems: testimonials.length,
-    itemListElement: testimonials.map((t, i) => ({
+    numberOfItems: testimonials().length,
+    itemListElement: testimonials().map((t, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
@@ -42,6 +42,7 @@ const schemas = [
 <Layout
   title="Học viên cảm nhận và đánh giá về SaigonHSK"
   description="Review thật của sinh viên và học viên đã học tiếng Trung, luyện thi HSK tại Trung tâm Hoa văn SaigonHSK TP.HCM — kết quả và cảm nhận sau khoá học."
+  keywords="cảm nhận học viên tiếng Trung, review trung tam tieng trung tphcm, danh gia trung tam tieng trung, học viên SaigonHSK"
   schemas={schemas}
 >
   <Header />

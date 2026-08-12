@@ -12,8 +12,9 @@ interface Props {
 }
 
 const { limit } = Astro.props;
-const items = limit ? faqs.slice(0, limit) : faqs;
-const hasMore = items.length < faqs.length;
+const all = faqs();
+const items = limit ? all.slice(0, limit) : all;
+const hasMore = items.length < all.length;
 
 /*
   Schema nằm ở component chứ không truyền qua `Layout.schemas` như các trang khác.

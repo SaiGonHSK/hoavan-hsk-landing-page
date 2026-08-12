@@ -1,6 +1,6 @@
-import { staticContent } from "./content";
+import { getContent } from "./content";
 
-export type Faq = { question: string; answer: string };
+export type Faq = { question: string; answer: string; category?: string };
 
-/** Tĩnh — sửa `content/site.json` rồi deploy. Xem `DYNAMIC_KEYS` trong `content.ts`. */
-export const faqs: Faq[] = staticContent.faqs;
+/** Động — admin soạn ở console, landing đọc qua API (cache 60s). */
+export const faqs = (): Faq[] => getContent().faqs;

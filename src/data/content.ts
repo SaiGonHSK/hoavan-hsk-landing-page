@@ -28,7 +28,7 @@ export type SiteContent = typeof bundled;
  * nên giữ thêm một bản trong tài liệu này và một bản nữa trong `content/site.json` chỉ
  * tạo ra ba phiên bản của cùng một lịch. Cả hai bản sao đã gỡ.
  */
-const DYNAMIC_KEYS = ["testimonials"] as const;
+const DYNAMIC_KEYS = ["testimonials", "faqs"] as const;
 
 let current: SiteContent = bundled;
 

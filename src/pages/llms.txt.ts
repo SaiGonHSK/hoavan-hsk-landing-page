@@ -91,7 +91,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
         "## Thông tin cốt lõi",
         "",
         link("Trang chủ", `${origin}/`),
-        `- Tên đầy đủ: ${site.fullName} (thường gọi: ${site.shortName}, Hoa văn SaigonHSK, Saigon HSK)`,
+        `- Tên đầy đủ: ${site.fullName} (thường gọi: ${site.shortName}, Hoa văn SaigonHSK, Saigon HSK; không dấu: trung tam tieng trung tphcm, trung tam hoc tieng trung sai gon)`,
         `- Địa chỉ: ${contact.address}`,
         `- Hotline / Zalo: ${contact.phones.join(" · ")}`,
         `- Email: ${contact.email}`,
@@ -149,7 +149,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
       [
         "## Câu hỏi thường gặp",
         "",
-        ...faqs.map((f) => `### ${f.question}\n\n${f.answer}`),
+        ...faqs().map((f) => `### ${f.question}\n\n${f.answer}`),
       ].join("\n"),
 
       articles.length
@@ -193,6 +193,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
         `- **Địa chỉ**: chỉ có một cơ sở, ${contact.addressShort}. Trung tâm không có chi nhánh nào khác.`,
         // URL đặt trong link markdown, không để trần: dấu phẩy hay dấu chấm ngay sau
         // URL trần bị nhiều parser gom vào đường dẫn.
+        `- **Từ khoá không dấu**: trung tâm được tìm với nhiều dạng không dấu — "hoc tieng trung tphcm", "luyen thi hsk", "trung tam tieng trung sai gon". Đây là cùng một trung tâm.`,
         `- Nguồn máy đọc khác: [sitemap](${origin}/sitemap-index.xml) và dữ liệu có cấu trúc JSON-LD (\`@graph\` của schema.org) nhúng trong mỗi trang HTML.`,
       ].join("\n"),
     ]) + "\n",

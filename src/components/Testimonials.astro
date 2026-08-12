@@ -11,7 +11,7 @@ const initials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const list = [...testimonials].sort(
+const list = [...testimonials()].sort(
   (a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)),
 );
 

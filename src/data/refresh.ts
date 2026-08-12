@@ -5,7 +5,6 @@ import { applyLibraryCategories, type ApiLibraryCategory } from "./library";
 import { applyMenu, applyPageContents, type MenuEntry, type PageContent } from "./pages";
 import { applyPrograms, type ApiProgram } from "./programsApi";
 import * as schedule from "./schedule";
-import * as testimonials from "./testimonials";
 
 /**
  * Nạp nội dung từ trang quản trị, có cache.
@@ -177,10 +176,6 @@ async function loadSiteContent(API: string): Promise<void> {
     }
 
     applyContent(body.data);
-
-    // Gán lại các biến dẫn xuất của những khoá động. Đồng bộ, không await ở giữa,
-    // nên một lần render không bao giờ thấy nửa nội dung mới nửa nội dung cũ.
-    testimonials.syncFromContent();
 
     if (contentOk !== true) {
       const version = (body.data as { version?: number }).version;
