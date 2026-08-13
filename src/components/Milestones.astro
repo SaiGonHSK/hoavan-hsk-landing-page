@@ -72,7 +72,7 @@ const figures = [
   của website khác dán vào. Nổi bật ở đây nên đến từ khổ chữ của con số, không phải từ
   việc đảo màu nền.
 */}
-<section id="milestones" class:list={["bg-background scroll-mt-24", className]}>
+<section id="milestones" class:list={["scroll-mt-24 bg-background", className]}>
   <div class="container mx-auto px-6">
     <SectionHeading
       title="Đã có hơn"
@@ -114,7 +114,13 @@ const figures = [
               />
             )}
 
-            <dt class="mt-2 whitespace-nowrap text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-muted-foreground">
+            {/*
+              `whitespace-nowrap` chỉ từ `sm`: ở hai cột trên điện thoại mỗi ô rộng
+              chưa tới 170px, mà nhãn dài nhất ("Đào tạo liên tục từ 2019" ở khổ 11px
+              giãn chữ) cần ~200px — ép một dòng thì chữ tràn ra ngoài mép màn hình.
+              Từ `sm` trở lên bốn ô nằm một hàng, lúc đó giữ một dòng mới đúng.
+            */}
+            <dt class="mt-2 text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-muted-foreground sm:whitespace-nowrap">
               {f.label}
             </dt>
 

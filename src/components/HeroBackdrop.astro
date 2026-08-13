@@ -1,0 +1,124 @@
+---
+/**
+ * Toàn bộ phần nền của hero trang chủ, gộp năm lớp theo đúng thứ tự vẽ:
+ *
+ *   1. dải chuyển sắc trắng → xám nhạt (nền)
+ *   2. hai vệt xám hắt từ hai góc
+ *   3. lưới kẻ mờ dần
+ *   4. lớp sticker — `HeroStickers.astro`
+ *   5. hai lớp sóng trắng ở đáy, ăn sang khối tiếp theo
+ *
+ * Dùng chung cho `HeroV3` và `HeroV4`. Cả hai phương án chỉ khác nhau ở phần giữa (chân dung
+ * trong vòng tròn / ảnh treo trên dây), còn nền thì phải giống hệt — đó là điều kiện để đứng
+ * cạnh nhau mà so được.
+ *
+ * Cả năm lớp đều `-z-10` và KHÔNG bọc trong thẻ nào có z-index: nhờ vậy thứ tự vẽ giữa chúng
+ * do đúng thứ tự DOM ở đây quyết định (sóng vẽ trên lưới và sticker), còn so với nội dung của
+ * hero thì cả năm luôn nằm dưới, vì khối nội dung là `relative` z-auto.
+ *
+ * Nơi dùng phải có `relative isolate overflow-hidden` trên thẻ `<section>`: `isolate` để
+ * `-z-10` không tụt xuống dưới nền của cả trang, `overflow-hidden` để sticker và sóng không
+ * thò ra ngoài hero.
+ */
+import HeroStickers from "@/components/HeroStickers.astro";
+
+interface Props {
+  /** Chuyển tiếp cho `HeroStickers` — xem chú thích của `variant` trong file đó. */
+  stickers?: "portrait" | "wide";
+}
+
+const { stickers = "portrait" } = Astro.props;
+
+/**
+ * Hai lớp sóng ở đáy hero, vẽ trong hệ trục 1440×160 và kéo giãn theo bề rộng màn hình
+ * (`preserveAspectRatio="none"`). Cả hai đều là mảng trắng đóng kín xuống đáy, khác nhau độ
+ * mờ — không có nét kẻ nào.
+ *
+ * Vì sao không có nét kẻ: nét kẻ biến lớp sóng thành một hình được *viền*, và mắt đọc viền là
+ * đường ranh giới cứng. Bỏ nét, chỉ còn mảng trắng chồng lên nền xám cùng một bóng đổ mềm hắt
+ * lên, thì ranh giới là chỗ chuyển sắc chứ không phải một đường.
+ *
+ * Vì sao đường cong lệch: một chữ S gần đối xứng, đỉnh và bụng cùng độ cong, đọc ra là một
+ * cái cung bị bẻ nhẹ — tức là "cứng". Ở đây đỉnh nhọn hơn hẳn bụng (đỉnh gom trong 300 đơn
+ * vị, bụng trải hơn 500), đỉnh đặt ở khoảng 1/3 trái chứ không phải giữa, và hai đầu dừng ở
+ * hai cao độ khác nhau. Cong không đều là cách nước cong.
+ *
+ * Hai đường viết tay riêng thay vì lấy một đường dịch xuống: dịch song song thì hai đỉnh
+ * thẳng hàng nhau và lộ ra là một hình copy. Ở đây đỉnh lớp sau lệch phải ~60 đơn vị so với
+ * lớp trước, nên hai lớp đọc như hai con sóng chồng nhau.
+ */
+const WAVE_BACK = "M0 96C180 66 300 18 520 24s300 72 540 62 220-42 380-32V160H0Z";
+const WAVE_FRONT =
+  "M0 128C130 104 250 40 460 46s300 72 540 66 220-46 440-34V160H0Z";
+---
+
+{/*
+  Nền: trắng ở trên, ngả sang xám nhạt nhất của bộ mực ở dưới. Trước đây nền ngả hồng
+  (red-50) — nó biến cả hero thành một mảng có màu, và vì mọi chi tiết trang trí cũng hồng
+  theo nên đỏ mất hết vai trò điểm nhấn. Nay toàn bộ phần trang trí (nền, lưới, vòng, sóng)
+  là xám; đỏ chỉ còn ở đúng những chỗ cần mắt dừng lại: dòng hai của tiêu đề và nút đăng ký.
+*/}
+<div class="hero-bd-base pointer-events-none absolute inset-0 -z-10"></div>
+<div class="hero-bd-glow pointer-events-none absolute inset-0 -z-10"></div>
+<div class="hero-bd-grid pointer-events-none absolute inset-0 -z-10"></div>
+
+<HeroStickers variant={stickers} />
+
+<div
+  class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 sm:h-36 lg:h-44"
+  aria-hidden="true"
+>
+  <svg
+    class="absolute inset-0 size-full"
+    viewBox="0 0 1440 160"
+    preserveAspectRatio="none"
+    fill="none"
+  >
+    <path d={WAVE_BACK} fill="var(--background)" opacity="0.5"></path>
+    <path class="hero-bd-wave" d={WAVE_FRONT} fill="var(--background)"></path>
+  </svg>
+</div>
+
+<style>
+  .hero-bd-base {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbfbfc 45%,
+      var(--brand-ink-50) 100%
+    );
+  }
+
+  /* Hai vệt xám: một hắt từ trên–trái (cùng hướng ánh sáng trong ảnh chân dung), một ở
+     dưới–phải cho nền không đối xứng. Đây là bóng chứ không phải màu — dùng chính mực của bộ
+     màu ở độ mờ rất thấp, nên nền chỉ tối đi nửa bậc chứ không đổi sắc. */
+  .hero-bd-glow {
+    background:
+      radial-gradient(
+        60% 55% at 16% 6%,
+        rgba(18, 19, 22, 0.05) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 50% at 90% 88%,
+        rgba(18, 19, 22, 0.04) 0%,
+        transparent 70%
+      );
+  }
+
+  /* Lưới kẻ: 72px một ô, mờ dần về bốn phía bằng `mask` để nó không chạy thẳng vào mép
+     section thành một đường cắt. */
+  .hero-bd-grid {
+    background-image:
+      linear-gradient(to right, rgba(18, 19, 22, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(18, 19, 22, 0.05) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(70% 65% at 50% 30%, #000 0%, transparent 100%);
+  }
+
+  /* Bóng của mảng trắng hắt lên hero. Offset âm theo trục Y + bán kính lớn: bóng làm mép sóng
+     dày lên thành một dải chuyển sắc, thay cho nét kẻ đã bỏ. */
+  .hero-bd-wave {
+    filter: drop-shadow(0 -10px 22px rgba(18, 19, 22, 0.07));
+  }
+</style>

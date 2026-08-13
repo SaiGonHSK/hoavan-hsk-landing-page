@@ -1,0 +1,188 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { ICONS } from "@/lib/icons";
+import { about } from "@/data/site";
+import photoTeachers from "@/assets/classes/giang-vien-chua-bai.webp";
+import photoClass from "@/assets/classes/lop-luyen-thi-hsk.webp";
+import photoStudents from "@/assets/classes/hoc-vien-lam-bai.webp";
+
+/**
+ * "Câu chuyện của chúng tôi": đoạn mở đầu của `content/site.json` đặt thành một câu
+ * trích lớn canh giữa, ba cột ảnh lớp thật xếp so le bên cạnh.
+ *
+ * Đoạn đầu tách khỏi hai đoạn còn lại và phóng to vì nó là câu trả lời cho "trung tâm
+ * này là ai" — thứ người mở trang giới thiệu tìm trước tiên; hai đoạn sau là phần khai
+ * triển, để cỡ chữ nhỏ hơn nên mắt biết đọc sau.
+ */
+interface Props {
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+const { ctaHref = "/courses", ctaLabel = "Khám phá các khoá học" } = Astro.props;
+
+const [quote, ...rest] = about.paragraphs;
+
+/*
+  Ba cột ảnh cao, so le: cột giữa cao nhất và nhô lên, hai cột bên thấp hơn và tụt
+  xuống. Ảnh nguồn là ảnh ngang chụp trong lớp, nên khung dựng đứng buộc `object-cover`
+  cắt hai bên — cắt vào giữa lớp thì phần còn lại vẫn là người đang học, không mất nghĩa.
+
+  `offset` chỉ bật từ `lg`: ở khổ hẹp ba cột đã rất mảnh, thêm so le thì hàng ảnh trông
+  xộc xệch chứ không thành nhịp.
+
+  `tint`: viền quanh ảnh — tấm giữa lấy hồng nhạt của thương hiệu, hai tấm bên lấy xám.
+  Ba tấm cùng viền đỏ thì hàng ảnh thành một dải hồng; một tấm đỏ giữa hai tấm xám thì
+  màu thương hiệu chỉ điểm đúng vào tấm cao nhất. Viền cũng để tách ảnh khỏi nền sáng —
+  không có nó, ảnh nào nền trắng cũng trôi ra mất mép.
+*/
+const photos = [
+  {
+    image: photoTeachers,
+    alt: "Giảng viên chữa bài trên bảng cho lớp tiếng Trung",
+    ratio: "aspect-[9/17]",
+    offset: "lg:mt-10",
+    tint: "ring-brand-surface-200",
+  },
+  {
+    image: photoClass,
+    alt: "Lớp luyện thi HSK – HSKK chụp ảnh cùng giảng viên",
+    ratio: "aspect-[9/21]",
+    offset: "",
+    tint: "ring-brand-red-100",
+  },
+  {
+    image: photoStudents,
+    alt: "Học viên làm bài tập tiếng Trung trong giờ học",
+    ratio: "aspect-[9/17]",
+    offset: "lg:mt-16",
+    tint: "ring-brand-surface-200",
+  },
+] satisfies {
+  image: ImageMetadata;
+  alt: string;
+  ratio: string;
+  offset: string;
+  tint: string;
+}[];
+---
+
+{/*
+  Nền trắng.
+
+  Khối mở đầu ngay trên kết thúc bằng dải xám nhạt nhất của bộ mực, rồi tới khoảng trắng
+  ngăn giữa các section. Cho khối này một nền xám nữa thì đoạn đầu trang thành ba vạch
+  xám–trắng–xám chồng lên nhau. Để trắng thì nó nối liền với khoảng trắng đó, và khối
+  "Bản sắc" nền xám ngay dưới mới là chỗ đổi nền đầu tiên người xem nhận ra.
+*/}
+<section class="relative overflow-hidden bg-background py-16 lg:py-24">
+  {/*
+    Một quầng hồng rất nhạt ở góc phải, thay cho lưới chữ Hán mờ dùng ở bản trước.
+
+    Lưới chữ ấy tuy mờ nhưng vẫn là *chữ*: đặt sau một đoạn văn tiếng Việt thì mắt cứ
+    cố đọc nó, và cả khối ngả sang xám bẩn. Quầng màu thì không có hình để đọc, chỉ làm
+    nền bớt phẳng. Một quầng chứ không phải hai ba quầng nhiều màu: trang này chỉ dùng
+    xám và đỏ thương hiệu.
+  */}
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-32 -bottom-40 size-112 rounded-full bg-brand-red-50 opacity-80 blur-3xl"
+  >
+  </div>
+
+  <div class="container relative z-10 mx-auto px-6">
+    <div class="flex flex-col items-center text-center">
+      <h2
+        class="text-[2rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-[2.75rem]"
+      >
+        Câu chuyện của chúng tôi
+      </h2>
+
+      {/* Vạch mảnh dưới tiêu đề — dấu chấm hết cho phần tiêu đề, thay cho một dòng mô tả
+          nữa mà nội dung ngay dưới đã nói. */}
+      <span
+        aria-hidden="true"
+        class="mt-5 block h-0.5 w-24 rounded-full bg-brand-red-300"></span>
+    </div>
+
+    <div
+      class="mt-12 grid items-center gap-12 lg:mt-16 lg:grid-cols-2 lg:gap-16"
+    >
+      {/*
+        Cột chữ canh giữa, không canh trái: cả khối này (tiêu đề, vạch, câu trích, nút)
+        nằm trên một trục dọc ở giữa cột, nên nó đọc như một lời tự giới thiệu chứ không
+        như một đoạn tài liệu.
+      */}
+      <div class="flex flex-col items-center text-center">
+        <blockquote
+          class="max-w-lg text-lg font-medium leading-relaxed text-brand-ink-900 md:text-xl"
+        >
+          <span class="text-brand-red-600">“</span>{quote}<span
+            class="text-brand-red-600">”</span
+          >
+        </blockquote>
+
+        {/*
+          `brand-ink-500` chứ không `muted-foreground`: `muted-foreground` là mức xám
+          nhạt hơn hẳn, đủ dùng cho chú thích nhưng hơi mờ cho hai đoạn văn phải đọc hết.
+          `brand-ink-500` là thang chữ của hệ màu — cùng thang với tiêu đề, chỉ nhạt hơn
+          vài bậc. Áp dụng cho cả ba khối mới của trang này.
+        */}
+        {/*
+          Hai đoạn khai triển canh **trái**, dù tiêu đề và câu trích canh giữa.
+
+          Canh giữa chỉ hợp với khối chữ ngắn vài dòng. Hai đoạn này dài 6–8 dòng, canh
+          giữa thì cả hai mép đều răng cưa và mắt phải dò lại điểm bắt đầu ở từng dòng —
+          rõ nhất trên điện thoại, nơi mỗi đoạn chiếm gần một màn hình.
+        */}
+        <div
+          class="mt-6 max-w-lg space-y-4 text-left text-[15px] leading-relaxed text-brand-ink-500"
+        >
+          {rest.map((p) => <p>{p}</p>)}
+        </div>
+
+        <a
+          href={ctaHref}
+          class="group mt-9 inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+        >
+          {ctaLabel}
+          <span
+            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+            set:html={ICONS.arrow}
+          />
+        </a>
+      </div>
+
+      <div class="mx-auto grid w-full max-w-md grid-cols-3 gap-3 lg:max-w-none lg:gap-4">
+        {
+          photos.map((p) => (
+            <div
+              class:list={[
+                "overflow-hidden rounded-[1.75rem] ring-4",
+                p.ratio,
+                p.offset,
+                p.tint,
+              ]}
+            >
+              {/*
+                `width`/`height` đúng tỉ lệ khung dựng đứng + `fit: "cover"`: chỉ đưa
+                `width` thì Astro giữ tỉ lệ ảnh ngang gốc rồi CSS kéo cho đầy khung —
+                ảnh tải đủ pixel mà vẫn mờ. Cùng lý do đã ghi ở `Facility.astro`.
+              */}
+              <Image
+                src={p.image}
+                alt={p.alt}
+                width={360}
+                height={p.ratio === "aspect-[9/21]" ? 840 : 680}
+                fit="cover"
+                loading="lazy"
+                class="size-full object-cover"
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

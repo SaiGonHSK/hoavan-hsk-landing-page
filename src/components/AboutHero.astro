@@ -1,0 +1,137 @@
+---
+import { Image } from "astro:assets";
+import bannerPhoto from "@/assets/daily/giang-vien-di-quanh-lop.webp";
+
+/**
+ * Khối mở đầu trang /about: chữ canh giữa trên nền sáng, ảnh lớp học nằm dưới dạng một
+ * dải ngang bo góc.
+ *
+ * Nền lấy đúng bộ nền của `HeroV3` (khối mở đầu trang chủ): trắng ngả xám nhạt ở đáy,
+ * hai vệt xám hắt chéo, lưới kẻ mờ dần — xem chú thích trong `HeroV3.astro`. Hai trang
+ * mở đầu bằng cùng một chất nền thì người xem biết mình vẫn ở trong một site; bản trước
+ * để ảnh tối phủ kín, đọc như trang của một site khác.
+ *
+ * Ảnh xuống dưới chữ chứ không làm nền: ảnh nền phải phủ tối mới đọc được chữ, mà phủ
+ * tối thì lớp học trong ảnh gần như không nhìn ra gì — mất cả hai. Tách ra thì chữ nằm
+ * trên nền sáng, còn ảnh giữ nguyên độ sáng thật của nó.
+ */
+interface Props {
+  title: string;
+  lead: string;
+  /** Ba câu ngắn dưới lời dẫn — phần "vì sao tin được", giữ trong màn hình đầu tiên. */
+  badges?: string[];
+}
+
+const {
+  title,
+  lead,
+  badges = [
+    "Giảng viên Thạc sĩ – Tiến sĩ",
+    "Lộ trình HSK1 – HSK6",
+    "Cam kết đầu ra mọi khoá học",
+  ],
+} = Astro.props;
+---
+
+<section class="about-hero relative isolate overflow-hidden">
+  {/* Hai lớp nền không mang thông tin, chép từ `HeroV3`: vệt xám hắt từ hai góc và lưới
+      kẻ mờ dần — giữ cho vùng nền lớn không thành một mảng phẳng. */}
+  <div class="about-hero-glow pointer-events-none absolute inset-0 -z-10"></div>
+  <div class="about-hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+
+  <div class="container mx-auto px-6 pt-14 pb-16 lg:pt-20 lg:pb-24">
+    <div class="mx-auto flex max-w-4xl flex-col items-center text-center">
+      <h1
+        class="text-[2.25rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-6xl"
+      >
+        {title}
+      </h1>
+
+      {/* `data-speakable`: câu tóm tắt của trang, khớp selector trong src/lib/schema.ts. */}
+      <p
+        data-speakable
+        class="mt-6 max-w-2xl text-base leading-relaxed text-brand-ink-500 md:text-lg"
+      >
+        {lead}
+      </p>
+
+      {
+        badges.length > 0 && (
+          <ul class="mt-8 flex flex-wrap justify-center gap-2.5">
+            {badges.map((b) => (
+              <li class="rounded-full border border-brand-surface-200 bg-background/80 px-4 py-2 text-[13px] font-semibold text-brand-ink-700 backdrop-blur-sm">
+                {b}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    {/*
+      Ảnh dải ngang 21:9. Tỉ lệ rất dẹt là cố ý: đây là ảnh mở đầu, nó phải nhường chỗ
+      cho chữ phía trên và cho khối tiếp theo, không được chiếm trọn màn hình.
+
+      Riêng ở khổ điện thoại đổi sang 16:10: 21:9 trên khung rộng 350px chỉ còn cao
+      150px, cả lớp học co lại thành một vệt không nhận ra ai đang làm gì.
+    */}
+    <div
+      class="mt-12 overflow-hidden rounded-[2rem] ring-1 ring-brand-surface-200 shadow-[0_30px_60px_-45px_var(--brand-ink-900)] lg:mt-16"
+    >
+      <Image
+        src={bannerPhoto}
+        alt="Giảng viên Hoa văn SaigonHSK đi quanh lớp hướng dẫn học viên làm bài"
+        width={1600}
+        height={686}
+        fit="cover"
+        format="webp"
+        quality={80}
+        loading="eager"
+        fetchpriority="high"
+        class="aspect-16/10 w-full object-cover sm:aspect-21/9"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+    Ba lớp nền dưới đây lấy nguyên từ `HeroV3.astro` (style của Astro có phạm vi riêng
+    từng component nên không dùng lại class được, phải chép). Sửa nền ở đó thì sửa cả ở
+    đây — chúng cố ý trông giống nhau.
+  */
+  .about-hero {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbfbfc 45%,
+      var(--brand-ink-50) 100%
+    );
+  }
+
+  /* Hai vệt xám: một hắt từ trên–trái, một ở dưới–phải cho nền không đối xứng. Đây là
+     bóng chứ không phải màu — dùng chính mực của bộ màu ở độ mờ rất thấp. */
+  .about-hero-glow {
+    background:
+      radial-gradient(
+        60% 55% at 16% 6%,
+        rgba(18, 19, 22, 0.05) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 50% at 90% 88%,
+        rgba(18, 19, 22, 0.04) 0%,
+        transparent 70%
+      );
+  }
+
+  /* Lưới kẻ 72px một ô, mờ dần về bốn phía bằng `mask` để nó không chạy thẳng vào mép
+     section thành một đường cắt. */
+  .about-hero-grid {
+    background-image:
+      linear-gradient(to right, rgba(18, 19, 22, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(18, 19, 22, 0.05) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(70% 65% at 50% 30%, #000 0%, transparent 100%);
+  }
+</style>

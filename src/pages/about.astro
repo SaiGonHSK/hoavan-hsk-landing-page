@@ -1,19 +1,17 @@
 ---
-import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
-import PageHero from "@/components/PageHero.astro";
+import AboutHero from "@/components/AboutHero.astro";
+import AboutStory from "@/components/AboutStory.astro";
+import AboutIdentity from "@/components/AboutIdentity.astro";
+import AboutTeam from "@/components/AboutTeam.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import DailyLife from "@/components/DailyLife.astro";
 import Milestones from "@/components/Milestones.astro";
-import { mission, contact, about } from "@/data/site";
-import { coreValues } from "@/data/coreValues";
-import { ICONS } from "@/lib/icons";
-import { aboutPageSchema } from "@/lib/schema";
-
+import { aboutPageSchema, breadcrumbNodes } from "@/lib/schema";
 
 const sections = [
   {
@@ -44,8 +42,15 @@ const sections = [
 ];
 
 /* Trang nhánh của mục Giới thiệu: khai `AboutPage` gộp vào node `WebPage` của Layout,
-   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm. */
-const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site })];
+   `mainEntity` trỏ về `#organization` để AI biết trang này nói *về* trung tâm.
+
+   Breadcrumb khai ở đây chứ không mượn `PageHero` như trước: trang này mở đầu bằng
+   `AboutHero` (bố cục hai cột riêng của nó), mà thẻ JSON-LD thì không nên đi kèm một
+   component chỉ vì component đó tình cờ đứng đầu trang. */
+const schemas = [
+  aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
+  ...breadcrumbNodes([{ label: "Giới thiệu" }], Astro.url.pathname, Astro.site),
+];
 ---
 
 <Layout
@@ -56,125 +61,46 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
-    <PageHero
-      title="Trung tâm Hoa văn SaigonHSK"
-      crumbs={[{ label: "Giới thiệu" }]}
-      glyph="华"
+    <AboutHero
+      title="Đồng hành cùng học viên xây dựng năng lực tiếng Trung thật sự"
+      lead="Từ năm 2019, Hoa văn SaigonHSK dạy tiếng Trung và luyện thi HSK tại TP.HCM theo giấy phép của Sở Giáo dục và Đào tạo. Lộ trình rõ từ HSK1 đến HSK6, giảng viên Thạc sĩ – Tiến sĩ, và cam kết đầu ra cho mọi khoá học."
     />
 
-    <section class="bg-background">
-      <div class="container mx-auto px-6">
-        {/*
-          Ba khối Sứ mệnh / Phương châm / Tầm nhìn xếp dọc *dưới* phần văn xuôi ở mọi
-          khổ, không còn làm cột phải ở desktop.
+    {/*
+      Ba khối kể về trung tâm, theo đúng thứ tự người đọc muốn biết: *là ai* (câu
+      chuyện) → *đứng trên cái gì* (giá trị, tầm nhìn, sứ mệnh) → *ai dạy* (đội ngũ).
 
-          Đặt cạnh cột chữ thì ba thẻ màu nằm ngang tầm mắt với đoạn mở đầu và tranh
-          chú ý với nó; đưa xuống dưới thì người đọc đi hết phần kể về trung tâm rồi
-          mới gặp ba lời khẳng định — đúng thứ tự đọc.
-        */}
-        <div class="flex flex-col gap-12 lg:gap-16">
-          <div>
-            <div class="space-y-5 text-base leading-relaxed text-muted-foreground">
-              {about.paragraphs.map((p) => <p>{p}</p>)}
-            </div>
+      Bản trước đặt văn xuôi giới thiệu, ba ô Sứ mệnh/Phương châm/Tầm nhìn và năm giá
+      trị thành ba khối rời trên nền trắng như nhau, nên cả đoạn giữa trang đọc như một
+      dải chữ dài không có nhịp. Giờ mỗi khối có nền riêng và một hình thức riêng.
+    */}
+    <AboutStory />
 
-          </div>
+    <AboutIdentity />
 
-          <div class="space-y-5">
-            <div class="rounded-3xl bg-brand-red-600 p-7 text-white">
-              <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
-                Sứ mệnh
-              </p>
-              <p class="mt-3 text-base leading-relaxed text-white/90">
-                {mission.statement}
-              </p>
-            </div>
-            <div class="rounded-3xl bg-brand-ink-50 p-7">
-              <p
-                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600"
-              >
-                Phương châm hoạt động
-              </p>
-              <p class="mt-3 text-base leading-relaxed text-muted-foreground">
-                {mission.motto}
-              </p>
-            </div>
-            <div class="rounded-3xl border border-border p-7">
-              <p
-                class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red-600"
-              >
-                Tầm nhìn
-              </p>
-              <p class="mt-3 text-base leading-relaxed text-muted-foreground">
-                {mission.vision}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-brand-ink-50 py-14 lg:py-20">
-      <div class="container mx-auto px-6">
-        <div
-          class="grid gap-12 rounded-[2.5rem] bg-background px-7 py-12 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)] md:px-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20 lg:px-20"
-        >
-          <div>
-            <SectionHeading
-              align="left"
-              title="Giá trị"
-              highlight="cốt lõi"
-              inlineHighlight
-              description="Năm giá trị định hướng mọi hoạt động đào tạo và dịch vụ của Hoa văn SaigonHSK."
-            />
-            <a
-              href="/about/differences"
-              class="group mt-8 inline-flex items-center gap-2 rounded-full bg-brand-red-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
-            >
-              Tìm hiểu thêm
-              <span
-                class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
-                set:html={ICONS.arrow}
-              />
-            </a>
-          </div>
-
-          <ul class="flex flex-col gap-5">
-            {
-              coreValues.map((v, i) => (
-                <li class="flex items-start gap-4 sm:gap-5">
-                  <Image
-                    src={v.image}
-                    alt={v.imageAlt}
-                    width={176}
-                    height={176}
-                    loading={i === 0 ? "eager" : "lazy"}
-                    class="size-18 shrink-0 rounded-xl object-cover sm:size-22"
-                  />
-                  <div class="pt-0.5">
-                    <h2 class="text-base font-extrabold leading-snug text-brand-ink-900 sm:text-lg">
-                      {v.title}
-                    </h2>
-                    <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                      {v.desc}
-                    </p>
-                  </div>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
-    </section>
-
-
+    <AboutTeam
+      title="Thầy cô đứng lớp tại SaigonHSK"
+      description="Thạc sĩ, Tiến sĩ tốt nghiệp các đại học lớn của Trung Quốc, hiện giảng dạy tại nhiều trường đại học ở TP.HCM."
+    />
 
     {/* Ảnh lớp thật, thay cho khối Cơ sở vật chất cũ (3 ảnh phòng học tĩnh). */}
     <DailyLife />
-    {/* Số liệu chốt lại phần giới thiệu, ngay trước lời mời đăng ký. */}
+
+    {/*
+      Số liệu đặt *sau* bốn khối kể về trung tâm, không chen giữa ảnh bìa và câu chuyện.
+
+      Dải số ở ngay dưới ảnh bìa đọc như một bảng thành tích chắn đường: người vừa mở
+      trang giới thiệu thì muốn biết trung tâm là ai trước, con số là thứ chốt lại sau
+      khi đã đọc.
+    */}
     <Milestones />
 
-    <section class="bg-background">
+    {/*
+      Nền xám cho khối này: từ khối ảnh sinh hoạt trở xuống, trang có bốn section nền
+      trắng liên tiếp (ảnh, số liệu, lưới liên kết, CTA) nên phần cuối trang trôi thành
+      một dải trắng dài. Một khối nền xám xen vào chia nó thành hai nhịp.
+    */}
+    <section class="bg-brand-surface-50 py-16 lg:py-24">
       <div class="container mx-auto px-6">
         <SectionHeading
           title="Tìm hiểu thêm về"
@@ -195,24 +121,31 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
           `Facility.astro` và dải số trong `Milestones.astro`.
         */}
         <div
-          class="mt-12 grid overflow-hidden rounded-3xl border border-border bg-brand-ink-50/50 lg:grid-cols-5"
+          class="mt-12 grid overflow-hidden rounded-3xl border border-brand-surface-200 bg-background lg:grid-cols-5"
         >
           {
             sections.map((s) => (
               <a
                 href={s.href}
                 class:list={[
-                  "group p-6 transition-colors hover:bg-background",
+                  /* Thẻ nền trắng nên hover phải *tối đi* một bậc, không sáng lên. */
+                  "group p-6 transition-colors hover:bg-brand-surface-50",
                   /*
                     Vạch ngang khi xếp dọc (mobile/tablet), vạch dọc khi thành một hàng
                     (desktop). Viết tường minh thay vì `divide-x`: `divide-x` đặt viền
                     trái cho mọi con từ thứ hai, nên khi lưới xuống hàng nó vẽ thêm một
                     vạch ở đầu hàng dưới — đúng chỗ không nên có vạch.
                   */
-                  "border-t border-brand-ink-200 first:border-t-0",
+                  "border-t border-brand-surface-200 first:border-t-0",
                   "lg:border-t-0 lg:border-l lg:first:border-l-0",
                 ]}
               >
+                {/* Chấm đỏ đầu ô: điểm nhấn duy nhất của mỗi ô, và là chỗ màu thương
+                    hiệu xuất hiện trong một dải năm ô chữ toàn xám. */}
+                <span
+                  aria-hidden="true"
+                  class="mb-4 block size-2.5 rounded-full bg-brand-red-500"
+                />
                 {/*
                   Không còn dòng "Xem chi tiết": cả ô đã là một `<a>` nên dòng đó là lời
                   mời thứ hai cho cùng một liên kết, nhân lên năm lần thì thành nhiễu. Dấu
@@ -233,7 +166,6 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
         </div>
       </div>
     </section>
-
 
     {/*
       Chỉ còn `CtaSection`, bỏ `RegisterSection`.

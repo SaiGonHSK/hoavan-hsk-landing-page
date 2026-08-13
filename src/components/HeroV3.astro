@@ -1,0 +1,553 @@
+---
+import { Image } from "astro:assets";
+import { hero, stats } from "@/data/site";
+import heroPhoto from "@/assets/hero/hoc-vien-hsk1-hsk4-tach-nen.webp";
+import { ICONS } from "@/lib/icons";
+import HeroBackdrop from "@/components/HeroBackdrop.astro";
+
+/**
+ * Hero phương án 3 — dựng theo concept "e-learning": chân dung nằm trong một vòng tròn có
+ * vành sáng, chữ nằm bên phải, đáy là lớp sóng ăn sang phần tiếp theo. Hero cao đúng một màn
+ * hình nên lớp sóng nằm ngay mép dưới màn đầu.
+ *
+ * Về màu: concept gốc là nền xanh đậm, và bản đầu tôi làm nền đỏ sâu — cả hai đều sai với
+ * site này. Toàn bộ trang chủ (Achievements, WhyUs, Courses…) là nền trắng, chữ mực, đỏ chỉ
+ * dùng làm điểm nhấn. Một hero nền tối đứng giữa header đỏ và các khối trắng thành ra một
+ * mảnh ghép của trang khác. Nay nền là trắng → xám nhạt, chữ ink-900, và đỏ chỉ còn ở dòng
+ * hai của tiêu đề cùng nút đăng ký.
+ *
+ * Về icon: concept gốc có một vành icon quay quanh vòng ảnh (8 ô: 4 chữ Hán 听说读写 và 4
+ * icon chat/lịch/sách/mũ tốt nghiệp), cộng ba icon vuông trên ba điểm mạnh. Đã bỏ hết. Lý do
+ * không phải "ít hơn thì đẹp hơn" mà là không icon nào trong số đó mang thông tin: tám ô nói
+ * tám chuyện rời rạc nên không có thứ tự để đọc, và ba icon vuông chỉ vẽ lại bằng hình cái
+ * mà nhãn bên dưới đã nói bằng chữ. Icon duy nhất còn lại là mũi tên trên hai nút — mũi tên
+ * ở đó không trang trí, nó chỉ hướng đi và nhận cả hiệu ứng hover.
+ *
+ * Vì sao vẫn giữ vòng tròn thay vì để ảnh tách nền tự do như `Hero.astro`: vòng tròn cho
+ * phép cắt ảnh ở ngang hông (ảnh gốc là ảnh toàn thân, để nguyên thì hai người bé lại), và
+ * nó là tâm điểm duy nhất của nửa trái. Ảnh được tách trên nền trắng nên đặt trên nền sáng
+ * là chỗ viền tóc sạch nhất.
+ */
+
+/**
+ * Ba điểm mạnh của trung tâm. Chữ ngắn vì đây là một hàng dữ kiện, không phải câu quảng bá —
+ * nội dung dài đã có ở `WhyUs` ngay bên dưới hero.
+ *
+ * Ba dòng này phải nói ba điều mà hai khối chữ phía trên CHƯA nói. Nhãn trên cùng là
+ * `hero.noteTitle` ("Lộ trình chuẩn HSK 3.0") và đoạn giới thiệu là `hero.description`, kết
+ * thúc bằng "cam kết 100% đầu ra" — cả hai đều soạn ở trang quản trị. Bộ ba cũ có "Lộ trình
+ * HSK 3.0" và "Cam kết 100% đầu ra", tức là đọc từ trên xuống thì cùng một câu hiện ra hai
+ * lần trong khoảng ba dòng; ở cỡ chữ đó mắt bắt được ngay và nó làm hero trông như thiếu
+ * nội dung.
+ *
+ * Nay: bằng cấp giảng viên, quy mô lớp, và cơ chế bảo đảm. "Học lại miễn phí" là cách nói
+ * khác của cam kết đầu ra — nó là *cơ chế* đứng sau lời cam kết, nên không lặp lại chữ nào
+ * của đoạn trên mà vẫn giữ được điểm bán mạnh nhất.
+ *
+ * Vì lẽ đó dòng thứ ba KHÔNG được chứa "đầu ra" hay "cam kết": bản trước ghi "Nếu chưa đạt
+ * đầu ra cam kết", nằm cách `hero.description` ("…cam kết 100% đầu ra") đúng hai dòng nên vẫn
+ * đọc ra là cùng một câu nói hai lần — chỉ đảo thứ tự chữ. Nay dòng phụ nói bằng từ khác:
+ * "chưa đạt mục tiêu" là điều kiện, "học lại khoá sau" là việc trung tâm làm.
+ */
+const features = [
+  { title: "Thạc sĩ, Tiến sĩ", desc: "Giảng viên tốt nghiệp tại Trung Quốc" },
+  { title: "Lớp 10–15 học viên", desc: "Giảng viên kèm từng người" },
+  { title: "Học lại miễn phí", desc: "Chưa đạt mục tiêu thì học lại khoá sau" },
+];
+
+/**
+ * Dưới 640px, khối chữ quay về đúng bộ của hero cũ: nhãn → tiêu đề → ba con số `stats`
+ * ("100%", "HSK 1–6", "Miễn phí") → một nút. Bộ ba `features` phía trên và đoạn
+ * `hero.description` chỉ còn hiện từ `sm` trở lên.
+ *
+ * Vì sao đổi theo bề rộng chứ không dùng một bộ cho cả hai: `features` là ba cặp
+ * tiêu đề–diễn giải, tức sáu dòng chữ. Ở 375px, ba cột đó rộng khoảng 105px mỗi cột nên
+ * "Lớp 10–15 học viên" vỡ thành ba dòng và cỡ chữ phải hạ xuống 0.68rem — cộng thêm đoạn
+ * giới thiệu bốn dòng ngay trên, phần chữ dài hơn cả vòng ảnh. Ba con số thì mỗi ô chỉ có
+ * một giá trị ngắn và một nhãn, đọc được ở cỡ chữ lớn trong cùng khoảng rộng đó.
+ *
+ * `stats` vẫn giữ một hàng ba cột ở mobile (hero cũ xếp dọc): xếp dọc thì ba ô chiếm thêm
+ * chừng 9rem và đẩy nút đăng ký cùng lớp sóng xuống dưới màn đầu, mất đúng cái mà
+ * `--hero-offset` ở dưới file này tính toán để giữ.
+ *
+ * Nhãn "Cam kết đầu ra khóa học" của `stats[0]` trùng chữ với `hero.description`, nhưng
+ * hai khối không bao giờ cùng xuất hiện: đoạn giới thiệu là `hidden sm:block`, còn hàng
+ * `stats` là `sm:hidden`.
+ */
+
+
+---
+
+{/*
+  Hero cao đúng phần còn lại của màn đầu: một màn hình trừ khoảng cách từ đỉnh trang xuống
+  đỉnh hero (header là `sticky`, tức vẫn chiếm chỗ trong luồng). Khoảng đó do script dưới
+  cùng file đo và ghi vào `--hero-offset`; giá trị trong `calc` chỉ là mức dự phòng khi
+  không có JS. Đo bằng script chứ không viết cứng vì header cao khác nhau ở mobile và
+  desktop, và nó còn đổi mỗi lần logo hay padding của header đổi.
+
+  Dùng `svh` chứ không phải `vh`: trên Safari iOS, `vh` tính theo màn hình khi thanh địa chỉ
+  đã thu lại, nên hero `100vh` luôn cao hơn khoảng nhìn thấy thật lúc mới mở trang.
+*/}
+<section
+  id="hero"
+  class="hero3 relative isolate flex min-h-[calc(100svh-var(--hero-offset,4.9rem))] items-center overflow-hidden pt-6 pb-20 sm:pt-10 sm:pb-28 lg:min-h-[calc(100svh-var(--hero-offset,6.1rem))] lg:pt-12 lg:pb-32"
+>
+  {/* Nền, vệt sáng, lưới kẻ, sticker và lớp sóng ở đáy — xem `HeroBackdrop.astro`. */}
+  <HeroBackdrop />
+
+  <div class="container relative mx-auto w-full px-6">
+    {/*
+      Thứ tự DOM: vòng ảnh trước, chữ sau — giống concept (ảnh bên trái, chữ bên phải) nên
+      thứ tự đọc trên desktop khớp thứ tự nguồn. Trên mobile vòng ảnh nhỏ lại còn 14.5rem để
+      tiêu đề và nút đăng ký vẫn nằm trong màn đầu.
+    */}
+    <div
+      class="grid items-center gap-y-6 sm:gap-y-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-x-10 xl:gap-x-16"
+    >
+      <div class="hero3-ring relative mx-auto">
+        {/*
+          Vòng nét đứt. Nét mảnh hơn và gạch ngắn hơn bản trước (0.28 thay cho 0.4, gạch
+          1.1/3.4 thay cho 1.6/3.2): ở đường kính 33rem, gạch cũ dài gần 6px và dày 1.3px nên
+          nó đọc ra là một vòng gạch to bao quanh, cạnh tranh với chính mép đĩa. Mảnh và thưa
+          thì nó lùi về đúng vai trò một quỹ đạo mờ.
+
+          Đẩy ra `-8%` (trước là `-6%`): sát quá thì hai đường cong gần như trùng nhau và mắt
+          đọc thành một vành dày bị đứt nét, không phải hai lớp.
+
+          Quầng blur xám phía sau đã gỡ. Nó là `bg-brand-ink-200/60 blur-3xl` ở `inset-[-12%]`
+          — một mảng xám to hơn vòng, và chính nó làm quanh mép vòng luôn có một vùng nhoè
+          bẩn, nhất là ở dưới–trái nơi nó chồng lên bóng đổ của `.hero3-neon`. Chiều sâu nay
+          do đúng một bóng đổ trên `.hero3-neon` lo.
+        */}
+        <svg
+          class="hero3-dash pointer-events-none absolute inset-[-8%]"
+          viewBox="0 0 100 100"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle
+            cx="50"
+            cy="50"
+            r="49"
+            stroke="var(--brand-ink-200)"
+            stroke-width="0.28"
+            stroke-dasharray="1.1 3.4"></circle>
+        </svg>
+
+        {/*
+          Ba đám mây phẳng nằm SAU đĩa: hệ trục 140×140 trong khi đĩa chiếm ô 20…120, nên
+          phần mây rơi vào trong đĩa bị chính đĩa (nền đục) che, chỉ còn mấy mảng nhô ra
+          ngoài mép vòng. Đó là cách có "mây phía sau" mà không cần lớp che nào.
+
+          Đặt trong `.hero3-ring` chứ không đặt ở lớp sticker của cả section: toạ độ khi đó
+          tính theo vòng, nên ba đám giữ đúng vị trí quanh vòng ở cả bốn cỡ `--ring` mà không
+          phải viết lại phần trăm cho từng breakpoint.
+
+          Ba cỡ và ba độ mờ khác nhau, đặt lệch nhau (dưới–trái, phải, trên): ba đám bằng
+          nhau và đối xứng thì đọc ra hoa văn, không phải mây.
+        */}
+        <svg
+          class="hero3-clouds pointer-events-none absolute inset-[-20%]"
+          viewBox="0 0 140 140"
+          fill="#ffffff"
+          aria-hidden="true"
+        >
+          <g opacity="0.95">
+            <g transform="translate(34 108)">
+              <rect x="-19" y="-2" width="38" height="9" rx="4.5"></rect>
+              <circle cx="-9" cy="-3" r="8"></circle>
+              <circle cx="2" cy="-7" r="11"></circle>
+              <circle cx="13" cy="-1" r="6.5"></circle>
+            </g>
+          </g>
+          {/* Đám bên phải đặt ở khoảng 4 giờ, không đặt ngang tâm vòng: ngang tâm là chỗ
+              rộng nhất của khoảng trống giữa vòng và cột chữ, mây nằm đó thành một hình lơ
+              lửng không dính vào gì. Ở 4 giờ nó bị mép vòng cắt hơn nửa nên đọc ra là mây
+              nằm sau vòng. */}
+          <g opacity="0.8">
+            <g transform="translate(116 88)">
+              <rect x="-14" y="-2" width="28" height="7" rx="3.5"></rect>
+              <circle cx="-6" cy="-3" r="6"></circle>
+              <circle cx="2" cy="-6" r="8.5"></circle>
+              <circle cx="10" cy="-1" r="5"></circle>
+            </g>
+          </g>
+          <g opacity="0.65">
+            <g transform="translate(54 18)">
+              <rect x="-11" y="-1.5" width="22" height="5.5" rx="2.75"></rect>
+              <circle cx="-5" cy="-2" r="4.5"></circle>
+              <circle cx="2" cy="-5" r="6"></circle>
+              <circle cx="8" cy="-1" r="4"></circle>
+            </g>
+          </g>
+        </svg>
+
+        <div class="hero3-disc absolute inset-0 overflow-hidden rounded-full">
+          {/*
+            `height` 560 + `densities` 1x/2x ⇒ bản 2x 1120px, dưới bề cao ảnh nguồn 1164px.
+            Eager + fetchpriority: đây là ảnh LCP của trang chủ.
+
+            Ảnh cao 100% vòng và đặt `top-[4%]`. Con số này tính ra từ chỗ đứng của hai cuốn
+            giáo trình, không phải chọn cho đẹp mắt: mép dưới sách ở 74% chiều cao ảnh nguồn,
+            nên với tỉ lệ này nó rơi vào 78% chiều cao vòng, chỗ cung tròn còn rộng 83% đường
+            kính — hai cuốn sách chỉ chiếm chừng 54% nên vào hẳn trong vòng, còn dư mỗi bên.
+
+            Bản trước ảnh cao 119% và đặt `top-[6%]`, đẩy mép sách xuống 94% chiều cao vòng.
+            Ở cao độ đó cung tròn chỉ còn rộng 47% đường kính, hẹp hơn chính hai cuốn sách —
+            nên vòng chắc chắn cắt vào góc sách, không phải chuyện lệch vài phần trăm.
+
+            Đổi tỉ lệ này KHÔNG làm hai bạn nhỏ đi: bốn mốc `--ring` bên dưới đã nới thêm để
+            bù. Phần từ đỉnh đầu xuống mép sách nay là 0.74 × 28rem = 20.7rem ở `lg`, so với
+            0.88 × 22rem = 19.4rem của bản gốc.
+          */}
+          <Image
+            src={heroPhoto}
+            alt="Hai học viên Hoa văn SaigonHSK mặc áo đồng phục, cầm giáo trình HSK1 và HSK4"
+            height={560}
+            densities={[1, 2]}
+            format="webp"
+            quality={92}
+            loading="eager"
+            fetchpriority="high"
+            class="absolute top-[4%] left-1/2 h-full w-auto max-w-none -translate-x-1/2"
+          />
+
+          {/*
+            Mờ dần ở chân ảnh, 10% dưới cùng của vòng.
+
+            Với tỉ lệ ảnh mới, 10% cuối này bắt đầu ở 90% chiều cao vòng — dưới mép sách
+            (78%) và dưới cả hai bàn tay (88%), nên vùng mờ chỉ còn phủ đúng chỗ ống quần đi
+            vào cung tròn. Đây là điểm khác hẳn bản trước: lúc đó dải mờ bắt đầu ngay trên
+            mép sách nên nó bạc màu đúng cái vật cần thấy.
+
+            Vẫn cần lớp này: không có nó thì cung dưới của vòng cắt ngang ống quần đen, và
+            một mảng tối bị nét cong cắt qua thì lộ ra là ảnh bị crop.
+          */}
+          <div class="hero3-disc-fade pointer-events-none absolute inset-x-0 bottom-0 h-[10%]">
+          </div>
+        </div>
+
+        {/* Vành sáng vẽ riêng, NGOÀI khối `overflow-hidden` ở trên — nằm trong thì phần toả
+            ra ngoài bị cắt mất, chỉ còn một nét viền mảnh. */}
+        <div class="hero3-neon pointer-events-none absolute inset-0 rounded-full"></div>
+
+      </div>
+
+      <div class="text-center lg:text-left">
+        <span
+          class="hero3-rise inline-flex items-center rounded-full border border-border bg-background/80 px-5 py-2.5 text-xs font-bold tracking-[0.16em] text-muted-foreground uppercase backdrop-blur-sm"
+        >
+          {hero.noteTitle}
+        </span>
+
+        <h1 class="hero3-rise mt-6 text-balance" style="--hero-delay: 80ms">
+          <span
+            class="block text-[9vw] leading-[1.05] font-black tracking-[-0.02em] text-brand-ink-900 uppercase sm:text-[3.3rem] lg:text-[3.2rem] xl:text-[3.8rem]"
+          >
+            {hero.titleLine1}
+          </span>
+          <span
+            class="block text-[9vw] leading-[1.05] font-black tracking-[-0.02em] text-brand-red-600 uppercase sm:text-[3.3rem] lg:text-[3.2rem] xl:text-[3.8rem]"
+          >
+            {hero.titleLine2}
+          </span>
+        </h1>
+
+        {/* `hidden sm:block`: xem chú thích của `stats` ở đầu file — dưới 640px chỗ này là
+            hàng ba con số. Câu tóm tắt `sr-only` ngay dưới vẫn nằm trong DOM ở mọi cỡ máy
+            nên dữ kiện "TP.HCM" và "cam kết 100% đầu ra" không mất ở bản mobile. */}
+        <p
+          class="hero3-rise mx-auto mt-4 hidden max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:block lg:mx-0 lg:text-base"
+          style="--hero-delay: 150ms"
+        >
+          {hero.description}
+        </p>
+
+        {/* Câu tóm tắt cho trợ lý giọng nói — giữ nguyên như `Hero.astro` để đổi phương án
+            hero không làm mất dữ kiện địa danh của trang chủ. */}
+        <p class="sr-only" data-speakable>
+          Trung tâm Hoa văn SaigonHSK — dạy tiếng Trung và luyện thi HSK tại
+          TP.HCM (Sài Gòn), cam kết 100% đầu ra.
+        </p>
+
+        {/*
+          Ba điểm mạnh, chia đều ba cột. Bỏ icon vuông phía trên mỗi cột: ba icon đó chỉ
+          trang trí (cái đích, hai người, cái khiên — không icon nào nói thêm được điều gì mà
+          nhãn chưa nói), và bỏ chúng thì ba con số/nhãn đứng thành một hàng dữ kiện, giống
+          hàng ba con số ở `Hero.astro`.
+
+          Thay icon bằng đường kẻ: một gạch trên đầu hàng và hai gạch dọc chia cột. Kẻ thì
+          phân định được ba cột mà không thêm hình gì mới vào hero.
+
+          Chỉ hiện từ 640px trở lên (`hidden sm:grid`); dưới mức đó là hàng ba con số
+          `stats` ngay bên dưới.
+        */}
+        <ul
+          class="mx-auto mt-6 hidden max-w-lg grid-cols-3 divide-x divide-border border-t border-border pt-5 sm:mt-8 sm:grid lg:mx-0 lg:mt-9"
+        >
+          {
+            features.map((f, i) => (
+              <li
+                class="hero3-rise px-3 first:pl-0 last:pr-0 sm:px-4"
+                style={`--hero-delay: ${230 + i * 80}ms`}
+              >
+                <p class="text-xs font-bold text-brand-ink-900 sm:text-sm">
+                  {f.title}
+                </p>
+                <p class="mt-1.5 text-[0.68rem] leading-snug text-muted-foreground sm:text-xs">
+                  {f.desc}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+
+        {/* Bản mobile của hàng dữ kiện: ba con số của hero cũ, giữ nguyên kiểu chữ ở đó
+            (giá trị đậm cỡ lớn, nhãn chữ hoa dàn thưa). Khung ngoài dùng lại đúng gạch trên
+            và hai gạch dọc của `features` để hai bản đọc ra cùng một hàng, chỉ khác nội
+            dung. */}
+        <ul
+          class="mx-auto mt-6 grid max-w-lg grid-cols-3 divide-x divide-border border-t border-border pt-5 sm:hidden"
+        >
+          {
+            stats.map((s, i) => (
+              <li
+                class="hero3-rise px-2 first:pl-0 last:pr-0"
+                style={`--hero-delay: ${230 + i * 80}ms`}
+              >
+                <p class="text-lg leading-none font-black text-brand-ink-900">
+                  {s.value}
+                </p>
+                <p class="mt-2 text-[0.55rem] leading-snug font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                  {s.label}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+
+        {/* Nút chính đỏ đặc, nút phụ viền — cùng một cặp nút xuất hiện lại ở `TrialCta` và
+            `CtaSection` phía dưới trang.
+
+            Dưới 640px chỉ còn nút đăng ký, như hero cũ: "Xem lịch khai giảng" ở mobile là
+            một nút to nữa chồng ngay dưới nút chính, và nó lặp lại một mục đã có trong menu
+            đầu trang. Bỏ nó đi thì hero mobile có đúng một việc để làm. */}
+        <div
+          class="hero3-rise mt-6 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center lg:justify-start"
+          style="--hero-delay: 480ms"
+        >
+          <a
+            href="/register"
+            class="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-red-600 px-8 py-3.5 text-sm font-bold sm:py-4 text-white shadow-lg shadow-brand-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-brand-red-700"
+          >
+            Đăng ký giữ chỗ ngay
+            <span
+              class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+              set:html={ICONS.arrow}
+            />
+          </a>
+
+          <a
+            href="/schedule"
+            class="group hidden items-center justify-center gap-2 rounded-full border border-border bg-background/70 px-8 py-3.5 text-sm font-bold text-brand-ink-900 transition-all hover:-translate-y-0.5 hover:border-brand-ink-300 hover:bg-brand-ink-50 sm:inline-flex sm:py-4"
+          >
+            Xem lịch khai giảng
+            <span
+              class="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 [&>svg]:size-4"
+              set:html={ICONS.arrowUpRight}
+            />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{/*
+  Đo khoảng cách từ đỉnh trang xuống đỉnh hero (chiều cao header cộng mọi thứ nằm trên hero)
+  và ghi vào `--hero-offset` để `min-h` của hero khớp đúng phần còn lại của màn đầu — nhờ vậy
+  lớp sóng nằm ngay mép dưới màn hình đầu tiên ở mọi cỡ máy.
+
+  `is:inline` để script chạy ngay, không qua bước bundle: nó chỉ có một phép đo, chờ bundle
+  thì hero nhảy chiều cao một nhịp sau khi trang đã hiện.
+
+  Đọc `--hero-offset` khi đang đo sẽ ra số cũ, nên phải xoá biến trước rồi mới đo lại —
+  không xoá thì mỗi lần đổi cỡ cửa sổ, `min-h` lại tính trên giá trị của lần trước và hero
+  co dần lại.
+*/}
+<script is:inline>
+  (() => {
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+
+    const measure = () => {
+      document.documentElement.style.removeProperty("--hero-offset");
+      const top = hero.getBoundingClientRect().top + window.scrollY;
+      document.documentElement.style.setProperty("--hero-offset", `${top}px`);
+    };
+
+    measure();
+
+    let pending = false;
+    window.addEventListener(
+      "resize",
+      () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+          pending = false;
+          measure();
+        });
+      },
+      { passive: true },
+    );
+
+    /* Font hiển thị xong thì chiều cao header đổi (logo có ba dòng chữ), nên đo lại một lần
+       nữa khi font đã áp dụng. */
+    if (document.fonts) document.fonts.ready.then(measure);
+  })();
+</script>
+
+<style>
+  /*
+    `--ring` là đường kính vòng ảnh, và cũng là đơn vị gốc của cả khối: bán kính vành icon,
+    cỡ ô icon, cỡ chữ Hán đều tính từ nó. Nên đổi kích thước hero ở một chỗ duy nhất là bốn
+    dòng media query dưới đây, không phải đi sửa từng lớp.
+  */
+  .hero3 {
+    /* 13rem ở mobile: cả hero phải nằm trong một màn hình điện thoại, và vòng ảnh là phần
+       duy nhất có thể nhỏ lại mà không mất chữ nào. Nới được thêm 1rem so với bản trước vì
+       khối chữ mobile nay là ba con số một dòng và một nút, ngắn hơn bản cũ chừng 5rem.
+
+       Cả bốn mốc dưới đây đều tăng khoảng 9%: vòng ảnh là tâm điểm duy nhất của nửa trái,
+       và ở cỡ trước hai bạn trong ảnh nhỏ hơn khối tiêu đề bên cạnh. Tăng `--ring` chứ
+       không tăng `h-[119%]` của thẻ `<Image>`: chiều cao ảnh tính theo vòng, kéo ảnh cao
+       thêm trong một vòng cũ thì phần cắt ở đáy ăn lên tới cuốn giáo trình hai bạn đang
+       cầm — đúng cái vật cần thấy. */
+    --ring: 14.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .hero3 {
+      --ring: 24rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero3 {
+      --ring: 28rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .hero3 {
+      --ring: 33rem;
+    }
+  }
+
+  .hero3-ring {
+    width: var(--ring);
+    height: var(--ring);
+  }
+
+  /*
+    Lòng vòng tròn: một dải chuyển sắc theo trục dọc, trắng ở trên xuống #f1f1f4 ở đáy. Ảnh
+    được tách trên nền trắng nên phần trên trắng là chỗ viền tóc sạch nhất, còn áo đỏ là vệt
+    màu duy nhất trong vòng nên nó nổi lên không cần nền phụ trợ.
+
+    Bản trước có thêm một `radial-gradient` trắng ở 50% 20% tắt hẳn tại 72%. Ngoài bán kính
+    đó chỉ còn lớp dưới, nên nửa dưới của đĩa có một vành xám bao quanh trong khi giữa vẫn
+    trắng — đọc ra là một cái lòng chảo, và đó là phần làm vòng trông bẩn. Một trục dọc duy
+    nhất thì mọi điểm cùng cao độ có cùng một màu, không sinh ra vành nào.
+  */
+  .hero3-disc {
+    background: linear-gradient(180deg, #ffffff 0%, #fafafb 52%, #f1f1f4 100%);
+  }
+
+  /*
+    Dải mờ ở chân vòng. Màu và hướng phải khớp ĐÚNG với `.hero3-disc`: cùng đi theo trục dọc
+    và cùng kết thúc ở #f1f1f4, nên chỗ chân hai bạn tan vào đáy đĩa mà không lộ ranh giới.
+
+    Bản trước dải này dừng ở `--brand-ink-100` (#e9e9ec) trong khi đáy đĩa lại là một màu
+    khác do lớp radial phía trên chồng vào — hai sắc xám lệch nhau tạo thành một vòng cung
+    xám nằm trong đĩa, đúng chỗ chân hai bạn.
+  */
+  .hero3-disc-fade {
+    background: linear-gradient(
+      to top,
+      #f1f1f4 0%,
+      rgba(241, 241, 244, 0.6) 55%,
+      transparent 100%
+    );
+  }
+
+  /* Mây trắng trên nền cũng gần trắng nên nó cần một bóng đổ để tách ra, chứ không cần thêm
+     màu: một nét viền hay một mảng xám sẽ biến mây thành hình vẽ có đường bao, trong khi cả
+     hero này không có chi tiết nào được viền. */
+  .hero3-clouds {
+    filter: drop-shadow(0 8px 16px rgba(18, 19, 22, 0.07));
+  }
+
+  /*
+    Mép vòng: đúng MỘT nét mảnh đi hết chu vi, cộng một bóng đổ lệch xuống để đĩa có chỗ đứng
+    trên nền sáng. Nét dùng `box-shadow` dạng `inset` thay cho `border` để nó không cộng vào
+    kích thước hộp, nhờ vậy mép nét trùng khít mép nền của đĩa.
+
+    Cung `conic-gradient` đậm ở trên–trái đã gỡ. Ý định của nó là một vệt sáng theo hướng
+    nguồn sáng, nhưng nó dày 1.5px và đậm tới 0.42 trong khi phần còn lại của vành chỉ 0.08 —
+    tức là cùng một đường viền mà một phần tư đậm gấp năm lần chỗ khác. Mắt không đọc ra
+    "được chiếu sáng", nó đọc ra một đường viền vẽ không đều. Chiều sâu nay chỉ do bóng đổ
+    lo, và bóng thì đổ đúng một hướng nên không có chỗ nào lệch sắc.
+  */
+  .hero3-neon {
+    box-shadow:
+      inset 0 0 0 1px rgba(18, 19, 22, 0.07),
+      0 30px 60px -34px rgba(18, 19, 22, 0.34);
+  }
+
+  /*
+    Trạng thái mặc định của mọi phần tử là *đã hiện đủ*, animation chỉ thêm vào khi người
+    xem không tắt hiệu ứng chuyển động — giống `Hero.astro`. Ai tắt thì thấy hero tĩnh
+    hoàn chỉnh, không phải một vùng trắng chờ animation không bao giờ chạy.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero3-rise {
+      animation: hero3-rise 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: var(--hero-delay, 0ms);
+    }
+
+    .hero3-ring {
+      animation: hero3-ring-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Vòng nét đứt là chuyển động duy nhất còn lại trong hero, 90 giây một vòng: chậm đến
+       mức phải nhìn mới thấy nó động. */
+    .hero3-dash {
+      animation: hero3-spin-rev 90s linear infinite;
+    }
+  }
+
+  @keyframes hero3-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  /* Vòng ảnh vào bằng cách nở ra từ 92%: nó là hình tròn, trôi lên như khối chữ thì nhìn
+     như cả trang bị xê dịch. */
+  @keyframes hero3-ring-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+  }
+
+  @keyframes hero3-spin-rev {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+</style>

@@ -1,0 +1,134 @@
+---
+import { ICONS } from "@/lib/icons";
+import { mission } from "@/data/site";
+import { coreValues } from "@/data/coreValues";
+
+/**
+ * "Bản sắc, Tầm nhìn và Giá trị": dải năm giá trị nền đỏ đè lên tấm thẻ trắng chứa
+ * Tầm nhìn và Sứ mệnh.
+ *
+ * Ba thứ này trước đây nằm rời nhau — ba ô Sứ mệnh / Phương châm / Tầm nhìn ở giữa
+ * trang, năm giá trị ở một khối khác phía dưới — nên người đọc gặp bốn lần trung tâm tự
+ * nói về mình mà không thấy chúng thuộc cùng một câu chuyện. Gộp lại: giá trị là phần
+ * ngắn (chỉ tên), tầm nhìn và sứ mệnh là phần dài, hai lớp chồng nhau thành một khối.
+ *
+ * Nội dung chi tiết của từng giá trị nằm ở /about/differences; ở đây chỉ cần tên để
+ * người đọc nắm được trung tâm lấy gì làm gốc.
+ *
+ * Màu: chỉ xám và đỏ thương hiệu. Cả khối có đúng **một** mảng màu — dải giá trị. Bản
+ * trước chia màu cho từng ô con (mỗi giá trị một sắc, mỗi ô tầm nhìn/sứ mệnh một nền)
+ * nên thành hộp-trong-hộp: thẻ trắng trong thẻ trắng, mỗi thẻ một viền, không mảng nào
+ * đủ mạnh để mắt bám vào.
+ */
+const panels = [
+  { icon: ICONS.target, label: "Tầm nhìn", body: mission.vision },
+  { icon: ICONS.heart, label: "Sứ mệnh", body: mission.statement },
+];
+---
+
+{/*
+  Nền xám `surface-100`: khối này có một mảng đỏ đặc và một thẻ trắng lớn, nền phải là
+  màu đứng yên để hai thứ đó nổi lên. Nền trắng thì thẻ trắng biến mất, nền hồng thì
+  mảng đỏ chìm.
+*/}
+<section class="bg-brand-surface-100 py-16 lg:py-24">
+  <div class="container mx-auto px-6">
+    <div class="flex flex-col items-center text-center">
+      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-red-600">
+        Về chúng tôi
+      </p>
+
+      <h2
+        class="mt-4 max-w-2xl text-[2rem] font-black leading-[1.08] tracking-tight text-balance text-brand-ink-900 md:text-[2.75rem]"
+      >
+        Bản sắc, Tầm nhìn<br class="hidden sm:block" /> và Giá trị
+      </h2>
+
+      {/* Phương châm đứng ngay dưới tiêu đề chứ không thành ô thứ ba trong thẻ trắng:
+          nó là một dòng khẩu hiệu, đặt cạnh hai đoạn văn dài thì ô của nó trống hoác. */}
+      <p
+        class="mt-5 max-w-2xl text-base leading-relaxed text-brand-ink-600 italic md:text-lg"
+      >
+        {mission.motto}
+      </p>
+    </div>
+
+    {/*
+      Hai tấm chồng nhau: dải đỏ hẹp hơn nằm trên, thẻ trắng rộng hơn nằm dưới và thò ra
+      hai bên. `-mt-*` kéo thẻ trắng lên; `pt-*` bù lại đúng phần bị dải đỏ che, để chữ
+      trong thẻ không chui xuống dưới dải đỏ ở bất kỳ khổ màn hình nào.
+    */}
+    <div class="mt-12 lg:mt-16">
+      <ul
+        class="relative z-10 mx-auto grid max-w-6xl grid-cols-1 gap-x-8 gap-y-9 rounded-[2rem] bg-brand-red-600 px-6 py-10 shadow-[0_22px_45px_-25px_var(--brand-red-900)] sm:grid-cols-2 lg:grid-cols-5 lg:rounded-[2.5rem] lg:px-10"
+      >
+        {
+          /*
+            Mỗi giá trị có cả **mô tả**, không chỉ tên.
+
+            Bản trước chỉ để tên và đẩy phần mô tả sang /about/differences. Nhưng năm
+            dòng "Chất lượng, Tận tâm, Chuyên nghiệp, Đổi mới, Uy tín" đứng trơ thì trung
+            tâm nào cũng viết được y hệt — chính đoạn mô tả mới nói trung tâm này hiểu
+            chữ đó theo nghĩa gì. Đặt mô tả ngay đây, trong dải đỏ, thay vì mở thêm một
+            khối riêng bên dưới: khối riêng thì phải in lại năm cái tên lần thứ hai.
+          */
+          coreValues.map((v) => (
+            <li class="flex flex-col items-center gap-3 text-center">
+              {/*
+                Icon trong đĩa trắng mờ: nét trắng mảnh đặt thẳng lên nền đỏ thì mỗi icon
+                một độ rõ khác nhau tuỳ chỗ đậm nhạt; có đĩa thì cả năm đứng trên cùng
+                một nền và đọc đều như nhau.
+              */}
+              <span
+                class="grid size-12 place-items-center rounded-full bg-white/15 text-white inset-ring inset-ring-white/25 [&>svg]:size-6"
+                set:html={ICONS[v.icon as keyof typeof ICONS] ?? ICONS.shield}
+              />
+              <p class="text-sm font-bold leading-snug text-white">{v.title}</p>
+              {/*
+                `white/85` chứ không mờ hơn: trắng 75% trên nền `red-600` chỉ còn tỉ lệ
+                tương phản ~4.2:1, dưới ngưỡng 4.5:1 cho chữ nhỏ. 85% đưa lên ~5:1.
+              */}
+              <p class="text-[12.5px] leading-relaxed text-white/85">{v.desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div
+        class="-mt-14 rounded-[2rem] bg-background px-6 pt-20 pb-10 shadow-[0_30px_60px_-45px_var(--brand-ink-900)] sm:px-10 lg:-mt-16 lg:rounded-[2.5rem] lg:px-14 lg:pt-24 lg:pb-14"
+      >
+        {/*
+          Hai cột ngăn nhau bằng một vạch dọc, không phải hai ô nền màu: chúng nằm sẵn
+          trong một tấm thẻ trắng, cho thêm nền nữa là hộp trong hộp.
+
+          Vạch viết thẳng vào cột thứ hai (`md:border-l`) chứ không dùng `divide-x`: khi
+          lưới rã thành một cột ở màn hẹp, `divide-x` vẫn vẽ viền trái cho ô thứ hai —
+          một vạch dọc lửng lơ bên mép chữ.
+        */}
+        <div class="grid gap-10 md:grid-cols-2 md:gap-14">
+          {
+            panels.map((p, i) => (
+              <div class:list={[i > 0 && "md:border-l md:border-brand-surface-200 md:pl-14"]}>
+                <div class="flex items-center gap-3">
+                  {/* Icon xám, không đỏ: đỏ trong khối này đã là cả một mảng (dải giá
+                      trị ngay trên), thêm hai nét đỏ nữa thì màu thương hiệu hết là
+                      điểm nhấn. */}
+                  <span
+                    class="grid size-10 place-items-center rounded-full bg-brand-surface-100 text-brand-ink-600 [&>svg]:size-5"
+                    set:html={p.icon}
+                  />
+                  <h3 class="text-xl font-extrabold text-brand-ink-900 md:text-2xl">
+                    {p.label}
+                  </h3>
+                </div>
+                <p class="mt-4 text-base leading-relaxed text-brand-ink-500">
+                  {p.body}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

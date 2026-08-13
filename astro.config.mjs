@@ -66,8 +66,10 @@ export default defineConfig({
       changefreq: "monthly",
       lastmod: CONTENT_UPDATED_AT,
       // Trang đăng nhập là noindex nên không đưa vào sitemap — sitemap chỉ nên
-      // chứa các URL muốn được index, tránh gửi tín hiệu mâu thuẫn.
-      filter: (page) => !page.includes("/login"),
+      // chứa các URL muốn được index, tránh gửi tín hiệu mâu thuẫn. `/hero-v3` là
+      // trang xem thử phương án hero, cũng noindex; xoá cả trang và dòng này khi
+      // chốt phương án.
+      filter: (page) => !page.includes("/login") && !page.includes("/hero-v3"),
       serialize(item) {
         // Trang chủ và các trang chuyển đổi chính được ưu tiên cao hơn.
         const path = new URL(item.url).pathname.replace(/\/$/, "");

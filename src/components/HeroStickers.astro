@@ -1,0 +1,242 @@
+---
+/**
+ * Lớp sticker nền của hero: sách vàng, cánh én, tia sáng. Dùng chung cho `HeroV3` (chân
+ * dung trong vòng tròn) và `HeroV4` (ảnh treo trên dây) — hai phương án khác nhau ở phần
+ * giữa, còn hai dải lề thì cùng một bộ hình.
+ *
+ * Tách ra file riêng thay vì copy sang phương án thứ hai: sáu hình này là ~120 dòng SVG cộng
+ * ba biến màu và một animation. Để hai bản thì mỗi lần chỉnh một con số phải sửa hai chỗ, và
+ * đó đúng là kiểu sai lệch âm thầm giữa hai trang.
+ *
+ * Vì sao tất cả đều ở LỀ (dưới 14% hoặc trên 82% bề rộng): vùng giữa hero là ảnh và chữ,
+ * sticker chen vào đó thì hoặc bị ảnh che hoặc làm chữ khó đọc. Chỉ hai dải lề là trống ở mọi
+ * cỡ máy và ở cả hai phương án.
+ *
+ * Vì sao vàng: đây là màu thứ ba duy nhất trong hero, và nó chỉ nằm trên vật trang trí — đỏ
+ * vẫn giữ nguyên vai trò điểm nhấn cho dòng hai tiêu đề và nút đăng ký. Cánh én dùng mực xám
+ * nhạt, không dùng đỏ, để hai loại sticker không đọc thành một cụm màu.
+ *
+ * Ở mobile chỉ còn cuốn sách mở và một cánh én: bề rộng lề lúc đó chỉ chừng 24px mỗi bên,
+ * nhét năm hình vào là chúng đè lên chữ.
+ *
+ * Nơi dùng phải tự lo thứ tự lớp: đặt thẻ này SAU lớp lưới kẻ và cho cả hai cùng `-z-10` thì
+ * sticker vẽ trên lưới nhưng vẫn dưới toàn bộ nội dung.
+ */
+interface Props {
+  /**
+   * Bố cục của hero đang dùng lớp sticker này. Nó chỉ đổi cao độ của HAI sticker trên cùng
+   * (cuốn sách mở bên trái, đàn én bên phải) ở màn hẹp, không đổi gì khác.
+   *
+   * `portrait` — chữ nằm một cột, nửa còn lại là ảnh (HeroV3). Ở mọi cỡ máy hai dải lề đều
+   * trống nên hai sticker trên nằm ở khoảng 13–14% chiều cao, ngang tầm khối chữ.
+   *
+   * `wide` — chữ dồn vào giữa và ăn hết bề rộng (HeroV4). Ở màn hẹp không còn lề nào ngang
+   * tầm tiêu đề, nên hai sticker trên phải lên hẳn 3–4%, tức dải trống phía trên cái nhãn —
+   * để nguyên 13% thì cuốn sách nằm chồng lên chữ "HỌC" của tiêu đề. Từ 640px trở lên khối
+   * chữ đã hẹp lại so với màn hình nên hai sticker về đúng chỗ như `portrait`.
+   */
+  variant?: "portrait" | "wide";
+  /** Class thêm vào lớp bọc, để nơi dùng chỉnh z-index hay độ mờ nếu cần. */
+  class?: string;
+}
+
+const { variant = "portrait", class: className = "" } = Astro.props;
+
+const TOP_ROW = {
+  portrait: {
+    book: "top-[14%] left-[2%] sm:left-[4%]",
+    birds: "top-[13%] right-[3%] sm:right-[5%]",
+  },
+  wide: {
+    book: "top-[3%] left-[2%] sm:top-[14%] sm:left-[4%]",
+    birds: "top-[2%] right-[3%] sm:top-[13%] sm:right-[5%]",
+  },
+}[variant];
+---
+
+<div
+  class:list={[
+    "hero-stickers pointer-events-none absolute inset-0 -z-10 overflow-hidden",
+    className,
+  ]}
+  aria-hidden="true"
+>
+  {/* Sách mở, góc trên–trái. Đây là sticker lớn nhất và là cái duy nhất giữ ở mobile. */}
+  <svg
+    class:list={[
+      "hero-sticker absolute w-14 -rotate-12 sm:w-20 lg:w-24",
+      TOP_ROW.book,
+    ]}
+    style="--float-delay: 0ms; --float-dur: 7s"
+    viewBox="0 0 64 48"
+    fill="none"
+  >
+    <path
+      d="M3 8c9-3 19-1 29 5 10-6 20-8 29-5v32c-9-3-19-1-29 5-10-6-20-8-29-5z"
+      fill="var(--sticker-gold)"></path>
+    <path d="M8 13c6-1 13 1 20 5v22c-7-4-14-6-20-5z" fill="#fffdf6"></path>
+    <path d="M56 13c-6-1-13 1-20 5v22c7-4 14-6 20-5z" fill="#fff8e6"></path>
+    {/* Ba nét chữ trên trang phải: đủ để đọc ra "trang có chữ", không vẽ chữ thật. */}
+    <path
+      d="M40 21h12M40 26h10M40 31h12"
+      stroke="var(--sticker-gold-deep)"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      opacity="0.55"></path>
+    <path
+      d="M32 13v27"
+      stroke="var(--sticker-gold-deep)"
+      stroke-width="1.8"
+      stroke-linecap="round"></path>
+  </svg>
+
+  {/* Ba cuốn xếp chồng, góc dưới–trái. Cuốn giữa đỏ để cụm sticker nối được với bộ màu của
+      trang, hai cuốn ngoài vàng. */}
+  <svg
+    class="hero-sticker absolute bottom-[22%] left-[5%] hidden w-16 rotate-6 sm:block lg:w-20"
+    style="--float-delay: 900ms; --float-dur: 9s"
+    viewBox="0 0 64 40"
+    fill="none"
+  >
+    <rect x="4" y="26" width="56" height="10" rx="2.5" fill="var(--sticker-gold)"
+    ></rect>
+    <rect
+      x="9"
+      y="15"
+      width="46"
+      height="10"
+      rx="2.5"
+      fill="var(--brand-red-300)"></rect>
+    <rect
+      x="14"
+      y="4"
+      width="38"
+      height="10"
+      rx="2.5"
+      fill="var(--sticker-gold-light)"></rect>
+    {/* Gờ sách: một vạch dọc sát mép trái mỗi cuốn, chỗ đóng gáy. */}
+    <path
+      d="M11 26v10M16 15v10M21 4v10"
+      stroke="#ffffff"
+      stroke-width="1.6"
+      opacity="0.7"></path>
+  </svg>
+
+  {/* Đàn én góc trên–phải: ba cặp cánh, cỡ và độ mờ giảm dần để đọc ra chiều sâu chứ không
+      phải ba hình giống nhau xếp cạnh. Én vẽ bằng hai cung nối nhau — cùng ngôn ngữ hình với
+      mấy cánh chim trong `HeroIllustration`. */}
+  <svg
+    class:list={[
+      "hero-sticker absolute w-20 sm:w-28 lg:w-32",
+      TOP_ROW.birds,
+    ]}
+    style="--float-delay: 400ms; --float-dur: 8s"
+    viewBox="0 0 128 72"
+    fill="none"
+    stroke="var(--brand-ink-300)"
+    stroke-linecap="round"
+  >
+    <path d="M4 26c9-13 18-13 26 1 8-14 17-14 26-1" stroke-width="3"></path>
+    <path
+      d="M62 54c7-10 14-10 20 1 6-11 13-11 20-1"
+      stroke-width="2.4"
+      opacity="0.75"></path>
+    <path
+      d="M92 18c5-7 10-7 14 1 4-8 9-8 13-1"
+      stroke-width="2"
+      opacity="0.55"></path>
+  </svg>
+
+  {/* Một cánh én lẻ ở dưới–phải, bay ngược hướng đàn trên. Giữ cả ở mobile: nó nằm trong
+      khoảng lề bên phải của hàng nút, chỗ duy nhất còn trống ở màn hẹp. */}
+  <svg
+    class="hero-sticker absolute right-[4%] bottom-[26%] w-12 sm:right-[8%] sm:w-16"
+    style="--float-delay: 1600ms; --float-dur: 10s"
+    viewBox="0 0 64 32"
+    fill="none"
+    stroke="var(--brand-ink-300)"
+    stroke-linecap="round"
+    stroke-width="2.6"
+  >
+    <path d="M4 20c8-12 16-12 24 1 8-13 16-13 24-1" opacity="0.8"></path>
+  </svg>
+
+  {/* Hai tia sáng nhỏ: dấu hoa thị ba nét (một nét dọc, hai nét chéo), đúng mô-típ đã dùng
+      trong `HeroIllustration`. Không dùng hai nét dọc–ngang: hình đó ra dấu cộng, và dấu cộng
+      trên trang của một trung tâm ngoại ngữ đọc như một nút "thêm" chứ không phải tia sáng. */}
+  <svg
+    class="hero-sticker absolute top-[46%] left-[6%] hidden w-8 sm:block"
+    style="--float-delay: 2200ms; --float-dur: 6s"
+    viewBox="0 0 32 32"
+    fill="none"
+    stroke="var(--sticker-gold)"
+    stroke-width="2.6"
+    stroke-linecap="round"
+  >
+    <path d="M16 3v26M5 9l22 14M27 9L5 23"></path>
+  </svg>
+  <svg
+    class="hero-sticker absolute top-[64%] right-[10%] hidden w-6 sm:block"
+    style="--float-delay: 1200ms; --float-dur: 6.5s"
+    viewBox="0 0 32 32"
+    fill="none"
+    stroke="var(--brand-red-300)"
+    stroke-width="3"
+    stroke-linecap="round"
+  >
+    <path d="M16 3v26M5 9l22 14M27 9L5 23"></path>
+  </svg>
+</div>
+
+<style>
+  /*
+    Vàng của sticker khai ngay tại đây, không thêm vào bộ màu ở `global.css`: bộ màu của site
+    chỉ có đỏ và mực (xanh/hồng trong `global.css` đều là bí danh của đỏ), và vàng này chỉ
+    dùng cho mấy hình dán trong hero. Đưa nó lên `:root` là mời cả trang dùng một màu thứ ba
+    mà thương hiệu không có.
+
+    Ba bậc vì cuốn sách cần ba: mặt bìa (`gold`), nét gáy và dòng chữ trên trang (`gold-deep`,
+    đậm hơn để nét đọc được trên bìa), và cuốn trên cùng của chồng sách (`gold-light`, nhạt
+    hơn để ba cuốn không dính thành một khối).
+  */
+  .hero-stickers {
+    --sticker-gold: #eab308;
+    --sticker-gold-light: #fcd34d;
+    --sticker-gold-deep: #a16207;
+  }
+
+  /* Sticker mờ hơn hẳn phần chữ: chúng nằm ở lề nhưng vẫn trong cùng một khung nhìn với tiêu
+     đề, để nguyên độ đậm thì mắt bị kéo ra hai bên. */
+  .hero-sticker {
+    opacity: 0.55;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-sticker {
+      opacity: 0.7;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /*
+      Sticker trôi lên xuống 6px. Mỗi hình có `--float-dur` và `--float-delay` riêng (khai
+      inline ở từng `<svg>`) với các chu kỳ 6/6.5/7/8/9/10 giây — số nguyên tố cùng nhau nên
+      chúng không bao giờ về cùng một pha, tức không có nhịp nào cả nhóm cùng lên hay cùng
+      xuống. Dùng một `animation` chung thì cả sáu hình nhấp nhô đồng thời và hero đọc ra là
+      một trang đang thở.
+    */
+    .hero-sticker {
+      animation: hero-sticker-float var(--float-dur, 8s) ease-in-out infinite;
+      animation-delay: var(--float-delay, 0ms);
+    }
+  }
+
+  /* Dùng thuộc tính `translate` chứ không phải `transform: translateY`: hai sticker có sẵn
+     `-rotate-12`/`rotate-6`, và một `transform` trong keyframes sẽ ghi đè cả góc nghiêng đó.
+     `translate` và `rotate` là hai thuộc tính riêng nên chúng cộng vào nhau. */
+  @keyframes hero-sticker-float {
+    50% {
+      translate: 0 -6px;
+    }
+  }
+</style>

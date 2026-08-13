@@ -1,0 +1,162 @@
+---
+import { ICONS } from "@/lib/icons";
+import { teachers } from "@/data/teachers";
+
+/**
+ * Đội ngũ giảng viên ở dạng chân dung tròn — bản rút gọn của `Teacher.astro` (dải thẻ
+ * vuông có lớp phủ thành tích khi rê chuột).
+ *
+ * Trang /about cần *khuôn mặt* của trung tâm chứ không cần hồ sơ đầy đủ: tên, học vị,
+ * một dòng nói rõ thầy cô làm gì, rồi dẫn sang /about/teachers cho ai muốn đọc tiếp.
+ * Dải thẻ có lớp phủ để nguyên ở trang giảng viên, nơi nó là nội dung chính.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+
+  /**
+   * Số chân dung hiển thị. Mặc định 4 — vừa **một** hàng ở desktop.
+   *
+   * Cả tám thầy cô thì thành hai hàng, và hàng thứ hai ở trang giới thiệu không thêm
+   * thông tin nào: người đọc đã hiểu "đội ngũ có học vị cao" từ hàng đầu, phần còn lại
+   * là việc của /about/teachers — nơi nút cuối khối này dẫn tới.
+   */
+  limit?: number;
+}
+
+const {
+  eyebrow = "Đội ngũ của chúng tôi",
+  title,
+  description,
+  ctaHref = "/about/teachers",
+  ctaLabel = "Xem đầy đủ đội ngũ giảng viên",
+  limit = 4,
+} = Astro.props;
+
+const shown = teachers.slice(0, limit);
+
+/**
+ * Chữ cái đầu của tên, dùng khi giảng viên chưa có ảnh. Bỏ "Cô/Thầy" vì mọi tên đều có,
+ * giữ tối đa 2 chữ cái cho vừa vòng tròn.
+ */
+const initialsOf = (name: string) =>
+  name
+    .replace(/^(cô|thầy)\s+/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
+/**
+ * Một dòng giới thiệu ngắn: lấy `role` nếu có (giảng viên phụ trách chuyên môn), còn
+ * lại lấy gạch đầu dòng thứ hai của banner — dòng đầu là học vị, đã hiện ở `title`.
+ */
+const blurbOf = (t: (typeof teachers)[number]) => {
+  const role = (t as { role?: string }).role;
+  if (role) return role;
+  const points = (t as { points?: readonly string[] }).points ?? [];
+  return points[1] ?? points[0] ?? "";
+};
+
+/*
+  Ảnh giảng viên đều là banner vuông theo cùng một khuôn: người đứng giữa, đầu ở khoảng
+  1/4 trên, nửa dưới là dải đỏ có tên. Cắt tròn nguyên tấm sẽ dính dải đỏ và chữ, nên
+  phóng ảnh lên ~2.2 lần rồi dịch sao cho khung tròn ôm đúng phần đầu–vai.
+
+  Con số lấy từ khuôn chung của bộ banner (tâm khuôn mặt ≈ 52% chiều ngang, 30% chiều
+  dọc), đã đối chiếu cả 8 tấm. Banner mới chụp theo đúng khuôn thì không phải sửa gì;
+  chụp khác khuôn thì phần lệch sẽ thấy ngay ở khung tròn này.
+*/
+const AVATAR_ZOOM = "width:217%;left:-63%;top:-15%";
+
+---
+
+<section class="bg-background py-16 lg:py-24">
+  <div class="container mx-auto px-6">
+    <div class="flex flex-col items-center text-center">
+      <p
+        class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-red-600"
+      >
+        {eyebrow}
+      </p>
+
+      <h2
+        class="mt-4 text-[2rem] font-black leading-[1.08] tracking-tight text-balance text-brand-ink-900 md:text-[2.75rem]"
+      >
+        {title}
+      </h2>
+
+      {
+        description && (
+          <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+        )
+      }
+    </div>
+
+    <ul class="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+      {
+        shown.map((t) => (
+          <li class="flex flex-col items-center text-center">
+            {/* Vòng hồng nhạt bọc ngoài: ảnh giảng viên nào cũng nền trắng, đặt thẳng lên
+                nền trang sáng thì khung tròn biến mất, chỉ còn cái đầu lơ lửng. */}
+            <div class="rounded-full bg-brand-red-100 p-1.5">
+              <div class="relative size-32 overflow-hidden rounded-full bg-background sm:size-36">
+                {t.image ? (
+                  <img
+                    src={t.image}
+                    alt={t.title ? `${t.name} — ${t.title}` : t.name}
+                    loading="lazy"
+                    width="1080"
+                    height="1080"
+                    class="absolute h-auto max-w-none"
+                    style={AVATAR_ZOOM}
+                  />
+                ) : (
+                  <span class="flex size-full items-center justify-center text-3xl font-black text-brand-ink-900/25">
+                    {initialsOf(t.name)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <p class="mt-5 text-sm font-extrabold uppercase tracking-[0.06em] text-brand-ink-900">
+              {t.name}
+            </p>
+
+            {t.title && (
+              <p class="mt-1.5 text-[13px] font-semibold leading-snug text-brand-red-600">
+                {t.title}
+              </p>
+            )}
+
+            {/* Chặn 3 dòng: mấy dòng thành tích lấy nguyên văn từ banner rất dài, để tự
+                do thì các thẻ trong cùng hàng lệch chân nhau. */}
+            <p class="mt-2.5 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
+              {blurbOf(t)}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-12 flex justify-center">
+      <a
+        href={ctaHref}
+        class="group inline-flex items-center gap-2 rounded-full border border-brand-red-200 bg-background px-7 py-3.5 text-sm font-bold text-brand-red-700 transition-colors hover:bg-brand-red-50"
+      >
+        {ctaLabel}
+        <span
+          class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+          set:html={ICONS.arrow}
+        />
+      </a>
+    </div>
+  </div>
+</section>
