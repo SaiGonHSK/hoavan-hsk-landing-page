@@ -2,7 +2,7 @@ import { values } from "./site";
 import { honorPosters } from "./achievements";
 import appHome from "@/assets/mobile-app/app-home.webp";
 import appPractice from "@/assets/mobile-app/app-practice.webp";
-import textbook from "@/assets/textbooks/giao-trinh-hsk1.webp";
+import textbook from "@/assets/hero/hoc-vien-hsk1-hsk4-tach-nen.webp";
 import faculty from "@/assets/values/doi-ngu-giang-vien.webp";
 
 /**
@@ -35,13 +35,32 @@ const PANELS: Record<string, ValuePanel> = {
     tabNote: "Biên soạn cho người Việt",
     badge: "Giáo trình độc quyền",
     /*
-      Ảnh chụp chính bộ giáo trình của trung tâm (in tên trung tâm trên bìa) chứ không
-      phải ảnh chụp lớp: tab này nói về giáo trình, ảnh phải cho thấy đúng cái nó nói tới.
+      Ảnh mẫu hai học viên mặc áo trung tâm cầm "GIÁO TRÌNH HSK1" và "GIÁO TRÌNH HSK4.1"
+      — cùng tấm đang dùng ở thẻ "Giáo trình HSK" trong hero (`HeroV4`), nhưng lấy **bản
+      tách nền**.
 
-      `contain` chứ không phủ kín ô như trước: ô ảnh của panel rộng và thấp, `object-cover`
-      cắt vào đúng vùng chụp thiếu nét ở góc trên bên trái rồi lớp phủ trắng rửa tiếp nửa
-      đó — nhìn ra là ảnh mờ chứ không ra là chồng giáo trình. Hiện trọn thì phần nét nhất
-      (ba bìa HSK1) chiếm gần hết khung.
+      Bản còn nền chụp trong phòng học: backdrop logo, cửa sổ, tranh thuỷ mặc, dãy ghế
+      xanh — bốn mảng màu lạ trong một khối mà ba tab kia đều là chủ thể nằm trên nền
+      xám phẳng (ảnh ghép giảng viên, poster vinh danh, khung điện thoại). Tách nền thì
+      hai bạn đứng thẳng trên nền `brand-ink-50` của ô ảnh, cùng một cách trình bày với
+      thẻ "Đội ngũ giảng viên".
+
+      Trước đây ô này là ảnh chụp chồng giáo trình đặt trên bàn: ảnh chụp vội bằng điện
+      thoại, sách nằm nghiêng, nền là chiếc túi vải đỏ. Tấm này chụp dàn dựng, nền lớp
+      học sạch, bìa giáo trình cầm thẳng nên đọc được tên và cấp ngay — mà vẫn là giáo
+      trình thật của trung tâm chứ không phải sách kho.
+
+      Dùng lại đúng tấm của hero là cố ý: hero mới chỉ cho thấy nó trong một ô ảnh nhỏ
+      nghiêng trên dây, ở đây nó được xem trọn nửa panel.
+
+      `contain` — hiện trọn, không phủ kín ô như ảnh chụp lớp.
+
+      Ảnh dọc (1122×1402) mà ô ảnh của panel rộng–thấp (~760×512 ở desktop, tỉ lệ 1,49):
+      phủ kín thì chỉ thấy được 54% chiều cao ảnh, trong khi từ đỉnh đầu bạn nam (y≈230)
+      xuống mép dưới cuốn HSK4.1 (y≈1150) đã chiếm 66%. Nghĩa là mọi cách canh đều phải
+      cắt — hoặc mất chân cuốn sách, hoặc mất đỉnh đầu. Hiện trọn thì cả người lẫn hai
+      cuốn giáo trình đều đủ, đúng cách hai tab "Đội ngũ giảng viên" và "Đầu ra đạt
+      chuẩn" đang làm.
     */
     image: textbook,
     contain: true,

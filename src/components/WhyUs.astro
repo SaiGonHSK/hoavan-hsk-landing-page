@@ -128,7 +128,17 @@ import { valuePanels as slides } from "@/data/valuePanels";
                     1200w phủ cả dpr=1 và dpr=2 cho ô 550px (550 × 2 = 1100 ≤ 1200), và ảnh
                     ghép phần lớn là nền phẳng nên 1200w q82 chỉ ~43 KB — nhẹ hơn cả cặp cũ.
                   */
-                  <div class="absolute inset-0 p-4 sm:p-6 lg:p-10">
+                  /*
+                    Chỉ từ `lg` ảnh mới nằm tuyệt đối và bị bó theo chiều cao ô.
+
+                    Dưới `lg` ô ảnh chỉ cao 256–384px, mà ba ảnh đi qua nhánh này đều
+                    cao hơn rộng: bó theo chiều cao thì ảnh co lại còn ~200px ngang, nằm
+                    lọt thỏm giữa một mảng xám rộng gần gấp đôi. Ở khổ đó cho ảnh chạy
+                    theo *bề ngang* (tối đa 24rem, canh giữa) rồi để ô cao theo ảnh —
+                    `min-h` là sàn nên ô tự giãn, và dưới `lg` panel vốn được phép cao
+                    thấp khác nhau.
+                  */
+                  <div class="p-4 sm:p-6 lg:absolute lg:inset-0 lg:p-10">
                     <Image
                       src={s.image}
                       alt={`${s.title} — ${s.note}`}
@@ -137,7 +147,7 @@ import { valuePanels as slides } from "@/data/valuePanels";
                       quality={82}
                       loading={i === 0 ? "eager" : "lazy"}
                       decoding="async"
-                      class="size-full rounded-2xl object-contain"
+                      class="mx-auto h-auto w-full max-w-96 rounded-2xl object-contain lg:size-full lg:max-w-none"
                     />
                   </div>
                 ) : (
@@ -163,10 +173,13 @@ import { valuePanels as slides } from "@/data/valuePanels";
               }
 
               {
+                /* Vệt mờ nối ảnh phủ kín vào cột chữ — chỉ những panel không `contain`,
+                   vì ảnh `contain` đã có lề xám bao quanh, phủ thêm vệt mờ lên đó chỉ
+                   làm bẩn một góc nền. */
                 !s.contain && (
                   <span
                     aria-hidden="true"
-                    class="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-background via-background/25 to-transparent lg:block"
+                    class="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-background via-background/10 to-transparent lg:block"
                   />
                 )
               }

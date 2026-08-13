@@ -203,12 +203,11 @@ const drops = cards.map((_, i) => {
   <HeroBackdrop stickers="wide" />
 
   <div class="relative mx-auto w-full max-w-5xl px-6 text-center">
+    {/* Nhãn không có icon, giống hệt nhãn của V3: chữ đã nói đủ "Lộ trình chuẩn HSK 3.0",
+        thêm một tia sáng đỏ vào trước thì nó chỉ là một vệt màu đứng cạnh chữ. */}
     <span
-      class="hero4-rise inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-5 py-2.5 text-xs font-bold tracking-[0.16em] text-muted-foreground uppercase backdrop-blur-sm"
+      class="hero4-rise inline-flex items-center rounded-full border border-border bg-background/80 px-5 py-2.5 text-xs font-bold tracking-[0.16em] text-muted-foreground uppercase backdrop-blur-sm"
     >
-      {/* Tia sáng nhỏ trước nhãn: đây là chi tiết duy nhất trong khối chữ có màu đỏ ngoài
-          dòng hai tiêu đề và nút đăng ký, và nó chỉ dài bằng chiều cao chữ. */}
-      <span class="text-brand-red-600 [&>svg]:size-3.5" set:html={ICONS.sparkle} />
       {hero.noteTitle}
     </span>
 

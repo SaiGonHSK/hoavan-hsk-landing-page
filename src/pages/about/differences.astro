@@ -107,7 +107,11 @@ const schemas = [aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.sit
                       quality={88}
                       loading="lazy"
                       decoding="async"
-                      class="size-full rounded-2xl object-contain"
+                      /* Dưới `lg` ảnh chạy theo bề ngang (tối đa 24rem, canh giữa) rồi
+                         để ô cao theo ảnh — cùng lý do đã ghi ở `WhyUs.astro`: ô ảnh ở
+                         khổ hẹp thấp hơn ảnh nhiều nên bó theo chiều cao thì ảnh còn
+                         bằng con tem. */
+                      class="mx-auto h-auto w-full max-w-96 rounded-2xl object-contain lg:size-full lg:max-w-none"
                     />
                   ) : (
                     /* Ảnh chụp lớp học phủ kín nửa thẻ — cắt cạnh thay vì hiện trọn. */
