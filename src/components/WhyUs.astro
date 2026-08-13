@@ -96,36 +96,41 @@ import { valuePanels as slides } from "@/data/valuePanels";
                   </div>
                 ) : s.devices ? (
                   /*
-                    Bốn khung điện thoại xếp thành MỘT hàng, không cái nào đè cái nào.
+                    Hai khung điện thoại cạnh nhau, không đè nhau, không nghiêng.
 
-                    ── Vì sao đo theo BỀ NGANG, không theo chiều cao ──────────────────
+                    ── Vì sao chỉ hai, và vì sao đo theo BỀ NGANG ─────────────────────
+                    Ô ảnh này rộng 419px ở viewport 1024 và 550px từ 1280, cao 512px (đo
+                    bằng `getBoundingClientRect`, không suy ra). Ảnh chụp app tỉ lệ
+                    1 : 2,17, nên một máy vừa đúng chiều cao ô thì rộng tối đa 236px —
+                    trần đó là do chiều cao ô, không nới được bằng cách xếp lại.
+
+                    Từ đó ra số khung: `w-[46%]` cho hai khung là 193px (1024) đến 253px
+                    (1440) mỗi cái — đọc được tiêu đề màn, con số lớn, thanh tiến độ và
+                    chữ Hán mẫu. Ba khung thì còn ~150px, bốn khung còn 88–116px, ở khổ
+                    đó chữ thân trong app chỉ còn 3px, tức một vệt xám. Đã thử cả hai.
+
                     Bản trước buộc `h-[88%]` rồi để bề ngang tự suy ra. Cách đó chặn được
-                    lỗi khung cao quá ô (ảnh dọc 1 : 2,17, ở khổ hẹp khung từng tràn lên
-                    đè cả dải tab), nhưng không chặn được lỗi tràn NGANG.
+                    lỗi khung cao quá ô (ở khổ hẹp khung từng tràn lên đè cả dải tab),
+                    nhưng không chặn được tràn NGANG — mà ba khung × 186px = 558px thì
+                    vượt 419px của ô ở khổ 1024, hai khung ngoài bị `overflow-hidden` cắt
+                    mất một nửa. Đo theo bề ngang (`w-[46%]` + `gap-[3%]` = 95%) thì không
+                    bao giờ tràn, ở mọi khổ màn; `max-h-full` lo phần chiều cao, cắt bớt
+                    đáy máy — chỗ đó là thanh tab dưới của app, mất không sao.
 
-                    Mà tràn ngang mới là lỗi thật: ô ảnh chỉ rộng 419px ở viewport 1024 và
-                    550px từ 1280 (đo bằng `getBoundingClientRect`, không suy ra). Buộc
-                    chiều cao thì mỗi khung rộng ~186px, ba khung đã là 558px — hai khung
-                    ngoài bị `overflow-hidden` của panel cắt mất một nửa ở khổ 1024.
+                    Không nghiêng: nghiêng làm hộp bao rộng thêm ~14px mỗi khung, đúng chỗ
+                    đang thiếu. Thay bằng lệch dọc vài phần trăm — không tốn pixel ngang.
 
-                    `w-[21%]` + `gap-[2%]` thì tổng luôn là 90% bề ngang ô, ở mọi khổ màn:
-                    không bao giờ cắt, không bao giờ phải ẩn khung nào. Đổi lại mỗi khung
-                    còn 80–115px — chữ thân trong ảnh app ở khổ đó chỉ còn ~3px, tức là
-                    không đọc được. Đó là giới hạn của ô này, không phải lỗi nén ảnh: bản
-                    gửi tới trình duyệt là 520×1131 (1040×2262 cho dpr2), thừa điểm ảnh.
-                    Muốn đọc được chữ trong app thì phải cắt ảnh lấy từng vùng (thẻ chuỗi
-                    ngày học, danh sách bài, ô viết chữ) rồi phóng to, chứ không thu nhỏ
-                    cả màn hình.
-
-                    Không nghiêng khung nào: nghiêng làm hộp bao rộng thêm ~14px mỗi khung,
-                    đúng chỗ đang thiếu. Thay bằng lệch dọc vài phần trăm — không tốn một
-                    pixel ngang nào.
+                    ── Còn muốn đọc được chữ thân trong app ──────────────────────────
+                    Thì phải cắt ảnh lấy từng thẻ (thẻ chuỗi ngày học, danh sách bài, ô
+                    viết chữ) rồi phóng lên gần cỡ thật, chứ không thu nhỏ cả màn hình.
+                    Không phải chuyện nén ảnh: bản gửi tới trình duyệt là 520×1131, và
+                    1040×2262 cho dpr2 — thừa điểm ảnh cho khung 253px.
                   */
-                  <div class="absolute inset-0 flex items-center justify-center gap-[2%] overflow-hidden p-6 lg:p-10">
+                  <div class="absolute inset-0 flex items-center justify-center gap-[3%] overflow-hidden p-6 lg:p-10">
                     {s.devices.map((device, k) => (
                       <div
                         class:list={[
-                          "w-[21%] max-w-40 shrink-0 self-center max-h-full overflow-hidden rounded-[1.25rem] border-[5px] border-brand-ink-900 bg-brand-ink-900 shadow-[0_20px_44px_-26px_rgb(17_24_39/0.55)]",
+                          "w-[46%] max-w-60 shrink-0 self-center max-h-full overflow-hidden rounded-[1.5rem] border-[6px] border-brand-ink-900 bg-brand-ink-900 shadow-[0_24px_52px_-28px_rgb(17_24_39/0.6)]",
                           k % 2 === 0 ? "translate-y-[-2%]" : "translate-y-[2%]",
                         ]}
                       >

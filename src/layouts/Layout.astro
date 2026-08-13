@@ -279,8 +279,19 @@ const GOOGLE_ADS_ID = "AW-18385026103";
       )
     }
 
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    {/*
+      Khai báo icon theo từng cỡ thay vì đưa một file 192px cho tất cả: trình duyệt
+      sẽ tự thu nhỏ file lớn, mà logo có nét maze mảnh nên xuống 16–32px thì nhoè
+      thành chấm đỏ. Các bản nhỏ là mark rút gọn vẽ riêng — xem scripts/gen-favicons.mjs.
+
+      /favicon.ico phải tồn tại dù đã có thẻ <link>: Google Search, một số crawler
+      và shortcut trên Windows bỏ qua thẻ và request thẳng đường dẫn đó.
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonical.href} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {

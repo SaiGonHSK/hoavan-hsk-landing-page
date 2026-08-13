@@ -112,39 +112,35 @@ const PANELS: Record<string, ValuePanel> = {
     tabNote: "Lộ trình & tiến độ",
     badge: "Nền tảng học tập số",
     /*
-      Bốn màn thật của app, chụp từ bản đang chạy. Thứ tự trong mảng là thứ tự xếp lớp:
-      phần tử ĐẦU nằm sau cùng, phần tử CUỐI nằm trước và hiện trọn.
+      Hai màn thật của app, chụp từ bản đang chạy.
 
-      Vì vậy màn chi tiết khoá xếp cuối: nó là thứ duy nhất chứng minh đây là một LMS chứ
-      không phải app ôn từ vựng — lộ trình 18 bài, tiến độ 10/18, giảng viên và lịch lớp
-      gắn vào khoá. Ba màn ló ra phía sau (tập viết theo nét, từ điển giáo trình, trang
-      chủ có chuỗi ngày học) nói rằng hệ thống còn nhiều phần nữa.
+      Chỉ hai, không phải bốn: ô ảnh của panel cao 512px, mà ảnh chụp app tỉ lệ 1 : 2,17
+      nên một máy vừa chiều cao ô thì rộng tối đa 236px. Bốn khung cạnh nhau là 88–116px
+      mỗi cái — chữ trong app còn 3px, không thấy nội dung gì. Số liệu đo và cách tính
+      nằm ở `WhyUs.astro`.
 
-      Ba màn sau mỗi cái chỉ ló ra 16% bề ngang. Chọn thứ tự theo mảng màu ở dải ló đó:
-      tập viết (nền trắng, chữ Hán đỏ) → từ điển (dải xám mờ) → trang chủ (thẻ ảnh khoá
-      học) → chi tiết khoá. Xem `WhyUs.astro` để biết vì sao chồng lệch chứ không xếp
-      cạnh nhau.
+      Chọn hai màn này vì chúng nói hai việc khác hẳn nhau:
+        · chi tiết khoá — thứ duy nhất chứng minh đây là một LMS chứ không phải app ôn từ
+          vựng: lộ trình 18 bài, tiến độ 10/18, giảng viên và lịch lớp gắn vào khoá;
+        · tập viết — phần luyện tập, và là màn dễ đọc nhất ở khổ nhỏ vì nội dung chính là
+          một chữ Hán lớn chứ không phải chữ thân.
 
-      Trước đây ô này chỉ có hai màn (splash và luyện đề). Màn splash chỉ có logo, không
-      nói được hệ thống làm gì.
+      Hai màn còn lại đã chụp và đã convert, đổi vào đây là xong một dòng:
+      `app-trang-chu.webp` (chuỗi 19 ngày học, khoá đang theo) và `app-tra-tu.webp`
+      (từ điển tra theo từ vựng giáo trình, có ô viết tay).
+
+      Trước đây ô này là hai màn splash và luyện đề. Màn splash chỉ có logo, không nói
+      được hệ thống làm gì.
     */
     image: appCourse,
     devices: [
       {
-        src: appWrite,
-        alt: "Bài tập viết chữ Hán trên LMS — xem thứ tự nét của chữ 健康 rồi viết lại bằng ngón tay",
-      },
-      {
-        src: appDict,
-        alt: "Từ điển trong LMS — tra 331 từ của giáo trình bằng chữ Hán, pinyin, nghĩa tiếng Việt hoặc viết tay",
-      },
-      {
-        src: appHome,
-        alt: "Trang chủ hệ thống LMS SaigonHSK — chuỗi 19 ngày học liên tiếp và các khoá học viên đang theo",
-      },
-      {
         src: appCourse,
         alt: "Chi tiết khoá HSK3 trên LMS — lộ trình 18 bài, tiến độ 10/18, giảng viên và lịch lớp phụ trách",
+      },
+      {
+        src: appWrite,
+        alt: "Bài tập viết chữ Hán trên LMS — xem thứ tự nét của chữ 健康 rồi viết lại bằng ngón tay",
       },
     ],
     strong: "Lộ trình từng bài · Tiến độ đồng bộ · Từ điển giáo trình",

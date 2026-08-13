@@ -16,6 +16,7 @@
     "gen:library": "node scripts/gen-library-images.mjs",
     "gen:faculty": "node scripts/gen-faculty-image.mjs",
     "gen:hero": "node scripts/gen-hero-cutout.mjs",
+    "gen:favicon": "node scripts/gen-favicons.mjs",
     "img:webp": "node scripts/to-webp.mjs",
     "check:schema": "node scripts/check-schema.mjs"
   },
