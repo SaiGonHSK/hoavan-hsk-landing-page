@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
+import TextbookSet from "@/components/TextbookSet.astro";
+import HonorStack from "@/components/HonorStack.astro";
 import { valuePanels as slides } from "@/data/valuePanels";
 ---
 
@@ -75,41 +77,79 @@ import { valuePanels as slides } from "@/data/valuePanels";
               ]}
             >
               {
-                s.devices ? (
+                s.illustration ? (
                   /*
-                    Khung điện thoại lấy kích thước theo CHIỀU CAO của ô ảnh, không theo
-                    chiều ngang.
+                    Minh hoạ vector — bó theo cùng một cách với ảnh `contain`: dưới `lg`
+                    chạy theo bề ngang cho ô cao theo hình, từ `lg` nằm tuyệt đối và vừa
+                    khít chiều cao ô.
 
-                    Trước đây mỗi khung là `w-1/2 max-w-52` rồi để ảnh tự suy ra chiều cao.
-                    Ảnh chụp app tỉ lệ 1206×2622, tức cao gấp 2,17 lần bề ngang: dưới `lg`
-                    khung rộng ~160px thành ra cao ~334px, trong khi ô ảnh chỉ cao 224px.
-                    Phần thừa tràn ngược lên trên và đè thẳng lên dải tab — bấm sang tab
-                    "Ứng dụng luyện đề" là hai cái điện thoại phủ mất chữ trên tab.
-
-                    Buộc chiều cao (`h-[88%]`) rồi để bề ngang tự suy ra thì khung không
-                    bao giờ cao hơn ô chứa nó, ở mọi khổ màn. 12% còn lại cộng với `p-6`
-                    là chỗ trống dành cho độ nghiêng và độ lệch của hai khung.
+                    Khác ảnh ở chỗ không cần `max-w-96`: SVG không có độ phân giải gốc để
+                    mà bị kéo mờ, nên ở khổ hẹp cứ cho nó rộng hết ô — xấp sáu cuốn càng
+                    rộng thì chữ trên bìa càng đọc được.
                   */
-                  <div class="absolute inset-0 flex items-center justify-center gap-3 p-6 sm:gap-5 lg:p-10">
+                  <div class="p-4 sm:p-6 lg:absolute lg:inset-0 lg:p-10">
+                    {s.illustration === "honor-stack" ? (
+                      <HonorStack class="h-auto w-full lg:size-full" />
+                    ) : (
+                      <TextbookSet class="h-auto w-full lg:size-full" />
+                    )}
+                  </div>
+                ) : s.devices ? (
+                  /*
+                    Bốn khung điện thoại xếp thành MỘT hàng, không cái nào đè cái nào.
+
+                    ── Vì sao đo theo BỀ NGANG, không theo chiều cao ──────────────────
+                    Bản trước buộc `h-[88%]` rồi để bề ngang tự suy ra. Cách đó chặn được
+                    lỗi khung cao quá ô (ảnh dọc 1 : 2,17, ở khổ hẹp khung từng tràn lên
+                    đè cả dải tab), nhưng không chặn được lỗi tràn NGANG.
+
+                    Mà tràn ngang mới là lỗi thật: ô ảnh chỉ rộng 419px ở viewport 1024 và
+                    550px từ 1280 (đo bằng `getBoundingClientRect`, không suy ra). Buộc
+                    chiều cao thì mỗi khung rộng ~186px, ba khung đã là 558px — hai khung
+                    ngoài bị `overflow-hidden` của panel cắt mất một nửa ở khổ 1024.
+
+                    `w-[21%]` + `gap-[2%]` thì tổng luôn là 90% bề ngang ô, ở mọi khổ màn:
+                    không bao giờ cắt, không bao giờ phải ẩn khung nào. Đổi lại mỗi khung
+                    còn 80–115px — chữ thân trong ảnh app ở khổ đó chỉ còn ~3px, tức là
+                    không đọc được. Đó là giới hạn của ô này, không phải lỗi nén ảnh: bản
+                    gửi tới trình duyệt là 520×1131 (1040×2262 cho dpr2), thừa điểm ảnh.
+                    Muốn đọc được chữ trong app thì phải cắt ảnh lấy từng vùng (thẻ chuỗi
+                    ngày học, danh sách bài, ô viết chữ) rồi phóng to, chứ không thu nhỏ
+                    cả màn hình.
+
+                    Không nghiêng khung nào: nghiêng làm hộp bao rộng thêm ~14px mỗi khung,
+                    đúng chỗ đang thiếu. Thay bằng lệch dọc vài phần trăm — không tốn một
+                    pixel ngang nào.
+                  */
+                  <div class="absolute inset-0 flex items-center justify-center gap-[2%] overflow-hidden p-6 lg:p-10">
                     {s.devices.map((device, k) => (
                       <div
                         class:list={[
-                          "h-[88%] shrink-0 overflow-hidden rounded-[1.5rem] border-[6px] border-brand-ink-900 bg-brand-ink-900 shadow-[0_28px_60px_-32px_rgb(17_24_39/0.6)]",
-                          k === 0
-                            ? "-rotate-6 translate-y-[4%]"
-                            : "rotate-3 -translate-y-[3%]",
+                          "w-[21%] max-w-40 shrink-0 self-center max-h-full overflow-hidden rounded-[1.25rem] border-[5px] border-brand-ink-900 bg-brand-ink-900 shadow-[0_20px_44px_-26px_rgb(17_24_39/0.55)]",
+                          k % 2 === 0 ? "translate-y-[-2%]" : "translate-y-[2%]",
                         ]}
                       >
+                        {/*
+                          `quality` 95 chứ không 88 như ảnh khác: đây là ảnh chụp giao
+                          diện, chữ nhỏ và nét mảnh 1px. Bản gốc trong `src/assets` đã là
+                          WebP q95, nén lại lần hai ở q88 thì các nét mảnh đó nhoè ra —
+                          cùng lý do đã ghi ở nhánh `contain` bên dưới.
+
+                          Ghi chú đặt NGOÀI thẻ như khối này, không nhét vào giữa các
+                          attribute của `<Image>`: chú thích nằm trong thẻ bị Astro đọc
+                          thành từng attribute rời (`chứ`, `95`, `88`…) và `astro check`
+                          báo lỗi type. Xem đúng lỗi đó đang còn ở `about/differences.astro`.
+                        */}
                         <Image
-                          src={device}
-                          alt={`Ứng dụng học tập SaigonHSK — màn hình ${k + 1}`}
-                          width={430}
+                          src={device.src}
+                          alt={device.alt}
+                          width={520}
                           densities={[1, 2]}
                           format="webp"
-                          quality={88}
+                          quality={95}
                           loading="lazy"
                           decoding="async"
-                          class="block h-full w-auto max-w-none"
+                          class="block h-auto w-full"
                         />
                       </div>
                     ))}

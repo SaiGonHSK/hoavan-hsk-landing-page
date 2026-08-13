@@ -1,8 +1,24 @@
 ---
 import { Image, getImage } from "astro:assets";
 import BrandHeading from "@/components/BrandHeading.astro";
-import RailHint from "@/components/RailHint.astro";
+import HeroBackdrop from "@/components/HeroBackdrop.astro";
 import { activityPosters } from "@/data/activities";
+
+/**
+ * Mục sự kiện, dựng lại theo đúng bộ hình đã dùng ở hero trang chủ trước đây: nền
+ * `HeroBackdrop` (dải chuyển sắc, vệt sáng, lưới kẻ, sticker sách–én–tia sáng, hai lớp sóng ở
+ * đáy) và dây phơi ảnh — mấy tấm ảnh kẹp trên một sợi dây võng, mỗi tấm nghiêng một góc.
+ *
+ * Vì sao chuyển xuống đây chứ không để ở hero: dây phơi ảnh là một hình ẩn dụ về *album* —
+ * mấy tấm ảnh ai đó vừa rửa ra và treo lên. Ở hero nó phải gánh việc của một tấm ảnh chính
+ * (nói "trung tâm này dạy cái gì"), và sáu tấm ảnh nhỏ ngang hàng nhau thì không tấm nào dẫn.
+ * Ở mục sự kiện thì đúng nghĩa đen: ảnh mấy dịp lễ, cắt thành từng hàng bốn tấm, mỗi hàng
+ * treo lên một sợi dây riêng.
+ *
+ * Nền cũng đi theo vì hai thứ là một bộ: dây phơi cần một mặt nền có chất liệu (lưới kẻ mờ)
+ * để đọc ra là dây căng trước một bức tường, treo trên nền trắng phẳng thì nó chỉ là một nét
+ * cong. Hai lớp sóng ở đáy khép mục này lại và trả về nền trắng cho `Facility` ngay dưới.
+ */
 
 /**
  * Bề rộng ô ảnh lớn nhất trên desktop: lưới 4 cột trong `container` (rộng nhất
@@ -10,6 +26,22 @@ import { activityPosters } from "@/data/activities";
  * Lấy 360 cho chẵn — ô hẹp hơn thì trình duyệt thu nhỏ xuống, chỉ nét thêm.
  */
 const CARD = 360;
+
+/**
+ * Số ảnh trên một dây. Con số này quyết định ba thứ cùng lúc và không tách rời được: số cột
+ * của lưới (`grid-cols-4`), chỗ cắt hàng trong `rows` bên dưới, và mẫu số của công thức tính
+ * `--drop` — mỗi sợi dây võng đúng một nhịp cho bốn tấm treo trên nó.
+ */
+const PER_ROW = 4;
+
+/**
+ * Góc nghiêng của từng tấm, năm giá trị lệch nhau và không đối xứng: nghiêng đều nhau hoặc
+ * đối xứng thì hàng ảnh đọc ra là một hoa văn xếp, không phải mấy tấm ảnh treo.
+ *
+ * Năm chứ không phải bốn: chu kỳ lặp trùng số cột thì tấm thứ nhất của mọi hàng đều nghiêng
+ * y hệt nhau, và hai hàng chồng lên nhau thì thấy ngay đó là một danh sách xoay vòng.
+ */
+const TILTS = [-3, 2, -1.5, 3, 1];
 
 /*
   Lightbox nhận URL dạng chuỗi nên phải tạo sẵn bản phóng to đã nén —
@@ -59,69 +91,205 @@ const posters = await Promise.all(
     };
   }),
 );
+
+/**
+ * Độ sâu của một tấm trên sợi dây, tính ra từ chính hình dạng sợi dây chứ không viết tay.
+ *
+ * Sợi dây là Bézier bậc hai `M0 12 Q500 188 1000 12`. Điểm điều khiển nằm đúng giữa theo trục
+ * ngang nên hoành độ tuyến tính theo tham số, và đường cong rút về một parabol `4x(1-x)` tính
+ * theo độ võng. Tâm cột thứ `col` trong `PER_ROW` cột nằm ở `(2col+1) / 2·PER_ROW` bề rộng,
+ * thay vào là ra: 0.4375 / 0.9375 / 0.9375 / 0.4375.
+ *
+ * Mẫu số là `PER_ROW` chứ không phải số ảnh của hàng đó: sợi dây căng hết bề rộng hàng kể cả
+ * khi hàng cuối thiếu ảnh — dây thì đóng đinh vào hai đầu tường, treo mấy tấm là chuyện khác.
+ * Lấy `row.length` làm mẫu số thì hàng cuối có 2 tấm sẽ dàn hai tấm đó ra hai đầu dây, trong
+ * khi lưới vẫn xếp chúng vào hai cột trái — kẹp rời khỏi dây ngay.
+ */
+const dropAt = (col: number) => {
+  const x = (2 * col + 1) / (2 * PER_ROW);
+  return 4 * x * (1 - x);
+};
+
+/**
+ * Cắt album thành từng hàng bốn tấm — mỗi hàng là một sợi dây riêng.
+ *
+ * Cắt ở đây (lúc dựng trang) chứ không để CSS tự xuống dòng: sợi dây là một thẻ `<svg>` phải
+ * nằm đúng sau lưng một hàng, mà `flex-wrap` thì tới lúc chạy mới biết hàng gãy ở đâu.
+ */
+const rows = Array.from(
+  { length: Math.ceil(posters.length / PER_ROW) },
+  (_, r) => posters.slice(r * PER_ROW, r * PER_ROW + PER_ROW),
+);
 ---
 
 {
   posters.length > 0 && (
     <section
       id="activities"
-      class="relative overflow-hidden bg-background scroll-mt-24"
+      class="activities relative isolate scroll-mt-24 overflow-hidden pt-12 pb-28 sm:pb-32 lg:pt-16 lg:pb-40"
     >
-      <div class="container relative z-10 mx-auto px-6">
+      {/* `stickers="wide"`: tiêu đề mục nằm giữa và ăn hết bề rộng, nên hai sticker trên cùng
+          phải lên khỏi tầm chữ ở màn hẹp — xem `variant` trong `HeroStickers.astro`. */}
+      <HeroBackdrop stickers="wide" />
+
+      <div class="container relative mx-auto px-6">
         <BrandHeading
           title="Sự kiện tại "
           highlight="SaigonHSK"
           note="Tết · Trung thu · Giáng sinh · 20/11"
         />
 
-        <div data-rail class="group/rail relative mt-12">
-          <div
-            data-rail-track
-            class="activity-rail -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
-          >
-          {posters.map((p) => (
-            <button
-              type="button"
-              data-lightbox={p.full}
-              data-caption={p.caption}
-              class="group relative block w-[78vw] max-w-80 shrink-0 snap-start cursor-zoom-in overflow-hidden rounded-3xl bg-brand-ink-50 sm:w-80 lg:w-auto lg:max-w-none"
-            >
-              <Image
-                src={p.image}
-                alt={p.caption}
-                width={p.card}
-                height={p.card}
-                fit="cover"
-                densities={p.densities}
-                format="webp"
-                quality={90}
-                loading="lazy"
-                decoding="async"
-                class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-              />
+        {/*
+          Album xếp thành nhiều dây, mỗi dây bốn tấm — không phải một dải chạy ngang mãi.
 
-              <span
-                aria-hidden="true"
-                class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-linear-to-t from-brand-ink-950/85 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              />
+          Vì sao xuống hàng: một dải cuộn giấu phần lớn album sau mép màn hình, mà mấy tấm này
+          là bằng chứng "trung tâm có tổ chức thật" nên càng thấy nhiều tấm cùng lúc càng tốt.
+          Xếp hàng thì cả album nằm gọn trong hai màn cuộn dọc, không phải thao tác gì thêm.
 
-              <span class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-left text-[15px] font-extrabold leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                {p.caption}
-              </span>
-            </button>
-          ))}
+          Vì sao bốn: `container` rộng nhất 96rem, chia bốn thì mỗi ô còn ~357px — vừa đủ để
+          nhìn ra trong ảnh đang diễn ra chuyện gì. Chia năm hay sáu thì ô tụt xuống dưới 280px
+          và mấy tấm poster có chữ Hán thành không đọc nổi.
 
-            <span
-              aria-hidden="true"
-              class="pointer-events-none absolute -right-2 top-1/2 hidden size-20 -translate-y-1/2 rotate-6 place-items-center rounded-full bg-brand-red-600 text-center text-xs font-bold leading-tight text-white shadow-[0_18px_40px_-20px_rgba(178,24,43,0.8)] lg:grid"
-            >
-              为你的
-              <br />
-              成功
-            </span>
+          Dưới 640px thì hai cột, và KHÔNG cuộn ngang. Bản trước cho cả chồng dây vào một dải
+          cuộn rộng cố định 46rem để giữ đủ bốn cột — ở 390px nó thành hai cột rưỡi, tấm thứ ba
+          bị mép kính xén dọc giữa và cả khối mất luôn lề trái. Bốn cột chia đúng 390px thì mỗi
+          ô còn 85px, cũng không xong. Hai cột chia hết bề rộng ra ~165px mỗi ô, nhìn được, mà
+          không phải kéo ngang gì cả.
+
+          Mỗi hàng bốn tấm ở mobile gãy thành hai dòng hai tấm, nên hàng nào cũng có hai sợi
+          dây — xem thẻ `<svg>` thứ hai bên dưới.
+        */}
+        <div class="relative mt-14 lg:mt-16">
+          <div class="flex flex-col gap-3 sm:gap-12 lg:gap-16">
+            {rows.map((row, r) => (
+              <div class="relative">
+                {/*
+                  Sợi dây: một Bézier bậc hai võng xuống 88 đơn vị trong hệ trục cao 120, kéo
+                  giãn theo bề rộng (`preserveAspectRatio="none"`) nhưng cao cố định — nhờ vậy
+                  độ võng tính theo px không đổi, và `--drop` của từng tấm khớp với dây ở mọi
+                  bề rộng. Ở mobile dây thấp hơn (`h-20` = 5rem, võng 3.67rem): cùng một độ
+                  võng 5.5rem mà bề rộng chỉ còn 1/4 thì cung dốc hẳn, đọc ra là dây sắp đứt.
+
+                  `vector-effect="non-scaling-stroke"` là bắt buộc: với
+                  `preserveAspectRatio="none"` thì nét vẽ bị kéo giãn theo hai trục khác nhau,
+                  nên một sợi dây mảnh sẽ dày mỏng khác nhau tuỳ chỗ và tuỳ cỡ màn hình.
+                */}
+                <svg
+                  class="pointer-events-none absolute inset-x-0 top-0 h-20 w-full sm:h-30"
+                  viewBox="0 0 1000 120"
+                  preserveAspectRatio="none"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M0 12Q500 188 1000 12"
+                    stroke="var(--brand-ink-300)"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+
+                {/*
+                  Sợi dây thứ hai, chỉ có ở mobile: hàng bốn tấm lúc đó xếp thành hai dòng hai
+                  tấm, dòng dưới cũng phải có dây của nó.
+
+                  `top: calc(50% + gap/2)` là chỗ đúng chứ không phải số ước lượng. Hai dòng
+                  cao bằng nhau (cùng `margin-top`, cùng ô vuông cùng bề rộng cột), gọi chiều
+                  cao mỗi dòng là L thì cả hàng cao `2L + gap`, nên 50% rơi vào `L + gap/2` và
+                  đỉnh dòng dưới ở `L + gap`. Cộng thêm nửa `gap` là ra đúng đó.
+
+                  Chỉ vẽ khi hàng có hơn hai tấm: hàng cuối lẻ ra một hai tấm thì không có dòng
+                  thứ hai, vẽ vào là một sợi dây treo lơ lửng không đỡ gì.
+                */}
+                {row.length > 2 && (
+                  <svg
+                    class="pointer-events-none absolute inset-x-0 top-[calc(50%+0.375rem)] h-20 w-full sm:hidden"
+                    viewBox="0 0 1000 120"
+                    preserveAspectRatio="none"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M0 12Q500 188 1000 12"
+                      stroke="var(--brand-ink-300)"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                )}
+
+                <ul class="grid grid-cols-2 items-start gap-3 sm:grid-cols-4 sm:gap-4 lg:gap-5">
+                    {row.map((p, col) => {
+                      /* Chỉ số trong cả album, để dáng nghiêng chạy tiếp qua hàng sau chứ
+                         không khởi động lại từ -3 độ ở mỗi hàng. */
+                      const i = r * PER_ROW + col;
+
+                      return (
+                        <li
+                          class="activity-card"
+                          style={`--drop: ${dropAt(col)}; --tilt: ${TILTS[i % TILTS.length]}deg`}
+                        >
+                          {/*
+                            Cái kẹp: một thanh dọc bo góc, nửa trên nằm trên dây nửa dưới nằm
+                            dưới dây. Nó KHÔNG nghiêng theo ảnh — kẹp thì cắn vào dây nên nó
+                            đứng, còn tấm ảnh treo dưới nó thì đổ nghiêng.
+                          */}
+                          <span class="activity-peg" aria-hidden="true">
+                            <span class="activity-peg-spring" />
+                          </span>
+
+                          <button
+                            type="button"
+                            data-lightbox={p.full}
+                            data-caption={p.caption}
+                            class="activity-frame group block w-full cursor-zoom-in"
+                          >
+                            <span class="relative block overflow-hidden rounded-lg bg-brand-ink-50">
+                              <Image
+                                src={p.image}
+                                alt={p.caption}
+                                width={p.card}
+                                height={p.card}
+                                fit="cover"
+                                densities={p.densities}
+                                format="webp"
+                                quality={90}
+                                loading="lazy"
+                                decoding="async"
+                                class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                              />
+
+                              <span
+                                aria-hidden="true"
+                                class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-linear-to-t from-brand-ink-950/85 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                              />
+
+                              <span class="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-left text-[13px] leading-snug font-extrabold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:p-5 lg:text-[15px]">
+                                {p.caption}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            ))}
           </div>
 
-          <RailHint label="hoạt động" hideFrom="lg" />
+          {/* Con dấu tròn không theo tấm ảnh nào: nó là dấu đóng lên cả mục chứ không phải
+              nhãn của tấm cuối.
+
+              Góc dưới–phải: tấm cuối của hàng cuối treo nông nhất trên dây (`--drop` 0.4375)
+              nên chân nó còn cao hơn đáy khối, chỗ đó trống thật. */}
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute -right-2 -bottom-2 hidden size-20 rotate-6 place-items-center rounded-full bg-brand-red-600 text-center text-xs leading-tight font-bold text-white shadow-[0_18px_40px_-20px_rgba(178,24,43,0.8)] lg:grid"
+          >
+            为你的
+            <br />
+            成功
+          </span>
         </div>
       </div>
     </section>
@@ -129,12 +297,104 @@ const posters = await Promise.all(
 }
 
 <style>
-  .activity-rail {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  /*
+    Chỗ treo của từng tấm ảnh.
+
+    Công thức: dây có điểm cao nhất ở tung độ 12 và võng thêm 88 trong hệ trục cao 120, mà thẻ
+    `<svg>` cao đúng 7.5rem nên 1 đơn vị = 1/16 rem. Vậy dây tại tâm cột này nằm ở
+    `0.75rem + drop × 5.5rem` tính từ đỉnh khối. Cái kẹp cao 1.25rem và đặt `top: -0.625rem`
+    so với thẻ, tức tâm kẹp trùng đỉnh thẻ — nên chỉ cần đẩy thẻ xuống đúng tung độ của dây là
+    kẹp cắn vào dây.
+
+    Viết bằng `--drop` thay vì bốn giá trị `margin-top` cứng: cùng một con số đó vừa là chỗ
+    treo vừa là thứ phải khớp với đường cong trong `<svg>`, để rời hai nơi thì sửa dây mà quên
+    sửa ảnh là lệch ngay.
+
+    Ở mobile (dưới 640px) lưới chỉ có hai cột nên `--drop` của bốn cột không dùng được, và
+    cũng không cần biến: thay `n = 2` vào cùng công thức `4x(1-x)` thì cả hai cột đều ra 0.75
+    — hai tấm cùng một dòng treo ngang nhau, đúng dáng một sợi dây chỉ có hai tấm. Dây lúc này
+    cao 5rem (`h-20`), tức đỉnh ở 0.5rem và võng 3.667rem, nên chỗ treo là
+    `0.5 + 0.75 × 3.667 ≈ 3.25rem`.
+  */
+  .activity-card {
+    position: relative;
+    margin-top: 3.25rem;
   }
 
-  .activity-rail::-webkit-scrollbar {
-    display: none;
+  @media (min-width: 640px) {
+    .activity-card {
+      margin-top: calc(0.75rem + var(--drop) * 5.5rem);
+    }
+  }
+
+  .activity-peg {
+    position: absolute;
+    top: -0.625rem;
+    left: 50%;
+    z-index: 1;
+    width: 0.625rem;
+    height: 1.25rem;
+    translate: -50% 0;
+    border-radius: 0.1875rem;
+    background: var(--brand-red-600);
+    box-shadow: 0 2px 4px rgba(18, 19, 22, 0.18);
+  }
+
+  /* Vạch sáng dọc giữa kẹp, chỗ cái lẫy: không có nó thì kẹp chỉ là một viên thuốc đỏ. */
+  .activity-peg-spring {
+    position: absolute;
+    inset: 0.5rem 0.1875rem 0.25rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  /*
+    Khung ảnh: nền trắng, đệm đều bốn phía, ảnh bo góc bên trong — đúng kiểu một tấm ảnh in có
+    mép trắng. Bóng đổ mềm và lệch xuống để tấm ảnh nổi khỏi nền xám.
+
+    `transform-origin: top center` cho `rotate`: tấm ảnh treo trên một cái kẹp thì nó quay
+    quanh chỗ bị kẹp, không quay quanh tâm mình. Quay quanh tâm thì mép trên tấm ảnh trôi khỏi
+    kẹp và cả hàng trông như ảnh dán lệch.
+  */
+  .activity-frame {
+    position: relative;
+    padding: 0.3125rem;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    rotate: var(--tilt);
+    transform-origin: top center;
+    box-shadow:
+      0 1px 2px rgba(18, 19, 22, 0.06),
+      0 12px 24px -12px rgba(18, 19, 22, 0.28);
+  }
+
+  @media (min-width: 640px) {
+    .activity-frame {
+      padding: 0.4375rem;
+      border-radius: 0.875rem;
+    }
+  }
+
+  /*
+    Trỏ vào thì tấm ảnh dựng thẳng lại và bóng dày lên — như thể vừa được nhấc ra khỏi dây để
+    xem cho rõ. Đây cũng là chỉ dấu bấm được, thay cho việc phải vẽ thêm một cái kính lúp.
+
+    Chỉ chạy khi người xem không tắt hiệu ứng chuyển động: `rotate` là thứ duy nhất đổi nên
+    tắt transition là tấm ảnh nhảy thẳng, thà để nó đứng yên.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .activity-frame {
+      transition:
+        rotate 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.35s ease;
+    }
+
+    .activity-frame:hover,
+    .activity-frame:focus-visible {
+      rotate: 0deg;
+      box-shadow:
+        0 2px 4px rgba(18, 19, 22, 0.08),
+        0 22px 40px -18px rgba(18, 19, 22, 0.4);
+    }
   }
 </style>

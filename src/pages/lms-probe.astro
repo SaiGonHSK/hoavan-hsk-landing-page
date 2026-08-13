@@ -1,0 +1,58 @@
+---
+import WhyUs from "@/components/WhyUs.astro";
+import "@/styles/global.css";
+---
+
+<html lang="vi">
+  <head><meta charset="utf-8" /></head>
+  <body>
+    <WhyUs />
+    <pre id="out">chưa đo</pre>
+    <script is:inline>
+      window.addEventListener("load", () => {
+        // Mở tab "Hệ thống LMS" (panel thứ 3) rồi đo khung điện thoại
+        document.querySelectorAll("[data-tab]")[2].click();
+        requestAnimationFrame(() => {
+          const panel = document.querySelectorAll("[data-panel]")[2];
+          const row = panel.querySelector(".absolute.inset-0.flex");
+          const frames = [...row.children];
+          const cs = getComputedStyle(row);
+          const usable =
+            row.clientWidth -
+            parseFloat(cs.paddingLeft) -
+            parseFloat(cs.paddingRight);
+          const lines = [
+            "viewport=" + window.innerWidth,
+            "row=" + Math.round(row.clientWidth) + " usable=" + Math.round(usable),
+            "rowHeight=" + Math.round(row.clientHeight),
+            ...frames.map((f, i) => {
+              const r = f.getBoundingClientRect();
+              const img = f.querySelector("img");
+              return (
+                "frame" +
+                i +
+                " w=" +
+                Math.round(r.width) +
+                " h=" +
+                Math.round(r.height) +
+                " imgNatural=" +
+                (img ? img.naturalWidth + "x" + img.naturalHeight : "-") +
+                " imgCss=" +
+                (img ? Math.round(img.clientWidth) + "x" + Math.round(img.clientHeight) : "-") +
+                " hidden=" +
+                (r.width === 0)
+              );
+            }),
+          ];
+          const rowRect = row.getBoundingClientRect();
+          const overflow = frames.some((f) => {
+            const r = f.getBoundingClientRect();
+            return r.left < rowRect.left - 1 || r.right > rowRect.right + 1;
+          });
+          lines.push("BỊ CẮT=" + overflow);
+          document.getElementById("out").textContent = lines.join("\n");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,7 +1,9 @@
 import { values } from "./site";
 import { honorPosters } from "./achievements";
-import appHome from "@/assets/mobile-app/app-home.webp";
-import appPractice from "@/assets/mobile-app/app-practice.webp";
+import appHome from "@/assets/mobile-app/app-trang-chu.webp";
+import appCourse from "@/assets/mobile-app/app-lo-trinh-khoa.webp";
+import appWrite from "@/assets/mobile-app/app-tap-viet.webp";
+import appDict from "@/assets/mobile-app/app-tra-tu.webp";
 import textbook from "@/assets/hero/hoc-vien-hsk1-hsk4-tach-nen.webp";
 import faculty from "@/assets/values/doi-ngu-giang-vien.webp";
 
@@ -18,8 +20,21 @@ export type ValuePanel = {
   image: ImageMetadata;
   /** Ảnh vuông (poster vinh danh) — hiện trọn thay vì cắt cạnh */
   contain?: boolean;
-  /** Ảnh chụp app — hiện trong khung điện thoại thay cho ảnh nền */
-  devices?: ImageMetadata[];
+  /**
+   * Vẽ minh hoạ vector thay cho `image`.
+   *
+   * `image` vẫn phải khai — nó là ảnh dự phòng cho `og:image` và cho bất kỳ chỗ nào
+   * dùng `valuePanels` mà chưa biết đến nhánh minh hoạ này.
+   */
+  illustration?: "textbook-set" | "honor-stack";
+  /**
+   * Ảnh chụp app — hiện trong khung điện thoại thay cho ảnh nền.
+   *
+   * Mỗi màn kèm `alt` riêng chứ không đánh số "màn hình 1, 2, 3": ba màn này nói ba
+   * việc khác nhau của hệ thống, và `alt` là chỗ duy nhất người dùng trình đọc màn
+   * hình (và bộ thu thập của máy tìm kiếm) biết được điều đó.
+   */
+  devices?: { src: ImageMetadata; alt: string }[];
   strong: string;
   note: string;
 };
@@ -62,6 +77,20 @@ const PANELS: Record<string, ValuePanel> = {
       cuốn giáo trình đều đủ, đúng cách hai tab "Đội ngũ giảng viên" và "Đầu ra đạt
       chuẩn" đang làm.
     */
+    /*
+      Ô ảnh giờ là `TextbookSet` — sáu bìa giáo trình vẽ lại bằng vector, xếp thành một
+      xấp trải ngang trên đúng nền `brand-ink-50` của ô.
+
+      Ảnh chụp hai học viên (giữ lại bên dưới làm ảnh dự phòng) cho thấy được hai cuốn.
+      Tab này nói về *bộ* giáo trình biên soạn riêng, mà bộ đó có bốn loại sách (giáo
+      trình, ngữ pháp, từ vựng, luyện viết) trải từ HSK1 lên HSK4.2 — không tấm ảnh nào
+      trong `src/assets/hero/` gom đủ, vì mỗi tấm chỉ có hai bạn cầm hai cuốn.
+
+      Xấp vector thì thấy trọn bốn loại sách và dải cấp trong một hình, và vì bìa thật
+      chỉ là khối màu chéo + ô chữ + một ảnh bìa nên vẽ lại gần như không mất gì; đổi lại
+      chữ trên bìa sắc ở mọi dpr, không như chữ in trong ảnh chụp.
+    */
+    illustration: "textbook-set",
     image: textbook,
     contain: true,
     strong: "Học lại miễn phí",
@@ -79,25 +108,64 @@ const PANELS: Record<string, ValuePanel> = {
     note: "tốt nghiệp các đại học lớn tại Trung Quốc",
   },
   "ung-dung-hoc-tap": {
-    tab: "Ứng dụng luyện đề",
-    tabNote: "Ôn tập mọi lúc",
-    badge: "Công nghệ học tập",
+    tab: "Hệ thống LMS",
+    tabNote: "Lộ trình & tiến độ",
+    badge: "Nền tảng học tập số",
     /*
-      Hai màn thật của app, chụp từ bản đang chạy.
+      Bốn màn thật của app, chụp từ bản đang chạy. Thứ tự trong mảng là thứ tự xếp lớp:
+      phần tử ĐẦU nằm sau cùng, phần tử CUỐI nằm trước và hiện trọn.
 
-      Trước đây ô bên trái là màn splash — chỉ có logo, không nói được app làm gì.
-      Đổi sang màn luyện đề: cặp ảnh giờ kể đúng một vòng dùng app, trang chủ có
-      chuỗi ngày học và khoá đang theo, bên cạnh là một câu đang làm dở.
+      Vì vậy màn chi tiết khoá xếp cuối: nó là thứ duy nhất chứng minh đây là một LMS chứ
+      không phải app ôn từ vựng — lộ trình 18 bài, tiến độ 10/18, giảng viên và lịch lớp
+      gắn vào khoá. Ba màn ló ra phía sau (tập viết theo nét, từ điển giáo trình, trang
+      chủ có chuỗi ngày học) nói rằng hệ thống còn nhiều phần nữa.
+
+      Ba màn sau mỗi cái chỉ ló ra 16% bề ngang. Chọn thứ tự theo mảng màu ở dải ló đó:
+      tập viết (nền trắng, chữ Hán đỏ) → từ điển (dải xám mờ) → trang chủ (thẻ ảnh khoá
+      học) → chi tiết khoá. Xem `WhyUs.astro` để biết vì sao chồng lệch chứ không xếp
+      cạnh nhau.
+
+      Trước đây ô này chỉ có hai màn (splash và luyện đề). Màn splash chỉ có logo, không
+      nói được hệ thống làm gì.
     */
-    image: appHome,
-    devices: [appPractice, appHome],
-    strong: "Ôn từ vựng · Luyện đề · AI luyện nói nghe",
-    note: "Chuỗi ngày học, điểm tích luỹ, bài tập của lớp và phần luyện nói – luyện nghe với AI đều nằm trong app",
+    image: appCourse,
+    devices: [
+      {
+        src: appWrite,
+        alt: "Bài tập viết chữ Hán trên LMS — xem thứ tự nét của chữ 健康 rồi viết lại bằng ngón tay",
+      },
+      {
+        src: appDict,
+        alt: "Từ điển trong LMS — tra 331 từ của giáo trình bằng chữ Hán, pinyin, nghĩa tiếng Việt hoặc viết tay",
+      },
+      {
+        src: appHome,
+        alt: "Trang chủ hệ thống LMS SaigonHSK — chuỗi 19 ngày học liên tiếp và các khoá học viên đang theo",
+      },
+      {
+        src: appCourse,
+        alt: "Chi tiết khoá HSK3 trên LMS — lộ trình 18 bài, tiến độ 10/18, giảng viên và lịch lớp phụ trách",
+      },
+    ],
+    strong: "Lộ trình từng bài · Tiến độ đồng bộ · Từ điển giáo trình",
+    note: "Khoá học chia sẵn theo bài, tiến độ và điểm số đồng bộ với giảng viên; tra từ theo giáo trình, tập viết theo thứ tự nét và luyện nói – luyện nghe với AI đều nằm trong hệ thống",
   },
   "hieu-qua-cao": {
     tab: "Đầu ra đạt chuẩn",
     tabNote: "Nghe – nói – đọc – viết",
     badge: "Hiệu quả thực tế",
+    /*
+      Ô ảnh là `HonorStack` — cả bốn poster vinh danh xếp thành một xấp, cùng cách bày
+      với bộ giáo trình ở tab đầu.
+
+      Trước đây chỉ hiện một tấm (`bestPoster`) phóng to giữa ô. Tab này nói về đầu ra
+      của trung tâm, mà một tấm thì chỉ chứng minh được đúng một bạn thi đỗ — xấp bốn
+      tấm cho thấy chuyện đó lặp lại qua nhiều kỳ thi, vẫn giữ tấm điểm cao nhất ở lớp
+      trước cùng để khớp với dòng số liệu bên dưới.
+
+      `image` giữ nguyên `bestPoster.image` làm ảnh dự phòng cho `og:image`.
+    */
+    illustration: "honor-stack",
     image: bestPoster.image,
     contain: true,
     strong: `${bestPoster.exam} ${bestPoster.total}/${bestPoster.max}`,

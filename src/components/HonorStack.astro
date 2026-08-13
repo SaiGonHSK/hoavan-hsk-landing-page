@@ -1,0 +1,85 @@
+---
+/**
+ * Bốn poster vinh danh xếp thành một xấp trải ngang — bản ảnh chụp của cách bày
+ * đã dùng cho bộ giáo trình ở tab đầu (`TextbookSet.astro`).
+ *
+ * Vì sao đổi từ MỘT poster sang cả xấp: tab này nói về *đầu ra* của trung tâm, mà
+ * một tấm poster thì chỉ chứng minh được đúng một bạn thi đỗ. Xấp bốn tấm cho thấy
+ * ngay đây là chuyện lặp lại nhiều kỳ thi, trong khi vẫn giữ tấm điểm cao nhất ở
+ * lớp trước cùng — đúng tấm mà dòng số liệu bên cột chữ đang nói tới.
+ *
+ * Cách xếp chép theo xấp sách: tấm phải cùng nằm TRÊN và thấp nhất, càng ra sau
+ * càng nhích lên và ngả thêm về trái quanh trục ở đáy tấm. Khác một chỗ: sách để lộ
+ * mép trái vì mép đó mang khối màu và tên loại sách, còn poster thì phần lộ ra chỉ
+ * là rèm đỏ và logo — nên bước trải để rộng bằng nửa tấm, đủ thấy mỗi tấm là một
+ * poster riêng chứ không phải viền trang trí.
+ *
+ * Ảnh chụp thật nên dựng bằng HTML chứ không vẽ SVG như bộ giáo trình.
+ */
+
+import { Image } from "astro:assets";
+import { honorPosters } from "@/data/achievements";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/* Điểm thấp nằm sau, cao nhất ra trước — tấm trước cùng trùng với tấm mà cột chữ
+   của panel trích số liệu (xem `bestPoster` trong `data/valuePanels.ts`). */
+const posters = [...honorPosters].sort(
+  (a, b) => Number(a.total) - Number(b.total),
+);
+
+/* ── Cách trải, đo theo % bề ngang khung ──────────────────────────────────────
+   Poster vuông nên bề ngang tấm cũng chính là chiều cao tấm. Khung tỉ lệ 16:10:
+   36% ngang tương đương 57,6% cao, cộng 8% chân và 15% nhích lên của tấm sau cùng
+   thì đỉnh xấp dừng ở ~81% — còn lề trên để bóng đổ không bị cắt. */
+const CARD = 36; // bề ngang một tấm
+const STEP = 18; // bước trải — đúng nửa tấm
+const LEFT = 5; // lề trái của tấm sau cùng
+const BOTTOM = 8; // chân của tấm trước cùng
+const RISE = 5; // mỗi tấm lùi ra sau thì nhích lên bấy nhiêu
+const TILT = 1.6; // và ngả thêm bấy nhiêu độ
+
+const LAST = posters.length - 1;
+
+const label = `Poster vinh danh học viên SaigonHSK: ${posters
+  .map((p) => `${p.name} ${p.result}`)
+  .join(", ")}`;
+---
+
+<div class:list={["relative aspect-16/10", className]} role="group" aria-label={label}>
+  {/* Bóng chung dưới cả xấp — thứ neo bốn tấm xuống cùng một mặt phẳng */}
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-[4%] bottom-[3%] h-[9%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(17_24_39/0.18),transparent)]"
+  ></span>
+
+  {
+    posters.map((p, i) => (
+      <figure
+        class="absolute overflow-hidden rounded-2xl border border-brand-ink-900/10 bg-white shadow-[0_4px_10px_-4px_rgb(17_24_39/0.35),0_22px_44px_-24px_rgb(17_24_39/0.5)]"
+        style={`left:${LEFT + i * STEP}%;bottom:${BOTTOM + (LAST - i) * RISE}%;width:${CARD}%;z-index:${i + 1};transform:rotate(${(-(LAST - i) * TILT).toFixed(1)}deg);transform-origin:50% 100%;`}
+      >
+        {/*
+          Poster có bảng điểm in sẵn trong ảnh nên phát MỘT bản ~2x thay vì cặp
+          1x/2x qua `densities` — cùng lý do đã ghi ở nhánh ảnh `contain` trong
+          `WhyUs.astro`: máy dpr=1 nhận bản nhỏ là chữ trong bảng điểm nhoè ngay.
+          Tấm rộng nhất ~250px CSS (36% của ô ảnh ~680px), 560w phủ cả dpr=2.
+        */}
+        <Image
+          src={p.image}
+          alt={`${p.title} — bạn ${p.name}`}
+          width={560}
+          format="webp"
+          quality={82}
+          loading="lazy"
+          decoding="async"
+          class="block aspect-square w-full object-cover"
+        />
+      </figure>
+    ))
+  }
+</div>

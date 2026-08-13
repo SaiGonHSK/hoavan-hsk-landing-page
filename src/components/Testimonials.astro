@@ -1,7 +1,22 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
 import RailHint from "@/components/RailHint.astro";
+import HeroBackdrop from "@/components/HeroBackdrop.astro";
 import { testimonials } from "@/data/testimonials";
+
+/**
+ * Mục cảm nhận học viên, đặt trên nền `HeroBackdrop` — cùng bộ nền của hero và mục sự kiện:
+ * dải chuyển sắc trắng→xám, hai vệt sáng, lưới kẻ mờ, sticker sách–én–tia sáng, và hai lớp
+ * sóng trắng ở đáy trả nền về trắng cho `TrialCta` ngay dưới.
+ *
+ * Vì sao mục này đáng có nền riêng: mấy thẻ đánh giá vốn là khối trắng viền mảnh, đứng trên
+ * nền trắng thì chúng chỉ là mấy ô kẻ viền. Đặt lên nền xám có chất liệu thì thẻ nổi hẳn lên
+ * thành từng tấm rời — đúng thứ cần thấy ở một dải kéo ngang.
+ *
+ * Đây cũng là mốc thứ hai của cùng một bộ nền trên trang chủ (mục sự kiện là mốc thứ nhất):
+ * hai mảng xám cách nhau đúng một mục trắng (`Facility`), nên trang đọc ra là xám–trắng xen
+ * kẽ chứ không phải một dải trắng dài có một chỗ đổi màu.
+ */
 
 const initials = (name: string) =>
   name
@@ -24,8 +39,24 @@ const badgeOf = (quote: string) => {
 };
 ---
 
-<section id="reviews" class="overflow-hidden bg-background scroll-mt-24">
-  <div class="container mx-auto px-6">
+{/*
+  `relative isolate overflow-hidden` là điều kiện dùng `HeroBackdrop` — xem chú thích đầu file
+  đó: `isolate` để lớp `-z-10` không tụt xuống dưới nền của cả trang, `overflow-hidden` để
+  sticker và sóng không thò ra ngoài mục.
+
+  `pb` đặt đúng bằng chiều cao dải sóng của `HeroBackdrop` ở cả ba mốc (28 / 36 / 44): sóng neo
+  ở đáy section, hai con số bằng nhau thì đỉnh sóng không bao giờ ăn vào thẻ đánh giá cuối dải.
+  Đổi chiều cao sóng thì phải đổi `pb` theo.
+*/}
+<section
+  id="reviews"
+  class="relative isolate scroll-mt-24 overflow-hidden pt-12 pb-28 sm:pb-36 lg:pt-16 lg:pb-44"
+>
+  {/* `stickers="wide"`: tiêu đề mục nằm giữa và ăn hết bề rộng, nên hai sticker trên cùng phải
+      lên khỏi tầm chữ ở màn hẹp — xem `variant` trong `HeroStickers.astro`. */}
+  <HeroBackdrop stickers="wide" />
+
+  <div class="container relative mx-auto px-6">
     <SectionHeading
       title="Chuyện của"
       highlight="học viên SaigonHSK"

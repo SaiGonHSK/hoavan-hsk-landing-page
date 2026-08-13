@@ -87,10 +87,15 @@ const features = [
 
   Dùng `svh` chứ không phải `vh`: trên Safari iOS, `vh` tính theo màn hình khi thanh địa chỉ
   đã thu lại, nên hero `100vh` luôn cao hơn khoảng nhìn thấy thật lúc mới mở trang.
+
+  `pb` đặt đúng bằng chiều cao dải sóng trong `HeroBackdrop` ở cả ba mốc (28 / 36 / 44):
+  sóng neo ở đáy section, nên khi hai con số bằng nhau thì đỉnh sóng không bao giờ ăn vào
+  vùng nội dung — trước đây `pb-32` thấp hơn `h-44` nên đỉnh sóng chồm lên sát chân vòng ảnh.
+  Đổi chiều cao sóng thì phải đổi `pb` theo.
 */}
 <section
   id="hero"
-  class="hero3 relative isolate flex min-h-[calc(100svh-var(--hero-offset,4.9rem))] items-center overflow-hidden pt-6 pb-20 sm:pt-10 sm:pb-28 lg:min-h-[calc(100svh-var(--hero-offset,6.1rem))] lg:pt-12 lg:pb-32"
+  class="hero3 relative isolate flex min-h-[calc(100svh-var(--hero-offset,4.9rem))] items-center overflow-hidden pt-6 pb-28 sm:pt-10 sm:pb-36 lg:min-h-[calc(100svh-var(--hero-offset,6.1rem))] lg:pt-12 lg:pb-44"
 >
   {/* Nền, vệt sáng, lưới kẻ, sticker và lớp sóng ở đáy — xem `HeroBackdrop.astro`. */}
   <HeroBackdrop />
@@ -233,7 +238,7 @@ const features = [
 
       </div>
 
-      <div class="text-center lg:text-left">
+      <div class="text-center">
         <span
           class="hero3-rise inline-flex items-center rounded-full border border-border bg-background/80 px-5 py-2.5 text-xs font-bold tracking-[0.16em] text-muted-foreground uppercase backdrop-blur-sm"
         >
@@ -257,7 +262,7 @@ const features = [
             hàng ba con số. Câu tóm tắt `sr-only` ngay dưới vẫn nằm trong DOM ở mọi cỡ máy
             nên dữ kiện "TP.HCM" và "cam kết 100% đầu ra" không mất ở bản mobile. */}
         <p
-          class="hero3-rise mx-auto mt-4 hidden max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:block lg:mx-0 lg:text-base"
+          class="hero3-rise mx-auto mt-4 hidden max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:block lg:text-base"
           style="--hero-delay: 150ms"
         >
           {hero.description}
@@ -283,7 +288,7 @@ const features = [
           `stats` ngay bên dưới.
         */}
         <ul
-          class="mx-auto mt-6 hidden max-w-lg grid-cols-3 divide-x divide-border border-t border-border pt-5 sm:mt-8 sm:grid lg:mx-0 lg:mt-9"
+          class="mx-auto mt-6 hidden max-w-lg grid-cols-3 divide-x divide-border border-t border-border pt-5 sm:mt-8 sm:grid lg:mt-9"
         >
           {
             features.map((f, i) => (
@@ -333,7 +338,7 @@ const features = [
             một nút to nữa chồng ngay dưới nút chính, và nó lặp lại một mục đã có trong menu
             đầu trang. Bỏ nó đi thì hero mobile có đúng một việc để làm. */}
         <div
-          class="hero3-rise mt-6 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center lg:justify-start"
+          class="hero3-rise mt-6 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center"
           style="--hero-delay: 480ms"
         >
           <a

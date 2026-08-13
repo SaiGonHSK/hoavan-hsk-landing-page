@@ -1,0 +1,410 @@
+---
+/**
+ * Bộ giáo trình của trung tâm, vẽ lại bằng vector.
+ *
+ * Dựng từ chính những cuốn sách trong ảnh chụp học viên ở `src/assets/hero/`:
+ * `hoc-vien-hsk1-hsk4-tach-nen.webp` (GIÁO TRÌNH HSK1 và HSK4.1), `hoc-vien-giao-trinh.webp`
+ * (NGỮ PHÁP HSK1, HSK4) và bốn ảnh gốc `1786586…jpg` (GIÁO TRÌNH HSK4.2, NGỮ PHÁP HSK3,
+ * TỪ VỰNG HSK4, LUYỆN VIẾT HSK1). Chín cuốn đó dùng đúng MỘT template bìa, chỉ đổi bốn
+ * biến: màu khối chéo góc trên, tên loại sách ở ô dưới trái, mã cấp ở ô dưới phải, và
+ * ảnh bìa (Thượng Hải cho HSK4.x, Trường Thành cho HSK1, vườn – đình cho HSK3).
+ *
+ * Nên component này khai template một lần rồi trải sáu cuốn, thay vì vẽ tay từng bìa.
+ * Mọi tỉ lệ đo từ cuốn TỪ VỰNG HSK4 trong `1786586378012…jpg` — cuốn duy nhất trong cả
+ * bộ ảnh được cầm gần chính diện, thấy trọn bìa từ mép trên đến mép dưới.
+ *
+ * ── Vì sao có ngần này lớp cho một hình phẳng ──────────────────────────────────────
+ * Bản đầu chỉ có khối màu và chữ: đúng bố cục bìa nhưng nhìn ra ngay là hình vẽ dán lên
+ * nền, không ra cuốn sách. Bốn thứ dưới đây mới là phần làm nó thành *vật thể*, và mỗi
+ * thứ đều lấy từ một chi tiết thấy được trong ảnh chụp:
+ *
+ *   1. Lò xo (`coil`) — cuộn thép trắng quặp qua mép trái, chi tiết nhận ra cuốn sách
+ *      này nhanh nhất. Vẽ đủ ba phần: vòng dây trước bìa, vòng dây chìm sau bìa, và
+ *      hàng lỗ đục. Bản trước rút gọn thành hàng viên nhựa nằm ngang nên trông như
+ *      hoa văn in trên bìa.
+ *   2. Bề dày (`edge`) — dải giấy ở mép phải và bóng gáy tối dần về phía lò xo. Bìa
+ *      không có bề dày thì nằm bẹt trên nền dù bóng đổ có mềm cỡ nào.
+ *   3. Ánh sáng (`sheen`) — bìa cán bóng, sáng chéo từ trên trái, tối dần xuống dưới
+ *      phải. Đây là thứ tách "giấy in" khỏi "ô màu CSS".
+ *   4. Bóng đổ hai tầng — một tầng ngắn sát chân sách, một tầng rộng và mờ. Bóng một
+ *      tầng thì hoặc quá cứng, hoặc quá xa, không bao giờ ra bóng thật.
+ *
+ * Ảnh bìa cũng vẽ theo lớp có mù (haze) giữa các tầng núi và tầng nhà, vì ảnh chụp
+ * phong cảnh nào cũng nhạt dần về phía xa — thiếu lớp mù đó thì rặng núi xa và rặng núi
+ * gần cùng một độ đậm, mắt đọc ra tranh vẽ ngay.
+ *
+ * Vì sao vector chứ không phải ảnh chụp chồng sách: khối này nằm trên nền `brand-ink-50`
+ * cùng ba tab kia. Ảnh chụp sách thật đặt trên bàn thì kéo theo nền bàn, ánh sáng phòng
+ * và bóng đổ — ba mảng màu lạ giữa một khối phẳng. Vẽ lại thì sáu bìa nằm thẳng trên
+ * đúng nền xám đó, và chữ trên bìa là chữ SVG nên sắc ở mọi dpr, không như chữ in trong
+ * ảnh chụp (vấn đề đã gặp ở ảnh ghép giảng viên, xem WhyUs.astro).
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+/* ── Bảng màu lấy từ bìa thật ─────────────────────────────────────────────── */
+const MAROON = "#9c2b2c"; // khối chéo đỏ gạch — cuốn hay gặp nhất
+const GREEN = "#5f7d4d"; // khối chéo xanh rêu — bộ HSK1
+const NAVY = "#33527a"; // khối chéo xanh mực — bộ HSK4.2
+const STEEL = "#5b8cbe"; // ô tên loại sách màu xanh thép
+const LEVEL = "#a5262b"; // ô mã cấp, luôn đỏ
+const PAPER = "#fdfcfb";
+
+/* ── Ba ảnh bìa, vẽ trong khung 240×133 ───────────────────────────────────── */
+
+/** Bến Thượng Hải: tháp Đông Phương Minh Châu và Thượng Hải Tower nhìn từ bờ Puxi. */
+const CITY = `
+<rect width="240" height="133" fill="url(#tbs-sky)"/>
+<circle cx="196" cy="26" r="30" fill="#fff" opacity=".28"/>
+
+<g fill="#c3d0da">
+  <rect x="0" y="76" width="13" height="27"/><rect x="15" y="84" width="9" height="19"/>
+  <rect x="108" y="82" width="10" height="21"/><rect x="120" y="88" width="8" height="15"/>
+  <rect x="226" y="78" width="14" height="25"/>
+</g>
+
+<g fill="#9db0c0">
+  <rect x="26" y="62" width="17" height="41"/><rect x="45" y="76" width="13" height="27"/>
+  <rect x="60" y="54" width="16" height="49"/><rect x="128" y="68" width="12" height="35"/>
+  <rect x="204" y="60" width="15" height="43"/><rect x="220" y="74" width="11" height="29"/>
+</g>
+
+<g fill="#7b8fa1">
+  <rect x="40" y="68" width="6" height="35"/>
+  <rect x="78" y="44" width="17" height="59"/>
+  <path d="M144 103V42l13-9 13 9v61Z"/>
+  <rect x="172" y="72" width="9" height="31"/>
+</g>
+
+<path d="M186 103 187 34l9-17 11 7-4 21 1 58Z" fill="#aebfcc"/>
+
+<g stroke="#fff" stroke-opacity=".3" stroke-width="1">
+  <path d="M26 72h17M26 84h17M60 64h16M60 78h16M60 92h16M78 54h17M78 70h17M78 86h17M144 54h26M144 70h26M144 86h26M204 72h15M204 86h15"/>
+</g>
+
+<g>
+  <path d="M101 6h2v97h-2Z" fill="#8d6f77"/>
+  <rect x="96" y="50" width="12" height="53" fill="url(#tbs-pearl)"/>
+  <circle cx="102" cy="40" r="14" fill="#c98994"/>
+  <circle cx="102" cy="40" r="14" fill="url(#tbs-gloss)"/>
+  <circle cx="102" cy="77" r="8.5" fill="#c98994"/>
+  <path d="M88 96 102 64 116 96Z" fill="#b07c86"/>
+</g>
+
+<rect x="0" y="88" width="240" height="15" fill="url(#tbs-haze)"/>
+<rect x="0" y="96" width="240" height="7" fill="#6f9159"/>
+<rect x="0" y="103" width="240" height="30" fill="url(#tbs-water)"/>
+<g stroke="#fff" stroke-opacity=".34" stroke-width="1.8" stroke-linecap="round">
+  <path d="M20 111h34M76 119h46M100 128h30M150 109h40M188 125h36"/>
+</g>
+<rect x="96" y="103" width="12" height="30" fill="#c98994" opacity=".3"/>
+`;
+
+/** Trường Thành nhìn từ trên: núi phủ kín khung, tường lượn chéo lên góc phải. */
+const WALL = `
+<rect width="240" height="133" fill="url(#tbs-sky)"/>
+<path d="M0 24 44 12 94 22 140 8 192 20 240 10V133H0Z" fill="#87ac68"/>
+<rect x="0" y="18" width="240" height="26" fill="url(#tbs-haze)"/>
+<path d="M0 46 52 32 104 44 154 28 202 40 240 32V133H0Z" fill="#65904c"/>
+<rect x="0" y="40" width="240" height="24" fill="url(#tbs-haze)" opacity=".55"/>
+<path d="M0 80 48 66 100 78 152 60 202 74 240 66V133H0Z" fill="#437038"/>
+<path d="M0 104 44 94 96 106 148 90 200 102 240 96V133H0Z" fill="#32562c"/>
+
+<g fill="none" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M-8 118 50 98 88 109 134 80 176 92 248 60" stroke="#8c8579" stroke-width="13"/>
+  <path d="M-8 118 50 98 88 109 134 80 176 92 248 60" stroke="#d9d4cb" stroke-width="10"/>
+  <path d="M-8 118 50 98 88 109 134 80 176 92 248 60" stroke="#a8a29a" stroke-width="3"/>
+</g>
+
+<g>
+  <rect x="124" y="60" width="27" height="28" fill="#cdc7bd"/>
+  <rect x="124" y="60" width="27" height="28" fill="url(#tbs-gloss)"/>
+  <rect x="119" y="53" width="37" height="8" fill="#9d968d"/>
+  <rect x="133" y="69" width="8" height="19" fill="#7f7971"/>
+</g>
+
+<g fill="#23401f" opacity=".42">
+  <circle cx="18" cy="106" r="9"/><circle cx="40" cy="118" r="8"/><circle cx="72" cy="128" r="10"/>
+  <circle cx="106" cy="114" r="8"/><circle cx="196" cy="102" r="9"/><circle cx="222" cy="114" r="10"/>
+  <circle cx="160" cy="124" r="9"/><circle cx="214" cy="84" r="7"/><circle cx="56" cy="110" r="6"/>
+</g>
+`;
+
+/** Đình mái đỏ bên hồ trong vườn — ảnh bìa của bộ HSK3. */
+const GARDEN = `
+<rect width="240" height="133" fill="url(#tbs-sky)"/>
+<path d="M0 32 54 22 112 30 168 18 240 28V133H0Z" fill="#87ac68"/>
+<rect x="0" y="26" width="240" height="26" fill="url(#tbs-haze)"/>
+<path d="M0 54 56 45 116 54 178 42 240 50V133H0Z" fill="#5a8845"/>
+
+<g>
+  <path d="M124 62h58l10 10H114Z" fill="#a5262b"/>
+  <path d="M114 72h78l-4 4h-70Z" fill="#7f1d21"/>
+  <path d="M131 76h44v20h-44Z" fill="#ede6db"/>
+  <g fill="#8e7a63"><rect x="132" y="76" width="5" height="20"/><rect x="169" y="76" width="5" height="20"/></g>
+  <path d="M144 48h18l7 8h-32Z" fill="#a5262b"/>
+</g>
+
+<rect x="0" y="92" width="240" height="41" fill="url(#tbs-water)"/>
+<g opacity=".32">
+  <path d="M131 92h44v18h-44Z" fill="#a5262b"/>
+  <path d="M114 92h78l-10 9h-58Z" fill="#7f1d21"/>
+</g>
+
+<g fill="#3a6630">
+  <circle cx="30" cy="68" r="18"/><circle cx="54" cy="77" r="13"/><circle cx="214" cy="70" r="17"/>
+  <rect x="27" y="76" width="6" height="18"/><rect x="211" y="78" width="6" height="16"/>
+</g>
+<g fill="#2a4d24" opacity=".5">
+  <circle cx="24" cy="64" r="9"/><circle cx="208" cy="66" r="8"/>
+</g>
+
+<g stroke="#fff" stroke-opacity=".4" stroke-width="1.8" stroke-linecap="round">
+  <path d="M16 106h36M62 116h48M180 110h40M118 126h44"/>
+</g>
+`;
+
+/* ── Sáu cuốn, xếp theo cấp từ thấp (sau, bên trái) lên cao (trước, bên phải) ── */
+type Book = {
+  /** Tên loại sách ở ô dưới trái, tách sẵn hai dòng đúng như bìa in */
+  kind: [string, string];
+  level: string;
+  /** Màu khối chéo góc trên trái */
+  accent: string;
+  /** Màu ô tên loại sách — bộ HSK4.x dùng xanh thép, còn lại trùng màu khối chéo */
+  kindFill: string;
+  scene: string;
+};
+
+const BOOKS: Book[] = [
+  { kind: ["GIÁO", "TRÌNH"], level: "HSK1", accent: GREEN, kindFill: GREEN, scene: WALL },
+  { kind: ["LUYỆN", "VIẾT"], level: "HSK1", accent: MAROON, kindFill: MAROON, scene: WALL },
+  { kind: ["NGỮ", "PHÁP"], level: "HSK3", accent: MAROON, kindFill: MAROON, scene: GARDEN },
+  { kind: ["TỪ", "VỰNG"], level: "HSK4", accent: MAROON, kindFill: STEEL, scene: CITY },
+  { kind: ["GIÁO", "TRÌNH"], level: "HSK4.2", accent: NAVY, kindFill: STEEL, scene: CITY },
+  { kind: ["GIÁO", "TRÌNH"], level: "HSK4.1", accent: MAROON, kindFill: STEEL, scene: CITY },
+];
+
+/* ── Khổ bìa và cách trải ─────────────────────────────────────────────────── */
+const W = 304; // bìa A4: 304 × 430 ≈ 1 : 1,414
+const H = 430;
+const STEP = 128; // 42% bề ngang — vừa đủ để lộ khối chéo và trọn tên loại sách
+const LAST = BOOKS.length - 1;
+
+/**
+ * Cuốn bên phải nằm TRÊN cuốn bên trái, nên phần lộ ra của mỗi cuốn phía sau là mép
+ * trái: lò xo, khối màu chéo và ô tên loại sách. Xếp ngược lại thì phần lộ ra là mép
+ * phải — gần như toàn giấy trắng, sáu cuốn thành một dải trắng nhờ.
+ *
+ * Cuốn trước cùng nằm thấp nhất và không nghiêng; càng ra sau càng nhích lên và ngả
+ * thêm về trái, quanh trục ở đáy bìa. Độ ngả tối đa giữ ở 6°: ngả hơn thì góc trên bên
+ * trái của cuốn sau cùng quét ra ngoài `viewBox`, mà nới `viewBox` cho vừa thì cả xấp
+ * co lại và chữ trên bìa nhỏ theo.
+ *
+ * Lưu ý khi đọc phần dựng khung ảnh: `clip-path` và `transform` phải nằm trên HAI thẻ
+ * <g> lồng nhau, không gộp một thẻ. Với `clipPathUnits="userSpaceOnUse"` (mặc định),
+ * hình cắt được đọc trong hệ toạ độ của chính thẻ tham chiếu nó — tức hệ ĐÃ áp
+ * `transform` của thẻ đó. Gộp cả hai lên một <g transform="translate(35 129)"> thì rect
+ * cắt bị dịch gấp đôi: khung giấy trắng vẫn đúng chỗ nhưng ảnh bên trong bị đẩy chéo
+ * xuống và cắt còn một góc.
+ */
+const book = (b: Book, i: number) => {
+  const x = 60 + i * STEP;
+  const y = 78 + i * 9;
+  const tilt = -(LAST - i) * 1.2;
+  const clip = `tbs-clip-${i}`;
+
+  // "HSK4.1" dài hơn "HSK1" nên phải hạ cỡ chữ, không thì tràn khỏi ô đỏ rộng 148.
+  const levelSize = b.level.length > 4 ? 32 : 38;
+
+  /*
+    Lò xo: 26 vòng thép, mỗi vòng ba nét — nét chìm sau bìa (vẽ trước, tối hơn), lỗ đục
+    trên giấy, rồi nét nổi trước bìa. Thiếu nét chìm thì cuộn dây trông như dán lên mặt
+    bìa; thiếu lỗ đục thì không thấy dây xuyên qua giấy.
+  */
+  const coilBack = Array.from({ length: 26 }, (_, k) => {
+    const cy = 14 + k * 16;
+    return `<path d="M15 ${cy}C4 ${cy} -6 ${cy + 3} -6 ${cy + 8}" stroke="#a8a9ae" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;
+  }).join("");
+
+  const coilFront = Array.from({ length: 26 }, (_, k) => {
+    const cy = 14 + k * 16;
+    return (
+      `<rect x="11" y="${cy + 4}" width="7" height="7" rx="2.2" fill="#e2e2e5"/>` +
+      `<path d="M-6 ${cy + 8}C-6 ${cy + 14} 5 ${cy + 17} 17 ${cy + 15}" stroke="url(#tbs-wire)" stroke-width="3.6" fill="none" stroke-linecap="round"/>`
+    );
+  }).join("");
+
+  return `
+<g transform="translate(${x} ${y}) rotate(${tilt} 40 ${H})">
+  <g filter="url(#tbs-shadow)">
+    ${coilBack}
+
+    <path d="M${W} 6 l7 5 v${H - 10} l-7 5Z" fill="#e8e8ea"/>
+    <g stroke="#cfd0d3" stroke-width=".7">
+      <path d="M${W + 2} 14v${H - 26}M${W + 4} 16v${H - 30}M${W + 6} 18v${H - 34}"/>
+    </g>
+
+    <rect width="${W}" height="${H}" rx="4" fill="${PAPER}"/>
+  </g>
+
+  <g clip-path="url(#${clip}-cover)">
+    <path d="M0 0H195L22 237H0Z" fill="${b.accent}"/>
+
+    <g>
+      <circle cx="190" cy="66" r="15" fill="${LEVEL}"/>
+      <circle cx="190" cy="66" r="13.2" fill="none" stroke="#fff" stroke-width="1.2"/>
+      <g stroke="#fff" stroke-width="1.7" stroke-linecap="square" fill="none">
+        <path d="M190 54v8M190 70v8M178 66h8M194 66h8M183 60h5v-4M197 72h-5v4"/>
+      </g>
+      <text x="212" y="63" fill="#26272c" font-size="12.5" font-weight="800" letter-spacing=".2">HOA VĂN</text>
+      <text x="212" y="77" fill="#26272c" font-size="12.5" font-weight="800" letter-spacing=".2">SAIGONHSK</text>
+    </g>
+
+    <g transform="rotate(-1.6 155 196)">
+      <rect x="30" y="124" width="250" height="143" fill="#fff"/>
+      <clipPath id="${clip}-photo"><rect x="35" y="129" width="240" height="133"/></clipPath>
+      <g clip-path="url(#${clip}-photo)"><g transform="translate(35 129)">${b.scene}</g></g>
+      <rect x="35" y="129" width="240" height="133" fill="none" stroke="#121316" stroke-opacity=".1"/>
+    </g>
+
+    <g transform="rotate(-3 76 308)">
+      <rect x="16" y="270" width="120" height="76" fill="${b.kindFill}"/>
+      <text x="76" y="301" fill="#fff" font-size="22" font-weight="800" letter-spacing=".6" text-anchor="middle">${b.kind[0]}</text>
+      <text x="76" y="331" fill="#fff" font-size="22" font-weight="800" letter-spacing=".6" text-anchor="middle">${b.kind[1]}</text>
+    </g>
+
+    <g transform="rotate(-3 216 317)">
+      <rect x="142" y="278" width="148" height="78" fill="${LEVEL}"/>
+      <text x="216" y="330" fill="#fff" font-size="${levelSize}" font-weight="800" letter-spacing=".5" text-anchor="middle">${b.level}</text>
+    </g>
+
+    <g>
+      <text x="26" y="376" fill="${LEVEL}" font-size="11.5" font-weight="800" letter-spacing=".1">TRUNG TÂM HOA VĂN SAIGONHSK</text>
+      <g fill="${LEVEL}" opacity=".7">
+        <rect x="26" y="386" width="5" height="5" rx="1.4"/><rect x="26" y="396" width="5" height="5" rx="1.4"/>
+        <rect x="26" y="406" width="5" height="5" rx="1.4"/><rect x="26" y="416" width="5" height="5" rx="1.4"/>
+      </g>
+      <g fill="#c9979b">
+        <rect x="36" y="386.8" width="150" height="3.2" rx="1.6"/><rect x="36" y="396.8" width="124" height="3.2" rx="1.6"/>
+        <rect x="36" y="406.8" width="140" height="3.2" rx="1.6"/><rect x="36" y="416.8" width="104" height="3.2" rx="1.6"/>
+      </g>
+    </g>
+
+    <rect width="42" height="${H}" fill="url(#tbs-gutter)"/>
+    <rect width="${W}" height="${H}" fill="url(#tbs-sheen)"/>
+  </g>
+
+  <clipPath id="${clip}-cover"><rect width="${W}" height="${H}" rx="4"/></clipPath>
+  <rect width="${W}" height="${H}" rx="4" fill="none" stroke="#121316" stroke-opacity=".12"/>
+
+  ${coilFront}
+</g>`;
+};
+
+const fan = BOOKS.map(book).join("");
+
+const label = `Bộ giáo trình Hoa văn SaigonHSK: ${BOOKS.map(
+  (b) => `${b.kind.join(" ")} ${b.level}`,
+).join(", ")}`;
+---
+
+<svg
+  class:list={["size-full", className]}
+  viewBox="0 0 1040 620"
+  fill="none"
+  role="img"
+  aria-labelledby="tbs-title"
+>
+  <title id="tbs-title">{label}</title>
+
+  <defs>
+    {/* Trời của ba ảnh bìa — xanh đậm trên đỉnh, nhạt dần xuống chân trời */}
+    <linearGradient id="tbs-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9cbe6"></stop>
+      <stop offset=".7" stop-color="#d8e8f3"></stop>
+      <stop offset="1" stop-color="#eef4f8"></stop>
+    </linearGradient>
+
+    {/* Mù giữa các tầng cảnh — lớp làm rặng xa nhạt hơn rặng gần */}
+    <linearGradient id="tbs-haze" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef4f8" stop-opacity=".8"></stop>
+      <stop offset="1" stop-color="#eef4f8" stop-opacity="0"></stop>
+    </linearGradient>
+
+    <linearGradient id="tbs-water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fb3ca"></stop>
+      <stop offset="1" stop-color="#6d95b1"></stop>
+    </linearGradient>
+
+    <linearGradient id="tbs-pearl" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d69ea7"></stop>
+      <stop offset="1" stop-color="#a9727d"></stop>
+    </linearGradient>
+
+    {/* Bóng khối cầu / khối hộp trong ảnh bìa */}
+    <linearGradient id="tbs-gloss" x1="0" y1="0" x2=".8" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".45"></stop>
+      <stop offset=".55" stop-color="#fff" stop-opacity="0"></stop>
+      <stop offset="1" stop-color="#000" stop-opacity=".18"></stop>
+    </linearGradient>
+
+    {/*
+      Ánh sáng trên bìa cán bóng: sáng chéo từ trên trái, gần như tắt ở giữa, tối lại ở
+      góc dưới phải. Biên độ để thấp (14% / 9%) — mạnh hơn là thành vệt loá giả.
+    */}
+    <linearGradient id="tbs-sheen" x1="0" y1="0" x2=".85" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".14"></stop>
+      <stop offset=".42" stop-color="#fff" stop-opacity="0"></stop>
+      <stop offset=".78" stop-color="#121316" stop-opacity=".04"></stop>
+      <stop offset="1" stop-color="#121316" stop-opacity=".09"></stop>
+    </linearGradient>
+
+    {/* Bóng gáy: bìa cong vào chỗ lò xo nên tối dần về mép trái */}
+    <linearGradient id="tbs-gutter" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#121316" stop-opacity=".16"></stop>
+      <stop offset=".55" stop-color="#121316" stop-opacity=".04"></stop>
+      <stop offset="1" stop-color="#121316" stop-opacity="0"></stop>
+    </linearGradient>
+
+    {/* Dây thép của lò xo — sáng ở đỉnh vòng, tối ở hai đầu */}
+    <linearGradient id="tbs-wire" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b9babf"></stop>
+      <stop offset=".35" stop-color="#fbfbfc"></stop>
+      <stop offset="1" stop-color="#c8c9ce"></stop>
+    </linearGradient>
+
+    {/*
+      Hai tầng bóng đổ: tầng ngắn sát chân sách cho ra chỗ tiếp đất, tầng rộng và mờ cho
+      ra khối trong không gian. Một tầng thì hoặc cứng như viền, hoặc mờ như sương.
+    */}
+    <filter id="tbs-shadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow
+        dx="6"
+        dy="4"
+        stdDeviation="4"
+        flood-color="#121316"
+        flood-opacity=".18"></feDropShadow>
+      <feDropShadow
+        dx="16"
+        dy="20"
+        stdDeviation="17"
+        flood-color="#121316"
+        flood-opacity=".16"></feDropShadow>
+    </filter>
+
+    <radialGradient id="tbs-ground">
+      <stop offset="0" stop-color="#121316" stop-opacity=".14"></stop>
+      <stop offset="1" stop-color="#121316" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  {/* Bóng chung dưới cả xấp — thứ neo sáu cuốn xuống cùng một mặt phẳng */}
+  <ellipse cx="530" cy="566" rx="446" ry="30" fill="url(#tbs-ground)"></ellipse>
+
+  <Fragment set:html={fan} />
+</svg>
