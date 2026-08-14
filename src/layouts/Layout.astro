@@ -280,9 +280,9 @@ const GOOGLE_ADS_ID = "AW-18385026103";
     }
 
     {/*
-      Khai báo icon theo từng cỡ thay vì đưa một file 192px cho tất cả: trình duyệt
-      sẽ tự thu nhỏ file lớn, mà logo có nét maze mảnh nên xuống 16–32px thì nhoè
-      thành chấm đỏ. Các bản nhỏ là mark rút gọn vẽ riêng — xem scripts/gen-favicons.mjs.
+      Khai báo icon theo từng cỡ thay vì đưa một file 192px cho tất cả: logo có nét
+      maze mảnh, để trình duyệt tự thu về 16–32px thì nhoè thành chấm đỏ. Các bản
+      nhỏ được thu sẵn và làm nét lại — xem scripts/gen-favicons.mjs.
 
       /favicon.ico phải tồn tại dù đã có thẻ <link>: Google Search, một số crawler
       và shortcut trên Windows bỏ qua thẻ và request thẳng đường dẫn đó.
