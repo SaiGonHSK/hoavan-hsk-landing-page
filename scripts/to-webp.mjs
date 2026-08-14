@@ -1,5 +1,5 @@
 /**
- * Đổi mọi ảnh JPEG/PNG trong src/assets/ và public/images/ sang WebP, xoá bản gốc.
+ * Đổi mọi ảnh JPEG/PNG trong src/assets/ sang WebP, xoá bản gốc.
  *
  * Chạy lại được nhiều lần: ảnh đã là .webp thì bỏ qua. Dùng mỗi khi thả thêm ảnh
  * chụp từ Facebook (toàn .jpg) vào src/assets/ — kho ảnh giữ một định dạng duy nhất
@@ -9,43 +9,43 @@
  *   node scripts/to-webp.mjs --dry    # chỉ in ra sẽ đổi những gì
  *
  * Lưu ý: script này KHÔNG sửa code. Sau khi chạy phải tự đổi đuôi trong các
- * `import ... from "@/assets/..."` và các đường dẫn "/images/..." tương ứng —
- * `astro build` sẽ báo lỗi ngay nếu còn sót.
+ * `import ... from "@/assets/..."` — `astro build` sẽ báo lỗi ngay nếu còn sót.
  */
 
 import { readdir, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const ROOTS = ["src/assets", "public/images"];
+// `public/` giờ chỉ còn favicon, không có ảnh nào để đổi.
+const ROOTS = ["src/assets"];
 
 /**
  * Ảnh phải giữ đúng định dạng cũ:
  * - og-default.jpg: ảnh Open Graph. Một số bộ đọc thẻ (Zalo, một vài crawler cũ)
- *   không đọc được WebP, mà ảnh này chỉ tồn tại để cho chúng đọc.
- * - favicon.png: nằm ngoài public/images/ nên vốn đã không bị quét, kể ra cho rõ.
+ *   không đọc được WebP, mà ảnh này chỉ tồn tại để cho chúng đọc. `Layout.astro`
+ *   dùng thẳng `.src` của nó, không cho qua `<Image>`, nên đuôi đổi là hỏng thật.
  */
-const KEEP = new Set(["public/images/og-default.jpg", "public/favicon.png"]);
+const KEEP = new Set(["src/assets/og-default.jpg"]);
 
 /**
- * Ảnh cảm nhận học viên: đường dẫn do trang quản trị soạn (`testimonials` nằm trong
- * `DYNAMIC_KEYS`, xem src/data/content.ts), API trả về chuỗi "/images/reviews/....jpg"
- * lúc chạy. Đổi tên file ở đây thì bản trong repo hết .jpg mà API vẫn trỏ .jpg → 404.
- * Muốn đổi thì phải đổi cả bên admin, không làm được từ repo này.
+ * Ảnh cảm nhận học viên: khoá tra trong `src/data/imageAssets.ts` là đường dẫn
+ * "/images/reviews/....jpg" mà trang quản trị lưu trong cơ sở dữ liệu (`testimonials`
+ * nằm trong `DYNAMIC_KEYS`, xem src/data/content.ts). Đổi đuôi tệp ở đây thì phải sửa
+ * cả khoá trong bảng tra lẫn giá trị bên admin mới khớp lại được — để nguyên .jpg/.png
+ * thì tên tệp và khoá trùng nhau, đọc bảng tra là thấy ngay.
  */
-const KEEP_DIRS = ["public/images/reviews"];
+const KEEP_DIRS = ["src/assets/reviews"];
 
 /**
- * Nén rất nhẹ tay, nhất là với `src/assets/`.
+ * Nén rất nhẹ tay.
  *
  * Ảnh trong `src/assets/` là **bản gốc**: `<Image>` của Astro còn nén lại một lần nữa
  * theo đúng khổ hiển thị. Hai lần nén lossy là cộng dồn — bản gốc nén mạnh thì lần
  * nén sau chỉ làm nét thêm mấy vệt nhiễu của lần nén trước. Đây là kho ảnh nguồn,
  * không phải ảnh trả cho trình duyệt, nên ưu tiên giữ chất lượng chứ không tiết kiệm
- * dung lượng. Ảnh trong `public/` được trả thẳng cho trình duyệt, không qua bước nào
- * nữa nên nén thấp hơn một chút.
+ * dung lượng.
  */
-const quality = (file) => (file.startsWith("src/assets") ? 95 : 90);
+const quality = () => 95;
 
 const dryRun = process.argv.includes("--dry");
 

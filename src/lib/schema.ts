@@ -27,6 +27,7 @@
 import { HSK_LEVELS } from "@/data/catalog";
 import { visibleCourses } from "@/data/coursesApi";
 import type { Teacher } from "@/data/teachers";
+import { imageAsset } from "@/data/imageAssets";
 import { toIsoDuration } from "@/lib/seo";
 
 /* ── Gom graph ───────────────────────────────────────────────────────── */
@@ -180,7 +181,14 @@ export function personSchema(teacher: Teacher, origin: string): Node {
     description: teacher.points?.length
       ? `${teacher.points.join(". ").replace(/\.\.$/, ".")}.`
       : undefined,
-    ...(teacher.image ? { image: `${origin}${teacher.image}` } : {}),
+    /*
+      Ảnh phải là URL tuyệt đối tải được: máy đọc schema đi lấy ảnh từ ngoài, đường dẫn
+      404 thì node `Person` mất phần ảnh. `teacher.image` chỉ còn là khoá tra — tệp thật
+      nằm trong `src/assets` và mang tên có mã băm, nên lấy `.src` của ảnh đã import.
+    */
+    ...(imageAsset(teacher.image)
+      ? { image: `${origin}${imageAsset(teacher.image)!.src}` }
+      : {}),
     ...(degree
       ? {
           hasCredential: {

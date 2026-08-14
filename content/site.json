@@ -42,7 +42,6 @@
     "description": "为你的成功 — Vì sự thành công của bạn. Trung tâm đào tạo tiếng Trung chất lượng cao, uy tín tại TP. HCM — cam kết 100% đầu ra.",
     "noteTitle": "Lộ trình chuẩn HSK 3.0",
     "noteBody": "Bạn được test trình độ miễn phí, xếp đúng lớp và đi theo lộ trình từ vỡ lòng đến HSK6 — cam kết 100% đầu ra, không đạt học lại miễn phí.",
-    "image": "/images/classroom.webp",
     "badgeValue": "100%",
     "badgeText": "cam kết đầu ra\nhọc lại miễn phí"
   },
@@ -84,29 +83,25 @@
       "id": "vi-nguoi-hoc",
       "icon": "heart",
       "title": "Vì người học",
-      "desc": "Giáo trình tối ưu, phương pháp độc quyền được biên soạn riêng cho người Việt học tiếng Trung. Không đạt được mục tiêu, học viên được học lại miễn phí.",
-      "image": "/images/values/vi-nguoi-hoc.svg"
+      "desc": "Giáo trình tối ưu, phương pháp độc quyền được biên soạn riêng cho người Việt học tiếng Trung. Không đạt được mục tiêu, học viên được học lại miễn phí."
     },
     {
       "id": "giang-vien-chat-luong",
       "icon": "cap",
       "title": "Giảng viên chất lượng",
-      "desc": "Giảng viên phụ trách chuyên môn là Tiến sĩ Võ Thị Quỳnh Trang — Tiến sĩ Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải).",
-      "image": "/images/values/giang-vien-chat-luong.svg"
+      "desc": "Giảng viên phụ trách chuyên môn là Tiến sĩ Võ Thị Quỳnh Trang — Tiến sĩ Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải)."
     },
     {
       "id": "ung-dung-hoc-tap",
       "icon": "phone",
       "title": "Hệ thống LMS hiện đại",
-      "desc": "Mỗi học viên có một tài khoản trên hệ thống LMS riêng của trung tâm: khoá học chia sẵn theo từng bài, tiến độ và điểm số đồng bộ với giảng viên, chuỗi ngày học nhắc ôn mỗi ngày. Kèm từ điển tra đúng từ vựng trong giáo trình, bảng thứ tự nét để tập viết chữ Hán và AI luyện nói – luyện nghe ngoài giờ lên lớp.",
-      "image": "/images/values/tiet-kiem-thoi-gian.svg"
+      "desc": "Mỗi học viên có một tài khoản trên hệ thống LMS riêng của trung tâm: khoá học chia sẵn theo từng bài, tiến độ và điểm số đồng bộ với giảng viên, chuỗi ngày học nhắc ôn mỗi ngày. Kèm từ điển tra đúng từ vựng trong giáo trình, bảng thứ tự nét để tập viết chữ Hán và AI luyện nói – luyện nghe ngoài giờ lên lớp."
     },
     {
       "id": "hieu-qua-cao",
       "icon": "target",
       "title": "Hiệu quả cao",
-      "desc": "Học viên phát triển đồng thời 4 kỹ năng nghe – nói – đọc – viết, nhiều bạn thi đậu HSK6 chỉ sau hơn 1 năm học.",
-      "image": "/images/values/hieu-qua-cao.svg"
+      "desc": "Học viên phát triển đồng thời 4 kỹ năng nghe – nói – đọc – viết, nhiều bạn thi đậu HSK6 chỉ sau hơn 1 năm học."
     }
   ],
   "commitments": [
@@ -129,7 +124,6 @@
   "teacher": {
     "name": "TS. Võ Thị Quỳnh Trang",
     "role": "Giảng viên phụ trách chuyên môn",
-    "photo": "/images/teacher-quynh-trang.webp",
     "points": [
       "Tốt nghiệp Tiến sĩ ngành Giáo dục Hán ngữ quốc tế, Đại học Sư phạm Hoa Đông (Thượng Hải).",
       "Giảng dạy tại nhiều trường đại học lớn, uy tín tại TP. HCM.",
@@ -369,7 +363,7 @@
     "heading": "Chào mừng đến với",
     "headingHighlight": "Hoa văn SaigonHSK",
     "paragraphs": [
-      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín và chất lượng cao tại TP. Hồ Chí Minh, có giấy phép của Sở Giáo dục và Đào tạo TP. Hồ Chí Minh, được xây dựng với mục tiêu mang đến môi trường học tập chuyên nghiệp, hiệu quả và truyền cảm hứng. Chúng tôi không chỉ giúp học viên chinh phục tiếng Trung mà còn đồng hành trên hành trình phát triển năng lực ngôn ngữ, học tập và sự nghiệp.",
+      "SaigonHSK là trung tâm đào tạo tiếng Trung uy tín, chất lượng tại TP.HCM được Sở GD&ĐT cấp phép. Với môi trường chuyên nghiệp và giàu cảm hứng, chúng tôi cam kết đồng hành cùng học viên trên hành trình chinh phục ngôn ngữ, phát triển học tập và sự nghiệp.",
       "SaigonHSK đào tạo đầy đủ các chương trình từ Sơ cấp đến Cao cấp, dành cho mọi đối tượng học viên: từ người mới bắt đầu, mất gốc đến luyện thi HSK, HSKK và tiếng Trung giao tiếp. Chương trình được thiết kế bài bản, lộ trình rõ ràng, chú trọng thực hành và cam kết đầu ra. Nếu học viên chưa đạt mục tiêu theo đúng lộ trình đã cam kết, trung tâm sẽ hỗ trợ học lại hoàn toàn miễn phí.",
       "Đội ngũ giảng viên của SaigonHSK là những thầy cô giàu kinh nghiệm, tận tâm và luôn cập nhật phương pháp giảng dạy hiện đại. Phần lớn giảng viên có trình độ Thạc sĩ, Tiến sĩ tốt nghiệp từ các trường đại học danh tiếng tại Trung Quốc và hiện đang giảng dạy tại nhiều trường đại học uy tín ở Việt Nam. Sự am hiểu chuyên môn cùng tinh thần trách nhiệm chính là nền tảng giúp hàng nghìn học viên đạt được mục tiêu học tập và chinh phục các chứng chỉ tiếng Trung."
     ]

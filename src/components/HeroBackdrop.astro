@@ -10,7 +10,8 @@
  *
  * Dùng chung cho `HeroV3` và `HeroV4`. Cả hai phương án chỉ khác nhau ở phần giữa (chân dung
  * trong vòng tròn / ảnh treo trên dây), còn nền thì phải giống hệt — đó là điều kiện để đứng
- * cạnh nhau mà so được.
+ * cạnh nhau mà so được. Từ `variant="band"` nó còn là nền của `Promotions` — xem chú thích
+ * của `variant` bên dưới.
  *
  * Cả năm lớp đều `-z-10` và KHÔNG bọc trong thẻ nào có z-index: nhờ vậy thứ tự vẽ giữa chúng
  * do đúng thứ tự DOM ở đây quyết định (sóng vẽ trên lưới và sticker), còn so với nội dung của
@@ -23,11 +24,30 @@
 import HeroStickers from "@/components/HeroStickers.astro";
 
 interface Props {
-  /** Chuyển tiếp cho `HeroStickers` — xem chú thích của `variant` trong file đó. */
-  stickers?: "portrait" | "wide";
+  /**
+   * `hero` — nền của một khối chiếm trọn màn đầu: chuyển sắc đi MỘT chiều từ trắng xuống
+   * xám nhạt, và lớp sóng trắng ở đáy lo phần nối sang khối tiếp theo.
+   *
+   * `band` — nền của một khối nằm giữa trang, hai bên đều là nền trắng. Ở đây chuyển sắc
+   * phải đối xứng (trắng → xám nhạt → trắng) và KHÔNG có sóng.
+   *
+   * Vì sao không dùng thẳng bản `hero` cho khối giữa trang: chuyển sắc một chiều kết thúc ở
+   * `--brand-ink-50`, nên mép dưới khối là một đường thẳng xám đâm vào nền trắng của khối
+   * sau. Còn lớp sóng thì không thêm được lần thứ hai — hai đường cong y hệt nhau cách nhau
+   * một khối đọc ra là một hình bị dán lại, không phải một mô-típ.
+   *
+   * Tâm của lưới kẻ đổi theo: hero dồn nội dung về nửa trên (`50% 30%`) vì đáy đã có sóng
+   * che, còn dải giữa trang thì nội dung nằm giữa nên lưới cũng đậm nhất ở giữa.
+   */
+  variant?: "hero" | "band";
+  /**
+   * Chuyển tiếp cho `HeroStickers` — xem chú thích của `variant` trong file đó. `none` để
+   * tắt hẳn lớp sticker.
+   */
+  stickers?: "portrait" | "wide" | "none";
 }
 
-const { stickers = "portrait" } = Astro.props;
+const { variant = "hero", stickers = "portrait" } = Astro.props;
 
 /**
  * Hai lớp sóng ở đáy hero, vẽ trong hệ trục 1440×160 và kéo giãn theo bề rộng màn hình
@@ -58,26 +78,42 @@ const WAVE_FRONT =
   theo nên đỏ mất hết vai trò điểm nhấn. Nay toàn bộ phần trang trí (nền, lưới, vòng, sóng)
   là xám; đỏ chỉ còn ở đúng những chỗ cần mắt dừng lại: dòng hai của tiêu đề và nút đăng ký.
 */}
-<div class="hero-bd-base pointer-events-none absolute inset-0 -z-10"></div>
-<div class="hero-bd-glow pointer-events-none absolute inset-0 -z-10"></div>
-<div class="hero-bd-grid pointer-events-none absolute inset-0 -z-10"></div>
-
-<HeroStickers variant={stickers} />
-
 <div
-  class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 sm:h-36 lg:h-44"
-  aria-hidden="true"
+  class:list={[
+    "hero-bd-base pointer-events-none absolute inset-0 -z-10",
+    variant === "band" && "is-band",
+  ]}
 >
-  <svg
-    class="absolute inset-0 size-full"
-    viewBox="0 0 1440 160"
-    preserveAspectRatio="none"
-    fill="none"
-  >
-    <path d={WAVE_BACK} fill="var(--background)" opacity="0.5"></path>
-    <path class="hero-bd-wave" d={WAVE_FRONT} fill="var(--background)"></path>
-  </svg>
 </div>
+<div class="hero-bd-glow pointer-events-none absolute inset-0 -z-10"></div>
+<div
+  class:list={[
+    "hero-bd-grid pointer-events-none absolute inset-0 -z-10",
+    variant === "band" && "is-band",
+  ]}
+>
+</div>
+
+{stickers !== "none" && <HeroStickers variant={stickers} />}
+
+{
+  variant === "hero" && (
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 sm:h-36 lg:h-44"
+      aria-hidden="true"
+    >
+      <svg
+        class="absolute inset-0 size-full"
+        viewBox="0 0 1440 160"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <path d={WAVE_BACK} fill="var(--background)" opacity="0.5" />
+        <path class="hero-bd-wave" d={WAVE_FRONT} fill="var(--background)" />
+      </svg>
+    </div>
+  )
+}
 
 <style>
   .hero-bd-base {
@@ -86,6 +122,20 @@ const WAVE_FRONT =
       #ffffff 0%,
       #fbfbfc 45%,
       var(--brand-ink-50) 100%
+    );
+  }
+
+  /* Đối xứng quanh trục giữa: hai mép của khối trùng đúng màu nền trang (trắng) nên không có
+     ranh giới nào, còn phần xám chỉ nằm ở khoảng giữa — đúng chỗ có nội dung. Hai chặng
+     `--brand-ink-50` ở 34% và 70% để khoảng giữa là một mảng xám phẳng, không phải một
+     đỉnh nhọn chỉ đạt màu đầy ở đúng 50%. */
+  .hero-bd-base.is-band {
+    background: linear-gradient(
+      180deg,
+      var(--background) 0%,
+      var(--brand-ink-50) 34%,
+      var(--brand-ink-50) 70%,
+      var(--background) 100%
     );
   }
 
@@ -114,6 +164,10 @@ const WAVE_FRONT =
       linear-gradient(to bottom, rgba(18, 19, 22, 0.05) 1px, transparent 1px);
     background-size: 72px 72px;
     mask-image: radial-gradient(70% 65% at 50% 30%, #000 0%, transparent 100%);
+  }
+
+  .hero-bd-grid.is-band {
+    mask-image: radial-gradient(72% 70% at 50% 50%, #000 0%, transparent 100%);
   }
 
   /* Bóng của mảng trắng hắt lên hero. Offset âm theo trục Y + bán kính lớn: bóng làm mép sóng

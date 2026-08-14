@@ -56,9 +56,15 @@ const wrap =
     }
   </h2>
 
+  {/* `text-balance` ở mô tả: khung rộng `max-w-2xl` chứa ~82 ký tự một dòng, nên một
+      câu hơi dài là dòng cuối chỉ còn vài chữ lọt thỏm giữa khối chữ canh giữa. Cân
+      dòng cho các dòng dài gần bằng nhau — mô tả ở đây luôn là câu ngắn 2–3 dòng, đúng
+      phạm vi `text-wrap: balance` xử lý được. */}
   {
     description && (
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+      <p
+        class="mt-6 max-w-2xl text-base leading-relaxed text-balance text-muted-foreground md:text-lg"
+      >
         {description}
       </p>
     )

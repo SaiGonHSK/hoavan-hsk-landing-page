@@ -8,7 +8,7 @@ import { lightboxSrc } from "@/lib/images";
 /**
  * Ảnh sinh hoạt thường ngày ở trung tâm, hiển thị thành khối riêng.
  *
- * Bảy tấm này trước đây là khảm nền của mục Học thử: `opacity-[0.22]`, `alt=""`,
+ * Mấy tấm này trước đây chỉ là khảm nền của mục Học thử: `opacity-[0.22]`, `alt=""`,
  * `aria-hidden` — nghĩa là người xem không nhìn ra được gì và bot cũng không đọc được
  * gì. Chúng lại đúng là loại ảnh người đang chọn trung tâm muốn xem nhất: lớp thật
  * đang học, đông bao nhiêu người, giảng viên có đi quanh lớp không. Để làm hoạ tiết mờ
@@ -40,8 +40,15 @@ const {
   lúc ấy trên màn hẹp — nơi nó chiếm trọn bề ngang — `object-cover` phải cắt hai bên rất
   sâu, ảnh mất nét. Ô đều nhau tránh được cả hai chuyện.
 
-  Bảy tấm trên lưới 4 cột thành 4 + 3, hàng cuối hụt một ô ở cuối dãy. Chỗ hụt ở cuối
-  hàng cuối là bình thường; chỗ hở giữa lưới mới là lỗi.
+  Số ảnh phải chia hết cho 4 để hàng cuối không hụt ô.
+
+  Bản trước có 7 tấm: lưới 4 cột thành 4 + 3, cạnh tấm cuối trơ ra một khoảng trắng đúng
+  bằng một ô ảnh. Lúc viết thì nghĩ "hụt ở cuối hàng cuối là bình thường" — nhưng khối
+  này canh giữa trong `container` rộng, khoảng trống nằm giữa dãy ảnh và mép phải, đọc ra
+  như thiếu ảnh chứ không như kết thúc dãy. Nay 8 tấm: 4 + 4 ở `lg`, 2 × 4 ở `sm`, và một
+  cột thẳng ở mobile — không khổ nào hụt.
+
+  Ràng buộc này ghi cả ở `dailyMoments` trong `src/data/activities.ts`, chỗ thêm/bớt ảnh.
 */
 
 /*

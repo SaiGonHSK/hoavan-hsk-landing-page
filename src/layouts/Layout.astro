@@ -8,6 +8,7 @@ import { canonicalUrl, enrollActionSchema, graph, speakable } from "@/lib/schema
 import classroom from "@/assets/facility/classroom.webp";
 import facility1 from "@/assets/facility/facility-1.webp";
 import facility2 from "@/assets/facility/facility-2.webp";
+import ogDefault from "@/assets/og-default.jpg";
 
 interface Props {
   title?: string;
@@ -30,8 +31,14 @@ interface Props {
 const {
   title = `Trung tâm tiếng Trung TPHCM — luyện thi HSK | SaigonHSK`,
   description = site.description,
-  // JPEG 1200×630 sinh bởi `yarn gen:og` — Zalo và Facebook đều đọc được.
-  image = "/images/og-default.jpg",
+  /*
+    JPEG 1200×630 sinh bởi `yarn gen:og` — Zalo và Facebook đều đọc được.
+
+    Dùng `.src` của ảnh đã import chứ không viết tay đường dẫn `/images/…`: ảnh nằm
+    trong `src/assets` nên tên tệp lúc dựng có kèm mã băm. Không cho qua `<Image>` để
+    giữ nguyên khổ 1200×630 đã khai ở `og:image:width`/`og:image:height` bên dưới.
+  */
+  image = ogDefault.src,
   ogType = "website",
   noindex = false,
   schemas = [],
@@ -225,23 +232,6 @@ const jsonLd = graph([
 ]);
 
 const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
-
-/**
- * Google Ads (gtag.js) — mã theo dõi của tài khoản quảng cáo, gắn ở mọi trang.
- *
- * Đây là *layout duy nhất* của site: mọi trang, kể cả các trang đi qua `CatalogHub`
- * hay `LibraryHub`, cuối cùng đều render qua đây, nên đặt một chỗ này là đủ cho cả
- * site — không trang nào phải tự nhớ gắn thêm.
- *
- * Chỉ chạy ở bản build (`import.meta.env.PROD`): `yarn dev` mà cũng bắn thì mỗi lần
- * mở thử một trang trên máy lại thành một lượt xem trong tài khoản quảng cáo, và
- * chuyển đổi thử nghiệm lẫn vào số liệu thật. Muốn tag chạy cả lúc dev thì bỏ điều
- * kiện `import.meta.env.PROD` ở dưới.
- *
- * Mã tài khoản không phải secret — nó nằm sẵn trong HTML gửi cho trình duyệt — nên
- * viết thẳng ở đây thay vì thêm một biến môi trường phải nhớ đặt trên máy build.
- */
-const GOOGLE_ADS_ID = "AW-18385026103";
 ---
 
 <!doctype html>
@@ -250,34 +240,6 @@ const GOOGLE_ADS_ID = "AW-18385026103";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-
-    {
-      /*
-        `is:inline` cho cả hai thẻ: để nguyên thì Astro gom script thành module và
-        hoãn tới sau khi phân tích xong tài liệu, còn `gtag()` phải tồn tại **trước**
-        khi gtag.js tải xong — nó đọc `dataLayer` đã xếp sẵn. Đặt ngay đầu `<head>`
-        cũng vì vậy, đúng như đoạn Google phát cho.
-      */
-      import.meta.env.PROD && (
-        <>
-          <script
-            is:inline
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
-          />
-          <script
-            is:inline
-            set:html={`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', '${GOOGLE_ADS_ID}');
-            `}
-          />
-        </>
-      )
-    }
 
     {/*
       Khai báo icon theo từng cỡ thay vì đưa một file 192px cho tất cả: logo có nét

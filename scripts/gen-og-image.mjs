@@ -1,5 +1,5 @@
 /**
- * Sinh ảnh Open Graph mặc định: public/images/og-default.jpg (1200×630).
+ * Sinh ảnh Open Graph mặc định: src/assets/og-default.jpg (1200×630).
  *
  * Lý do cần bước này: ảnh gốc của trang là WebP, nhưng bộ đọc link của Zalo —
  * kênh chia sẻ chính ở Việt Nam — không hiển thị WebP ổn định, còn Facebook thì
@@ -12,13 +12,29 @@ import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-const SOURCE = "src/assets/facility/classroom.webp";
-const OUTPUT = "public/images/og-default.jpg";
+const SOURCE = "src/assets/classes/lop-luyen-thi-hsk.webp";
+const OUTPUT = "src/assets/og-default.jpg";
+
+/*
+  Ảnh gốc 4:3 nên phải cắt bớt chiều cao; cắt giữa (`position: "centre"`) lấy quá
+  nhiều trần nhà và ăn mất mép dưới. Chốt khung bắt đầu ở y=200 để giữ trọn dãy
+  bàn học phía dưới lẫn backdrop SaigonHSK phía trên.
+*/
+const CROP_TOP = 200;
 
 await mkdir(path.dirname(OUTPUT), { recursive: true });
 
+const { width, height } = await sharp(SOURCE).metadata();
+const cropHeight = Math.round((width * 630) / 1200);
+
 await sharp(SOURCE)
-  .resize(1200, 630, { fit: "cover", position: "centre" })
+  .extract({
+    left: 0,
+    top: Math.min(CROP_TOP, height - cropHeight),
+    width,
+    height: cropHeight,
+  })
+  .resize(1200, 630)
   .jpeg({ quality: 82, mozjpeg: true })
   .toFile(OUTPUT);
 

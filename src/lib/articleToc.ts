@@ -1,10 +1,10 @@
 /**
  * Rút mục lục ra khỏi HTML thân bài viết Thư viện.
  *
- * Thân bài do trang quản trị soạn bằng Tiptap: có H2/H3 nhưng không có `id`, nên tự
- * gắn `id` ở đây rồi trả về cả HTML đã gắn và danh sách mục. Không sửa ở phía console
- * vì `id` là chuyện của trang đọc — người soạn bài không cần biết tới nó, và những bài
- * đã lưu trong cơ sở dữ liệu cũng không phải soạn lại.
+ * Nhận HTML đã dựng xong, tức đầu ra của `renderArticleBody` chứ không phải Markdown
+ * thô: H2/H3 có sẵn nhưng không có `id`, nên tự gắn `id` ở đây rồi trả về cả HTML đã
+ * gắn và danh sách mục. Không sửa ở phía console vì `id` là chuyện của trang đọc —
+ * người soạn bài không cần biết tới nó.
  */
 
 export type TocEntry = {

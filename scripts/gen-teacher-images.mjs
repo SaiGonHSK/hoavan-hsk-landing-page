@@ -1,5 +1,5 @@
 /**
- * Nén card giảng viên từ src/assets/teacher/ ra public/images/teachers/<slug>.webp.
+ * Nén card giảng viên từ src/assets/teacher/ ra src/assets/teachers/<slug>.webp.
  *
  * Ảnh gốc do bộ phận truyền thông xuất là card vuông 2560×2560 đã nướng sẵn logo,
  * panel đỏ và tên + học vị vào trong ảnh. Giữ nguyên khung card đó — không cắt —
@@ -13,7 +13,7 @@ import { readdir, mkdir } from "node:fs/promises";
 import path from "node:path";
 
 const SOURCE_DIR = "src/assets/teacher";
-const OUTPUT_DIR = "public/images/teachers";
+const OUTPUT_DIR = "src/assets/teachers";
 
 /**
  * Card hiển thị rộng tối đa 24rem (384px), nhân 2 cho màn retina rồi làm tròn lên

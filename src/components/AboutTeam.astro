@@ -1,6 +1,8 @@
 ---
+import { Image } from "astro:assets";
 import { ICONS } from "@/lib/icons";
 import { teachers } from "@/data/teachers";
+import { imageAsset } from "@/data/imageAssets";
 
 /**
  * Đội ngũ giảng viên ở dạng chân dung tròn — bản rút gọn của `Teacher.astro` (dải thẻ
@@ -104,17 +106,22 @@ const AVATAR_ZOOM = "width:217%;left:-63%;top:-15%";
       {
         shown.map((t) => (
           <li class="flex flex-col items-center text-center">
-            {/* Vòng hồng nhạt bọc ngoài: ảnh giảng viên nào cũng nền trắng, đặt thẳng lên
-                nền trang sáng thì khung tròn biến mất, chỉ còn cái đầu lơ lửng. */}
-            <div class="rounded-full bg-brand-red-100 p-1.5">
+            {/* Vòng xám nhạt bọc ngoài: ảnh giảng viên nào cũng nền trắng, đặt thẳng lên
+                nền trang sáng thì khung tròn biến mất, chỉ còn cái đầu lơ lửng. Xám chứ
+                không hồng — dòng học vị ngay dưới đã là chữ đỏ, vòng hồng bao quanh ảnh
+                làm cả dải bốn người thành một mảng đỏ nhạt tranh chỗ với nó. */}
+            <div class="rounded-full bg-brand-surface-200 p-1.5">
               <div class="relative size-32 overflow-hidden rounded-full bg-background sm:size-36">
-                {t.image ? (
-                  <img
-                    src={t.image}
+                {imageAsset(t.image) ? (
+                  <Image
+                    src={imageAsset(t.image)!}
                     alt={t.title ? `${t.name} — ${t.title}` : t.name}
                     loading="lazy"
-                    width="1080"
-                    height="1080"
+                    decoding="async"
+                    width={480}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={88}
                     class="absolute h-auto max-w-none"
                     style={AVATAR_ZOOM}
                   />

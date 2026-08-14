@@ -1,7 +1,10 @@
 ---
+import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import { teachers } from "@/data/teachers";
+import { imageAsset } from "@/data/imageAssets";
+import { lightboxSrc } from "@/lib/images";
 import { ICONS } from "@/lib/icons";
 
 interface Props {
@@ -68,6 +71,19 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
 
   return lines;
 };
+
+/**
+ * Gắn sẵn ảnh đã import và bản phóng to cho Lightbox.
+ *
+ * Tính ở đây chứ không trong phần dựng: `lightboxSrc` là hàm bất đồng bộ, mà phần dựng
+ * của Astro không `await` được bên trong `.map`.
+ */
+const cards = await Promise.all(
+  teachers.map(async (t) => {
+    const asset = imageAsset(t.image);
+    return { ...t, asset, full: asset ? await lightboxSrc(asset) : undefined };
+  }),
+);
 ---
 
 <section id="teachers" class="relative overflow-hidden bg-background scroll-mt-24">
@@ -80,25 +96,28 @@ const credentialsOf = (t: (typeof teachers)[number]): Credential[] => {
         class="teacher-rail -mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-2"
       >
         {
-        teachers.map((t) => (
+        cards.map((t) => (
           <button
             type="button"
-            data-lightbox={t.image || undefined}
+            data-lightbox={t.full}
             data-caption={t.title ? `${t.name} — ${t.title}` : t.name}
             class:list={[
               "group w-[19rem] shrink-0 snap-start text-left transition-transform duration-300 hover:-translate-y-1.5 sm:w-[22rem] lg:w-[24rem]",
-              t.image ? "cursor-zoom-in" : "cursor-default",
+              t.asset ? "cursor-zoom-in" : "cursor-default",
             ]}
           >
             <div class="relative overflow-hidden rounded-lg shadow-[0_24px_50px_-36px_rgba(15,23,42,0.5)]">
               {
-                t.image ? (
-                  <img
-                    src={t.image}
+                t.asset ? (
+                  <Image
+                    src={t.asset}
                     alt={t.title ? `${t.name} — ${t.title}` : t.name}
                     loading="lazy"
-                    width="1080"
-                    height="1080"
+                    decoding="async"
+                    width={540}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={88}
                     class="aspect-square w-full object-cover"
                   />
                 ) : (

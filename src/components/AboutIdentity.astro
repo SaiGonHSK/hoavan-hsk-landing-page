@@ -20,19 +20,97 @@ import { coreValues } from "@/data/coreValues";
  * nên thành hộp-trong-hộp: thẻ trắng trong thẻ trắng, mỗi thẻ một viền, không mảng nào
  * đủ mạnh để mắt bám vào.
  */
+/*
+  Từ khoá được in đậm trong hai đoạn Tầm nhìn / Sứ mệnh.
+
+  Danh sách nằm **ở đây**, không nhúng `<strong>` vào `content/site.json`: cùng hai đoạn
+  đó còn được `src/pages/llms.txt.ts` in ra dạng văn bản thuần cho bot đọc, nhúng thẻ vào
+  dữ liệu là đưa HTML vào chỗ không render HTML.
+
+  Mỗi đoạn dài 40–50 từ và cả hai đều là văn tuyên bố, đọc hết mới thấy ý — in đậm mấy
+  cụm mang thông tin để người chỉ quét mắt vẫn lấy được ý chính.
+
+  Cụm không khớp thì bỏ qua, không lỗi: sửa `site.json` mà quên sửa danh sách này thì
+  đoạn văn chỉ mất phần in đậm, chữ vẫn còn nguyên.
+*/
 const panels = [
-  { icon: ICONS.target, label: "Tầm nhìn", body: mission.vision },
-  { icon: ICONS.heart, label: "Sứ mệnh", body: mission.statement },
+  {
+    icon: ICONS.target,
+    label: "Tầm nhìn",
+    body: mission.vision,
+    keywords: [
+      "uy tín hàng đầu tại TP.HCM",
+      "phương pháp giảng dạy hiện đại",
+      "môi trường học tập truyền cảm hứng",
+    ],
+  },
+  {
+    icon: ICONS.heart,
+    label: "Sứ mệnh",
+    body: mission.statement,
+    /*
+      Ba cụm, không phải bốn: đoạn này liệt kê "môi trường… , phương pháp… và đội ngũ…"
+      — đậm cả ba thì ba vệt đậm chỉ cách nhau một dấu phẩy với một chữ "và", nhìn ra
+      một khối đậm dài chứ không ra ba chỗ được nhấn. Bỏ cụm giữa (đã đậm ở Tầm nhìn)
+      để nhịp đậm – nhạt – đậm còn đọc được.
+    */
+    keywords: [
+      "môi trường học tập chuyên nghiệp",
+      "đội ngũ giảng viên tận tâm",
+      "phát triển toàn diện năng lực ngôn ngữ",
+    ],
+  },
 ];
+
+const escapeHtml = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * Bọc `<strong>` quanh từng cụm từ khoá trong `text`, escape toàn bộ phần còn lại.
+ *
+ * Escape trước rồi mới chèn thẻ — chèn thẻ trước thì bước escape sau sẽ escape luôn thẻ
+ * mình vừa chèn.
+ *
+ * Cụm dài xử lý trước cụm ngắn: nếu một cụm nằm lồng trong cụm khác, cụm ngắn khớp
+ * trước sẽ cắt cụm dài làm hai và phần còn lại không còn khớp được nữa.
+ *
+ * Thay bằng chuỗi (không phải regex) nên chỉ đổi lần xuất hiện đầu — đúng ý ở đây, mỗi
+ * cụm chỉ nên đậm một lần. Markup chèn vào toàn ký tự ASCII còn từ khoá là tiếng Việt
+ * có dấu, nên không có chuyện vòng lặp sau khớp vào thẻ do vòng trước sinh ra.
+ */
+const emphasize = (text: string, keywords: readonly string[]) => {
+  const longestFirst = [...keywords].sort((a, b) => b.length - a.length);
+
+  return longestFirst.reduce(
+    (html, keyword) =>
+      html.replace(
+        escapeHtml(keyword),
+        (match) => `<strong class="font-bold text-brand-ink-800">${match}</strong>`,
+      ),
+    escapeHtml(text),
+  );
+};
 ---
 
 {/*
   Nền xám `surface-100`: khối này có một mảng đỏ đặc và một thẻ trắng lớn, nền phải là
   màu đứng yên để hai thứ đó nổi lên. Nền trắng thì thẻ trắng biến mất, nền hồng thì
   mảng đỏ chìm.
+
+  `isolate` để hai lớp backdrop `-z-10` bên dưới nằm trên nền xám nhưng dưới nội dung.
 */}
-<section class="bg-brand-surface-100 py-16 lg:py-24">
-  <div class="container mx-auto px-6">
+<section class="about-identity relative isolate overflow-hidden py-16 lg:py-24">
+  {/* Backdrop sau cả khối (dải đỏ + thẻ trắng): một quầng ấm ngay sau dải đỏ và một
+      lưới kẻ mờ dần. Nền xám phẳng trước đây khiến cả khối trôi giữa hai section trắng
+      trên dưới — không có gì nói "phần này là một mảng riêng"; quầng sáng gom mắt về
+      giữa, lưới cho mảng nền lớn một chất liệu thay vì một mảng màu chết.
+
+      Cùng thủ pháp với `AboutHero`/`HeroV3` (style của Astro có phạm vi riêng nên phải
+      chép class, không dùng chung được) — sửa bên đó thì cân nhắc sửa cả đây. */}
+  <div class="about-identity-glow pointer-events-none absolute inset-0 -z-10"></div>
+  <div class="about-identity-grid pointer-events-none absolute inset-0 -z-10"></div>
+
+  <div class="container relative mx-auto px-6">
     <div class="flex flex-col items-center text-center">
       <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-red-600">
         Về chúng tôi
@@ -83,12 +161,25 @@ const panels = [
                 class="grid size-12 place-items-center rounded-full bg-white/15 text-white inset-ring inset-ring-white/25 [&>svg]:size-6"
                 set:html={ICONS[v.icon as keyof typeof ICONS] ?? ICONS.shield}
               />
-              <p class="text-sm font-bold leading-snug text-white">{v.title}</p>
+              <p class="text-base font-extrabold leading-snug text-white md:text-[17px]">
+                {v.title}
+              </p>
               {/*
-                `white/85` chứ không mờ hơn: trắng 75% trên nền `red-600` chỉ còn tỉ lệ
-                tương phản ~4.2:1, dưới ngưỡng 4.5:1 cho chữ nhỏ. 85% đưa lên ~5:1.
+                Cỡ chữ đủ đọc trên nền đỏ: 14px ở mobile, 15px từ `md`.
+
+                Bản trước để 12.5px — không phải vì chọn cỡ đó, mà vì mỗi mô tả dài
+                25–30 từ, để lớn hơn thì năm cột chữ đùn thành khối đặc. Chữ 12.5px màu
+                trắng mờ trên nền đỏ đặc là trường hợp xấu nhất của việc đọc: nét mảnh,
+                nền bão hoà cao, mắt phải căng ra để tách chữ khỏi nền. Nay mô tả rút còn
+                một câu (xem `coreValues.ts`) nên cỡ chữ nâng lên được.
+
+                `white/90` chứ không mờ hơn: trắng 75% trên `red-600` chỉ còn ~4.2:1,
+                dưới ngưỡng 4.5:1; 90% cho ~5.4:1 — và trên nền đỏ thì nên lấy dư một
+                khoảng, tỉ lệ vừa đủ ngưỡng vẫn đọc mỏi.
               */}
-              <p class="text-[12.5px] leading-relaxed text-white/85">{v.desc}</p>
+              <p class="text-sm leading-relaxed text-white/90 md:text-[15px]">
+                {v.desc}
+              </p>
             </li>
           ))
         }
@@ -121,9 +212,16 @@ const panels = [
                     {p.label}
                   </h3>
                 </div>
-                <p class="mt-4 text-base leading-relaxed text-brand-ink-500">
-                  {p.body}
-                </p>
+                {/* Từ khoá in đậm **và** đậm màu hơn một bậc (`ink-800` trên nền chữ
+                    `ink-500`): chỉ tăng nét mà giữ nguyên màu xám nhạt thì phần đậm
+                    trông như lỗi font chứ không ra chỗ được nhấn. */}
+                {/* Giãn dòng rộng hơn `leading-relaxed` một bậc: đây là hai đoạn văn
+                    xuôi dài nhất trang, lại nằm ngay dưới dải giá trị chữ nhỏ sát nhau,
+                    nên ở mức 1.625 cả khối đọc như một mảng chữ đặc. */}
+                <p
+                  class="mt-4 text-base leading-[1.85] text-brand-ink-500"
+                  set:html={emphasize(p.body, p.keywords)}
+                />
               </div>
             ))
           }
@@ -132,3 +230,44 @@ const panels = [
     </div>
   </div>
 </section>
+
+<style>
+  /* Nền gốc: xám `surface-100` ở giữa, nhạt dần về trắng ở hai mép trên/dưới để khối
+     này nối liền với section trắng đứng trước và sau, không thành một băng xám cắt
+     ngang trang. */
+  .about-identity {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      var(--brand-surface-100) 18%,
+      var(--brand-surface-100) 82%,
+      #ffffff 100%
+    );
+  }
+
+  /* Quầng đỏ rất nhạt ngay sau dải giá trị, cộng một vệt mực ở dưới–phải cho nền không
+     đối xứng. Đỏ ở 5%: đủ để nền quanh dải đỏ ấm lên, chưa tới mức đọc ra là màu hồng. */
+  .about-identity-glow {
+    background:
+      radial-gradient(
+        55% 40% at 50% 38%,
+        rgba(178, 20, 32, 0.05) 0%,
+        transparent 72%
+      ),
+      radial-gradient(
+        45% 45% at 88% 92%,
+        rgba(18, 19, 22, 0.04) 0%,
+        transparent 70%
+      );
+  }
+
+  /* Lưới 72px như ở `AboutHero`, mask cho mờ dần về bốn phía để không có đường kẻ nào
+     chạm mép section. */
+  .about-identity-grid {
+    background-image:
+      linear-gradient(to right, rgba(18, 19, 22, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(18, 19, 22, 0.04) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(65% 60% at 50% 45%, #000 0%, transparent 100%);
+  }
+</style>

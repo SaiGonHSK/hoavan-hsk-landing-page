@@ -1,22 +1,24 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import sharp from "sharp";
 
 /**
  * Sinh ảnh bìa cho các bài Thư viện (blog).
  *
- * Bìa dùng chung một bố cục 16:9 — nền giấy hồng, lưới điểm, khung góc, chữ Hán lớn
- * làm hình chính, nhãn chuyên mục và pinyin ở dưới, gạch đỏ dưới đáy — nên cả danh
- * sách bài trông đồng nhất, giống cách làm của `gen-value-images.mjs`.
+ * Bìa dùng chung một bố cục 16:9 — chữ Hán lớn chiếm nửa trái trên nền giấy ngà, con
+ * dấu đỏ và cột pinyin/chuyên mục ở nửa phải — nên cả danh sách bài trông đồng nhất,
+ * giống cách làm của `gen-value-images.mjs`. Chi tiết bố cục xem chú thích ở `svg`.
  *
  * Vì sao vẽ chứ không dùng ảnh chụp: bài Thư viện là kiến thức tiếng Trung, ảnh stock
  * không nói được nội dung bài, còn chữ Hán trọng tâm của bài thì nói được ngay.
  *
- * ITEMS phải khớp `coverImage` trong `hoavan-hsk-server/cmd/seed/data/articles.json`
- * (tên file = phần cuối của slug bài). Thêm bài mới: thêm một dòng vào ITEMS rồi chạy
- * `npm run gen:library`.
+ * `file` phải bằng phần cuối của slug bài, vì `landing_pages.cover_image` được đặt
+ * theo đúng quy tắc đó (`/images/library/<phần-cuối-slug>.webp`). Thêm bài mới: thêm
+ * một dòng vào ITEMS rồi chạy `npm run gen:library`.
  */
 
 const RED = "#b2182b";
-const RED_700 = "#971324";
+const INK = "#121316";
+const PAPER = "#f7f3ef";
 
 const ITEMS = [
   {
@@ -45,66 +47,120 @@ const ITEMS = [
     pinyin: "liàng",
     category: "Tài liệu ngữ pháp",
   },
+
+  /*
+    Bìa cho các bài migrate từ tài liệu Word của giáo vụ mà bản gốc không có ảnh nào.
+
+    Chữ Hán chọn theo ĐÚNG điểm ngữ pháp bài dạy, không phải chữ trang trí: bài "Câu chữ
+    把" lấy 把, bài "Trợ từ động thái" lấy 了, bài "Câu so sánh" lấy 比. Người học nhìn bìa
+    là biết bài nói về cái gì — đó là lý do bố cục này vẽ chữ chứ không dùng ảnh chụp.
+
+    Hai chữ trùng nhau thì phải tách ra bằng nghĩa chứ đừng dùng lại: bổ ngữ trạng thái
+    và bổ ngữ khả năng đều đánh dấu bằng 得, nên bài khả năng lấy 能 cho khỏi ra hai bìa
+    y hệt nhau nằm cạnh nhau trong cùng chuyên mục.
+  */
+  { file: "cau-chu-ba", han: "把", pinyin: "bǎ", category: "Tài liệu ngữ pháp" },
+  { file: "cau-chu-bei", han: "被", pinyin: "bèi", category: "Tài liệu ngữ pháp" },
+  { file: "cau-so-sanh", han: "比", pinyin: "bǐ", category: "Tài liệu ngữ pháp" },
+  { file: "cau-kiem-ngu", han: "兼", pinyin: "jiān", category: "Tài liệu ngữ pháp" },
+  { file: "cau-ton-hien", han: "在", pinyin: "zài", category: "Tài liệu ngữ pháp" },
+  { file: "dinh-ngu-tieng-trung", han: "的", pinyin: "de", category: "Tài liệu ngữ pháp" },
+  { file: "tro-tu-dong-thai", han: "了", pinyin: "le", category: "Tài liệu ngữ pháp" },
+  { file: "tro-tu-ngu-khi", han: "吗", pinyin: "ma", category: "Tài liệu ngữ pháp" },
+  { file: "bo-ngu-thoi-luong", han: "久", pinyin: "jiǔ", category: "Tài liệu ngữ pháp" },
+  { file: "bo-ngu-dong-luong", han: "次", pinyin: "cì", category: "Tài liệu ngữ pháp" },
+  { file: "bo-ngu-xu-huong", han: "来", pinyin: "lái", category: "Tài liệu ngữ pháp" },
+  { file: "bo-ngu-trang-thai", han: "得", pinyin: "de", category: "Tài liệu ngữ pháp" },
+  { file: "bo-ngu-kha-nang", han: "能", pinyin: "néng", category: "Tài liệu ngữ pháp" },
+  { file: "dong-tu-li-hop", han: "离", pinyin: "lí", category: "Tài liệu ngữ pháp" },
+  { file: "dong-tu-trung-diep", han: "叠", pinyin: "dié", category: "Tài liệu ngữ pháp" },
+  {
+    file: "trat-tu-thanh-phan-cau-trong-tieng-han",
+    han: "序",
+    pinyin: "xù",
+    category: "Tài liệu ngữ pháp",
+  },
+  {
+    file: "phan-biet-thanh-ngu-va-quan-dung-ngu-trong-tieng-trung",
+    han: "惯",
+    pinyin: "guàn",
+    category: "Quán dụng ngữ",
+  },
 ];
 
 const W = 960;
 const H = 540;
-const CX = W / 2;
 
+/*
+  Bố cục: chữ Hán chiếm trọn nửa trái, cột chữ nhỏ im lặng bên phải, con dấu đỏ ở trên.
+
+  Bản trước dùng khung góc + lưới chấm + gradient hồng + chữ căn giữa tuyệt đối — nhiều
+  thứ trang trí, không thứ nào có chủ đích, nhìn ra ngay là mẫu dựng sẵn. Bản này chỉ giữ
+  đúng một điểm nhấn: chữ Hán của bài, to hết cỡ, đặt lệch. Mọi thứ còn lại phải nhỏ và im.
+
+  Con dấu mang 华文 — tên trung tâm — chứ KHÔNG lặp lại chữ của bài. Dấu 印章 trong ấn loát
+  Trung Hoa là dấu của nhà in, lặp lại chính chữ đang trưng bày thì nhìn thành lỗi lặp.
+
+  Chỉ hai màu: mực đen trên giấy ngà, đỏ thương hiệu dành riêng cho con dấu và gạch chân.
+*/
 const svg = ({ han, pinyin, category }) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img">
-  <defs>
-    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fffdfd"/>
-      <stop offset=".55" stop-color="#fdf2f3"/>
-      <stop offset="1" stop-color="#fbdcdf"/>
-    </linearGradient>
-    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${RED}"/>
-      <stop offset="1" stop-color="${RED_700}"/>
-    </linearGradient>
-    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1.6" fill="${RED}" opacity=".16"/>
-    </pattern>
-  </defs>
-
-  <rect width="${W}" height="${H}" fill="url(#paper)"/>
-  <rect width="${W}" height="${H}" fill="url(#dots)"/>
-
-  <!-- khung góc, giống nhau ở mọi bìa -->
-  <g fill="none" stroke="${RED}" stroke-width="2" opacity=".2">
-    <path d="M56 56h84M56 56v84"/>
-    <path d="M${W - 56} 56h-84M${W - 56} 56v84"/>
-    <path d="M56 ${H - 56}h84M56 ${H - 56}v-84"/>
-    <path d="M${W - 56} ${H - 56}h-84M${W - 56} ${H - 56}v-84"/>
-  </g>
-
-  <!-- ô kẻ ô vuông tập viết, mờ, làm nền cho chữ Hán -->
-  <g fill="none" stroke="${RED}" opacity=".16">
-    <rect x="${CX - 132}" y="118" width="264" height="264" stroke-width="2"/>
-    <path d="M${CX} 118v264M${CX - 132} 250h264" stroke-width="1.2" stroke-dasharray="6 10"/>
-  </g>
+  <rect width="${W}" height="${H}" fill="${PAPER}"/>
 
   <!-- chữ Hán trọng tâm của bài -->
-  <text x="${CX}" y="337" text-anchor="middle"
-        font-family="'Noto Serif SC','Songti SC','SimSun',serif"
-        font-size="200" fill="url(#ink)">${han}</text>
+  <text x="300" y="452" text-anchor="middle"
+        font-family="'Songti SC','Noto Serif SC','SimSun',serif"
+        font-size="440" fill="${INK}">${han}</text>
 
-  <!-- pinyin + nhãn chuyên mục -->
-  <text x="${CX}" y="424" text-anchor="middle"
-        font-family="'Bricolage Grotesque',system-ui,sans-serif" font-size="30"
-        font-weight="700" letter-spacing="6" fill="${RED}" opacity=".62">${pinyin}</text>
-  <text x="${CX}" y="470" text-anchor="middle"
-        font-family="'Bricolage Grotesque',system-ui,sans-serif" font-size="19"
-        font-weight="700" letter-spacing="4" fill="${RED}" opacity=".5">${category.toUpperCase()}</text>
+  <!-- con dấu của trung tâm, nghiêng nhẹ như dấu đóng tay -->
+  <g transform="translate(700,96) rotate(-4)">
+    <rect width="126" height="126" rx="5" fill="${RED}"/>
+    <text x="63" y="58" text-anchor="middle" font-family="'Songti SC',serif" font-size="50" fill="${PAPER}">华</text>
+    <text x="63" y="110" text-anchor="middle" font-family="'Songti SC',serif" font-size="50" fill="${PAPER}">文</text>
+  </g>
 
-  <rect x="0" y="${H - 8}" width="${W}" height="8" fill="${RED}"/>
+  <!-- pinyin, gạch đỏ, nhãn chuyên mục -->
+  <text x="763" y="316" text-anchor="middle" font-family="Georgia,'Times New Roman',serif"
+        font-size="52" font-style="italic" fill="${INK}">${pinyin}</text>
+  <line x1="683" y1="352" x2="843" y2="352" stroke="${RED}" stroke-width="3"/>
+  <text x="763" y="386" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17"
+        font-weight="700" letter-spacing="1.5" fill="${INK}" opacity=".55">${category}</text>
 </svg>
 `;
+
+/*
+  Xuất thẳng ra .webp 1600×900 — đúng định dạng và kích thước trang đang dùng.
+
+  Trước đây script dừng ở .svg, ai đó phải tự đổi sang webp bằng tay ở đâu đó; chạy
+  `npm run gen:library` một mình không ra được thứ trang cần. SVG giờ chỉ là bước trung
+  gian trong bộ nhớ, không ghi ra đĩa nữa.
+
+  `density: 220` là để rasterize nét: sharp dựng SVG theo DPI, để mặc định 72 thì chữ Hán
+  200px bị răng cưa khi phóng lên 1600px.
+
+  BỎ QUA file đã có .webp, trừ khi chạy với `--force`. Không phải để chạy cho nhanh mà để
+  giữ ảnh thật: bài Thư viện có hai nguồn ảnh bìa — bìa chữ do script này vẽ, và ảnh minh
+  hoạ trích từ tài liệu Word của giáo vụ (scripts/migrate-library-docx/). Hai nguồn dùng
+  chung quy tắc đặt tên theo slug nên có tên đụng nhau — `cau-chuyen-chu-hao` là một ca
+  thật. Ghi đè vô điều kiện là bìa vẽ nuốt mất ảnh của người soạn, mà ảnh đó không có
+  trong git để lấy lại.
+*/
+const force = process.argv.includes("--force");
 
 mkdirSync("public/images/library", { recursive: true });
 
 for (const item of ITEMS) {
-  const out = `public/images/library/${item.file}.svg`;
-  writeFileSync(out, svg(item));
-  console.log("wrote", out);
+  const out = `public/images/library/${item.file}.webp`;
+
+  if (!force && existsSync(out)) {
+    console.log("bỏ qua (đã có ảnh)", out);
+    continue;
+  }
+
+  const png = await sharp(Buffer.from(svg(item)), { density: 220 })
+    .resize(W * 2, H * 2, { fit: "fill" })
+    .webp({ quality: 88 })
+    .toBuffer();
+
+  writeFileSync(out, png);
+  console.log("wrote", out, `${Math.round(png.length / 1024)}KB`);
 }

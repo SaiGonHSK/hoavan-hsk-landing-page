@@ -29,6 +29,11 @@ pnpm-debug.log*
 # Secret (mật khẩu, JWT) không bao giờ được đặt vào đây — chúng thuộc .env của
 # hoavan-hsk-server.
 
+# Nguồn .docx dùng để migrate Thư viện (xem scripts/migrate-library-docx/) —
+# ~22MB tài liệu Word thô, không phải asset site cần deploy. Markdown sinh ra
+# từ chúng đã nằm trong DB (landing_pages.body), không cần giữ bản gốc trong git.
+content/Web- Thư viện/
+
 # macOS-specific files
 .DS_Store
 

@@ -6,6 +6,7 @@ import midAutumn from "@/assets/activities/trung-thu-goc-check-in.webp";
 import teachersDay from "@/assets/activities/ngay-nha-giao-viet-nam.webp";
 import tet from "@/assets/activities/a1.webp";
 import tetTeaCeremony from "@/assets/activities/a6.webp";
+import dailyBoardWork from "@/assets/classes/giang-vien-chua-bai.webp";
 import dailyClassExercise from "@/assets/daily/lop-lam-bai-tap.webp";
 import dailyTeacherRounds from "@/assets/daily/giang-vien-di-quanh-lop.webp";
 import dailyAoDaiLesson from "@/assets/daily/co-giao-ao-dai-giang-bai.webp";
@@ -88,12 +89,30 @@ export type Activity = {
 
 /**
  * Ảnh sinh hoạt thường ngày ở trung tâm — lớp đang học, giảng viên đi quanh lớp,
- * học viên chờ vào lớp. Dùng làm khảm nền mờ ở mục Học thử.
+ * học viên chờ vào lớp.
  *
- * Nằm ở src/assets/daily/ chứ không phải public/: chỗ dùng chỉ hiện mỗi ô ~220px,
- * để trong public/ thì trình duyệt phải tải nguyên bản 2048px cho từng ô.
+ * Hai chỗ dùng: khối có chú thích ở `DailyLife.astro` (trang /about) và khảm nền mờ
+ * trang trí ở `TrialCta.astro`.
+ *
+ * **Giữ số lượng là số chẵn chia hết cho 4.** `DailyLife` xếp lưới 2 cột từ `sm` và 4
+ * cột từ `lg`; số nào khác thì hàng cuối hụt ô, để trơ một khoảng trắng cạnh dãy ảnh.
+ * Danh sách này từng có 7 tấm và đúng là nhìn ra ngay chỗ hụt đó.
+ *
+ * Ảnh nằm trong src/assets/ chứ không phải public/: chỗ dùng chỉ hiện mỗi ô ~360px, để
+ * trong public/ thì trình duyệt phải tải nguyên bản 2048px cho từng ô.
  */
 export const dailyMoments: Activity[] = [
+  /*
+    Tấm mở đầu là ảnh giảng viên viết bài trên bảng — tấm duy nhất trong dãy nhìn thấy
+    *nội dung đang học* (chữ Hán trên bảng) chứ chỉ thấy không khí lớp. Tiêu đề khối là
+    "Một buổi học ở SaigonHSK" nên mở bằng đúng cái cảnh dạy học.
+
+    Đây cũng là tấm thứ tám thêm vào cho lưới 4 cột đủ hai hàng — xem chú thích trên.
+  */
+  {
+    image: dailyBoardWork,
+    caption: "Giảng viên chữa bài trên bảng, cả lớp ghi theo",
+  },
   {
     image: dailyClassExercise,
     caption: "Lớp kín chỗ, cả lớp cùng làm bài trên lớp",

@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
@@ -8,6 +9,7 @@ import FloatingContact from "@/components/FloatingContact.astro";
 import { courses } from "@/data/courses";
 import { schedule } from "@/data/schedule";
 import { teachers } from "@/data/teachers";
+import { imageAsset } from "@/data/imageAssets";
 import { contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 import { registerHref } from "@/lib/registerLink";
@@ -601,15 +603,19 @@ const sectionTitle =
               {
                 staff.map((t) => (
                   <article class="flex gap-4 rounded-2xl border border-border bg-background p-5">
-                    <img
-                      src={t.image}
-                      alt={t.name}
-                      width="160"
-                      height="160"
-                      loading="lazy"
-                      decoding="async"
-                      class="size-16 shrink-0 rounded-xl object-cover"
-                    />
+                    {imageAsset(t.image) && (
+                      <Image
+                        src={imageAsset(t.image)!}
+                        alt={t.name}
+                        width={160}
+                        densities={[1, 2]}
+                        format="webp"
+                        quality={88}
+                        loading="lazy"
+                        decoding="async"
+                        class="size-16 shrink-0 rounded-xl object-cover"
+                      />
+                    )}
                     <div class="min-w-0">
                       <h3 class="text-sm font-extrabold leading-snug text-brand-ink-900">
                         {t.name}

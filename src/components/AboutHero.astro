@@ -16,6 +16,10 @@ import bannerPhoto from "@/assets/daily/giang-vien-di-quanh-lop.webp";
  * trên nền sáng, còn ảnh giữ nguyên độ sáng thật của nó.
  */
 interface Props {
+  /**
+   * Tiêu đề trang. Xuống dòng bằng `\n` để tự chọn chỗ ngắt: để trình duyệt tự ngắt thì
+   * nó cắt giữa cụm ("...cùng học viên xây / dựng năng lực..."), đọc gãy nghĩa.
+   */
   title: string;
   lead: string;
   /** Ba câu ngắn dưới lời dẫn — phần "vì sao tin được", giữ trong màn hình đầu tiên. */
@@ -31,6 +35,8 @@ const {
     "Cam kết đầu ra mọi khoá học",
   ],
 } = Astro.props;
+
+const titleLines = title.split("\n");
 ---
 
 <section class="about-hero relative isolate overflow-hidden">
@@ -44,7 +50,14 @@ const {
       <h1
         class="text-[2.25rem] font-black leading-[1.05] tracking-tight text-balance text-brand-ink-900 md:text-6xl"
       >
-        {title}
+        {
+          titleLines.map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              {line}
+            </>
+          ))
+        }
       </h1>
 
       {/* `data-speakable`: câu tóm tắt của trang, khớp selector trong src/lib/schema.ts. */}

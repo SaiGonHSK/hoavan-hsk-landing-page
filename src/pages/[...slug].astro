@@ -7,6 +7,7 @@ import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { findParent, getPageContents } from "@/data/pages";
+import { renderArticleBody } from "@/lib/articleBody";
 import { site } from "@/data/site";
 
 // Tra cứu theo params — xem ghi chú ở src/pages/courses/[slug].astro.
@@ -72,9 +73,10 @@ const schemas = [
 
     <section class="bg-background">
       <div class="container mx-auto px-6">
+        {/* `body` là Markdown do console soạn — xem src/lib/articleBody.ts. */}
         <article
           class="rich mx-auto max-w-3xl rounded-3xl bg-brand-ink-50 p-7 text-base leading-relaxed text-muted-foreground md:p-10"
-          set:html={page.body}
+          set:html={renderArticleBody(page.body)}
         />
       </div>
     </section>

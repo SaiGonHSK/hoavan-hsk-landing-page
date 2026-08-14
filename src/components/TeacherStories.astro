@@ -1,6 +1,8 @@
 ---
+import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
 import { teacherStories } from "@/data/teacherStories";
+import { imageAsset } from "@/data/imageAssets";
 
 /**
  * Chia sẻ của giảng viên về con đường giảng dạy.
@@ -44,12 +46,14 @@ import { teacherStories } from "@/data/teacherStories";
                     là height:100% ăn theo ô grid — ô này bị đoạn chia sẻ bên cạnh kéo
                     cao nên khung thành dọc, và ảnh card đã nướng sẵn tên + học vị vào
                     trong sẽ bị object-cover cắt mất logo bên trái, chữ bên phải. */}
-                {teacher.image && (
-                  <img
-                    src={teacher.image}
+                {imageAsset(teacher.image) && (
+                  <Image
+                    src={imageAsset(teacher.image)!}
                     alt={teacher.name}
-                    width="480"
-                    height="480"
+                    width={480}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={88}
                     loading="lazy"
                     decoding="async"
                     class="size-20 shrink-0 rounded-2xl object-cover lg:aspect-square lg:h-auto lg:w-full"

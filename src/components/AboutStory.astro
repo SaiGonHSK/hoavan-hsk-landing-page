@@ -3,9 +3,8 @@ import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { ICONS } from "@/lib/icons";
 import { about } from "@/data/site";
-import photoTeachers from "@/assets/classes/giang-vien-chua-bai.webp";
-import photoClass from "@/assets/classes/lop-luyen-thi-hsk.webp";
-import photoStudents from "@/assets/classes/hoc-vien-lam-bai.webp";
+import photoClassGroup from "@/assets/facility/facility-2.webp";
+import photoAoDaiLesson from "@/assets/daily/co-giao-ao-dai-giang-bai.webp";
 
 /**
  * "Câu chuyện của chúng tôi": đoạn mở đầu của `content/site.json` đặt thành một câu
@@ -25,46 +24,59 @@ const { ctaHref = "/courses", ctaLabel = "Khám phá các khoá học" } = Astro
 const [quote, ...rest] = about.paragraphs;
 
 /*
-  Ba cột ảnh cao, so le: cột giữa cao nhất và nhô lên, hai cột bên thấp hơn và tụt
-  xuống. Ảnh nguồn là ảnh ngang chụp trong lớp, nên khung dựng đứng buộc `object-cover`
-  cắt hai bên — cắt vào giữa lớp thì phần còn lại vẫn là người đang học, không mất nghĩa.
+  HAI tấm ảnh, **không có khung tỉ lệ cố định** — chiều cao mỗi tấm do chính tỉ lệ ảnh
+  quyết định (`h-auto`, không `aspect-*`, không `fit: "cover"`).
 
-  `offset` chỉ bật từ `lg`: ở khổ hẹp ba cột đã rất mảnh, thêm so le thì hàng ảnh trông
-  xộc xệch chứ không thành nhịp.
+  Đây là điểm khác căn bản so với hai bản trước, cả hai đều hỏng vì cùng một lý do: bố
+  cục ấn định trước tỉ lệ khung rồi bắt ảnh vừa vào khung.
 
-  `tint`: viền quanh ảnh — tấm giữa lấy hồng nhạt của thương hiệu, hai tấm bên lấy xám.
-  Ba tấm cùng viền đỏ thì hàng ảnh thành một dải hồng; một tấm đỏ giữa hai tấm xám thì
-  màu thương hiệu chỉ điểm đúng vào tấm cao nhất. Viền cũng để tách ảnh khỏi nền sáng —
-  không có nó, ảnh nào nền trắng cũng trôi ra mất mép.
+  - Bản 1: ba ảnh **ngang** trong `assets/classes/` (1.33–1.5) nhét vào khung 9/17 và
+    9/21 (0.53 và 0.43) ⇒ `object-cover` cắt mất 60–70% bề ngang, chỉ còn một dải dọc
+    giữa ảnh, người bị cắt ngang mặt.
+  - Bản 2: đổi sang ảnh **dọc** và hạ khung xuống 2/3 với 9/16 ⇒ phần cắt còn 4–16%,
+    nhưng vẫn cắt: mấy tấm này chụp bằng điện thoại, người thường đứng sát mép ảnh, nên
+    cắt 4% mỗi bên là đủ để mất tay, mất một người ở rìa.
+
+  Không có phần trăm cắt nào là "an toàn" khi ta không kiểm soát được ảnh chụp vào.
+  Cách duy nhất chắc chắn là bỏ khung: ảnh giữ nguyên tỉ lệ gốc, bố cục chịu chiều cao
+  mà ảnh đưa ra. Cái mất là hàng ảnh không còn phẳng mép dưới — nhưng hai cột so le thì
+  vốn không cần phẳng mép.
+
+  Hai tấm chứ không phải ba: ở khổ này (nửa `container` từ `lg`) ba cột giữ tỉ lệ gốc
+  thì mỗi tấm chỉ còn ~190px, ảnh lớp đông người thu nhỏ cỡ đó là không nhìn ra ai. Hai
+  tấm ~290px thì còn đọc được mặt người.
+
+  Hai tấm này cũng chọn theo hai việc khác nhau — cả lớp ở trung tâm, và một giờ học
+  thật — thay vì hai lát cắt của cùng một buổi.
 */
 const photos = [
   {
-    image: photoTeachers,
-    alt: "Giảng viên chữa bài trên bảng cho lớp tiếng Trung",
-    ratio: "aspect-[9/17]",
-    offset: "lg:mt-10",
-    tint: "ring-brand-surface-200",
-  },
-  {
-    image: photoClass,
-    alt: "Lớp luyện thi HSK – HSKK chụp ảnh cùng giảng viên",
-    ratio: "aspect-[9/21]",
-    offset: "",
+    image: photoClassGroup,
+    alt: "Học viên và giảng viên SaigonHSK chụp ảnh ở cầu thang trung tâm dịp Giáng sinh",
+    /*
+      Viền hồng nhạt của thương hiệu dành cho tấm này: nó là tấm có bảng hiệu "HOA VĂN
+      SAIGONHSK" trong ảnh. Tấm còn lại để viền xám — hai tấm cùng viền đỏ thì cả khối
+      thành một dải hồng, không còn là điểm nhấn.
+
+      Viền cũng để tách ảnh khỏi nền sáng: không có nó, mảng tường trắng trong ảnh trôi
+      thẳng ra nền trang, mất mép.
+    */
     tint: "ring-brand-red-100",
+    /* Tấm đầu nhô lên, tấm sau tụt xuống — chỉ so le từ `sm`; dưới đó hai cột đã hẹp,
+       thêm so le thì thành xộc xệch. */
+    offset: "",
   },
   {
-    image: photoStudents,
-    alt: "Học viên làm bài tập tiếng Trung trong giờ học",
-    ratio: "aspect-[9/17]",
-    offset: "lg:mt-16",
+    image: photoAoDaiLesson,
+    alt: "Giảng viên mặc áo dài giảng bài cho lớp tiếng Trung buổi tối",
     tint: "ring-brand-surface-200",
+    offset: "sm:mt-10",
   },
 ] satisfies {
   image: ImageMetadata;
   alt: string;
-  ratio: string;
-  offset: string;
   tint: string;
+  offset: string;
 }[];
 ---
 
@@ -154,30 +166,41 @@ const photos = [
         </a>
       </div>
 
-      <div class="mx-auto grid w-full max-w-md grid-cols-3 gap-3 lg:max-w-none lg:gap-4">
+      {/*
+        `items-start`: hai tấm cao khác nhau (tỉ lệ gốc khác nhau) nên phải neo mép trên,
+        không để lưới kéo chúng cao bằng nhau — kéo cao bằng nhau là quay lại đúng cái
+        khung cố định vừa bỏ đi.
+      */}
+      <div
+        class="mx-auto grid w-full max-w-md grid-cols-2 items-start gap-4 lg:max-w-none lg:gap-5"
+      >
         {
           photos.map((p) => (
             <div
               class:list={[
                 "overflow-hidden rounded-[1.75rem] ring-4",
-                p.ratio,
                 p.offset,
                 p.tint,
               ]}
             >
               {/*
-                `width`/`height` đúng tỉ lệ khung dựng đứng + `fit: "cover"`: chỉ đưa
-                `width` thì Astro giữ tỉ lệ ảnh ngang gốc rồi CSS kéo cho đầy khung —
-                ảnh tải đủ pixel mà vẫn mờ. Cùng lý do đã ghi ở `Facility.astro`.
+                Chỉ có `width`, **không** `height` và **không** `fit: "cover"`: Astro giữ
+                nguyên tỉ lệ ảnh gốc, còn `h-auto` để chiều cao thẻ chạy theo ảnh. Đây là
+                chỗ bảo đảm không cắt tấm nào — xem chú thích ở mảng `photos`.
+
+                520px cho một ô rộng ~290px ở desktop (≈1,8×) — đủ nét trên màn retina mà
+                không tải nguyên bản. `facility-2` gốc chỉ 768px nên đây cũng gần mức tối
+                đa nó gánh được.
               */}
               <Image
                 src={p.image}
                 alt={p.alt}
-                width={360}
-                height={p.ratio === "aspect-[9/21]" ? 840 : 680}
-                fit="cover"
+                width={520}
+                format="webp"
+                quality={88}
                 loading="lazy"
-                class="size-full object-cover"
+                decoding="async"
+                class="h-auto w-full"
               />
             </div>
           ))

@@ -24,7 +24,7 @@ const { toc } = Astro.props;
     <nav aria-labelledby="toc-heading" class="border border-border p-6">
       <p
         id="toc-heading"
-        class="text-[0.6875rem] font-bold uppercase tracking-widest text-brand-red-600"
+        class="text-xs font-bold uppercase tracking-widest text-brand-red-600"
       >
         Trong bài này
       </p>
@@ -33,28 +33,43 @@ const { toc } = Astro.props;
         Danh sách chặn chiều cao và tự cuộn: bài chia nhiều mục thì mục lục dài hơn màn
         hình, không chặn thì phần cuối nằm ngoài vùng thấy được và không cách nào tới.
       */}
+      {/*
+        Đường kẻ dọc liền mạch chạy suốt danh sách. Mỗi mục đắp lên nó một đoạn 2px trong
+        suốt, kéo lùi `-ml-px` cho trùng khít; mục đang đọc thì đoạn của nó đỏ lên.
+
+        Vì sao là đường liền chứ không phải vạch rời từng mục: có đường nền thì mắt thấy
+        ngay đoạn đỏ nằm ở đâu trên cả chiều dài bài, tức là đọc tới đâu rồi — vạch rời chỉ
+        nói "mục này", không nói "chỗ nào". Cũng vì vậy danh sách không còn `gap` giữa các
+        mục: hở một nhịp là đường đứt quãng.
+      */}
       <ol
         data-toc
-        class="toc-list mt-4 flex max-h-[calc(100vh-13rem)] flex-col gap-1 overflow-y-auto"
+        class="toc-list mt-4 flex max-h-[calc(100vh-13rem)] flex-col overflow-y-auto border-l border-border"
       >
         {
           toc.map((entry) => (
-            <li class:list={[entry.level === 3 && "pl-4"]}>
+            <li>
               {/*
-                Trạng thái đang đọc chỉ đổi màu và viền trái, KHÔNG đổi độ đậm chữ.
+                Đang đọc = đoạn kẻ đỏ + chữ đổi từ xám sang mực đen. Chỉ hai thứ đó.
 
-                Chữ đậm rộng hơn chữ thường, mục nào dài gần hết cột sẽ xuống thêm một
-                dòng — cuộn qua từng mục là danh sách cao thấp liên tục, cả cột giật theo.
-                Màu và viền đổi mà không chạm tới khung chữ.
+                Không tô nền, không bo góc: một ô nền bo góc nằm trong khung `nav` vuông là
+                hai ngôn ngữ hình chỏi nhau, và nền tô là thứ đầu tiên khiến một mục lục
+                trông như mẫu dựng sẵn. Đỏ chỉ xuất hiện đúng một chỗ trên cả cột — đoạn kẻ.
+
+                Tuyệt đối không đổi độ đậm chữ, cỡ chữ hay bề dày viền, vì cả ba đều đổi bề
+                rộng khung chữ: chữ đậm rộng hơn nên mục dài sẽ xuống thêm một dòng và cả cột
+                giật theo mỗi lần cuộn, còn viền dày thêm 1px thì đẩy chữ nhích ngang 1px.
+                Màu thì đổi thoải mái — nó không chạm tới khung chữ.
               */}
               <a
                 href={`#${entry.id}`}
                 data-toc-link={entry.id}
                 class:list={[
-                  "block border-l-2 py-1.5 pl-3 leading-snug transition-colors",
-                  "border-transparent text-muted-foreground hover:border-border hover:text-brand-ink-900",
+                  "-ml-px block border-l-2 py-1.5 leading-snug transition-colors",
+                  "border-transparent text-muted-foreground",
+                  "hover:border-brand-ink-900/25 hover:text-brand-ink-900",
                   "data-[active=true]:border-brand-red-600 data-[active=true]:text-brand-ink-900",
-                  entry.level === 3 ? "text-[0.8125rem]" : "text-sm",
+                  entry.level === 3 ? "pl-7 text-[0.8125rem]" : "pl-3.5 text-[0.9375rem]",
                 ]}
               >
                 {entry.text}
@@ -71,14 +86,21 @@ const { toc } = Astro.props;
   /*
    * Tô mục đang đọc trong mục lục.
    *
-   * Dùng `IntersectionObserver` với `rootMargin` cắt bớt phần trên khung nhìn thay vì
-   * nghe `scroll`: chỉ chạy khi có tiêu đề đi qua vạch, không chạy mỗi khung hình.
+   * Tính thẳng từ vị trí cuộn, gom lại bằng `requestAnimationFrame` nên nhiều nhất một
+   * lần mỗi khung hình và chỉ khi đang cuộn.
    *
-   * Vạch đặt ở 30% chiều cao khung nhìn — không phải đỉnh — nên mục sáng lên đúng lúc
-   * tiêu đề của nó lên tới vùng mắt đang đọc, chứ không phải lúc nó vừa chạm mép trên.
+   * Trước đây chỗ này dùng `IntersectionObserver` với một dải cao 10% khung nhìn, và nó
+   * sai ở đúng thao tác hay dùng nhất — bấm một mục trong mục lục. Cú nhảy neo đưa tiêu
+   * đề đích lên 6rem (`scroll-margin-top` của `.rich h2/h3`), tức NẰM TRÊN dải chứ không
+   * đi vào dải; tiêu đề đang sáng trước đó thì thường cũng đã ở ngoài dải. Không tiêu đề
+   * nào đổi trạng thái nên observer không bắn sự kiện nào, và mục sáng đứng nguyên chỗ cũ
+   * dù trang đã nhảy đi hẳn nơi khác. Nhánh dự phòng tính lại theo vị trí có tồn tại,
+   * nhưng nó nằm BÊN TRONG callback — callback không chạy thì nó không cứu được gì.
+   *
+   * Bài học: trạng thái phải tính được từ vị trí cuộn bất kỳ lúc nào, chứ đừng chỉ tính
+   * khi có sự kiện đi ngang một lằn ranh.
    */
   const BAND_TOP = 0.3;
-  const BAND_BOTTOM = 0.6;
 
   const list = document.querySelector<HTMLElement>("[data-toc]");
   if (list) {
@@ -93,48 +115,62 @@ const { toc } = Astro.props;
       .map((id) => document.getElementById(id))
       .filter((node): node is HTMLElement => node !== null);
 
-    // Giữ danh sách tiêu đề đang trong vùng đọc: cuộn nhanh có thể vào/ra nhiều cái một
-    // lúc, lấy cái trên cùng làm mục đang đọc.
-    const visible = new Set<string>();
+    /** Nhớ mục đang tô để khỏi ghi lại 17 thuộc tính DOM ở mỗi khung hình cuộn. */
+    let painted: string | undefined;
 
     const paint = (id: string | undefined) => {
+      if (id === painted) return;
+      painted = id;
       for (const [key, link] of links) {
         link.dataset.active = String(key === id);
       }
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.add(entry.target.id);
-          else visible.delete(entry.target.id);
-        }
+    const update = () => {
+      /*
+       * Chạm đáy trang thì tô luôn tiêu đề cuối.
+       *
+       * Mục cuối bài thường ngắn, trang hết chỗ cuộn trước khi tiêu đề của nó kịp lên tới
+       * vạch — không có nhánh này thì đọc tới tận cuối bài mà mục lục vẫn sáng ở mục
+       * áp chót, và không cách nào sáng được mục cuối.
+       */
+      const doc = document.documentElement;
+      if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+        paint(headings.at(-1)?.id);
+        return;
+      }
 
-        const current = headings.find((heading) => visible.has(heading.id));
-        if (current) {
-          paint(current.id);
-          return;
-        }
+      /*
+       * Tiêu đề cuối cùng đã vượt qua vạch. Vạch đặt ở 30% chiều cao khung nhìn — không
+       * phải mép trên — nên mục sáng lên đúng lúc tiêu đề lên tới vùng mắt đang đọc.
+       *
+       * `headings` theo đúng thứ tự trong bài nên gặp cái đầu tiên chưa qua vạch là dừng.
+       */
+      const line = window.innerHeight * BAND_TOP;
+      let current: string | undefined;
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top >= line) break;
+        current = heading.id;
+      }
+      paint(current);
+    };
 
-        /*
-         * Không tiêu đề nào trong vùng đọc — đang ở giữa một mục dài, hoặc ở đoạn mở đầu.
-         * Lấy tiêu đề cuối cùng đã vượt qua vạch trên; chưa qua cái nào thì không tô gì.
-         *
-         * Vạch phải đúng là vạch của `rootMargin`, không phải mép trên khung nhìn: tiêu đề
-         * vừa rời vùng đọc đi lên vẫn còn nằm dưới mép trên, so với mép trên thì nó bị coi
-         * là "chưa qua" và mục sáng nhảy về lại tiêu đề trước đó. Cuộn một đoạn dài là mục
-         * sáng cứ nhảy tiến rồi lùi.
-         */
-        const line = window.innerHeight * BAND_TOP;
-        const passed = headings.filter(
-          (heading) => heading.getBoundingClientRect().top < line,
-        );
-        paint(passed.at(-1)?.id);
-      },
-      { rootMargin: `-${BAND_TOP * 100}% 0px -${BAND_BOTTOM * 100}% 0px` },
-    );
+    /** Gom lại còn nhiều nhất một lần tính mỗi khung hình, và chỉ khi đang cuộn. */
+    let queued = false;
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        update();
+      });
+    };
 
-    headings.forEach((heading) => observer.observe(heading));
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    // Ảnh trong bài tải xong là mọi tiêu đề bên dưới nó tụt xuống — vị trí cũ hết đúng.
+    window.addEventListener("load", update);
   }
 </script>
 

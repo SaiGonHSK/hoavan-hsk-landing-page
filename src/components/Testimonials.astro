@@ -1,8 +1,10 @@
 ---
+import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import HeroBackdrop from "@/components/HeroBackdrop.astro";
 import { testimonials } from "@/data/testimonials";
+import { imageAsset } from "@/data/imageAssets";
 
 /**
  * Mục cảm nhận học viên, đặt trên nền `HeroBackdrop` — cùng bộ nền của hero và mục sự kiện:
@@ -26,8 +28,14 @@ const initials = (name: string) =>
     .join("")
     .toUpperCase();
 
+/*
+  Xếp thẻ có ảnh lên trước, và "có ảnh" tính theo ảnh tra được trong `src/assets` chứ
+  không theo việc trường `image` có chuỗi hay không: cơ sở dữ liệu còn cảm nhận trỏ vào
+  tệp đã không còn (`/images/reviews/hoang-ha-phuong.jpg`), thẻ đó rơi về chữ cái đầu
+  nên phải nằm cùng nhóm không ảnh.
+*/
 const list = [...testimonials()].sort(
-  (a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)),
+  (a, b) => Number(Boolean(imageAsset(b.image))) - Number(Boolean(imageAsset(a.image))),
 );
 
 // `quote` là chữ thuần nên không còn thẻ HTML để bỏ; vẫn dò trên chuỗi thô.
@@ -69,7 +77,7 @@ const badgeOf = (quote: string) => {
       >
         {
         list.map((t, i) => {
-          const image = t.image;
+          const image = imageAsset(t.image);
 
           /*
             Chỉ cặp thẻ nhìn thấy khi khối lọt vào khung mới có nét trượt ngang: thẻ đầu
@@ -103,11 +111,13 @@ const badgeOf = (quote: string) => {
                 </div>
 
                 {image && (
-                  <img
+                  <Image
                     src={image}
                     alt={`Học viên ${t.name}`}
-                    width="600"
-                    height="800"
+                    width={288}
+                    densities={[1, 2]}
+                    format="webp"
+                    quality={85}
                     loading="lazy"
                     decoding="async"
                     class="hidden aspect-[3/4] w-36 shrink-0 self-start rounded-2xl object-cover object-top sm:block"
@@ -118,11 +128,13 @@ const badgeOf = (quote: string) => {
               <figcaption class="mt-auto flex items-center justify-between gap-4 border-t border-border bg-brand-ink-50/70 px-7 py-5 md:px-8">
                 <div class="flex min-w-0 items-center gap-3">
                   {image ? (
-                    <img
+                    <Image
                       src={image}
                       alt=""
-                      width="96"
-                      height="96"
+                      width={96}
+                      densities={[1, 2]}
+                      format="webp"
+                      quality={85}
                       loading="lazy"
                       decoding="async"
                       class="size-12 shrink-0 rounded-full object-cover object-top"

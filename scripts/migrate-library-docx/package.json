@@ -1,0 +1,20 @@
+{
+  "name": "migrate-library-docx",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Công cụ dùng một lần: chuyển 31 file .docx trong content/Web- Thư viện thành Markdown và nạp vào bảng landing_pages (draft) qua API admin. KHÔNG phải dependency của app landing — package.json này tách riêng, không có trong cây phụ thuộc của `astro build`. Xoá cả thư mục này sau khi việc migrate xong.",
+  "type": "module",
+  "scripts": {
+    "convert": "node convert.mjs",
+    "insert": "node insert.mjs"
+  },
+  "dependencies": {
+    "mammoth": "^1.12.1",
+    "rehype-parse": "^9.0.1",
+    "rehype-remark": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-stringify": "^11.0.0",
+    "sharp": "^0.35.3",
+    "unified": "^11.0.5"
+  }
+}

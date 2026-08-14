@@ -141,7 +141,13 @@ const courseFromLevel = (
     goal: program.goal,
     entry: spec ? spec.entry : program.entry,
     icon: program.icon as CourseIcon,
-    thumbnailUrl: program.image ?? "",
+    /*
+      Luôn rỗng: `CourseRow` giữ trường này cho khớp bản ghi khoá học phía máy chủ,
+      nhưng landing không dựng ảnh khoá ở đâu cả. Trước đây nó lấy `program.image` —
+      mấy đường dẫn `/images/courses/…` trong `courses.ts`, đọc lên rồi bỏ đi. Ảnh đã
+      xoá cùng trường đó; máy chủ định danh ảnh khoá bằng `thumbnailFileId`.
+    */
+    thumbnailUrl: "",
     tags: [...program.tags],
     isFeatured: program.featured ?? false,
     contactOnly: program.contactOnly ?? false,

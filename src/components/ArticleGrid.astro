@@ -2,16 +2,18 @@
 import { formatArticleDate, type LibraryArticle } from "@/data/library";
 
 /**
- * Lưới bài viết của Thư viện — 3 cột, kẻ ô bằng đường viền chung.
+ * Lưới bài viết của Thư viện — 3 cột, mỗi bài một thẻ bo góc rời nhau.
  *
- * Không dùng thẻ bo góc có nền như các hub khác (`CatalogHub`): Thư viện là blog,
- * nội dung là ảnh bìa + tiêu đề + tóm tắt, nên khung kẻ ô để chữ tự đứng ra thay vì
- * mỗi bài một khối xám.
+ * Trước đây đây là lưới kẻ ô: các ô dính sát nhau, mỗi ô tự viền bốn cạnh rồi kéo lùi
+ * `-1px` để chồng viền lên ô kề cho hai đường 1px thành một. Cách đó không bo góc được
+ * — góc tròn thì bốn ô kề nhau hở ra bốn khoảng trắng hình sao ở mỗi mối nối.
  *
- * Cách vẽ đường kẻ: mỗi ô tự viền bốn cạnh rồi kéo lùi `-1px` lên trên và sang trái
- * để chồng lên viền của ô kề, hai đường 1px thành một. Không đặt viền ngoài ở khung
- * bao vì số cột đổi theo bề rộng màn hình (1 → 2 → 3) — một chuyên mục có 1 bài thì
- * viền của khung bao sẽ kẻ một đường chạy ngang qua hai ô trống bên cạnh.
+ * `overflow-hidden` trên thẻ là bắt buộc chứ không phải cho đẹp: ảnh bìa nằm sát mép
+ * trên, không cắt thì hai góc trên của ảnh vẫn vuông và chìa ra ngoài góc tròn của thẻ.
+ *
+ * Vẫn không đặt viền ở khung bao ngoài: số cột đổi theo bề rộng màn hình (1 → 2 → 3),
+ * một chuyên mục có đúng 1 bài thì viền khung bao sẽ kẻ một đường chạy ngang qua hai
+ * ô trống bên cạnh.
  */
 
 interface Props {
@@ -35,18 +37,28 @@ const { articles, emptyMessage, eagerFirst = true } = Astro.props;
 
 {
   articles.length > 0 && (
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
       {articles.map((article, index) => (
-        <article class="-ml-px -mt-px border border-border">
+        <article class="overflow-hidden rounded-3xl border border-border transition-colors hover:border-brand-red-600/40">
           <a href={article.slug} class="group flex h-full flex-col">
             {article.coverImage && (
               <div class="overflow-hidden">
+                {/*
+                  Thẻ bài giữ khung 16:9 cố định — lưới ba cột mà mỗi thẻ một chiều cao thì
+                  hàng nào cũng so le. Nhưng cắt từ MÉP TRÊN chứ không cắt giữa: ảnh bìa
+                  trích từ tài liệu Word phần lớn là ảnh dọc 2:3, cắt giữa chỉ còn một dải
+                  chữ lưng chừng, còn cắt từ trên thì ít ra lấy được phần tiêu đề của tấm
+                  infographic. Ảnh 1600×900 đặt riêng cho web thì cắt kiểu nào cũng như nhau.
+
+                  `alt` để rỗng là cố ý: tiêu đề bài nằm ngay dưới trong cùng thẻ <a>, gán
+                  alt nữa là trình đọc màn hình đọc lại y hệt hai lần.
+                */}
                 <img
                   src={article.coverImage}
                   alt=""
                   loading={eagerFirst && index === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  class="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  class="aspect-video w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
                 />
               </div>
             )}
