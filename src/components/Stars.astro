@@ -1,0 +1,54 @@
+---
+/**
+ * Dải năm ngôi sao cho một điểm đánh giá.
+ *
+ * Luôn vẽ đủ năm ngôi: nếu chỉ vẽ số sao đạt được thì 4/5 và 5/5 trông giống nhau
+ * khi hai thẻ không nằm cạnh nhau, người xem không có gì để so.
+ *
+ * Sao lẻ được làm tròn xuống chứ không tô một nửa: điểm ở đây là điểm của MỘT bài
+ * đánh giá, và Google chỉ cho chọn số nguyên 1–5, nên nửa sao là trạng thái không
+ * bao giờ xảy ra — thêm code cho nó là thêm nhánh không ai chạy.
+ */
+import { ICONS } from "@/lib/icons";
+
+interface Props {
+  /** Điểm 1–5. Ngoài dải thì bị kẹp lại, để dữ liệu lỗi không vẽ ra 9 ngôi sao. */
+  rating: number;
+  /** Cỡ ngôi sao. `sm` cho thẻ trong dải ngang, `md` cho trang chi tiết. */
+  size?: "sm" | "md";
+  /**
+   * Nhãn cho trình đọc màn hình. Bỏ trống thì tự ghi "N/5 sao" — truyền vào khi
+   * chỗ dùng cần nói rõ đây là điểm của ai.
+   */
+  label?: string;
+  class?: string;
+}
+
+const { rating, size = "sm", label, class: className = "" } = Astro.props;
+
+const filled = Math.max(0, Math.min(5, Math.round(rating)));
+const starSize = size === "md" ? "[&>svg]:size-5" : "[&>svg]:size-4";
+---
+
+{/*
+  `role="img"` + `aria-label` trên thẻ bọc, và `aria-hidden` từng ngôi sao: không thế
+  thì trình đọc màn hình đọc ra năm cái hình vô nghĩa liên tiếp thay vì "5/5 sao".
+*/}
+<span
+  role="img"
+  aria-label={label ?? `${filled}/5 sao`}
+  class:list={["inline-flex items-center gap-0.5", className]}
+>
+  {
+    Array.from({ length: 5 }, (_, i) => (
+      <span
+        aria-hidden="true"
+        class:list={[
+          starSize,
+          i < filled ? "text-amber-500" : "text-brand-ink-200",
+        ]}
+        set:html={ICONS.star}
+      />
+    ))
+  }
+</span>

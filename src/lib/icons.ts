@@ -36,6 +36,9 @@ import seed from "@/assets/icons/seed.svg?raw";
 import shield from "@/assets/icons/shield.svg?raw";
 import snow from "@/assets/icons/snow.svg?raw";
 import sparkle from "@/assets/icons/sparkle.svg?raw";
+// Ngôi sao tô đầy, không phải nét: nó dùng để vẽ điểm đánh giá, và một dải năm ngôi
+// sao viền rỗng đọc ra là "chưa chọn" chứ không phải "năm sao".
+import star from "@/assets/icons/star.svg?raw";
 import target from "@/assets/icons/target.svg?raw";
 import users from "@/assets/icons/users.svg?raw";
 import wifi from "@/assets/icons/wifi.svg?raw";
@@ -57,6 +60,7 @@ export const ICONS = {
   check,
   plus,
   shield,
+  star,
   book,
   cap,
   heart,

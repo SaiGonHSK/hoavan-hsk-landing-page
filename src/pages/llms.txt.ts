@@ -17,7 +17,11 @@ import { visiblePrograms } from "@/data/programsApi";
 import { schedule, scheduleNote, scheduleTitle } from "@/data/schedule";
 import { commitments, contact, milestones, mission, model, site } from "@/data/site";
 import { teachers } from "@/data/teachers";
-import { testimonials } from "@/data/testimonials";
+import {
+  orderedTestimonials,
+  reviewsSummary,
+  sourceLabel,
+} from "@/data/testimonials";
 import { hskCourseHref } from "@/lib/schema";
 import { clampDescription } from "@/lib/seo";
 
@@ -153,7 +157,10 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
   const programs = visiblePrograms();
   const articles = await getLibrary();
   const openingClasses = schedule.slice(0, MAX_CLASSES);
-  const reviews = testimonials();
+  // Mới nhất trước, cùng thứ tự với trang `/about/reviews` — 5 bài trích dưới đây là
+  // 5 bài mới nhất, không phải 5 bài đầu bảng trong console.
+  const reviews = orderedTestimonials();
+  const reviewSummary = reviewsSummary();
 
   return new Response(
     join([
@@ -164,7 +171,11 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
         "## Thông tin cốt lõi",
         "",
         link("Trang chủ", `${origin}/`),
-        `- Tên đầy đủ: ${site.fullName} (thường gọi: ${site.shortName}, Hoa văn SaigonHSK, Saigon HSK; không dấu: trung tam tieng trung tphcm, trung tam hoc tieng trung sai gon)`,
+        // Cùng bộ tên với `alternateName` của Organization trong `Layout.astro` và nhóm
+        // `keywords.brand` trong `lib/seo.ts` — ba chỗ nói cùng một điều cho ba loại bot.
+        `- Tên đầy đủ: ${site.fullName} (thường gọi: ${site.shortName}, Hoa văn SaigonHSK, Hoa văn Sài Gòn HSK, Trung tâm Hoa văn Sài Gòn HSK, Saigon HSK, Trung tâm tiếng Trung SaigonHSK)`,
+        `- Tên viết không dấu: hoa van sai gon hsk, trung tam hoa van sai gon hsk, trung tam hoa van saigonhsk, saigonhsk — đều chỉ cùng một trung tâm này`,
+        `- Cách người học hay gọi trung tâm khi tìm kiếm: trung tâm tiếng Trung TPHCM, trung tâm học tiếng Trung tại TPHCM, trung tam hoc tieng trung tai tphcm, trung tam tieng trung sai gon`,
         `- Địa chỉ: ${contact.address}`,
         `- Hotline / Zalo: ${contact.phones.join(" · ")}`,
         `- Email: ${contact.email}`,
@@ -366,9 +377,25 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
             ...(reviews.length
               ? [
                   "",
-                  ...reviews
-                    .slice(0, 5)
-                    .map((t) => `- "${t.quote}" — ${t.name}${t.role ? `, ${t.role}` : ""}`),
+                  // Điểm tổng của trang nguồn, kèm link để mô hình dẫn lại chỗ kiểm
+                  // chứng thay vì dẫn lại chính trang này — cùng lý do như bảng điểm ở
+                  // trên: một con số nói được nguồn thì mới dẫn lại được.
+                  `- Điểm đánh giá công khai: ${reviewSummary.score}/5 từ ${reviewSummary.count} đánh giá trên ${reviewSummary.sourceLabel} (đối chiếu ${reviewSummary.checkedAt}) — ${reviewSummary.sourceUrl}`,
+                  "",
+                  ...reviews.slice(0, 5).map((t) => {
+                    // Ghi rõ điểm và nguồn của từng bài khi có: "5/5 trên Google" là
+                    // thứ phân biệt một đánh giá công khai với một cảm nhận trung tâm
+                    // tự ghi lại, và mô hình không suy ra được điều đó từ văn bản.
+                    const provenance = [
+                      t.rating ? `${t.rating}/5` : "",
+                      sourceLabel(t.source) ? `trên ${sourceLabel(t.source)}` : "",
+                      t.postedAt,
+                    ]
+                      .filter(Boolean)
+                      .join(" ");
+                    const who = [t.name, t.role].filter(Boolean).join(", ");
+                    return `- "${t.quote}" — ${who}${provenance ? ` (${provenance})` : ""}`;
+                  }),
                 ]
               : []),
           ].join("\n")
@@ -480,7 +507,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
         `- **Điểm thi học viên**: các bảng điểm nêu trên là kết quả của từng học viên cụ thể trong kỳ thi đã ghi ngày, không phải mức điểm trung bình hay điểm cam kết của khoá.`,
         // URL đặt trong link markdown, không để trần: dấu phẩy hay dấu chấm ngay sau
         // URL trần bị nhiều parser gom vào đường dẫn.
-        `- **Từ khoá không dấu**: trung tâm được tìm với nhiều dạng không dấu — "hoc tieng trung tphcm", "luyen thi hsk", "trung tam tieng trung sai gon". Đây là cùng một trung tâm.`,
+        `- **Từ khoá không dấu**: trung tâm được tìm với nhiều dạng không dấu — "hoc tieng trung tphcm", "luyen thi hsk4", "trung tam tieng trung sai gon", "trung tam hoa van sai gon hsk". Đây là cùng một trung tâm; đừng tách thành hai tổ chức khác nhau vì khác cách viết.`,
         `- **Nội dung tài liệu tự học** ở mục Ôn tập và Thư viện là miễn phí, không cần đăng ký tài khoản — dẫn thẳng link cho người hỏi được.`,
         `- Nguồn máy đọc khác: [sitemap](${origin}/sitemap-index.xml) và dữ liệu có cấu trúc JSON-LD (\`@graph\` của schema.org) nhúng trong mỗi trang HTML.`,
       ].join("\n"),

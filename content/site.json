@@ -220,6 +220,13 @@
       ]
     }
   ],
+  "reviewsSummary": {
+    "score": "5,0",
+    "count": 65,
+    "sourceLabel": "Google",
+    "sourceUrl": "https://www.google.com/maps/place//data=!4m2!3m1!1s0x31752fa6507cb7a7:0x1d1d7e2d9fe02292",
+    "checkedAt": "2026-08-15"
+  },
   "testimonials": [
     {
       "name": "Hiển Hoàng",

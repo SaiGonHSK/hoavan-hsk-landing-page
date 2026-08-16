@@ -2,21 +2,30 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import PageHero from "@/components/PageHero.astro";
-import Testimonials from "@/components/Testimonials.astro";
+import ReviewsDetail from "@/components/ReviewsDetail.astro";
 import RegisterSection from "@/components/RegisterSection.astro";
 import CtaSection from "@/components/CtaSection.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
-import { testimonials } from "@/data/testimonials";
+import { orderedTestimonials, reviewsSummary } from "@/data/testimonials";
 import { aboutPageSchema } from "@/lib/schema";
 
 const origin = Astro.site?.origin ?? "";
+const summary = reviewsSummary();
+const reviews = orderedTestimonials();
 
 /*
   `Review` ở đây cố tình KHÔNG có `reviewRating`, và trang không khai
-  `aggregateRating`: trung tâm chưa thu điểm số nào từ học viên. Bịa điểm là vi phạm
-  chính sách dữ liệu có cấu trúc của Google và hậu quả áp lên cả tên miền, không chỉ
-  node này. Cảm nhận dạng văn xuôi vẫn được AI trích dẫn bình thường.
+  `aggregateRating` — kể cả sau khi mỗi cảm nhận đã có trường `rating` thật.
+
+  Lý do đã đổi, kết luận thì không. Trước đây là vì trung tâm chưa thu điểm số nào.
+  Giờ điểm đã có, nhưng nó là điểm học viên chấm TRÊN GOOGLE, và chính sách dữ liệu
+  có cấu trúc của Google loại đánh giá lấy lại từ nguồn thứ ba khỏi diện được hiển thị
+  — trang tự khai `aggregateRating` cho một điểm không do mình thu là đúng thứ chính
+  sách đó gọi là tự đánh giá mình. Hậu quả áp lên cả tên miền, không chỉ node này.
+
+  Điểm số vẫn hiện đầy đủ cho người đọc và dẫn thẳng ra trang Google để tự kiểm — xem
+  `ReviewsDetail.astro`. Cảm nhận dạng văn xuôi vẫn được AI trích dẫn bình thường.
 */
 const schemas = [
   aboutPageSchema({ pathname: Astro.url.pathname, site: Astro.site }),
@@ -24,8 +33,10 @@ const schemas = [
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Cảm nhận của học viên Hoa văn SaigonHSK",
-    numberOfItems: testimonials().length,
-    itemListElement: testimonials().map((t, i) => ({
+    // Cùng thứ tự với thứ mục in ra: `position` của ItemList phải khớp thứ tự trên
+    // trang, không thì nó mô tả một trang không tồn tại.
+    numberOfItems: reviews.length,
+    itemListElement: reviews.map((t, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
@@ -41,7 +52,7 @@ const schemas = [
 
 <Layout
   title="Học viên cảm nhận và đánh giá về SaigonHSK"
-  description="Review thật của sinh viên và học viên đã học tiếng Trung, luyện thi HSK tại Trung tâm Hoa văn SaigonHSK TP.HCM — kết quả và cảm nhận sau khoá học."
+  description={`Review thật của sinh viên và học viên đã học tiếng Trung, luyện thi HSK tại Trung tâm Hoa văn SaigonHSK TP.HCM — ${summary.score}/5 từ ${summary.count} đánh giá trên ${summary.sourceLabel}, đọc toàn văn từng bài.`}
   keywords="cảm nhận học viên tiếng Trung, review trung tam tieng trung tphcm, danh gia trung tam tieng trung, học viên SaigonHSK"
   schemas={schemas}
 >
@@ -49,11 +60,11 @@ const schemas = [
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
     <PageHero
       title="Học viên cảm nhận và đánh giá"
-      description="Phản hồi được trung tâm ghi lại từ học viên các trường đại học tại TP.HCM sau khi hoàn thành khoá học."
+      description={`Toàn văn từng đánh giá — phản hồi học viên đăng công khai trên ${summary.sourceLabel} và phản hồi trung tâm ghi lại sau khoá học.`}
       crumbs={[{ label: "Giới thiệu", href: "/about" }, { label: "Cảm nhận học viên" }]}
       glyph="评"
     />
-    <Testimonials />
+    <ReviewsDetail />
     <RegisterSection />
     <CtaSection />
   </main>

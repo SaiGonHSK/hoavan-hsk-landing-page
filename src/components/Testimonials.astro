@@ -3,8 +3,16 @@ import { Image } from "astro:assets";
 import SectionHeading from "@/components/SectionHeading.astro";
 import RailHint from "@/components/RailHint.astro";
 import HeroBackdrop from "@/components/HeroBackdrop.astro";
-import { testimonials } from "@/data/testimonials";
+import Stars from "@/components/Stars.astro";
+import {
+  orderedTestimonials,
+  reviewDetailHref,
+  reviewsSummary,
+  sourceLabel,
+  testimonials,
+} from "@/data/testimonials";
 import { imageAsset } from "@/data/imageAssets";
+import { ICONS } from "@/lib/icons";
 
 /**
  * Mục cảm nhận học viên, đặt trên nền `HeroBackdrop` — cùng bộ nền của hero và mục sự kiện:
@@ -20,6 +28,21 @@ import { imageAsset } from "@/data/imageAssets";
  * kẽ chứ không phải một dải trắng dài có một chỗ đổi màu.
  */
 
+interface Props {
+  /**
+   * Số thẻ tối đa trên dải. Bỏ trống là hiện hết.
+   *
+   * Có mặt vì danh sách đã đổi bậc độ lớn: trước đây là hơn chục cảm nhận trung tâm
+   * tự ghi lại, giờ có thêm đánh giá Google. Một dải ngang 70 thẻ thì mọi thẻ từ thẻ
+   * thứ mười trở đi không ai kéo tới, mà vẫn phải render và tải ảnh.
+   */
+  limit?: number;
+}
+
+const { limit } = Astro.props;
+
+const summary = reviewsSummary();
+
 const initials = (name: string) =>
   name
     .split(" ")
@@ -29,14 +52,20 @@ const initials = (name: string) =>
     .toUpperCase();
 
 /*
-  Xếp thẻ có ảnh lên trước, và "có ảnh" tính theo ảnh tra được trong `src/assets` chứ
-  không theo việc trường `image` có chuỗi hay không: cơ sở dữ liệu còn cảm nhận trỏ vào
-  tệp đã không còn (`/images/reviews/hoang-ha-phuong.jpg`), thẻ đó rơi về chữ cái đầu
-  nên phải nằm cùng nhóm không ảnh.
+  Cắt từ đầu `orderedTestimonials()` — tức là dải này luôn là mấy đánh giá MỚI NHẤT.
+
+  Mục này KHÔNG tự sắp lại danh sách, và đó là chủ ý: mã neo của link "Chi tiết" tính
+  theo vị trí trong `orderedTestimonials()` (xem `reviewAnchor`), nên sắp lại ở đây là
+  mọi link trỏ sang thẻ của người khác. Muốn đổi thứ tự thì đổi ở `orderedTestimonials`,
+  một chỗ, cho cả trang chủ lẫn `/about/reviews`.
+
+  Trước đây dải này xếp thẻ có ảnh lên đầu để trang chủ đẹp hơn. Quy tắc đó đã bỏ:
+  "mới nhất trước" và "có ảnh trước" là hai thứ tự khác nhau, giữ cả hai thì hai trang
+  hiển thị hai thứ tự và link giữa chúng hết khớp.
 */
-const list = [...testimonials()].sort(
-  (a, b) => Number(Boolean(imageAsset(b.image))) - Number(Boolean(imageAsset(a.image))),
-);
+const list = orderedTestimonials()
+  .slice(0, limit ?? Infinity)
+  .map((item, index) => ({ item, index }));
 
 // `quote` là chữ thuần nên không còn thẻ HTML để bỏ; vẫn dò trên chuỗi thô.
 const badgeOf = (quote: string) => {
@@ -70,13 +99,41 @@ const badgeOf = (quote: string) => {
       highlight="học viên SaigonHSK"
     />
 
-    <div data-rail class="group/rail relative mt-16">
+    {/*
+      Dải điểm tổng của trang nguồn, đặt dưới tiêu đề.
+
+      Ở đây nó là chữ cho người đọc, KHÔNG kèm `aggregateRating` của schema.org —
+      lý do viết ở `src/pages/about/reviews.astro`.
+
+      Con số dẫn thẳng ra trang nguồn: một dòng "5,0 · 65 đánh giá" tự trung tâm
+      viết về mình thì không có sức nặng gì, trừ khi bấm được để tự kiểm.
+    */}
+    <div class="mt-8 flex justify-center">
+      <a
+        href={summary.sourceUrl}
+        target="_blank"
+        rel="noopener nofollow"
+        class="group/summary inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full border border-border bg-background/80 px-6 py-3 backdrop-blur-sm transition-colors hover:border-brand-red-300"
+      >
+        <span class="text-lg font-black text-brand-ink-900">{summary.score}</span>
+        <Stars rating={5} label={`${summary.score} trên 5 sao`} />
+        <span class="text-sm text-muted-foreground">
+          {summary.count} đánh giá trên {summary.sourceLabel}
+        </span>
+        <span
+          class="text-brand-red-700 transition-transform group-hover/summary:translate-x-0.5 [&>svg]:size-4"
+          set:html={ICONS.arrowUpRight}
+        />
+      </a>
+    </div>
+
+    <div data-rail class="group/rail relative mt-12">
       <div
         data-rail-track
         class="flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {
-        list.map((t, i) => {
+        list.map(({ item: t, index }, i) => {
           const image = imageAsset(t.image);
 
           /*
@@ -93,19 +150,44 @@ const badgeOf = (quote: string) => {
               class="flex w-[min(88vw,34rem)] shrink-0 snap-start flex-col overflow-hidden rounded-[2rem] border border-border bg-background lg:w-[calc((100%-1.5rem)/2)]"
             >
               <div class="flex flex-1 gap-6 p-7 md:p-8">
-                <div class="flex flex-1 flex-col">
-                  <span
-                    aria-hidden="true"
-                    class="font-serif text-6xl leading-[0.6] text-brand-ink-200"
-                  >
-                    &ldquo;
-                  </span>
+                {/*
+                  `justify-center` cho khối trích dẫn: mọi thẻ trong dải cao bằng nhau
+                  (`items-stretch`), và chiều cao đó do thẻ có bài dài nhất quyết định —
+                  nên một cảm nhận ba dòng nằm cạnh một cảm nhận chín dòng sẽ để lại sáu
+                  dòng trống. Canh giữa thì chỗ trống chia đều trên–dưới và đọc ra là bố
+                  cục, thay vì dồn hết xuống dưới và đọc ra là thiếu nội dung.
+                */}
+                <div class="flex flex-1 flex-col justify-center">
+                  {/*
+                    Có điểm thì dải sao thay chỗ dấu ngoặc kép trang trí, không xếp
+                    thêm một hàng: hai thứ này cùng nằm trên đầu khối trích dẫn, để cả
+                    hai thì đầu thẻ có hai hàng chỉ để nhìn và chữ bị đẩy xuống.
+                  */}
+                  {t.rating ? (
+                    <Stars
+                      rating={t.rating}
+                      label={`${t.rating}/5 sao — đánh giá của ${t.name}`}
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      class="font-serif text-6xl leading-[0.6] text-brand-ink-200"
+                    >
+                      &ldquo;
+                    </span>
+                  )}
                   {/*
                     Nội suy chứ không `set:html`: `quote` là chữ thuần do người soạn
                     nhập, in như HTML thì dấu < và & của họ thành thẻ. `whitespace-pre-line`
                     để chỗ họ xuống dòng vẫn xuống dòng.
+
+                    `line-clamp-9` là lý do trang chi tiết tồn tại: đánh giá Google dài
+                    tới vài trăm chữ, không chặn thì một thẻ cao gấp năm thẻ bên cạnh và
+                    dải ngang mất luôn đường chân. Bản đầy đủ nằm sau link "Chi tiết" ở
+                    chân thẻ — `line-clamp` chỉ cắt phần NHÌN THẤY, chữ vẫn nằm trong DOM
+                    nên người dùng Ctrl+F và trình thu thập vẫn đọc được cả bài.
                   */}
-                  <blockquote class="mt-5 whitespace-pre-line text-[0.95rem] leading-[1.85] text-brand-ink-700">
+                  <blockquote class="mt-5 line-clamp-9 whitespace-pre-line text-[0.95rem] leading-[1.85] text-brand-ink-700">
                     {t.quote}
                   </blockquote>
                 </div>
@@ -149,31 +231,54 @@ const badgeOf = (quote: string) => {
                     <p class="truncate font-bold text-brand-ink-900">
                       {t.name}
                     </p>
+                    {/*
+                      Dòng dưới tên: mô tả học viên nếu có, còn đánh giá Google thì
+                      không có mô tả nào — chỗ đó ghi nguồn và thời điểm đăng, tức là
+                      thứ trả lời đúng câu người xem hỏi ở một đánh giá lạ: ai đăng,
+                      đăng ở đâu, đăng khi nào.
+                    */}
                     <p class="truncate text-sm text-muted-foreground">
-                      {t.role}
+                      {t.role ||
+                        [sourceLabel(t.source), t.postedAt]
+                          .filter(Boolean)
+                          .join(" · ")}
                     </p>
                   </div>
                 </div>
 
                 {/*
-                  Có link nguồn thì huy hiệu thành liên kết tới bài đăng gốc để người
-                  xem tự kiểm chứng; không có thì vẫn là nhãn tĩnh như trước.
+                  Chân thẻ là một link "Chi tiết" dẫn sang bản đầy đủ trên
+                  `/about/reviews`, KHÔNG còn là link ra bài đăng gốc.
+
+                  Vì phần chữ trên thẻ đã bị `line-clamp` cắt, nên thao tác người xem
+                  cần ở đây là "đọc hết cái này", chứ không phải "rời trang sang
+                  Google". Link ra nguồn vẫn còn, nằm ở trang chi tiết cạnh bản đầy
+                  đủ — đó là chỗ nó có ích, vì lúc đó người xem đã đọc và mới có gì để
+                  kiểm chứng.
+
+                  Huy hiệu HSK/TOCFL trở lại thành nhãn tĩnh: nó là thông tin, không
+                  phải chỗ bấm, và hai vùng bấm cạnh nhau trong một chân thẻ thì không
+                  ai đoán được cái nào dẫn đi đâu.
                 */}
-                {t.link ? (
-                  <a
-                    href={t.link}
-                    target="_blank"
-                    rel="noopener nofollow"
-                    class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900 transition-colors hover:border-brand-red-300 hover:text-brand-red-700"
-                  >
-                    {badgeOf(t.quote)}
-                    <span class="sr-only"> — xem bài đăng gốc của {t.name}</span>
-                  </a>
-                ) : (
-                  <span class="shrink-0 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-bold text-brand-ink-900">
+                <div class="flex shrink-0 items-center gap-2">
+                  <span class="hidden rounded-full border border-border bg-background px-4 py-2 text-xs font-bold text-brand-ink-900 sm:inline">
                     {badgeOf(t.quote)}
                   </span>
-                )}
+
+                  <a
+                    href={reviewDetailHref(t, index)}
+                    class="group/detail inline-flex items-center gap-1.5 rounded-full border border-brand-red-200 bg-background px-5 py-2.5 text-sm font-bold text-brand-red-700 transition-colors hover:bg-brand-red-50"
+                  >
+                    Chi tiết
+                    <span class="sr-only">
+                      {" "}đánh giá của {t.name}
+                    </span>
+                    <span
+                      class="transition-transform group-hover/detail:translate-x-0.5 [&>svg]:size-4"
+                      set:html={ICONS.arrow}
+                    />
+                  </a>
+                </div>
               </figcaption>
             </figure>
           );
@@ -183,6 +288,25 @@ const badgeOf = (quote: string) => {
 
       <RailHint label="đánh giá" />
     </div>
+
+    {/*
+      Chỉ hiện khi dải đã bị `limit` cắt bớt: trên `/about/reviews` mục này in hết
+      danh sách, một nút "xem tất cả" ở đó sẽ trỏ về chính trang đang đứng.
+    */}
+    {limit !== undefined && limit < testimonials().length && (
+      <div class="mt-12 flex justify-center">
+        <a
+          href="/about/reviews"
+          class="group inline-flex items-center gap-2 rounded-full border border-brand-red-200 bg-background px-7 py-3.5 text-sm font-bold text-brand-red-700 transition-colors hover:bg-brand-red-50"
+        >
+          Xem tất cả cảm nhận và đánh giá
+          <span
+            class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
+            set:html={ICONS.arrow}
+          />
+        </a>
+      </div>
+    )}
   </div>
 
   {/*

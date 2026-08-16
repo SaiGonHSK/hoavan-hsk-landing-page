@@ -9,7 +9,7 @@
     "kill:port": "lsof -ti tcp:4321 | xargs kill -9 2>/dev/null || true",
     "predev": "yarn kill:port",
     "dev": "astro dev",
-    "build": "astro build",
+    "build:dev": "astro build",
     "build:prod": "PUBLIC_API_BASE=/ astro build && yarn check:prod",
     "check:prod": "if grep -rq 'localhost:9909' dist/client/; then echo '✗ dist/client còn localhost:9909 — KHONG duoc rsync len VPS'; exit 1; else echo '✓ dist/client sach, dua len VPS duoc'; fi",
     "prepreview": "yarn kill:port",

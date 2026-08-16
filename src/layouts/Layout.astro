@@ -58,16 +58,27 @@ const organizationSchema = {
   name: site.fullName,
   // Người học gõ tên trung tâm theo rất nhiều cách; khai báo hết để Google gộp
   // về cùng một thực thể thay vì coi là các thương hiệu khác nhau.
-  alternateName: [
+  // `Set`: `site.shortName` do console soạn nên có thể trùng đúng một tên viết tay bên
+  // dưới — hiện đang trùng "SaigonHSK" — và một `alternateName` lặp thì đọc như lỗi dữ
+  // liệu chứ không thêm được cách gọi nào.
+  alternateName: Array.from(new Set([
     site.shortName,
     "Hoa văn SaigonHSK",
     "SaigonHSK",
     "Trung tâm tiếng Trung SaigonHSK",
     "Saigon HSK",
+    // Tên viết rời: "Sài Gòn HSK" và "SaigonHSK" là hai chuỗi khác nhau với công cụ
+    // tìm kiếm, mà người chưa thấy logo bao giờ thì gõ dạng rời.
+    "Hoa văn Sài Gòn HSK",
+    "Trung tâm Hoa văn Sài Gòn HSK",
     // Không dấu — phủ cách gõ phổ biến trên mobile và Cốc Cốc
+    "hoa van sai gon hsk",
+    "trung tam hoa van sai gon hsk",
+    "trung tam hoa van saigonhsk",
     "trung tam hoc tieng trung tphcm",
+    "trung tam hoc tieng trung tai tphcm",
     "trung tam tieng trung sai gon",
-  ],
+  ])),
   slogan: `${site.slogan} — ${site.sloganVi}`,
   description: site.description,
   url: canonical.origin,
@@ -231,7 +242,21 @@ const jsonLd = graph([
   ...schemas,
 ]);
 
-const metaKeywords = keywords ? `${keywords}, ${keywordString}` : keywordString;
+/*
+  Từ khoá riêng của trang đứng trước bộ chung, và khử trùng lặp ở chỗ nối.
+
+  Trang gọi `keywordsFor()` nhận về bộ chung đã gộp sẵn, nên nối thẳng hai chuỗi là in
+  lại gần hai trăm từ khoá lần thứ hai trong cùng một thẻ. Đây là chỗ duy nhất biết cả
+  hai vế nên cũng là chỗ duy nhất khử được.
+*/
+const metaKeywords = Array.from(
+  new Set(
+    `${keywords ? `${keywords}, ` : ""}${keywordString}`
+      .split(",")
+      .map((k) => k.trim())
+      .filter(Boolean),
+  ),
+).join(", ");
 ---
 
 <!doctype html>

@@ -16,55 +16,136 @@ export const CITY = {
   legacy: "Sài Gòn",
 } as const;
 
+/**
+ * Từ khoá của **một** cấp HSK, sinh theo khuôn thay vì gõ tay sáu lần.
+ *
+ * Trước đây sáu cấp được liệt kê tay theo từng dòng, nên mỗi lần thêm một dạng truy vấn
+ * là thêm sáu dòng và luôn sót một hai cấp — bản cũ có "ngữ pháp HSK3/4/5" mà không có
+ * HSK1, HSK2, HSK6, có "đề thi HSK3/4/5" mà thiếu HSK6. Khuôn dưới đây làm chỗ khai báo
+ * duy nhất: thêm một dòng ở đây là đủ sáu cấp cùng có.
+ *
+ * Bốn nhóm truy vấn, tất cả đều thấy trong dữ liệu tìm kiếm tiếng Việt:
+ *
+ * - Tìm lớp: "khoá học HSK4", "lớp HSK4 TPHCM". Giữ **cả hai** cách viết "khoá" và
+ *   "khóa" — đây là hai chuỗi khác nhau với công cụ tìm kiếm, và "khóa" mới là cách gõ
+ *   phổ biến hơn, trong khi cả site chỉ dùng "khoá".
+ * - Luyện thi: "luyện thi HSK4", "ôn thi HSK4" — hai động từ khác nhau, người tìm dùng
+ *   lẫn lộn.
+ * - Tra cứu nội dung: "từ vựng HSK4", "ngữ pháp HSK4", "đề thi HSK4".
+ * - Câu hỏi: "HSK4 học bao lâu", "HSK4 bao nhiêu từ" — dạng truy vấn mà trang khoá từng
+ *   cấp trả lời trực tiếp bằng số liệu HSK 3.0.
+ */
+const hskLevelKeywords = (level: number) => [
+  `HSK${level}`,
+  `HSK ${level}`,
+  `học HSK${level}`,
+  `khoá học HSK${level}`,
+  `khóa học HSK${level}`,
+  `lớp HSK${level}`,
+  `lớp HSK${level} TPHCM`,
+  `luyện thi HSK${level}`,
+  `luyện thi HSK ${level}`,
+  `luyện thi HSK${level} TPHCM`,
+  `lớp luyện thi HSK ${level}`,
+  `ôn thi HSK${level}`,
+  `ôn tập HSK${level}`,
+  `chứng chỉ HSK${level}`,
+  `từ vựng HSK${level}`,
+  `ngữ pháp HSK${level}`,
+  `đề thi HSK${level}`,
+  `HSK${level} học bao lâu`,
+  `HSK${level} bao nhiêu từ`,
+  // Không dấu — xem ghi chú ở nhóm `nodiacritics`.
+  `hoc hsk${level}`,
+  `khoa hoc hsk${level}`,
+  `luyen thi hsk${level}`,
+  `on thi hsk${level}`,
+  `tu vung hsk${level}`,
+  `de thi hsk${level}`,
+  `lop hsk${level} tphcm`,
+];
+
+/** Sáu cấp HSK. Không lấy từ `HSK_LEVELS`: `lib/` không phụ thuộc vào `data/`. */
+const HSK_LEVEL_NUMBERS = [1, 2, 3, 4, 5, 6];
+
 export const keywords = {
   core: [
     "học tiếng Trung",
     "trung tâm tiếng Trung TPHCM",
     "trung tâm tiếng Trung Sài Gòn",
+    "trung tâm học tiếng Trung tại TPHCM",
     "học tiếng Trung ở đâu tốt",
     "học tiếng Trung ở đâu tốt TPHCM",
     "trung tâm tiếng Trung uy tín",
+    "trung tâm tiếng Trung uy tín TPHCM",
     "trung tâm tiếng Trung có giấy phép",
     "trung tâm tiếng Trung được Sở Giáo dục cấp phép",
     "học phí học tiếng Trung",
     "học tiếng Trung TPHCM",
     "học tiếng Trung tại TPHCM",
     "học tiếng Trung Sài Gòn",
+    "học tiếng Trung tại Sài Gòn",
     "dạy tiếng Trung TPHCM",
     "lớp tiếng Trung TPHCM",
     "khoá học tiếng Trung TPHCM",
+    "khóa học tiếng Trung TPHCM",
+    "trung tâm dạy tiếng Trung TPHCM",
+    "trung tâm Hoa văn TPHCM",
+    "học tiếng Hoa TPHCM",
+  ],
+  /**
+   * Tên trung tâm và các biến thể người ta gõ khi đã biết tên.
+   *
+   * Nhóm quan trọng nhất trong file mà bản cũ không có: truy vấn thương hiệu là truy vấn
+   * gần chuyển đổi nhất — người gõ "hoa van sai gon hsk" đã định học ở đây, chỉ đang tìm
+   * đường vào. Tên bị viết rời ("Sài Gòn HSK") hay dính ("SaigonHSK"), có dấu và không
+   * dấu đều là những chuỗi khác nhau với công cụ tìm kiếm, nên phải khai đủ.
+   *
+   * Cùng bộ tên này còn nằm ở `alternateName` của node Organization trong `Layout.astro`
+   * và ở mục "Thông tin cốt lõi" của `/llms.txt` — ba chỗ nói cùng một điều cho ba loại
+   * bot khác nhau.
+   */
+  brand: [
+    "SaigonHSK",
+    "Saigon HSK",
+    "Hoa văn SaigonHSK",
+    "Hoa văn Sài Gòn HSK",
+    "Trung tâm Hoa văn SaigonHSK",
+    "Trung tâm Hoa văn Sài Gòn HSK",
+    "trung tâm tiếng Trung SaigonHSK",
+    "saigonhsk",
+    "sai gon hsk",
+    "hoa van saigonhsk",
+    "hoa van sai gon hsk",
+    "trung tam hoa van sai gon hsk",
+    "trung tam hoa van saigonhsk",
+    "trung tam tieng trung saigonhsk",
   ],
   exam: [
     "luyện thi HSK",
     "luyện thi HSK ở TPHCM",
     "luyện thi HSK TPHCM",
+    "trung tâm luyện thi HSK",
+    "trung tâm luyện thi HSK TPHCM",
+    "lớp luyện thi HSK",
+    "khoá luyện thi HSK",
     "ôn thi HSK",
+    "ôn tập HSK",
+    "ôn thi HSK cấp tốc",
     "chứng chỉ HSK",
     "thi HSK ở đâu",
     "đăng ký thi HSK",
     "HSK 3.0",
-    "HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6",
-    "HSK 1", "HSK 2", "HSK 3", "HSK 4", "HSK 5", "HSK 6",
-    "học HSK1", "học HSK2", "học HSK3", "học HSK4", "học HSK5", "học HSK6",
-    "khoá học HSK1", "khoá học HSK2", "khoá học HSK3",
-    "khoá học HSK4", "khoá học HSK5", "khoá học HSK6",
-    "lớp luyện thi HSK 3",
-    "lớp luyện thi HSK 4",
-    "lớp luyện thi HSK 5",
-    "lớp luyện thi HSK 6",
-    "lớp HSK1 TPHCM", "lớp HSK2 TPHCM", "lớp HSK3 TPHCM",
-    "lớp HSK4 TPHCM", "lớp HSK5 TPHCM", "lớp HSK6 TPHCM",
+    "HSKK",
+    "luyện thi HSKK",
     "từ vựng HSK",
-    "từ vựng HSK1", "từ vựng HSK2", "từ vựng HSK3",
-    "từ vựng HSK4", "từ vựng HSK5", "từ vựng HSK6",
-    "ngữ pháp HSK3", "ngữ pháp HSK4", "ngữ pháp HSK5",
-    "đề thi HSK", "đề thi HSK3", "đề thi HSK4", "đề thi HSK5",
-    "HSK1 học bao lâu", "HSK2 học bao lâu", "HSK3 học bao lâu",
-    "HSK4 học bao lâu", "HSK5 học bao lâu", "HSK6 học bao lâu",
-    "HSK1 bao nhiêu từ", "HSK2 bao nhiêu từ", "HSK3 bao nhiêu từ",
-    "HSK4 bao nhiêu từ", "HSK5 bao nhiêu từ", "HSK6 bao nhiêu từ",
-    "HSK4 khó không", "HSK5 khó không",
-    "học phí HSK", "học phí luyện thi HSK",
+    "ngữ pháp HSK",
+    "đề thi HSK",
+    "HSK4 khó không",
+    "HSK5 khó không",
+    "học phí HSK",
+    "học phí luyện thi HSK",
+    ...HSK_LEVEL_NUMBERS.flatMap(hskLevelKeywords),
   ],
   level: [
     "tiếng Trung cho người mới bắt đầu",
@@ -97,41 +178,73 @@ export const keywords = {
     "gia sư tiếng Trung TPHCM",
     "dạy tiếng Trung cho doanh nghiệp",
   ],
-  /** Biến thể không dấu — phủ tìm kiếm trên Cốc Cốc và mobile keyboard. */
+  /**
+   * Biến thể không dấu — phủ tìm kiếm trên Cốc Cốc và mobile keyboard.
+   *
+   * Bản không dấu **theo cấp** ("luyen thi hsk4") nằm trong `hskLevelKeywords`, không
+   * lặp lại ở đây; chỗ này chỉ giữ các truy vấn không gắn với cấp nào.
+   */
   nodiacritics: [
     "hoc tieng trung",
     "trung tam hoc tieng trung",
+    "trung tam hoc tieng trung tai tphcm",
     "trung tam tieng trung tphcm",
+    "trung tam tieng trung sai gon",
+    "trung tam tieng trung uy tin",
+    "trung tam day tieng trung tphcm",
     "luyen thi hsk",
     "luyen thi hsk tphcm",
+    "trung tam luyen thi hsk",
     "khoa hoc tieng trung",
+    "khoa hoc tieng trung tphcm",
     "tieng trung giao tiep",
     "hoc tieng trung o dau",
+    "hoc tieng trung o dau tot",
     "hoc tieng trung tphcm",
+    "hoc tieng trung tai tphcm",
+    "hoc tieng trung sai gon",
     "hoc tieng trung co ban",
     "hoc tieng trung cho nguoi moi",
-    "hoc hsk1", "hoc hsk2", "hoc hsk3", "hoc hsk4", "hoc hsk5", "hoc hsk6",
+    "hoc tieng hoa tphcm",
     "tu vung hsk", "ngu phap hsk",
-    "de thi hsk", "on thi hsk",
+    "de thi hsk", "on thi hsk", "on tap hsk",
+    "chung chi hsk",
     "tieng trung thuong mai",
     "gia su tieng trung",
     "hoc phi tieng trung",
+    "lich khai giang tieng trung",
   ],
 } as const;
 
-export const keywordString = [
-  ...keywords.core,
-  ...keywords.exam,
-  ...keywords.level,
-  ...keywords.purpose,
-  ...keywords.nodiacritics,
-].join(", ");
+/**
+ * Bộ từ khoá đầy đủ, đi vào `<meta name="keywords">` của **mọi** trang.
+ *
+ * Bỏ trùng lặp trước khi nối: các nhóm được soạn tay theo chủ đề nên chuyện một truy vấn
+ * xuất hiện ở hai nhóm là bình thường, mà chuỗi lặp thì vừa dài vừa trông như nhồi nhét
+ * với đúng những công cụ còn đọc thẻ này.
+ */
+export const keywordString = Array.from(
+  new Set([
+    ...keywords.core,
+    ...keywords.brand,
+    ...keywords.exam,
+    ...keywords.level,
+    ...keywords.purpose,
+    ...keywords.nodiacritics,
+  ]),
+).join(", ");
 
-/** Gộp bộ từ khoá chung với các từ khoá riêng của trang, bỏ trùng lặp. */
+/**
+ * Gộp bộ từ khoá chung với các từ khoá riêng của trang, bỏ trùng lặp.
+ *
+ * Từ khoá riêng đứng **trước**: `Layout` nối tiếp `keywordString` vào sau chuỗi này, nên
+ * thứ đặc thù của trang phải nằm ở đầu thẻ chứ không lẫn giữa hai trăm từ khoá chung.
+ */
 export const keywordsFor = (...extra: string[]) =>
   Array.from(
     new Set([
       ...extra.map((k) => k.trim()).filter(Boolean),
+      ...keywords.brand,
       ...keywords.core,
       ...keywords.exam,
     ]),

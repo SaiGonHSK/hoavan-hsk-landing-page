@@ -53,7 +53,9 @@ const schemas = [
     <Teacher />
     <Activities />
     <Facility />
-    <Testimonials />
+    {/* Trang chủ chỉ lấy 6 thẻ đầu; phần còn lại ở `/about/reviews`. Xem `limit`
+        trong `Testimonials.astro`. */}
+    <Testimonials limit={6} />
     <TrialCta />
     <FAQ limit={5} />
     <!-- <RegisterSection /> -->

@@ -1,0 +1,238 @@
+---
+import { Image } from "astro:assets";
+import Stars from "@/components/Stars.astro";
+import {
+  orderedTestimonials,
+  reviewAnchor,
+  reviewsSummary,
+  sourceLabel,
+} from "@/data/testimonials";
+import { imageAsset } from "@/data/imageAssets";
+import { ICONS } from "@/lib/icons";
+
+/**
+ * Bản đầy đủ của mọi cảm nhận — đích của link "Chi tiết" trên thẻ ở dải ngang.
+ *
+ * Vì sao là một mục riêng chứ không dùng lại `Testimonials.astro` với một `variant`:
+ * hai chỗ này hiển thị ngược nhau ở đúng những điểm quyết định bố cục. Dải ngang cắt
+ * chữ để mọi thẻ cao bằng nhau, thẻ đứng cạnh nhau theo chiều ngang, và chân thẻ dẫn
+ * người xem đi tiếp; ở đây chữ phải in trọn vẹn (đó là lý do người xem bấm sang), thẻ
+ * xếp dọc theo một cột đọc được, và chân thẻ dẫn ra nguồn. Nhồi cả hai vào một
+ * component thì gần như mỗi dòng markup phải rẽ theo `variant`.
+ *
+ * Thứ tự lấy nguyên từ `orderedTestimonials()` — mới nhất trước — và KHÔNG sắp lại ở
+ * đây: mã neo (`reviewAnchor`) tính theo vị trí trong danh sách đó, nên sắp lại là mọi
+ * link "Chi tiết" từ trang chủ trỏ sang thẻ của người khác.
+ */
+const list = orderedTestimonials();
+const summary = reviewsSummary();
+
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .slice(-2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
+/**
+ * Ngày đối chiếu hai con số tổng, in cho người đọc.
+ *
+ * `timeZone: "UTC"` chứ không để mặc định: `checkedAt` là ngày trần (không giờ), nên
+ * `Date` hiểu nó là nửa đêm UTC — render trên máy chủ đặt ở múi giờ âm sẽ lùi về ngày
+ * hôm trước.
+ */
+const checkedAtLabel = new Intl.DateTimeFormat("vi-VN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(summary.checkedAt));
+---
+
+<section id="all-reviews" class="scroll-mt-24">
+  {/*
+    MỘT cột duy nhất cho cả mục, khai ở đây chứ không ở từng khối con.
+
+    Trước đây dải tổng quan ăn hết bề rộng `container` còn danh sách thì `max-w-3xl`
+    canh giữa, nên hai khối lệch nhau gần 200px mỗi bên — đọc ra là hai mục rời chứ
+    không phải một bảng điểm đứng trên chính danh sách nó tổng kết. Bề rộng chỉ nên
+    khai ở một chỗ, và chỗ đó là đây.
+
+    Vì sao hẹp (`max-w-3xl`): đây là mục để ĐỌC những bài dài không đều nhau. Lưới
+    nhiều cột sẽ xếp một bài ba chữ cạnh một bài ba trăm chữ, mà một dòng chạy hết
+    `container` thì quá dài cho văn xuôi.
+  */}
+  <div class="container mx-auto px-6">
+    <div class="mx-auto max-w-3xl">
+      {/*
+        Dải tổng quan dán lại khi cuộn: danh sách dưới đây dài mấy chục thẻ, và câu
+        hỏi "mấy đánh giá này lấy ở đâu ra" phải trả lời được ở bất kỳ chỗ nào trong
+        lúc đọc, không chỉ ở đầu trang.
+
+        `top-20` bằng chiều cao thanh header dán của cả trang cộng một khoảng thở.
+      */}
+      <div
+        class="sticky top-20 z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 rounded-3xl border border-border bg-background/90 px-6 py-5 shadow-[0_10px_30px_-24px_rgb(15_23_42/0.5)] backdrop-blur-md"
+      >
+        <div class="flex items-center gap-4">
+          {/*
+            `leading-none` + `tabular-nums` để con số không kéo cao khối bên cạnh và
+            không nhảy ngang nếu điểm đổi từ "5,0" sang "4,9".
+          */}
+          <span
+            class="text-3xl font-black leading-none tabular-nums text-brand-ink-900"
+          >
+            {summary.score}
+          </span>
+          <div>
+            <Stars rating={5} size="md" label={`${summary.score} trên 5 sao`} />
+            <p class="mt-1.5 text-sm leading-snug text-muted-foreground">
+              {summary.count} đánh giá trên {summary.sourceLabel}
+              <span class="block sm:inline">
+                <span class="hidden sm:inline"> · </span>đối chiếu ngày {checkedAtLabel}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/*
+          `w-full sm:w-auto`: ở màn hẹp nút xuống hàng riêng, và một nút ngắn nằm lệch
+          trái dưới khối điểm đọc ra là bị bỏ sót chỗ chứ không phải chủ ý.
+        */}
+        <a
+          href={summary.sourceUrl}
+          target="_blank"
+          rel="noopener nofollow"
+          class="group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-brand-red-600 px-5 py-3 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 sm:w-auto"
+        >
+          Xem trên {summary.sourceLabel}
+          <span
+            class="transition-transform group-hover:translate-x-0.5 [&>svg]:size-4"
+            set:html={ICONS.arrowUpRight}
+          />
+        </a>
+      </div>
+
+      <ol class="mt-8 flex flex-col gap-5">
+      {
+        list.map((t, index) => {
+          const image = imageAsset(t.image);
+          const meta = [sourceLabel(t.source), t.postedAt].filter(Boolean);
+
+          return (
+            /*
+              `scroll-mt-44` bù cho hai thứ chồng lên nhau ở đỉnh khung: header dán của
+              cả trang và dải tổng quan `sticky` phía trên. Thiếu nó thì nhảy tới
+              `#review-…` sẽ đưa thẻ nằm ngay dưới hai dải đó, tức là bị che.
+            */
+            <li
+              id={reviewAnchor(t, index)}
+              class="scroll-mt-44 overflow-hidden rounded-3xl border border-border bg-background transition-colors target:border-brand-red-300 target:bg-brand-red-50/40"
+            >
+              {/*
+                Hàng đầu thẻ là một dải riêng có nền nhạt và đường kẻ dưới, không phải
+                mấy dòng chữ trôi trên cùng mặt phẳng với bài viết.
+
+                Lý do: mỗi thẻ ở đây có hai loại nội dung khác hẳn nhau — thông tin về
+                NGƯỜI viết (ảnh, tên, nguồn, điểm) và BÀI viết. Xếp cả hai trên một nền
+                trắng thì ở một danh sách mấy chục thẻ, mắt không tìm được chỗ mỗi bài
+                bắt đầu; chỉ có khoảng trắng phân định, mà khoảng trắng giữa hai thẻ
+                cũng y như vậy.
+
+                `items-center`: dải sao căn giữa theo chiều cao khối tên chứ không dính
+                lên đỉnh — khối tên cao 1–3 dòng tuỳ cảm nhận có `role`/`postedAt` hay
+                không, canh theo đỉnh thì sao trôi lung tung giữa các thẻ.
+              */}
+              <div
+                class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border bg-brand-ink-50/60 px-6 py-4 md:px-8"
+              >
+                <div class="flex min-w-0 items-center gap-3.5">
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={`Học viên ${t.name}`}
+                      width={104}
+                      densities={[1, 2]}
+                      format="webp"
+                      quality={85}
+                      loading="lazy"
+                      decoding="async"
+                      class="size-13 shrink-0 rounded-full object-cover object-top"
+                    />
+                  ) : (
+                    <span class="grid size-13 shrink-0 place-items-center rounded-full bg-brand-red-100 text-sm font-black text-brand-red-700">
+                      {initials(t.name)}
+                    </span>
+                  )}
+
+                  <div class="min-w-0">
+                    <p class="truncate font-bold leading-tight text-brand-ink-900">
+                      {t.name}
+                    </p>
+                    {/*
+                      Một dòng phụ duy nhất, không phải hai: mô tả học viên nếu trung
+                      tâm có ghi, còn đánh giá Google thì không có mô tả nào và chỗ đó
+                      ghi nguồn với thời điểm đăng. Ghép cả hai vào một dòng thì khối
+                      tên cao đều nhau ở mọi thẻ.
+                    */}
+                    {(t.role || meta.length > 0) && (
+                      <p class="mt-0.5 truncate text-sm text-muted-foreground">
+                        {t.role || meta.join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {t.rating && (
+                  <Stars
+                    rating={t.rating}
+                    size="md"
+                    label={`${t.rating}/5 sao — đánh giá của ${t.name}`}
+                    class="shrink-0"
+                  />
+                )}
+              </div>
+
+              <div class="px-6 py-6 md:px-8 md:py-7">
+                {/*
+                  KHÔNG có `line-clamp` ở đây — cả trang này tồn tại để in trọn bài. Nội
+                  suy chứ không `set:html`, cùng lý do như ở `Testimonials.astro`.
+                */}
+                <blockquote
+                  class="whitespace-pre-line text-[1.0625rem] leading-[1.85] text-brand-ink-700"
+                >
+                  {t.quote}
+                </blockquote>
+
+                {/*
+                  Link ra bài đăng gốc nằm ở đây, sau bản đầy đủ: đọc xong mới có thứ để
+                  kiểm chứng. Cảm nhận trung tâm tự ghi lại không có link, và thẻ đó
+                  không mọc thêm chân giả.
+                */}
+                {t.link && (
+                  <a
+                    href={t.link}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    class="group mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-brand-red-700 hover:underline"
+                  >
+                    Xem bài gốc{
+                      sourceLabel(t.source) ? ` trên ${sourceLabel(t.source)}` : ""
+                    }
+                    <span class="sr-only"> — đánh giá của {t.name}</span>
+                    <span
+                      class="transition-transform group-hover:translate-x-0.5 [&>svg]:size-4"
+                      set:html={ICONS.arrowUpRight}
+                    />
+                  </a>
+                )}
+              </div>
+            </li>
+          );
+        })
+      }
+      </ol>
+    </div>
+  </div>
+</section>
