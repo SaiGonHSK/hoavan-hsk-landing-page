@@ -4,7 +4,6 @@ import { hero, stats } from "@/data/site";
 import heroPhoto from "@/assets/hero/hoc-vien-hsk1-hsk4-tach-nen.webp";
 import { ICONS } from "@/lib/icons";
 import HeroBackdrop from "@/components/HeroBackdrop.astro";
-import PromoNotice from "@/components/PromoNotice.astro";
 
 /**
  * Hero phương án 3 — dựng theo concept "e-learning": chân dung nằm trong một vòng tròn có
@@ -94,34 +93,22 @@ const features = [
   vùng nội dung — trước đây `pb-32` thấp hơn `h-44` nên đỉnh sóng chồm lên sát chân vòng ảnh.
   Đổi chiều cao sóng thì phải đổi `pb` theo.
 
-  `flex-col`: hero nay có hai phần xếp dọc — băng thông báo ưu đãi bám ngay dưới header, rồi
-  khối nội dung. Khối nội dung nhận `my-auto` để nó vẫn nằm giữa phần chiều cao CÒN LẠI, tức
-  vẫn căn giữa như khi hero chỉ có một con (trước đây là `items-center`).
-
-  Section KHÔNG còn `pt` — khoảng đệm trên chuyển xuống chính khối nội dung. Băng thông báo
-  phải chạm đúng đáy header thì nó mới đọc ra là một dải liền của trang; còn `pt` trên section
-  thì đẩy băng xuống, và một băng có nét viền mà lại hở một khoảng phía trên thì thành một cái
-  hộp trôi giữa nền.
 */}
 <section
   id="hero"
-  class="hero3 relative isolate flex min-h-[calc(100svh-var(--hero-offset,4.9rem))] flex-col overflow-hidden pb-28 sm:pb-36 lg:min-h-[calc(100svh-var(--hero-offset,6.1rem))] lg:pb-44"
+  class="hero3 relative isolate flex min-h-[calc(100svh-var(--hero-offset,4.9rem))] items-center overflow-hidden pt-6 pb-28 sm:pt-10 sm:pb-36 lg:min-h-[calc(100svh-var(--hero-offset,6.1rem))] lg:pt-12 lg:pb-44"
 >
   {/* Nền, vệt sáng, lưới kẻ, sticker và lớp sóng ở đáy — xem `HeroBackdrop.astro`. */}
   <HeroBackdrop />
 
-  <PromoNotice />
-
-  <div
-    class="container relative mx-auto my-auto w-full px-6 pt-5 sm:pt-9 lg:pt-11"
-  >
+  <div class="container relative mx-auto w-full px-6">
     {/*
       Thứ tự DOM: vòng ảnh trước, chữ sau — giống concept (ảnh bên trái, chữ bên phải) nên
       thứ tự đọc trên desktop khớp thứ tự nguồn. Trên mobile vòng ảnh nhỏ lại còn 14.5rem để
       tiêu đề và nút đăng ký vẫn nằm trong màn đầu.
     */}
     <div
-      class="grid items-center gap-y-5 sm:gap-y-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-x-10 xl:gap-x-16"
+      class="grid items-center gap-y-6 sm:gap-y-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-x-10 xl:gap-x-16"
     >
       <div class="hero3-ring relative mx-auto">
         {/*
@@ -352,7 +339,7 @@ const features = [
             một nút to nữa chồng ngay dưới nút chính, và nó lặp lại một mục đã có trong menu
             đầu trang. Bỏ nó đi thì hero mobile có đúng một việc để làm. */}
         <div
-          class="hero3-rise mt-5 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center"
+          class="hero3-rise mt-6 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center"
           style="--hero-delay: 480ms"
         >
           <a
@@ -436,29 +423,15 @@ const features = [
   */
   .hero3 {
     /* 13rem ở mobile: cả hero phải nằm trong một màn hình điện thoại, và vòng ảnh là phần
-       duy nhất có thể nhỏ lại mà không mất chữ nào.
-
-       Hạ từ 14.5rem xuống 12.75rem khi băng thông báo ưu đãi (`PromoNotice`) vào nằm trong
-       hero: băng đó cao 46px ở khổ điện thoại, và trên máy 667px (iPhone SE) nút "Đăng ký giữ
-       chỗ" trước đó chỉ còn dư 9px là chạm mép màn đầu. Vòng ảnh vẫn là phần duy nhất co lại
-       được mà không mất chữ nào, nên nó trả lại chỗ cho băng. Ba mốc còn lại giữ nguyên — từ
-       `sm` trở lên `min-h` của hero đã dư chỗ, thêm băng vào không đẩy gì xuống.
+       duy nhất có thể nhỏ lại mà không mất chữ nào. Nới được thêm 1rem so với bản trước vì
+       khối chữ mobile nay là ba con số một dòng và một nút, ngắn hơn bản cũ chừng 5rem.
 
        Cả bốn mốc dưới đây đều tăng khoảng 9%: vòng ảnh là tâm điểm duy nhất của nửa trái,
        và ở cỡ trước hai bạn trong ảnh nhỏ hơn khối tiêu đề bên cạnh. Tăng `--ring` chứ
        không tăng `h-[119%]` của thẻ `<Image>`: chiều cao ảnh tính theo vòng, kéo ảnh cao
        thêm trong một vòng cũ thì phần cắt ở đáy ăn lên tới cuốn giáo trình hai bạn đang
        cầm — đúng cái vật cần thấy. */
-    --ring: 12.75rem;
-  }
-
-  /* Máy cao từ 700px trở lên (mọi điện thoại đời nay: 740, 812, 852…) còn dư chỗ cho cả dải
-     thông báo lẫn vòng ảnh cỡ cũ — chỉ máy 667px và thấp hơn mới phải cắt. Lọc theo CHIỀU CAO
-     vì đó mới là thứ đang thiếu; lọc theo bề rộng thì mấy máy hẹp-mà-cao cũng bị cắt lây. */
-  @media (max-width: 639px) and (min-height: 700px) {
-    .hero3 {
-      --ring: 14.5rem;
-    }
+    --ring: 14.5rem;
   }
 
   @media (min-width: 640px) {

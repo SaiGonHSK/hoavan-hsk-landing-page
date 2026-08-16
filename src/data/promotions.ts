@@ -47,21 +47,23 @@ export type Promotion = {
    */
   accent: "green" | "gold" | "blue";
 
-  /** Các mức của ưu đãi bậc thang. Chỉ dùng khi một con số không nói hết được. */
-  tiers?: { label: string; value: string }[];
-
   /**
-   * Bản rút gọn cho dải thông báo ở hero (`PromoNotice.astro`) — ba ưu đãi đứng cạnh nhau
-   * trong một dải, mỗi ưu đãi chỉ được chừng một phần ba bề rộng.
+   * Ba dòng ở chân tấm phiếu (`Promotions.astro`) — cùng vai trò với hàng
+   * "Redemption / Validity / Use" trên phiếu giảm giá thật: điều kiện dùng, gói gọn thành
+   * cặp nhãn–giá trị đọc lướt được.
    *
-   * Viết riêng chứ không cắt từ `title`/`value`/`unit`: ghép máy móc ra "Học lên khoá tiếp
-   * theo — 5% học phí khoá sau", dài gấp đôi chỗ có. Ở đây `value` mang cả chữ "Giảm"/"Đến"
-   * và ký hiệu "đ" để đọc lướt là hiểu, còn `label` nói điều kiện áp dụng.
+   * ĐÚNG BA MỤC mỗi ưu đãi, không hơn không kém: chân phiếu chia ba cột đều nhau, hai mục
+   * thì cột thứ ba trống, bốn mục thì phải xuống hàng và ba tấm phiếu cao khác nhau.
    *
-   * `label` của ưu đãi nhóm nêu "từ 2 bạn" — đó là mức thấp nhất, tức điều kiện để bắt đầu
-   * được giảm; con số in đậm bên cạnh là mức cao nhất. Hai mức đầy đủ vẫn ở `tiers`.
+   * Mọi giá trị ở đây đều nói lại điều đã có trong `desc`/`value`/`unit` bằng ít chữ hơn,
+   * KHÔNG thêm điều kiện mới. Đây là ràng buộc bắt buộc: mỗi dòng ở đây là một cam kết về
+   * tiền, và một điều kiện tự nghĩ ra ở phần chân phiếu thì người đọc vẫn hiểu là trung tâm
+   * hứa. Sửa `desc` thì phải xem lại ba dòng này.
+   *
+   * Hai mức của ưu đãi nhóm (2 bạn / 5 bạn) nằm luôn ở đây, không còn trường `tiers` riêng:
+   * hai chỗ cùng giữ một con số tiền thì sớm muộn cũng lệch nhau một lần sửa.
    */
-  notice: { value: string; label: string };
+  terms: { label: string; value: string }[];
 };
 
 /**
@@ -78,7 +80,11 @@ export const promotions: Promotion[] = [
     unit: "học phí khoá sau",
     title: "Học lên khoá tiếp theo",
     desc: "Giảm ngay khi học viên đang học đăng ký khoá kế tiếp.",
-    notice: { value: "Giảm 5%", label: "học phí khoá sau" },
+    terms: [
+      { label: "Dành cho", value: "Học viên đang học" },
+      { label: "Áp dụng", value: "Khoá kế tiếp" },
+      { label: "Mức giảm", value: "5% học phí" },
+    ],
   },
   {
     id: "referral",
@@ -87,7 +93,11 @@ export const promotions: Promotion[] = [
     unit: "đồng mỗi học viên",
     title: "Giới thiệu học viên mới",
     desc: "Trung tâm gửi phí giới thiệu khi bạn mới đăng ký khoá học.",
-    notice: { value: "200.000đ", label: "giới thiệu bạn mới" },
+    terms: [
+      { label: "Dành cho", value: "Người giới thiệu" },
+      { label: "Nhận khi", value: "Bạn mới nhập học" },
+      { label: "Mức nhận", value: "200.000đ/bạn" },
+    ],
   },
   {
     id: "group",
@@ -97,11 +107,11 @@ export const promotions: Promotion[] = [
     unit: "đồng mỗi học viên",
     title: "Đăng ký theo nhóm",
     desc: "Cả nhóm cùng đăng ký, mỗi bạn đều được giảm học phí.",
-    tiers: [
-      { label: "Nhóm từ 2 bạn", value: "100.000đ" },
-      { label: "Nhóm từ 5 bạn", value: "200.000đ" },
+    terms: [
+      { label: "Nhóm từ 2 bạn", value: "Giảm 100.000đ" },
+      { label: "Nhóm từ 5 bạn", value: "Giảm 200.000đ" },
+      { label: "Áp dụng", value: "Mỗi học viên" },
     ],
-    notice: { value: "Đến 200.000đ", label: "nhóm từ 2 bạn" },
   },
 ];
 
@@ -110,8 +120,8 @@ export const promotions: Promotion[] = [
  * cân nhắc biết chính xác khi nào quay lại xem, thay vì một câu "theo dõi để cập nhật" không
  * nói gì.
  *
- * Câu này nằm dưới dải thông báo ở hero (`PromoNotice.astro`), thành một dòng riêng chứ
- * không vào trong dải: nó là một lời hẹn, không phải một ưu đãi đang áp dụng.
+ * Câu này nằm dưới ba tấm phiếu (`Promotions.astro`) và cố ý mang hình dạng khác hẳn chúng:
+ * nó là một lời hẹn, không phải một ưu đãi đang áp dụng.
  */
 export const promotionNote =
   "Ưu đãi theo dịp lễ (30/4, 2/9, 20/11, Tết…) được trung tâm cập nhật vào ngày 25 hằng tháng.";

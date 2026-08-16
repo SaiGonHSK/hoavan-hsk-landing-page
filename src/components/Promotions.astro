@@ -1,0 +1,439 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import { promotions, promotionNote } from "@/data/promotions";
+import { ICONS } from "@/lib/icons";
+
+/**
+ * Ba chương trình ưu đãi cố định, vẽ thành ba tấm phiếu quà tặng.
+ *
+ * Vì sao là hình phiếu chứ không phải ba thẻ vuông như các khối khác của trang: cả trang chủ
+ * đã có bốn khối dùng thẻ bo góc (`Courses`, `WhyUs`, `Testimonials`, `FAQ`), nên một bộ thẻ
+ * nữa sẽ trôi qua mắt. Phiếu có hai khuyết tròn ở hai bên hông và một đường răng cưa cắt
+ * ngang — đó là hình mà người đọc nhận ra ngay là "cái để dùng", không phải một mẩu giới
+ * thiệu nữa.
+ *
+ * Bố cục mỗi phiếu, từ trên xuống — đúng thứ tự người đọc cần:
+ *
+ *   1. tên chương trình
+ *   2. con số in lớn, tô màu, cộng đơn vị của nó
+ *   3. một câu nói rõ khi nào được hưởng
+ *   4. hộp quà vẽ ở góc phải, chồng dưới lớp chữ
+ *   5. dưới đường răng cưa: ba điều kiện dùng, cùng vai trò với hàng
+ *      "Redemption / Validity / Use" trên phiếu giảm giá thật
+ */
+
+/**
+ * Ở bố cục hai cột (`md`), một danh sách lẻ để lại đúng một tấm phiếu đứng một mình nửa hàng
+ * cuối. Cho tấm cuối ăn hết hàng thì hàng cuối kín, và tấm đó cũng là tấm duy nhất có hai mức
+ * (nhóm 2 bạn / nhóm 5 bạn) nên nó dùng được chỗ rộng hơn.
+ *
+ * Tính theo số phần tử chứ không viết cứng "tấm thứ ba": danh sách này còn được sửa mỗi khi
+ * trung tâm đổi chương trình, và thêm một mục nữa là quy tắc tự đảo chiều.
+ */
+const lastSpansRow = promotions.length % 2 === 1;
+---
+
+{/*
+  Khối này KHÔNG có `py` và không có nền riêng: nó ăn theo `gap` của `<main>` như mọi khối
+  khác trên trang chủ. Bản trước có một dải nền xám chạy hết bề ngang (lấy từ `HeroBackdrop`
+  dạng `band`) — nhưng ba tấm phiếu nay mỗi tấm là một mảng màu, đặt chúng lên một dải có màu
+  nữa thì nền chọi với chính thứ nó đỡ.
+*/}
+<section id="promotions" class="relative scroll-mt-24">
+  <div class="container mx-auto px-6">
+    {/*
+      Nhãn viết tay tách ra đứng riêng bên phải thay vì dùng `note` của `SectionHeading` —
+      `note` luôn nằm TRÊN tiêu đề, còn ở đây nó phải nằm ngang hàng, nên nó được vẽ ở đây.
+
+      DOM để nhãn trước tiêu đề, rồi `md:order-last` đẩy nó sang phải từ `md`: ở khổ một cột
+      thứ tự đọc vẫn là nhãn → tiêu đề như mọi khối khác của trang, chỉ bố cục đổi chứ không
+      đổi luôn cả trình tự.
+
+      `md:items-start`: nhãn bám mép trên của tiêu đề. Căn theo mép dưới thì nó tụt xuống
+      ngang dòng mô tả — chỗ đó là chân khối, không phải chỗ của một cái nhãn.
+    */}
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between md:gap-10">
+      <p
+        class="mb-5 w-fit -rotate-2 rounded-2xl border border-dashed border-brand-red-200 bg-brand-red-50 px-4 py-2 font-hand text-xl leading-tight text-brand-red-700 md:order-last md:mb-0 md:shrink-0 md:text-2xl"
+      >
+        Ưu đãi cố định
+      </p>
+
+      <SectionHeading
+        align="left"
+        title="Ưu đãi học phí"
+        highlight="áp dụng quanh năm"
+        description="Ba chương trình áp dụng cố định tại SaigonHSK, không giới hạn thời gian."
+      />
+    </div>
+
+    {/*
+      Hai cột chỉ từ `md` chứ không từ `sm`: ở đúng 640px, hai cột cho mỗi phiếu 286px — hẹp
+      hơn cả bản một cột trên điện thoại 375px (327px). Một breakpoint làm chữ chật hơn khổ
+      máy nhỏ hơn nó thì không nên có.
+
+      `items-stretch` + `h-full` ở trong: ba phiếu cao bằng nhau thì ba đường răng cưa thẳng
+      hàng, và ba hàng điều kiện ở chân cũng vậy. Không có nó thì phiếu nào chữ ngắn hơn sẽ
+      có đường răng cưa nằm lệch lên trên so với hai phiếu bên cạnh.
+    */}
+    <ul
+      class="mt-10 grid items-stretch gap-6 md:grid-cols-2 lg:mt-12 lg:grid-cols-3"
+    >
+      {
+        promotions.map((p, i) => (
+          <li
+            class:list={[
+              "promo-ticket",
+              `is-${p.accent}`,
+              lastSpansRow &&
+                i === promotions.length - 1 &&
+                "md:col-span-2 lg:col-span-1",
+            ]}
+          >
+            {/*
+              Hai lớp lồng nhau, và cả hai đều cần thiết:
+
+                `.promo-ticket-shadow` — chỉ để đổ bóng, KHÔNG mang mặt nạ.
+                `.promo-ticket-body`   — mặt phiếu, mang mặt nạ khoét hai khuyết tròn.
+
+              Tách ra vì trong CSS `filter` chạy TRƯỚC `mask`: đặt bóng cùng thẻ với mặt nạ
+              thì chính mặt nạ đó cắt mất bóng. Đặt `drop-shadow` ở thẻ bọc ngoài thì bóng
+              tính theo hình đã bị khoét của thẻ trong — tức bóng cũng có hai khuyết, đúng
+              như một tờ giấy bị bấm lỗ.
+            */}
+            <div class="promo-ticket-shadow h-full">
+              <div class="promo-ticket-body flex h-full flex-col">
+                <div class="relative flex-1 overflow-hidden px-5 pt-5 pb-6 sm:px-6 sm:pt-6">
+                  {/* Hộp quà: nằm ở lớp dưới cùng và bị mép phải cắt bớt một phần. Vẽ trọn
+                      vẹn trong khung thì nó thành một cái icon minh hoạ; bị cắt thì nó là
+                      hình trang trí nằm sau tờ phiếu, và chữ vẫn là thứ đọc trước. */}
+                  <svg
+                    class="promo-ticket-gift pointer-events-none absolute -top-2 -right-5 w-28 sm:w-32"
+                    viewBox="0 0 96 96"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    {/* Tia và chấm bắn ra từ miệng hộp */}
+                    <g class="promo-ticket-confetti">
+                      <path
+                        d="M30 26 24 16"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M48 18 48 6"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M66 26 73 16"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                      />
+                      <circle cx="16" cy="34" r="3" stroke-width="0" />
+                      <circle cx="82" cy="38" r="2.5" stroke-width="0" />
+                    </g>
+
+                    {/* Ngôi sao nhô lên khỏi miệng hộp — thứ duy nhất trong hình dùng màu
+                        đậm nhất, nên mắt rơi vào đúng chỗ "quà" chứ không phải cái hộp. */}
+                    <path
+                      class="promo-ticket-star"
+                      d="M48 22 52.4 32.2 63.4 33.2 55.1 40.5 57.5 51.3 48 45.6 38.5 51.3 40.9 40.5 32.6 33.2 43.6 32.2Z"
+                    />
+
+                    {/* Nắp, thân, và dải ruy băng dọc */}
+                    <rect
+                      class="promo-ticket-lid"
+                      x="18"
+                      y="50"
+                      width="60"
+                      height="14"
+                      rx="4"
+                    />
+                    <rect
+                      class="promo-ticket-box"
+                      x="24"
+                      y="64"
+                      width="48"
+                      height="30"
+                      rx="4"
+                    />
+                    <rect
+                      class="promo-ticket-ribbon"
+                      x="42"
+                      y="50"
+                      width="12"
+                      height="44"
+                    />
+                  </svg>
+
+                  <div class="relative">
+                    <h3 class="text-[0.95rem] leading-snug font-black text-brand-ink-900">
+                      {p.title}
+                    </h3>
+
+                    {/*
+                      Con số và đơn vị của nó. `valuePrefix` ("Đến") phải đứng TRƯỚC con số
+                      trên cùng một dòng, không phải một nhãn nhỏ phía trên như bản phiếu cũ:
+                      ở đó nửa trái chỉ rộng 7rem nên chữ "Đến" không có chỗ nào khác để
+                      đứng, còn ở đây cả bề ngang phiếu là của nó.
+
+                      Cỡ chữ theo độ dài con số: "200.000" chạm mép ở 2rem trong khi "5%" ở
+                      cùng cỡ chỉ chiếm một phần ba bề rộng và đọc ra là ưu đãi nhỏ hơn — dù
+                      5% học phí không hề nhỏ hơn 200.000đ. Ngưỡng 4 ký tự là chỗ hai nhóm
+                      tách hẳn: mọi giá trị phần trăm đều dưới 4, mọi giá trị tiền đều từ 7
+                      ký tự trở lên.
+                    */}
+                    <p class="mt-4 flex max-w-60 flex-wrap items-baseline gap-x-1.5">
+                      {p.valuePrefix && (
+                        <span class="promo-ticket-value text-base font-black">
+                          {p.valuePrefix}
+                        </span>
+                      )}
+                      <span
+                        class:list={[
+                          "promo-ticket-value leading-none font-black tracking-[-0.02em] whitespace-nowrap",
+                          p.value.length <= 4
+                            ? "text-[2.4rem]"
+                            : "text-[1.9rem]",
+                        ]}
+                      >
+                        {p.value}
+                      </span>
+                      <span class="text-[0.8rem] leading-snug font-semibold text-brand-ink-500">
+                        {p.unit}
+                      </span>
+                    </p>
+
+                    {/* `max-w-60`: chặn dòng chữ lại trước khi nó chạy vào chỗ hộp quà.
+                        Không chặn thì ở khổ một cột (điện thoại) câu này kéo dài hết bề
+                        ngang và nằm đè lên phần đuôi hộp. */}
+                    <p class="mt-2.5 max-w-60 text-[0.82rem] leading-relaxed text-muted-foreground">
+                      {p.desc}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Ba điều kiện dùng. Chia đều ba cột và căn trái: căn giữa thì ba cặp
+                    nhãn–giá trị trôi mỗi cặp một chỗ vì độ dài khác nhau, còn căn trái cho
+                    ba mốc thẳng hàng — đọc dọc xuống là ra ba giá trị. */}
+                <ul class="promo-ticket-terms grid grid-cols-3 gap-2 px-5 pt-4 pb-5 sm:px-6">
+                  {p.terms.map((t) => (
+                    <li class="min-w-0">
+                      <p class="text-[0.62rem] leading-tight font-semibold tracking-[0.06em] text-brand-ink-400 uppercase">
+                        {t.label}
+                      </p>
+                      <p class="promo-ticket-term-value mt-1 text-[0.78rem] leading-snug font-bold">
+                        {t.value}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    {/*
+      Ưu đãi theo dịp lễ. Viền nét đứt để nó nối được với ba tấm phiếu ở trên mà không cần
+      thêm một tấm phiếu thứ tư — nội dung ở đây là một lời hẹn, không phải một ưu đãi đang
+      áp dụng, nên nó không được mang cùng hình dạng với ba cái trên.
+    */}
+    <p
+      class="mx-auto mt-7 flex max-w-2xl items-center justify-center gap-2.5 rounded-full border border-dashed border-brand-ink-200 bg-background/70 px-5 py-3 text-center text-xs leading-relaxed text-muted-foreground sm:text-[0.8rem] lg:mt-8"
+    >
+      {/* Icon để màu mực chứ không lấy một trong ba màu nhấn: chọn màu nào cũng thành ra
+          dòng này thuộc về một trong ba tấm phiếu, mà nó nói về chuyện thứ tư. */}
+      <span
+        class="shrink-0 text-brand-ink-400 [&>svg]:size-4"
+        aria-hidden="true"
+        set:html={ICONS.calendar}
+      />
+      {promotionNote}
+    </p>
+  </div>
+</section>
+
+<style>
+  /*
+    HÌNH TỜ PHIẾU.
+
+    `--notch` là bán kính hai khuyết tròn ở hông, `--terms` là chiều cao phần chân phiếu.
+    Hai biến này phải khớp nhau: tâm khuyết đặt đúng trên đường răng cưa, mà đường răng cưa
+    lại là mép trên của phần chân. Đổi `padding` của phần chân thì phải đổi `--terms` theo,
+    nếu không hai khuyết trôi khỏi đường kẻ và tờ phiếu trông như bị bấm lỗ nhầm chỗ.
+  */
+  .promo-ticket {
+    --notch: 13px;
+    --terms: 4.9rem;
+  }
+
+  /*
+    Khoét hai khuyết bằng `mask` chứ không vẽ hai chấm tròn màu trắng đè lên: nền của khối
+    này là nền trang, nhưng cùng lúc đó ba tấm phiếu còn có bóng đổ — một chấm trắng đè lên
+    sẽ che mất phần bóng nằm dưới nó và để lại hai vết sáng ở hai bên hông.
+
+    `mask-composite: intersect` để hai mặt nạ CÙNG có hiệu lực (mỗi mặt nạ khoét một bên).
+    Chrome dưới 120 chỉ hiểu `-webkit-mask-composite: source-in` — cùng nghĩa, phải khai cả
+    hai. Trình duyệt không hiểu cả hai thì tệ nhất là mất hai khuyết, phiếu vẫn nguyên vẹn.
+  */
+  .promo-ticket-body {
+    background: var(--tint);
+    border-radius: 1.15rem;
+    -webkit-mask-image:
+      radial-gradient(
+        circle var(--notch) at 0 calc(100% - var(--terms)),
+        transparent 99%,
+        #000 100%
+      ),
+      radial-gradient(
+        circle var(--notch) at 100% calc(100% - var(--terms)),
+        transparent 99%,
+        #000 100%
+      );
+    mask-image:
+      radial-gradient(
+        circle var(--notch) at 0 calc(100% - var(--terms)),
+        transparent 99%,
+        #000 100%
+      ),
+      radial-gradient(
+        circle var(--notch) at 100% calc(100% - var(--terms)),
+        transparent 99%,
+        #000 100%
+      );
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* Bóng mảnh và thấp: tờ phiếu đã có mảng màu riêng để tách khỏi nền trắng, nên bóng ở đây
+     chỉ để nó không dán phẳng lì vào trang. Đổ bằng `drop-shadow` chứ không `box-shadow` vì
+     `box-shadow` vẽ theo hình chữ nhật của hộp, tức bóng vẫn vuông ở đúng hai chỗ vừa khoét. */
+  .promo-ticket-shadow {
+    filter: drop-shadow(0 14px 26px rgba(18, 19, 22, 0.09));
+  }
+
+  /* Đường răng cưa: nét đứt chạy ngang, hai đầu dừng đúng mép hai khuyết. `left/right` bằng
+     `--notch` chứ không phải 0 — chạy sát mép thì nét đứt đâm vào lòng khuyết. */
+  .promo-ticket-terms {
+    position: relative;
+  }
+
+  .promo-ticket-terms::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: var(--notch);
+    right: var(--notch);
+    border-top: 1.5px dashed var(--perf);
+  }
+
+  /*
+    NỀN TIA SÁNG.
+
+    `repeating-conic-gradient` từ một điểm nằm ngoài khung (110% 130%, tức dưới–phải): tia
+    toả ra từ trong khung thì tâm toả rơi vào giữa tờ phiếu, và mọi tia chụm lại ở đó thành
+    một điểm rối ngay dưới chữ. Đặt tâm ra ngoài thì trong khung chỉ còn những tia gần như
+    song song, quét chéo qua tờ phiếu.
+
+    Chênh lệch giữa hai nan nhỏ (`--ray` đậm hơn `--tint` chừng 5–6 đơn vị RGB): đủ để thấy
+    đây là tia toả ra, chưa đủ để đọc thành sọc. Bản đầu chênh 11 đơn vị và ở khổ một cột —
+    nơi tấm phiếu rộng gần 700px — nan tia to bằng ngón tay, chọi hẳn với con số.
+  */
+  .promo-ticket-body {
+    background-image: repeating-conic-gradient(
+      from 0deg at 110% 130%,
+      var(--ray) 0deg 4deg,
+      transparent 4deg 9deg
+    );
+    background-color: var(--tint);
+  }
+
+  .promo-ticket-value,
+  .promo-ticket-term-value {
+    color: var(--ink);
+  }
+
+  /* Hộp quà: bốn mảng cùng một sắc, khác nhau ở độ đậm — nắp đậm nhất, thân nhạt hơn, ruy
+     băng nhạt nhất, ngôi sao lấy màu chữ. Cùng một sắc thì hình đọc ra là một khối; đổi sắc
+     cho từng mảng thì nó thành hình vẽ nhiều màu, chọi với con số ngay bên cạnh. */
+  .promo-ticket-lid {
+    fill: var(--gift-deep);
+  }
+
+  .promo-ticket-box {
+    fill: var(--gift-mid);
+  }
+
+  .promo-ticket-ribbon {
+    fill: var(--gift-light);
+  }
+
+  .promo-ticket-star {
+    fill: var(--ink);
+  }
+
+  .promo-ticket-confetti {
+    stroke: var(--gift-deep);
+    fill: var(--gift-deep);
+  }
+
+  /*
+    BA MÀU NHẤN CỦA BA TẤM PHIẾU — giữ nguyên bộ của bản phiếu cũ.
+
+    Mỗi tấm mang một màu gắn với nghĩa của chính ưu đãi đó (xem `accent` trong
+    `promotions.ts`). Sáu giá trị cho sáu chỗ dùng, không hơn:
+
+      `--tint`       nền tờ phiếu
+      `--ray`        nan tia sáng trên nền
+      `--ink`        con số, ngôi sao trên hộp quà, giá trị ở chân phiếu
+      `--perf`       đường răng cưa
+      `--gift-*`     ba mảng của hộp quà
+
+    BA MÀU ĐƯỢC CÂN THEO ĐỘ SÁNG, KHÔNG PHẢI CHỌN THEO SẮC. Ba tấm đứng cạnh nhau cùng cỡ
+    chữ, nên tấm nào màu tối hơn sẽ đọc ra là ưu đãi lớn hơn. Cả ba `--ink` đều rơi vào
+    khoảng 4.9–5.3:1 trên nền trắng (vàng 4.9, lá 5.0, dương 5.3).
+
+    Vàng là màu khó nhất: vàng thuần không bao giờ đủ tối để làm chữ nên phải kéo về phía hổ
+    phách. #a16207 chính là `--sticker-gold-deep` đã dùng cho nét chữ trên cuốn sách dán ở
+    hero, nên vàng này không phải màu lạ với trang.
+
+    Đỏ thương hiệu KHÔNG có mặt trong ba tấm phiếu, nhưng vẫn giữ ở tiêu đề và nhãn viết tay
+    của `SectionHeading` phía trên: phần đầu khối là tiếng nói của trung tâm nên nó mang màu
+    của trung tâm, còn ba tấm phiếu là ba món khác nhau nên mỗi tấm một màu.
+  */
+  .promo-ticket.is-green {
+    --tint: #edf8f1;
+    --ray: #e6f5ec;
+    --ink: #15803d;
+    --perf: #b4dcc4;
+    --gift-deep: #15803d;
+    --gift-mid: #4aa96c;
+    --gift-light: #9ad3b0;
+  }
+
+  /* Nền vàng nhạt hơn hai màu kia một chút (lệch khỏi trắng ~23 đơn vị RGB so với ~25): màu
+     ấm luôn tiến ra trước màu lạnh ở cùng độ nhạt, nên tô bằng nhau thì tấm giữa nổi lên
+     trước hai tấm bên. */
+  .promo-ticket.is-gold {
+    --tint: #fdf7ea;
+    --ray: #fbf3e3;
+    --ink: #a16207;
+    --perf: #e8d09a;
+    --gift-deep: #a16207;
+    --gift-mid: #d09a2c;
+    --gift-light: #eccd8a;
+  }
+
+  .promo-ticket.is-blue {
+    --tint: #eef4fd;
+    --ray: #e8f0fc;
+    --ink: #1668d1;
+    --perf: #b6cff0;
+    --gift-deep: #1668d1;
+    --gift-mid: #5794e0;
+    --gift-light: #a7c6f0;
+  }
+</style>

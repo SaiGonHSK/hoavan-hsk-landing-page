@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Hero from "@/components/HeroV3.astro";
+import Promotions from "@/components/Promotions.astro";
 import WhyUs from "@/components/WhyUs.astro";
 import Courses from "@/components/Courses.astro";
 import Teacher from "@/components/Teacher.astro";
@@ -43,8 +44,8 @@ const schemas = [
 >
   <Header />
   <main id="main" class="flex flex-col gap-16 lg:gap-24">
-    {/* Ưu đãi nay là dải thông báo một dòng nằm trong `Hero` — xem `PromoNotice.astro`. */}
     <Hero />
+    <Promotions />
     <Achievements />
     <WhyUs />
     <Courses limit={4} />
