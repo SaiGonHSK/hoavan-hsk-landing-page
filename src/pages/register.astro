@@ -9,7 +9,7 @@ import { ICONS } from "@/lib/icons";
 import { breadcrumbGraph } from "@/lib/schema";
 import { commitments, contact } from "@/data/site";
 import { contextFromUrl, registerNote, resolveCourseOption } from "@/lib/registerLink";
-import { findClassById } from "@/data/schedule";
+import { findRowById } from "@/data/schedule";
 
 /**
  * Trang này là trang chuyển đổi: form phải nằm ngay trong khung nhìn đầu tiên, cạnh
@@ -27,25 +27,24 @@ const crumbs = [{ label: "Đăng ký" }];
 const context = contextFromUrl(Astro.url);
 
 /**
- * Lớp khách bấm trên lịch khai giảng, giải từ `?classId=` sang một dòng có thật của đợt
- * đang đăng. `undefined` khi id không tra được — link cũ, đợt vừa đổi, hay số ai đó tự
- * gõ — và khi đó trang chạy đúng như khi không có tham số nào.
+ * Dòng lịch khách bấm trên trang Lịch khai giảng, giải từ `?item=` sang một dòng có thật
+ * của đợt đang đăng. `undefined` khi id không tra được — link cũ, đợt vừa đổi, hay số ai
+ * đó tự gõ — và khi đó trang chạy đúng như khi không có tham số nào.
  */
-const pickedClass = findClassById(context.classId);
+const pickedClass = findRowById(context.itemId);
 
 /*
-  `?course=` của link được ưu tiên, lớp chỉ là đường lùi.
+  `?course=` của link được ưu tiên, dòng lịch chỉ là đường lùi.
 
   Ngược lại thì tệ hơn: khoá của link là thứ trang trước đó biết chính xác ("HSK3"),
-  còn suy từ lớp chỉ ra được tên chương trình bao ngoài ("Tiếng Trung Sơ cấp"). Lấy
-  lớp đè lên link là đổi một nhãn cụ thể lấy một nhãn rộng hơn.
+  còn suy từ dòng lịch chỉ ra được nhãn khối bao ngoài ("Tiếng Trung Sơ cấp"). Lấy dòng
+  lịch đè lên link là đổi một nhãn cụ thể lấy một nhãn rộng hơn.
 
-  `resolveCourseOption` trả `undefined` cho slug không phải khoá bán ra (giáo trình,
-  trang kỹ năng), nên `??` mới là thứ bắt đúng "link không nói được khoá nào".
+  `resolveCourseOption` trả `undefined` cho chuỗi không khớp khoá bán ra nào — kể cả một
+  nhãn khối giáo vụ tự đặt — nên `??` mới là thứ bắt đúng "link không nói được khoá nào".
 */
 const selectedCourse =
-  resolveCourseOption(context.course) ??
-  resolveCourseOption(pickedClass?.programSlug || pickedClass?.courseTitle);
+  resolveCourseOption(context.course) ?? resolveCourseOption(pickedClass?.group);
 
 /*
   Mã lớp chỉ nhét vào ghi chú khi KHÔNG giải được lớp.
@@ -167,7 +166,7 @@ const perks = commitments.map((c) => ({
             <RegisterForm
               dense
               course={selectedCourse}
-              classId={pickedClass?.id}
+              itemId={pickedClass?.id}
               note={prefilledNote}
             />
           </div>

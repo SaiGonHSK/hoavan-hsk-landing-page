@@ -367,9 +367,9 @@ const DAY_OF_WEEK = [
 
 type ScheduleRowLike = {
   name: string;
-  courseCode: string;
-  courseTitle: string;
-  programSlug: string;
+  code: string;
+  /** Nhãn khối giáo vụ gõ; rỗng thì gom theo `code`. Xem `data/scheduleApi.ts`. */
+  group: string;
   mode: string;
   openDateISO: string;
   duration: string;
@@ -384,11 +384,15 @@ const courseMode = (mode: string) =>
  * Lịch khai giảng dưới dạng `ItemList` các `Course`, mỗi khoá kèm các `CourseInstance`
  * đang tuyển sinh.
  *
- * Gom theo khoá chứ không phẳng theo lớp: schema.org không có chỗ để một
+ * Gom theo khối chứ không phẳng theo lớp: schema.org không có chỗ để một
  * `CourseInstance` tự trỏ ngược về khoá của nó — quan hệ chỉ tồn tại theo chiều
  * `Course.hasCourseInstance`. Phát một danh sách CourseInstance rời sẽ mất luôn thông
- * tin "ba lớp này là ba ca của cùng khoá HSK1", vốn là điều người hỏi "khi nào khai
+ * tin "ba lớp này là ba ca của cùng một trình độ", vốn là điều người hỏi "khi nào khai
  * giảng HSK1" cần biết.
+ *
+ * Khối lấy từ chữ giáo vụ gõ trên từng dòng lịch (`group`), rơi về mã lớp khi để trống —
+ * một dòng lịch không tra sang `courses` được nữa, nên cũng không có `url` trỏ về trang
+ * chương trình.
  *
  * Lớp không có ngày khai giảng cố định (GT1, GT2, VIP — xếp lịch theo học viên) vẫn
  * được khai, chỉ không có `startDate`: bỏ chúng đi thì trang lịch hiện lớp mà dữ liệu
@@ -403,7 +407,7 @@ export function openingScheduleSchema(
 
   const byCourse = new Map<string, ScheduleRowLike[]>();
   for (const row of rows) {
-    const key = row.courseCode || row.courseTitle;
+    const key = row.group || row.code;
     const list = byCourse.get(key);
     if (list) list.push(row);
     else byCourse.set(key, [row]);
@@ -412,20 +416,18 @@ export function openingScheduleSchema(
   const location = { "@type": "Place", name: provider.name, address: provider.address };
 
   const courses = [...byCourse.entries()].map(([key, group]) => {
-    const { courseTitle, programSlug } = group[0];
     const modes = [...new Set(group.map((r) => r.mode))];
 
     return {
       "@type": "Course",
       "@id": `${origin}/schedule#${slugifyName(key)}`,
-      name: courseTitle,
+      name: key,
       // Mô tả dựng từ chính dữ liệu lịch, không viết tay: nó luôn khớp số lớp thật.
-      description: `Lịch khai giảng khoá ${courseTitle} tại ${provider.name}: ${group.length} lớp đang nhận đăng ký${
+      description: `Lịch khai giảng ${key} tại ${provider.name}: ${group.length} lớp đang nhận đăng ký${
         modes.length ? ` (${modes.join(", ")})` : ""
       }.`,
       inLanguage: "vi-VN",
       provider: { "@id": `${origin}/#organization` },
-      ...(programSlug ? { url: `${origin}/courses/programs/${programSlug}` } : {}),
       hasCourseInstance: group.map((row) => ({
         "@type": "CourseInstance",
         name: row.name,

@@ -49,6 +49,19 @@ export type Promotion = {
 
   /** Các mức của ưu đãi bậc thang. Chỉ dùng khi một con số không nói hết được. */
   tiers?: { label: string; value: string }[];
+
+  /**
+   * Bản rút gọn cho dải thông báo ở hero (`PromoNotice.astro`) — ba ưu đãi đứng cạnh nhau
+   * trong một dải, mỗi ưu đãi chỉ được chừng một phần ba bề rộng.
+   *
+   * Viết riêng chứ không cắt từ `title`/`value`/`unit`: ghép máy móc ra "Học lên khoá tiếp
+   * theo — 5% học phí khoá sau", dài gấp đôi chỗ có. Ở đây `value` mang cả chữ "Giảm"/"Đến"
+   * và ký hiệu "đ" để đọc lướt là hiểu, còn `label` nói điều kiện áp dụng.
+   *
+   * `label` của ưu đãi nhóm nêu "từ 2 bạn" — đó là mức thấp nhất, tức điều kiện để bắt đầu
+   * được giảm; con số in đậm bên cạnh là mức cao nhất. Hai mức đầy đủ vẫn ở `tiers`.
+   */
+  notice: { value: string; label: string };
 };
 
 /**
@@ -65,6 +78,7 @@ export const promotions: Promotion[] = [
     unit: "học phí khoá sau",
     title: "Học lên khoá tiếp theo",
     desc: "Giảm ngay khi học viên đang học đăng ký khoá kế tiếp.",
+    notice: { value: "Giảm 5%", label: "học phí khoá sau" },
   },
   {
     id: "referral",
@@ -73,6 +87,7 @@ export const promotions: Promotion[] = [
     unit: "đồng mỗi học viên",
     title: "Giới thiệu học viên mới",
     desc: "Trung tâm gửi phí giới thiệu khi bạn mới đăng ký khoá học.",
+    notice: { value: "200.000đ", label: "giới thiệu bạn mới" },
   },
   {
     id: "group",
@@ -86,6 +101,7 @@ export const promotions: Promotion[] = [
       { label: "Nhóm từ 2 bạn", value: "100.000đ" },
       { label: "Nhóm từ 5 bạn", value: "200.000đ" },
     ],
+    notice: { value: "Đến 200.000đ", label: "nhóm từ 2 bạn" },
   },
 ];
 
@@ -93,6 +109,9 @@ export const promotions: Promotion[] = [
  * Câu chốt về ưu đãi theo dịp lễ. Có nêu ngày 25 vì đó là thông tin dùng được: người đang
  * cân nhắc biết chính xác khi nào quay lại xem, thay vì một câu "theo dõi để cập nhật" không
  * nói gì.
+ *
+ * Câu này nằm dưới dải thông báo ở hero (`PromoNotice.astro`), thành một dòng riêng chứ
+ * không vào trong dải: nó là một lời hẹn, không phải một ưu đãi đang áp dụng.
  */
 export const promotionNote =
   "Ưu đãi theo dịp lễ (30/4, 2/9, 20/11, Tết…) được trung tâm cập nhật vào ngày 25 hằng tháng.";

@@ -7,7 +7,6 @@ import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { courses } from "@/data/courses";
-import { schedule } from "@/data/schedule";
 import { teachers } from "@/data/teachers";
 import { imageAsset } from "@/data/imageAssets";
 import { contact, site } from "@/data/site";
@@ -196,9 +195,6 @@ const includes = [
     desc: `Mục tiêu khoá: ${course.goal}. Chưa đạt đầu ra đã cam kết, học viên được học lại hoàn toàn miễn phí.`,
   },
 ];
-
-/** Các lớp đang tuyển sinh của đúng chương trình này. */
-const classes = schedule.filter((row) => row.programSlug === course.slug);
 
 /*
   Toàn bộ đội ngũ, người phụ trách chuyên môn lên đầu.
@@ -507,77 +503,35 @@ const sectionTitle =
           <section id="lop-dang-mo" class="scroll-mt-24">
             <h2 class={sectionTitle}>Lịch học {course.title.toLowerCase()}</h2>
 
-            {
-              classes.length > 0 ? (
-                <div class="mt-7 overflow-hidden rounded-2xl border border-border">
-                  <div class="overflow-x-auto">
-                    <table class="w-full min-w-[42rem] border-collapse text-left text-sm">
-                      <thead>
-                        <tr class="bg-brand-ink-50">
-                          {["Lớp khai giảng", "Đầu ra", "Buổi học", "Thời lượng", ""].map(
-                            (h) => (
-                              <th class="px-5 py-4 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                                {h}
-                              </th>
-                            ),
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {classes.map((row, i) => (
-                          <tr class:list={[i > 0 && "border-t border-border"]}>
-                            <td class="px-5 py-4">
-                              {/* `name`, không phải `className`: ScheduleRow không có
-                                  trường đó nên cột "Lớp" sẽ in ra rỗng. */}
-                              <p class="font-bold text-brand-ink-900">{row.name}</p>
-                              <p class="mt-0.5 font-mono text-xs text-muted-foreground">
-                                {row.code}
-                              </p>
-                            </td>
-                            <td class="px-5 py-4">
-                              <span class="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
-                                <span class="size-1.5 rounded-full bg-emerald-500" />
-                                {row.target}
-                              </span>
-                            </td>
-                            <td class="px-5 py-4 text-muted-foreground">{row.cadence}</td>
-                            <td class="px-5 py-4 text-muted-foreground">{row.duration}</td>
-                            <td class="px-5 py-4 text-right">
-                              <a
-                                href={registerHref({
-                                  course: course.slug,
-                                  classCode: row.code,
-                                })}
-                                class="inline-flex shrink-0 rounded-full bg-brand-red-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-red-700"
-                              >
-                                Đăng ký
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : (
-                <div class="mt-7 rounded-2xl border-2 border-dashed border-border bg-brand-ink-50/60 p-8 text-center">
-                  <p class="text-base font-black text-brand-ink-900">
-                    Lớp {course.title.toLowerCase()} mở theo nhu cầu học viên
-                  </p>
-                  <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                    Gọi hotline để nhận ngày khai giảng gần nhất và giữ chỗ — trung tâm
-                    xếp lớp ngay khi đủ học viên cùng trình độ.
-                  </p>
-                  <a
-                    href={`tel:${contact.phonePrimaryRaw}`}
-                    class="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
-                  >
-                    <span class="[&>svg]:size-4" set:html={ICONS.phone} />
-                    Gọi {contact.phonePrimary}
-                  </a>
-                </div>
-              )
-            }
+            {/*
+              Không còn bảng lớp của riêng chương trình này.
+
+              Nó lọc lịch khai giảng theo `programSlug` của từng lớp, mà một dòng lịch
+              không nối tới chương trình nào nữa: tờ lịch trên /schedule là chữ giáo vụ
+              gõ, không phải các hàng `classes` gom theo khoá (xem `data/scheduleApi.ts`
+              và `migrations/017` bên server). Không có cách nào chọn ra "dòng nào thuộc
+              chương trình này" mà không đoán theo tên.
+
+              Thay bằng đúng khối vẫn hiển thị trước đây cho chương trình chưa có lớp
+              nào: gọi hotline, hoặc xem lịch đầy đủ — link ngay bên dưới.
+            */}
+            <div class="mt-7 rounded-2xl border-2 border-dashed border-border bg-brand-ink-50/60 p-8 text-center">
+              <p class="text-base font-black text-brand-ink-900">
+                Lịch khai giảng {course.title.toLowerCase()} cập nhật theo từng đợt
+              </p>
+              <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Xem đợt đang mở ở trang Lịch khai giảng, hoặc gọi hotline để nhận ngày
+                khai giảng gần nhất và giữ chỗ — trung tâm xếp lớp ngay khi đủ học viên
+                cùng trình độ.
+              </p>
+              <a
+                href={`tel:${contact.phonePrimaryRaw}`}
+                class="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-red-700"
+              >
+                <span class="[&>svg]:size-4" set:html={ICONS.phone} />
+                Gọi {contact.phonePrimary}
+              </a>
+            </div>
 
             <a
               href="/schedule"

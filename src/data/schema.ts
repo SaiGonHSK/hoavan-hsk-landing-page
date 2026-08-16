@@ -58,10 +58,10 @@ export type CourseSectionMap = Record<CourseSectionKind, string[]>;
  * Bảng `courses` — danh sách phẳng những khoá trung tâm dạy.
  *
  * Khoá là thứ cố định. Chia HSK4 thành hai chặng nối tiếp là chuyện xếp lớp, nên
- * "Lớp HSK4.1" và "Lớp HSK4.2" là hai `ClassRow` cùng trỏ vào khoá HSK4.
+ * "Lớp HSK4.1" và "Lớp HSK4.2" là hai lớp cùng trỏ vào khoá HSK4.
  */
 export type CourseRow = {
-  /** Mã của trung tâm, unique — cũng là mã lịch khai giảng gom lớp theo. */
+  /** Mã của trung tâm, unique. */
   code: string;
   /** Đường dẫn `/courses/:slug`. */
   slug: string;
@@ -134,30 +134,3 @@ export type ScheduleSlot = {
   endTime: string;
 };
 
-/**
- * Bảng `classes` — một lần khai giảng, tức một dòng trên lịch khai giảng.
- *
- * `code` KHÔNG unique: lịch thật dùng lại một mã cho nhiều ca của cùng khoá
- * ("Lớp HSK1 (ca 1)" và "(ca 2)" đều là `HSK1`). Cái nhận diện một lớp là
- * `name` + `openDate`.
- */
-export type ClassRow = {
-  code: string;
-  name: string;
-  /** `CourseRow.code` của khoá lớp này dạy. */
-  courseCode: string;
-  /** Slug chương trình — dùng để gom lớp theo chương trình trên trang lịch. */
-  programSlug: string;
-  mode: ClassMode;
-  target: string;
-  /** `dd/mm/yyyy`; rỗng với lớp không có ngày khai giảng cố định (GT1, GT2, VIP). */
-  openDate: string;
-  /**
-   * Ở lớp chứ không ở khoá: HSK3 offline chạy 4,5 tháng còn HSK3-ON chạy 3,5
-   * tháng — cùng khoá, khác thời lượng.
-   */
-  durationLabel: string;
-  slots: ScheduleSlot[];
-  /** Dùng khi `slots` rỗng: "Lịch linh hoạt theo học viên". */
-  cadenceNote: string;
-};

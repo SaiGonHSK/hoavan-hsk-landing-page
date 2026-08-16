@@ -23,10 +23,10 @@ export type SiteContent = typeof bundled;
  * định kiểu), và một tài liệu cũ còn sót `hero` sẽ âm thầm ghi đè bản trong repo.
  * Khai ở đây thì đọc một dòng là biết cái gì động, cái gì tĩnh.
  *
- * `schedule` từng là khoá thứ hai. Lịch khai giảng giờ là bảng `classes`, đọc qua
- * `GET /api/v1/classes` (xem `classesApi.ts`): nó vốn đã là một bảng thật có trạng thái,
- * nên giữ thêm một bản trong tài liệu này và một bản nữa trong `content/site.json` chỉ
- * tạo ra ba phiên bản của cùng một lịch. Cả hai bản sao đã gỡ.
+ * `schedule` từng là khoá thứ hai. Lịch khai giảng giờ có bảng riêng bên server, đọc
+ * qua `GET /api/v1/schedule` (xem `scheduleApi.ts`): giữ thêm một bản trong tài liệu này
+ * và một bản nữa trong `content/site.json` chỉ tạo ra ba phiên bản của cùng một lịch.
+ * Cả hai bản sao đã gỡ.
  */
 const DYNAMIC_KEYS = ["testimonials", "faqs"] as const;
 
@@ -54,9 +54,9 @@ export let contentUpdatedAt: string = bundled.updatedAt;
  * Nhận tài liệu từ API và đưa vào dùng — chỉ những khoá trong `DYNAMIC_KEYS`.
  *
  * Merge lên bản trong repo thay vì thay thẳng: server lưu jsonb không định kiểu nên
- * nó **không đảm bảo** đủ khoá. Nếu API trả tài liệu thiếu `schedule`, merge nghĩa là
- * trang lịch khai giảng vẫn render bằng nội dung trong repo; thay thẳng thì nó vỡ ở
- * `schedule.map`.
+ * nó **không đảm bảo** đủ khoá. Nếu API trả tài liệu thiếu `testimonials`, merge nghĩa
+ * là trang vẫn render bằng nội dung trong repo; thay thẳng thì nó vỡ ở
+ * `testimonials.map`.
  */
 export function applyContent(next: unknown): void {
   if (!isPlainObject(next)) return;

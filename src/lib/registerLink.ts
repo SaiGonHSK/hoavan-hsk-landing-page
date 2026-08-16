@@ -2,7 +2,7 @@
  * Nối trang khách đang xem với ô "Khoá học quan tâm" của form đăng ký.
  *
  * Vấn đề: khách đã đi qua một trang khoá cụ thể (`/courses/hsk-3`), một buổi học thử
- * (`/trial/hsk-3`) hoặc bấm "Đăng ký giữ chỗ" trên đúng một lớp trong lịch khai giảng,
+ * (`/trial/hsk-3`) hoặc bấm "Đăng ký giữ chỗ" trên đúng một dòng của lịch khai giảng,
  * nhưng tới form thì mọi thứ về không — họ phải mở lại select và tìm đúng khoá vừa
  * đọc. Đó là một bước thừa ngay chỗ dễ bỏ cuộc nhất, và lead gửi lên còn có nguy cơ
  * ghi sai khoá so với trang đã đưa họ tới đây.
@@ -81,32 +81,33 @@ export const cleanClassCode = (value?: string | null): string | undefined => {
 };
 
 /**
- * Id lớp trong bảng `classes` — `bigserial`, nên chỉ chữ số.
+ * Id một dòng trên lịch khai giảng (`enrollment_schedule_items`) — `bigserial`, nên chỉ
+ * chữ số.
  *
  * Lọc ở đây chỉ chặn thứ không thể là một id; việc id đó có thật hay không do trang
- * `/register` trả lời bằng cách tra trong đợt đang đăng (`findClassById`). Không tra
- * được thì bỏ qua, chứ không mang một con số lạ đi đăng ký.
+ * `/register` trả lời bằng cách tra trong đợt đang đăng (`findRowById`). Không tra được
+ * thì bỏ qua, chứ không mang một con số lạ đi điền vào form.
  */
-const CLASS_ID = /^[0-9]{1,20}$/;
+const ITEM_ID = /^[0-9]{1,20}$/;
 
-export const cleanClassId = (value?: string | null): string | undefined => {
+export const cleanItemId = (value?: string | null): string | undefined => {
   const id = (value ?? "").trim();
-  return CLASS_ID.test(id) ? id : undefined;
+  return ITEM_ID.test(id) ? id : undefined;
 };
 
 export type RegisterContext = {
   /** Slug khoá/chương trình, hoặc đúng nhãn trong `courseOptions`. */
   course?: string;
-  /** Mã lớp khi khách bấm đăng ký từ đúng một lớp trong lịch khai giảng. */
+  /** Mã lớp khi khách bấm đăng ký từ đúng một dòng trên lịch khai giảng. */
   classCode?: string;
   /**
-   * Id lớp — thứ duy nhất nhận diện được một ca học.
+   * Id dòng lịch — thứ duy nhất nhận diện được một ca học.
    *
-   * Đi kèm `classCode` chứ không thay thế: mã lớp là thứ đọc được trong ghi chú của
-   * lead, còn id là thứ `POST /api/v1/schedule/classes/:id/register` cần. Mã không
-   * unique (nhiều ca chung mã HSK1) nên một mình nó không đủ để ghi đúng lớp.
+   * Đi kèm `classCode` chứ không thay thế: mã đọc được trong ghi chú của lead, còn id là
+   * thứ `/register` tra ra để chọn sẵn đúng dòng trong ô "Lớp muốn giữ chỗ". Mã không
+   * unique (nhiều ca chung mã HSK1) nên một mình nó không chỉ được ca nào.
    */
-  classId?: string;
+  itemId?: string;
   /** Khách tới từ trang học thử — ghi chú nói rõ họ muốn học thử trước. */
   trial?: boolean;
 };
@@ -121,8 +122,8 @@ export function registerHref(context: RegisterContext = {}): string {
   const code = cleanClassCode(context.classCode);
   if (code) params.set("class", code);
 
-  const id = cleanClassId(context.classId);
-  if (id) params.set("classId", id);
+  const id = cleanItemId(context.itemId);
+  if (id) params.set("item", id);
 
   if (context.trial) params.set("trial", "1");
 
@@ -154,7 +155,7 @@ export function contextFromUrl(url: URL): RegisterContext {
   return {
     course: url.searchParams.get("course") ?? undefined,
     classCode: cleanClassCode(url.searchParams.get("class")),
-    classId: cleanClassId(url.searchParams.get("classId")),
+    itemId: cleanItemId(url.searchParams.get("item")),
     trial: url.searchParams.get("trial") === "1",
   };
 }

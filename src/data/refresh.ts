@@ -1,4 +1,4 @@
-import { applySchedule, type ApiSchedule } from "./classesApi";
+import { applySchedule, type ApiSchedule } from "./scheduleApi";
 import { applyContent } from "./content";
 import { applyCourses, type ApiCourse } from "./coursesApi";
 import { applyLibraryCategories, type ApiLibraryCategory } from "./library";
@@ -55,7 +55,7 @@ let coursesOk: boolean | null = null;
 let menuOk: boolean | null = null;
 let categoriesOk: boolean | null = null;
 let programsOk: boolean | null = null;
-let classesOk: boolean | null = null;
+let scheduleOk: boolean | null = null;
 
 export async function refreshContent(): Promise<void> {
   if (Date.now() - lastAt < TTL_MS) return;
@@ -87,16 +87,19 @@ async function load(): Promise<void> {
 
   // Các lời gọi độc lập: tài liệu nội dung lỗi thì trang động vẫn nạp được, và
   // ngược lại. Nội dung cũ được giữ lại cho phần nào lỗi.
-  // Lịch khai giảng nạp SAU khoá học và chương trình, không song song với chúng: một lớp
-  // tra chương trình của nó qua `courseId` → `catalogKey` → `courseKeys` (xem
-  // `schedule.ts`), nên cả hai danh sách kia phải có trước thì lớp mới gom đúng khối.
-  // Chạy song song thì lần nạp đầu sau khi khởi động dựng lịch lúc `apiCourses` còn rỗng.
+  // Lịch khai giảng chạy song song với mọi thứ còn lại: từ khi tờ lịch tách khỏi
+  // `classes`, một dòng lịch không tra sang khoá hay chương trình nào nữa (nhãn khối là
+  // chữ giáo vụ gõ — xem `scheduleApi.ts`), nên nó không cần `apiCourses`/`apiPrograms`
+  // đã nạp xong trước. Trước đây phải xếp sau hai lời gọi kia, không thì lần nạp đầu sau
+  // khi khởi động dựng lịch lúc danh sách khoá còn rỗng.
   await Promise.all([
     loadSiteContent(API),
     loadMenu(API),
     loadLibraryCategories(API),
     loadPages(API),
-    Promise.all([loadCourses(API), loadPrograms(API)]).then(() => loadClasses(API)),
+    loadCourses(API),
+    loadPrograms(API),
+    loadSchedule(API),
   ]);
 }
 
@@ -212,14 +215,14 @@ async function loadPages(API: string): Promise<void> {
 }
 
 /**
- * Lịch khai giảng — `GET /api/v1/schedule`, đợt đang được đăng cùng các lớp của nó.
+ * Lịch khai giảng — `GET /api/v1/schedule`, đợt đang được đăng cùng các dòng của nó.
  *
  * Khác `loadMenu`/`loadLibraryCategories`: đợt rỗng **không** bị coi là lỗi. Giữa hai
  * đợt trung tâm có thể chưa đăng gì, và khi đó trang lịch phải nói đúng như vậy chứ
  * không giữ lại lịch tháng trước. Chỉ khi gọi hỏng (API chết, HTTP lỗi) mới giữ nguyên
  * nội dung đang dùng.
  */
-async function loadClasses(API: string): Promise<void> {
+async function loadSchedule(API: string): Promise<void> {
   try {
     const res = await fetch(`${API}/api/v1/schedule`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -227,19 +230,19 @@ async function loadClasses(API: string): Promise<void> {
     const body = (await res.json()) as { data?: ApiSchedule };
     const count = applySchedule(body.data);
     // Dựng lại các dòng lịch ngay: `schedule` là mảng dẫn xuất, gán nguồn thôi chưa đủ.
-    schedule.syncFromClasses();
+    schedule.syncFromSchedule();
 
-    if (classesOk !== true) {
+    if (scheduleOk !== true) {
       console.info(
-        `[schedule] “${schedule.scheduleTitle || "chưa đăng đợt nào"}” · ${count} lớp, soạn từ trang quản trị`,
+        `[schedule] “${schedule.scheduleTitle || "chưa đăng đợt nào"}” · ${count} dòng, soạn từ trang quản trị`,
       );
-      classesOk = true;
+      scheduleOk = true;
     }
   } catch (error) {
     console.warn(
       `[schedule] không đọc được ${API}/api/v1/schedule (${String(error)}) — giữ lịch khai giảng đang dùng`,
     );
-    classesOk = false;
+    scheduleOk = false;
   }
 }
 

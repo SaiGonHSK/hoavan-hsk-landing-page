@@ -21,24 +21,27 @@ interface Props {
   course?: string;
 
   /**
-   * Lớp chọn sẵn ở ô "Lớp muốn giữ chỗ" — id trong bảng `classes`.
+   * Dòng lịch chọn sẵn ở ô "Lớp muốn giữ chỗ" — id trong `enrollment_schedule_items`.
    *
-   * Chỗ gọi phải truyền id đã giải được thành một lớp có thật của đợt đang đăng (xem
-   * `findClassById`), không phải chuỗi thô từ URL: id không khớp dòng nào thì select
-   * lặng lẽ về "Chưa chọn" và khách tưởng mình đã giữ chỗ.
+   * Chỗ gọi phải truyền id đã giải được thành một dòng có thật của đợt đang đăng (xem
+   * `findRowById`), không phải chuỗi thô từ URL: id không khớp dòng nào thì select lặng
+   * lẽ về "Chưa chọn" và khách tưởng mình đã giữ chỗ.
    */
-  classId?: string;
+  itemId?: string;
 
   /** Ghi chú điền sẵn — xem `registerNote` ở `lib/registerLink.ts`. */
   note?: string;
 }
 
-const { dense = false, course, classId, note = "" } = Astro.props;
+const { dense = false, course, itemId, note = "" } = Astro.props;
 
 const selectedCourse = resolveCourseOption(course);
 
 /**
- * Các lớp khách có thể giữ chỗ ngay trên form này.
+ * Các lớp khách có thể xin giữ chỗ ngay trên form này — các dòng của đợt đang đăng.
+ *
+ * Ô này không ghi vào bảng nào cả: nó chỉ chở tên lớp vào ghi chú của lead, để giáo vụ
+ * gọi lại đúng việc. Không còn danh sách chờ theo lớp nữa — xem `lib/leads.ts`.
  *
  * Lấy thẳng từ `schedule` (đợt đang đăng) chứ không nhận qua prop, giống cách file lấy
  * `courseOptions`: mọi chỗ đặt form đều muốn cùng một danh sách, và truyền tay thì có
@@ -166,8 +169,8 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
             Lớp muốn giữ chỗ{" "}
             <span class="font-normal text-muted-foreground">(không bắt buộc)</span>
           </label>
-          <select id="rf-class" name="classId" class={field}>
-            <option value="" selected={!classId}>
+          <select id="rf-class" name="scheduleItemId" class={field}>
+            <option value="" selected={!itemId}>
               Chưa chọn — để trung tâm tư vấn xếp lớp
             </option>
             {openingClasses.map((row) => (
@@ -175,7 +178,7 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
                 value={row.id}
                 data-class-code={row.code}
                 data-class-name={row.name}
-                selected={row.id === classId}
+                selected={row.id === itemId}
               >
                 {row.code} · {row.name} · Khai giảng {row.openDate}
               </option>
@@ -335,7 +338,6 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
 <script>
   import {
     LEADS_ENDPOINT,
-    submitClassRegistration,
     submitLead,
     type LeadPayload,
   } from "@/lib/leads";
@@ -362,15 +364,15 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
     const successDefault = successDetail?.textContent ?? "";
 
     /**
-     * Lớp đang chọn ở ô "Lớp muốn giữ chỗ", đọc tại thời điểm gửi.
+     * Dòng lịch đang chọn ở ô "Lớp muốn giữ chỗ", đọc tại thời điểm gửi.
      *
-     * Trả cả mã lẫn tên chứ không chỉ id: id là thứ `POST /schedule/classes/:id/register`
-     * cần, mã đi vào ghi chú của lead (bảng `leads` không có cột lớp), còn tên để viết câu
-     * báo thành công. `null` khi khách để "Chưa chọn", hoặc khi đợt không có lớp nào nên
-     * cả ô cũng không được render — khi đó form chạy đúng như trước, chỉ ghi lead.
+     * Mã đi vào ghi chú của lead (bảng `leads` không có cột lớp), tên để viết câu báo
+     * thành công; id chỉ để phân biệt hai ca cùng mã trong lúc đọc select. `null` khi
+     * khách để "Chưa chọn", hoặc khi đợt không có dòng nào nên cả ô cũng không được
+     * render.
      */
     const pickedClass = () => {
-      const select = form.querySelector<HTMLSelectElement>('select[name="classId"]');
+      const select = form.querySelector<HTMLSelectElement>('select[name="scheduleItemId"]');
       const id = select?.value.trim();
       if (!select || !id) return null;
 
@@ -509,12 +511,12 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
           course: data.course,
           level: data.level,
           /*
-            Mã lớp ghép vào trước phần khách tự viết. Lead dedupe theo số điện thoại nên
-            không có cột lớp (một người đăng ký hai lớp sẽ gộp thành một dòng); với CRM
-            thì mã lớp nằm trong ghi chú là đủ, dòng thật cho lớp là request thứ hai.
+            Mã lớp ghép vào trước phần khách tự viết, và đây là chỗ DUY NHẤT chở nó: lead
+            dedupe theo số điện thoại nên không có cột lớp, và không còn bảng danh sách
+            chờ nào để ghi riêng.
 
-            `data.classId` không có mặt ở đây: payload dựng từng field nên ô chọn lớp
-            không lọt vào body của `/leads`, nơi không biết field đó là gì.
+            `data.scheduleItemId` không có mặt ở đây: payload dựng từng field nên ô chọn
+            lớp không lọt vào body của `/leads`, nơi không biết field đó là gì.
           */
           note: [
             picked?.code ? `Đăng ký giữ chỗ lớp ${picked.code}.` : "",
@@ -526,62 +528,24 @@ const label = "mb-1.5 block text-sm font-semibold text-foreground";
         };
         const result = await submitLead(payload);
 
-        if (!result.ok) {
-          /*
-            Lead trượt thì dừng hẳn, không gọi tiếp sang đăng ký lớp.
-
-            Ghi tiếp sẽ đặt một người vào danh sách chờ của lớp mà CRM không có dòng nào
-            để gọi — server tra lead theo số điện thoại để gắn `lead_id`, không có lead
-            thì dòng đó mồ côi. Mà khách đang nhìn thấy báo lỗi và sẽ tự gửi lại, nên
-            lượt sau ghi đủ cả hai.
-
-            Luật kiểm của hai endpoint soi gương nhau (tên, số điện thoại, email), nên
-            lỗi theo field ở đây thì bên kia cũng trượt y hệt.
-          */
-          if (button) {
-            button.disabled = false;
-            button.textContent = "Gửi đăng ký tư vấn";
-          }
-          showError(result.message, result.fields);
-          return;
-        }
-
-        /*
-          Lead đã vào thì mới ghi dòng giữ chỗ, và đúng thứ tự này: server tra lead đang
-          mở theo số điện thoại để gắn `lead_id` cho dòng đăng ký, nên lead phải có trước.
-          Gọi ngược lại thì dòng vẫn được ghi, chỉ mất đường lần từ lớp về cuộc hội thoại.
-        */
-        const classResult = picked
-          ? await submitClassRegistration({
-              classId: picked.id,
-              name: data.name ?? "",
-              phone: data.phone ?? "",
-              email: data.email,
-              note: data.note,
-            })
-          : null;
-
         if (button) {
           button.disabled = false;
           button.textContent = "Gửi đăng ký tư vấn";
         }
 
-        if (classResult && !classResult.ok) {
-          // Không hiện cho khách, nhưng phải có dấu vết: đây là nửa sau của một lần bấm.
-          console.warn("class registration failed:", classResult.message);
+        if (!result.ok) {
+          showError(result.message, result.fields);
+          return;
         }
 
         /*
-          Lead vào được là báo thành công, kể cả khi dòng giữ chỗ trượt.
-
-          Từ phía khách, trung tâm ĐÃ có thông tin của họ và mã lớp nằm trong ghi chú của
-          lead, nên giáo vụ vẫn gọi lại đúng việc. Báo lỗi ở đây chỉ khiến họ gửi lại và
-          sinh thêm một lead trùng. Chỉ đổi câu chữ: "đã ghi vào danh sách" thay vì "sẽ
-          liên hệ xếp lớp".
+          Một request là hết: lớp khách chọn đã nằm trong ghi chú của chính lead vừa ghi.
+          Trước đây còn một request thứ hai ghi vào danh sách chờ của lớp đó, và cả một
+          đoạn xử lý "lead vào được nhưng dòng giữ chỗ trượt" — không còn gì để lệch nữa.
         */
         showSuccess(
-          classResult?.ok
-            ? `Trung tâm đã ghi bạn vào danh sách ${picked?.name || "lớp bạn chọn"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`
+          picked
+            ? `Trung tâm đã nhận yêu cầu giữ chỗ ${picked.name || "lớp bạn chọn"} và sẽ liên hệ để xác nhận chỗ, báo học phí và hướng dẫn nhập học.`
             : undefined,
         );
         return;

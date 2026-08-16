@@ -1,17 +1,12 @@
 /**
- * Client cho hai write công khai của `hoavan-hsk-server`:
+ * Client cho write công khai duy nhất của `hoavan-hsk-server`:
+ * `POST {PUBLIC_API_BASE}/api/v1/leads` — "đăng ký tư vấn", vào CRM inbox.
  *
- * - `POST {PUBLIC_API_BASE}/api/v1/leads` — "đăng ký tư vấn", CRM inbox.
- * - `POST {PUBLIC_API_BASE}/api/v1/schedule/classes/:id/register` — "đăng ký giữ chỗ"
- *   một lớp cụ thể trên lịch khai giảng.
- *
- * Cùng một file vì chúng dùng chung base URL, chung envelope, chung bảng dịch lỗi.
- *
- * Ai gọi cái nào: modal "Đăng ký giữ chỗ" trên trang Lịch khai giảng chỉ gọi
- * `submitClassRegistration` — giữ chỗ **không** sinh lead, để người đã vào lớp không
- * nằm trong danh sách gửi chương trình tuyển sinh. Form "Đăng ký tư vấn" ở `/register`
- * thì gọi `submitLead`, và gọi thêm `submitClassRegistration` khi khách có chọn lớp;
- * ở đó lead mới là mục đích chính nên vẫn là một lần bấm hai lần ghi.
+ * **Mọi form trên landing đều đổ về đây**, kể cả nút "Đăng ký giữ chỗ" trên từng thẻ của
+ * lịch khai giảng. Nút đó từng gọi một endpoint riêng
+ * (`POST /api/v1/schedule/classes/:id/register`) ghi thẳng vào danh sách chờ của một
+ * lớp; endpoint đó không còn tồn tại vì một thẻ trên tờ lịch không phải một lớp nữa —
+ * xem `data/scheduleApi.ts`. Lớp khách quan tâm đi trong `note`/`course` của lead.
  *
  * Endpoint này là write duy nhất của API không cần token, nên nó có rate limit
  * riêng theo IP (`AUTH_RATE_LIMIT`/`AUTH_RATE_WINDOW`, mặc định 60 lần / 5 phút).
@@ -96,55 +91,10 @@ export async function submitLead(payload: LeadPayload): Promise<LeadResult> {
 }
 
 /**
- * URL đăng ký giữ chỗ một lớp. Rỗng khi chưa cấu hình API base, giống `LEADS_ENDPOINT`.
- *
- * Không đi qua `PUBLIC_REGISTER_ENDPOINT`: biến đó là đường tắt trỏ form sang một chỗ
- * nhận lead khác (form service, staging), mà chỗ đó không có bảng lớp nào để ghi vào.
- */
-const classRegisterEndpoint = (classId: string): string =>
-  RAW_BASE ? `${BASE}/api/v1/schedule/classes/${encodeURIComponent(classId)}/register` : "";
-
-/**
- * Có gọi được đường giữ chỗ hay không — dùng làm guard trước khi submit.
- *
- * Phải là cờ riêng chứ không dùng lại `LEADS_ENDPOINT`: hai đường phụ thuộc hai biến môi
- * trường khác nhau. Cấu hình chỉ có `PUBLIC_REGISTER_ENDPOINT` mà thiếu `PUBLIC_API_BASE`
- * sẽ khiến `LEADS_ENDPOINT` khác rỗng trong khi `classRegisterEndpoint` vẫn rỗng — guard
- * cho đi tiếp rồi `postPublic` trả câu lỗi chung, và khách mất chỗ mà không hiểu vì sao.
- */
-export const CLASS_REGISTER_READY = Boolean(RAW_BASE);
-
-export type ClassRegistrationPayload = {
-  /** Id lớp trong bảng `classes` — `ScheduleRow.id`, không phải mã lớp. */
-  classId: string;
-  name: string;
-  phone: string;
-  email?: string;
-  note?: string;
-};
-
-/**
- * Ghi khách vào danh sách chờ của đúng một lớp.
- *
- * Đứng một mình được: từ modal Lịch khai giảng đây là request DUY NHẤT của lần bấm đó.
- *
- * Server vẫn tra lead đang mở theo số điện thoại để gắn `lead_id` — nhưng chỉ là *nối*
- * vào lead đã có sẵn, không tạo mới. Nên chỗ nào cũng gọi `submitLead` trước (`/register`)
- * thì phải giữ đúng thứ tự đó để có link; chỗ không gọi thì `lead_id` rỗng, và dòng đăng
- * ký vẫn đủ dùng vì nó tự mang tên, số điện thoại, email của khách.
- */
-export async function submitClassRegistration(
-  payload: ClassRegistrationPayload,
-): Promise<LeadResult> {
-  const { classId, ...body } = payload;
-  return postPublic(classRegisterEndpoint(classId), body);
-}
-
-/**
  * POST một JSON tới endpoint công khai và dịch mọi kiểu thất bại thành `LeadResult`.
  *
- * Hai endpoint trả cùng một envelope và cùng chịu một rate limiter, nên phần xử lý lỗi
- * — mất mạng, 429, lỗi theo field — giống nhau từng dòng.
+ * Vẫn tách khỏi `submitLead` dù giờ chỉ còn một endpoint: phần dịch lỗi (mất mạng, 429,
+ * lỗi theo field) là thứ dài nhất trong file và không dính gì tới hình dạng của lead.
  */
 async function postPublic(endpoint: string, payload: unknown): Promise<LeadResult> {
   if (!endpoint) return { ok: false, message: GENERIC };

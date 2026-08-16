@@ -272,9 +272,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
             scheduleNote ? "" : null,
             ...openingClasses.map((row) =>
               `- **${row.name}**${
-                row.courseTitle && !covers(row.name, row.courseTitle)
-                  ? ` (khoá ${row.courseTitle})`
-                  : ""
+                row.group && !covers(row.name, row.group) ? ` (${row.group})` : ""
               } — ${sentence(
                 row.openDate ? `khai giảng ${row.openDate}.` : "xếp lịch theo học viên.",
                 row.cadence && `Lịch học: ${row.cadence}.`,

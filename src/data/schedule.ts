@@ -1,6 +1,4 @@
-import { publishedSchedule, type ApiClass } from "./classesApi";
-import { apiCourseByID } from "./coursesApi";
-import { programOfCourseKey } from "./programsApi";
+import { publishedSchedule, type ApiScheduleItem } from "./scheduleApi";
 import type { ScheduleSlot } from "./schema";
 
 /** Nhãn ngắn theo `time.Weekday` của Go: 0 = Chủ nhật … 6 = Thứ 7. */
@@ -89,32 +87,30 @@ export function sessionLines(slots: readonly ScheduleSlot[]): string[] {
 /**
  * Một dòng trên lịch khai giảng, đã ghép sẵn những gì các trang cần in.
  *
- * Là dạng *dẫn xuất* của `ApiClass`: chuỗi lịch dựng từ `slots`, ngày đổi sang dạng
- * người Việt đọc, chương trình tra từ khoá học. Không có trường nào ở đây được ai nhập
- * tay — mọi thứ suy từ bảng `classes`.
+ * Là dạng *dẫn xuất* của `ApiScheduleItem`: chuỗi lịch dựng từ `slots`, ngày đổi sang
+ * dạng người Việt đọc. Bản thân dòng đó thì do giáo vụ gõ tay — không suy từ bảng
+ * `classes` hay `courses` nữa, nên ở đây không còn `courseId`/`courseCode`/`programSlug`
+ * và cũng không còn link sang trang chương trình. Xem `scheduleApi.ts`.
  */
 export type ScheduleRow = {
   /**
-   * Id của lớp trong bảng `classes` — thứ duy nhất nhận diện được một lớp.
+   * Id của dòng trong `enrollment_schedule_items`.
    *
-   * Có ở đây vì nút "Đăng ký giữ chỗ" gửi nó lên `POST /api/v1/schedule/classes/:id/register`
-   * để dòng đăng ký vào đúng lớp. Không dùng `code` được: server nói rõ mã không unique —
-   * "Lớp HSK1 (ca 1)" và "(ca 2)" cùng mã HSK1 — nên đăng ký theo mã là đăng ký vào ca nào
-   * cũng được.
+   * Chỉ dùng để nhận diện dòng trong phạm vi trang: điền sẵn ô "Lớp muốn giữ chỗ" ở
+   * `/register`, và ghi tên lớp vào ghi chú của lead. Không còn endpoint nào nhận nó —
+   * "Đăng ký giữ chỗ" giờ ghi một lead, không ghi vào lớp nào cả.
    */
   id: string;
   code: string;
   name: string;
-  courseCode: string;
-  courseTitle: string;
   /**
-   * Slug chương trình để gom lớp và link sang trang giới thiệu; rỗng khi khoá của lớp
-   * chưa thuộc chương trình nào trong `courses.ts` — xem `programOfCourseKey`.
+   * Khối gom nhóm trên trang lịch, chữ giáo vụ gõ ("Tiếng Trung Sơ cấp"). Rỗng thì
+   * trang gom dòng đó theo `code`.
    */
-  programSlug: string;
+  group: string;
   mode: string;
   target: string;
-  /** `dd/mm/yyyy` để in; rỗng với lớp xếp lịch theo học viên. */
+  /** `dd/mm/yyyy` để in; rỗng với dòng xếp lịch theo học viên. */
   openDate: string;
   /** `YYYY-MM-DD` để sắp xếp — so sánh chuỗi là ra đúng thứ tự thời gian. */
   openDateISO: string;
@@ -131,38 +127,29 @@ const toVietnameseDate = (iso: string): string => {
   return year && month && day ? `${day}/${month}/${year}` : "";
 };
 
-const toScheduleRow = (row: ApiClass): ScheduleRow => {
-  // Chương trình tra qua khoá học: lớp → `courseId` → `catalogKey` → chương trình.
-  // Khoá chưa publish thì không có ở đây, và lớp đó chỉ mất link "Xem chương trình".
-  const catalogKey = apiCourseByID(row.courseId)?.catalogKey ?? "";
-
+const toScheduleRow = (row: ApiScheduleItem): ScheduleRow => {
   return {
     id: row.id,
     code: row.code,
-    // Tên lớp là cột thật trong bảng ("Lớp HSK1 (ca 1)"), không suy từ mã nữa. Chỉ dòng
-    // nào để trống mới rơi về mã, để thẻ không hiện tiêu đề rỗng.
+    // Tên lớp là cột thật ("Lớp HSK1 (ca 1)"), không suy từ mã. Chỉ dòng nào để trống
+    // mới rơi về mã, để thẻ không hiện tiêu đề rỗng.
     name: row.name?.trim() || row.code,
-    courseCode: row.courseCode,
-    courseTitle: row.courseTitle,
-    programSlug: programOfCourseKey(catalogKey) ?? "",
+    group: row.groupLabel?.trim() ?? "",
     mode: row.mode,
     target: row.target,
     openDate: toVietnameseDate(row.openDate),
     openDateISO: row.openDate,
     duration: row.durationLabel,
-    slots: row.scheduleSlots ?? [],
+    slots: row.slots ?? [],
     cadenceNote: row.cadenceNote,
-    cadence:
-      (row.scheduleSlots ?? []).length > 0
-        ? formatCadence(row.scheduleSlots)
-        : row.cadenceNote,
+    cadence: (row.slots ?? []).length > 0 ? formatCadence(row.slots) : row.cadenceNote,
   };
 };
 
 /**
- * Các lớp của đợt khai giảng đang đăng.
+ * Các dòng của đợt khai giảng đang đăng.
  *
- * `let` + `syncFromClasses`: xem giải thích ở `site.ts`. Mảng này là dữ liệu *dẫn xuất*
+ * `let` + `syncFromSchedule`: xem giải thích ở `site.ts`. Mảng này là dữ liệu *dẫn xuất*
  * (`.map()`), nên phải tính lại khi API trả về đợt mới — chỉ gán lại nguồn là không đủ.
  */
 export let schedule: ScheduleRow[] = [];
@@ -178,22 +165,21 @@ export let scheduleTitle = "";
 export let scheduleNote = "";
 
 /**
- * Lớp theo id, trong đúng đợt đang đăng.
+ * Dòng lịch theo id, trong đúng đợt đang đăng.
  *
  * Tra thẳng `schedule` chứ không gọi API riêng: mảng này *là* đợt đang đăng, được
- * `middleware.ts` làm mới mỗi request. Nên tra được ở đây đồng nghĩa lớp đó đang
- * `recruiting` và thuộc đợt đã đăng — đúng bằng điều kiện server kiểm lại khi nhận đăng
- * ký (`classes.Service.RegisterPublic`). Tra không ra thì trả `undefined`, không phải
- * lỗi: link cũ, đợt vừa đổi, hay id ai đó tự gõ đều rơi vào đây và chỗ gọi bỏ qua.
+ * `middleware.ts` làm mới mỗi request. Tra không ra thì trả `undefined`, không phải lỗi:
+ * link cũ, đợt vừa đổi, hay id ai đó tự gõ đều rơi vào đây và chỗ gọi bỏ qua — id chỉ
+ * dùng để điền sẵn một ô select, không có gì được ghi theo nó.
  *
  * Hàm chứ không phải hằng: `schedule` được gán lại mỗi lần đồng bộ, nên phải đọc lúc gọi.
  */
-export const findClassById = (id?: string | null): ScheduleRow | undefined =>
+export const findRowById = (id?: string | null): ScheduleRow | undefined =>
   id ? schedule.find((row) => row.id === id) : undefined;
 
-export function syncFromClasses(): void {
+export function syncFromSchedule(): void {
   const published = publishedSchedule();
-  schedule = published.classes.map(toScheduleRow);
+  schedule = published.items.map(toScheduleRow);
   scheduleTitle = published.title;
   scheduleNote = published.note;
 }

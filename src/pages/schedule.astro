@@ -9,7 +9,6 @@ import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { schedule, scheduleNote, scheduleTitle } from "@/data/schedule";
-import { findProgram, visiblePrograms } from "@/data/programsApi";
 import { contact, site } from "@/data/site";
 import { ICONS } from "@/lib/icons";
 // Ảnh tách nền cho hero.
@@ -60,62 +59,51 @@ const heroChips = [
 ];
 
 /**
- * Thứ tự các khối trên trang = thứ tự chương trình người quản trị sắp trong console.
+ * Gom dòng lịch theo khối.
  *
- * Cần bảng này vì lịch đã được server sắp theo **ngày khai giảng**: gom nhóm theo thứ tự
- * gặp thì khối nào tình cờ có lớp khai giảng sớm nhất sẽ nhảy lên đầu trang, và thứ tự
- * đổi mỗi tháng theo lịch mở lớp. Trang giới thiệu phải đọc theo lộ trình (Sơ cấp →
- * Trung cấp → Cao cấp), không theo ngày.
+ * Khối là chữ giáo vụ gõ vào từng dòng (`groupLabel`), không phải một chương trình tra
+ * từ `programs`: một dòng lịch không nối tới khoá học hay chương trình nào nữa — xem
+ * `data/scheduleApi.ts`. Vì vậy khối cũng không có trang để dẫn tới, và nút "Xem chương
+ * trình" đã bỏ.
  *
- * Lớp trong từng khối vẫn giữ thứ tự ngày khai giảng — đó là thứ người xem cần bên trong
- * một chương trình.
+ * Dòng không có nhãn khối vẫn lên trang: nó đứng thành khối riêng mang tên mã lớp. Giấu
+ * một lớp đang tuyển sinh vì giáo vụ chưa gõ nhãn là mất học viên, không phải dữ liệu
+ * sạch.
+ *
+ * Thứ tự khối = thứ tự khối đầu tiên xuất hiện trong `schedule`, mà `schedule` đã được
+ * server sắp theo ngày khai giảng. Nói cách khác: khối nào có lớp khai giảng sớm nhất
+ * đứng trước. Trước đây thứ tự lấy theo danh sách chương trình trong console (Sơ cấp →
+ * Trung cấp → Cao cấp); giờ không còn danh sách nào để lấy, và giáo vụ đổi thứ tự bằng
+ * chính ngày khai giảng của các dòng.
  */
-const programRank = new Map(visiblePrograms().map((program, i) => [program.slug, i]));
+const groups = schedule.reduce<
+  {
+    /** Khoá gom nhóm, cũng là mã neo `#lich-…` của khối. */
+    key: string;
+    title: string;
+    rows: typeof schedule;
+  }[]
+>((acc, row) => {
+  const title = row.group || row.code;
+  // Mã neo phải là chuỗi đi được trong URL: nhãn khối là chữ tự do, có dấu và khoảng
+  // trắng. Bỏ dấu rồi thay mọi thứ còn lại bằng gạch nối.
+  const key = title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
-/**
- * Gom lớp theo chương trình.
- *
- * Lớp của khoá chưa thuộc chương trình nào vẫn lên trang: nó đứng thành khối riêng mang
- * tên khoá, xếp sau mọi chương trình, chỉ không có nút "Xem chương trình". Giấu một lớp
- * đang tuyển sinh vì chưa ai khai chương trình cho khoá của nó là mất học viên, không
- * phải dữ liệu sạch.
- */
-const groups = schedule
-  .reduce<
-    {
-      /** Khoá gom nhóm, cũng là mã neo `#lich-…` của khối. */
-      key: string;
-      title: string;
-      summary: string;
-      /** `null` khi lớp chưa gom về chương trình nào — không dựng link chết. */
-      href: string | null;
-      /** Vị trí trong danh sách chương trình; khối không thuộc chương trình nào xuống cuối. */
-      rank: number;
-      rows: typeof schedule;
-    }[]
-  >((acc, row) => {
-    const program = row.programSlug ? findProgram(row.programSlug) : undefined;
-    const key = program?.slug ?? (row.courseCode || row.code);
-
-    const found = acc.find((g) => g.key === key);
-    if (found) {
-      found.rows = [...found.rows, row];
-      return acc;
-    }
-
-    acc.push({
-      key,
-      title: program?.title ?? row.courseTitle ?? row.name,
-      summary: program?.summary ?? "",
-      href: program ? `/courses/programs/${program.slug}` : null,
-      rank: program ? (programRank.get(program.slug) ?? Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER,
-      rows: [row],
-    });
+  const found = acc.find((g) => g.key === key);
+  if (found) {
+    found.rows = [...found.rows, row];
     return acc;
-  }, [])
-  // `sort` sau `reduce`, không sắp sẵn `schedule`: gom nhóm cần thứ tự ngày để lớp trong
-  // mỗi khối đúng thứ tự, còn thứ tự khối là chuyện của chương trình.
-  .sort((a, b) => a.rank - b.rank);
+  }
+
+  acc.push({ key, title, rows: [row] });
+  return acc;
+}, []);
 
 /*
   Lịch khai giảng dạng dữ liệu có cấu trúc.
@@ -258,36 +246,14 @@ const scheduleSchemas = [
       groups.map((g) => (
         <section id={`lich-${g.key}`} data-group class="scroll-mt-24">
           <div class="container mx-auto px-6">
-            <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <div>
-                <p class="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-brand-red-600">
-                  Các lớp {g.title.toLowerCase()}
-                </p>
-                <h2 class="mt-3 text-[1.75rem] font-black leading-tight tracking-tight text-brand-ink-900 md:text-4xl">
-                  Lịch học{" "}
-                  <span class="text-brand-red-600">{g.title}</span>
-                </h2>
-                {g.summary && (
-                  <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                    {g.summary}
-                  </p>
-                )}
-              </div>
-
-              {/* Khối của khoá chưa gom về chương trình nào thì không có trang để
-                  dẫn tới — bỏ nút, không dựng link 404. */}
-              {g.href && (
-                <a
-                  href={g.href}
-                  class="group inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-bold text-brand-ink-900 transition-colors hover:bg-brand-ink-50"
-                >
-                  Xem chương trình
-                  <span
-                    class="transition-transform group-hover:translate-x-1 [&>svg]:size-4"
-                    set:html={ICONS.arrow}
-                  />
-                </a>
-              )}
+            <div>
+              <p class="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-brand-red-600">
+                Các lớp {g.title.toLowerCase()}
+              </p>
+              <h2 class="mt-3 text-[1.75rem] font-black leading-tight tracking-tight text-brand-ink-900 md:text-4xl">
+                Lịch học{" "}
+                <span class="text-brand-red-600">{g.title}</span>
+              </h2>
             </div>
 
             <ScheduleCards rows={g.rows} class="mt-8" />

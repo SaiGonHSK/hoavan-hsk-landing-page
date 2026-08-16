@@ -7,7 +7,6 @@ import EnrollCta from "@/components/EnrollCta.astro";
 import Footer from "@/components/Footer.astro";
 import FloatingContact from "@/components/FloatingContact.astro";
 import { contact, site } from "@/data/site";
-import { schedule } from "@/data/schedule";
 import { ICONS } from "@/lib/icons";
 import { registerHref, registerNote } from "@/lib/registerLink";
 import { clampDescription, courseSchema as buildCourseSchema } from "@/lib/seo";
@@ -32,9 +31,6 @@ interface Props {
   curriculum?: { title: string; items: string[] }[];
   crumbs: { label: string; href?: string }[];
   glyph?: string;
-
-  /** Slug chương trình để lấy lịch khai giảng; bỏ trống thì ẩn bảng lịch. */
-  scheduleSlug?: string;
 
   /**
    * Khoá tra để form đăng ký chọn sẵn đúng khoá của trang này — slug khoá
@@ -78,7 +74,6 @@ const {
   curriculum = [],
   crumbs,
   glyph = "课",
-  scheduleSlug,
   registerCourse,
   trial = false,
   related = [],
@@ -146,10 +141,6 @@ const heroFacts = [
     tone: "bg-linear-to-br from-emerald-400 to-green-600 shadow-emerald-500/30",
   },
 ].filter((f) => f.value);
-
-const classes = scheduleSlug
-  ? schedule.filter((row) => row.programSlug === scheduleSlug)
-  : [];
 
 /**
  * Ngữ cảnh mang sang form: nút bên phải đi tới `/register` thì gửi qua query, còn form
@@ -369,51 +360,17 @@ const sectionTitle =
             )
           }
 
-          <!-- Lịch khai giảng của đúng khoá này -->
-          {
-            classes.length > 0 && (
-              <section>
-                <h2 class={sectionTitle}>Lịch học {title}</h2>
-                <div class="mt-7 overflow-hidden rounded-2xl border border-border">
-                  <div class="overflow-x-auto">
-                    <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
-                      <thead>
-                        <tr class="bg-brand-ink-50">
-                          {["Lớp khai giảng", "Mục tiêu", "Buổi học", "Thời lượng"].map(
-                            (h) => (
-                              <th class="px-5 py-4 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                                {h}
-                              </th>
-                            ),
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {classes.map((row, i) => (
-                          <tr class:list={[i > 0 && "border-t border-border"]}>
-                            <td class="px-5 py-4">
-                              <p class="font-bold text-brand-ink-900">{row.className}</p>
-                              <p class="mt-0.5 font-mono text-xs text-muted-foreground">
-                                {row.code}
-                              </p>
-                            </td>
-                            <td class="px-5 py-4">
-                              <span class="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
-                                <span class="size-1.5 rounded-full bg-emerald-500" />
-                                {row.target}
-                              </span>
-                            </td>
-                            <td class="px-5 py-4 text-muted-foreground">{row.cadence}</td>
-                            <td class="px-5 py-4 text-muted-foreground">{row.duration}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </section>
-            )
-          }
+          {/*
+            Không còn bảng "Lịch học <khoá>" ở đây.
+
+            Nó lọc `schedule` theo `programSlug` của từng dòng lịch, mà một dòng lịch
+            không nối tới chương trình nào nữa (xem `data/scheduleApi.ts`) — tờ lịch là
+            chữ giáo vụ gõ, không suy ra được lớp nào thuộc trang này. Lịch đầy đủ nằm ở
+            /schedule; nút đăng ký bên phải vẫn mang theo khoá của trang.
+
+            (Khối này thực ra đã chết từ trước: không trang nào truyền `scheduleSlug`, và
+            thân bảng còn đọc `row.className` — một trường `ScheduleRow` chưa bao giờ có.)
+          */}
 
           {
             related.length > 0 && (
