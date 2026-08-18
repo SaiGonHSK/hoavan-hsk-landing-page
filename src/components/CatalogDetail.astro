@@ -20,6 +20,12 @@ interface Props {
   content?: string[];
   contentTitle?: string;
   outcomes?: string[];
+  /**
+   * "Đối tượng phù hợp" — `courses.audience` (nhãn hiển thị chung ba repo là "Đầu
+   * vào", cột vẫn tên `audience`; landing giữ nguyên tiêu đề mục này theo xác nhận của
+   * người giao, DELTA 2, 2026-08-18). Rỗng thì ẩn cả mục, giống `outcomes`.
+   */
+  audience?: string[];
   topics?: { title: string; note?: string; items: string[] };
   /**
    * Khối "Chương trình học" soạn từ trang quản trị: danh sách mục có tiêu đề riêng.
@@ -27,6 +33,11 @@ interface Props {
    * Có mục nào thì nó **thay** hai panel sinh từ repo (content / topics) — người quản
    * trị đã tự quyết định trang gồm những mục gì, chồng thêm nội dung sinh tự động vào
    * là ra hai lần cùng một thứ.
+   *
+   * `{title, items[]}` — KHÔNG có trường thời lượng riêng trên mỗi Mục (T13, DELTA 2,
+   * 2026-08-18: người giao rút lại yêu cầu này — "Thời lượng" giờ chỉ là MỘT Mục bình
+   * thường do giáo vụ tự soạn, ví dụ tiêu đề "Thời lượng" với các dòng "Học trong 2,5
+   * tháng"/"24 tiết").
    */
   curriculum?: { title: string; items: string[] }[];
   crumbs: { label: string; href?: string }[];
@@ -70,6 +81,7 @@ const {
   content = [],
   contentTitle = "Nội dung khoá học",
   outcomes = [],
+  audience = [],
   topics,
   curriculum = [],
   crumbs,
@@ -91,8 +103,27 @@ const fact = (label: string) => facts.find((f) => f.label.startsWith(label))?.va
 
 const months = fact("Thời lượng");
 const level = fact("Cấp độ");
-const entry = fact("Đầu vào");
 const mode = fact("Hình thức") ?? "Offline tại TP.HCM hoặc online";
+// "Mục tiêu" — trước bản sửa này chỉ đọc ở dòng buildCourseSchema bên dưới (fallback
+// cho schema.org `level`) và luôn undefined vì `merge()` chưa từng upsert fact này
+// (T7, DELTA 2026-08-18: `courses.goal` dựng lại). Giờ đọc thật và hiện ở khối
+// heroFacts bên dưới — CÓ chữ mặc định giống ba mục kia, nhưng không viết cứng ở
+// đây: `catalog.ts` đã khai sẵn fact `{ label: "Mục tiêu" }` cho 5 khoá (GT1, GT2,
+// LT-HSK, HSK5-6, chuyên ngành — xem catalog.ts:315,345,375,401,452), nên với các
+// khoá đó `fact("Mục tiêu")` trả về đúng giá trị template khi `courses.goal` rỗng,
+// đúng luật "template làm mặc định" đã chốt (T3). Chỉ những khoá KHÔNG có sẵn fact
+// này trong catalog.ts (HSK1–4) mới thật sự không có mặc định — `.filter((f) =>
+// f.value)` bên dưới bỏ hẳn mục khỏi hàng cho đúng những khoá đó.
+const goal = fact("Mục tiêu");
+
+/**
+ * Sĩ số lớp — "10–15 học viên". Không còn nguồn dữ liệu nào cho con số này
+ * (`courses.class_size` đã bỏ khỏi API, T13 DELTA 2, 2026-08-18, và `catalog.ts`
+ * chưa từng có fact "Sĩ số" để làm mặc định) — viết cứng trực tiếp ở đây, cùng cách
+ * `mode` phía trên đã viết cứng "Offline tại TP.HCM hoặc online" khi `catalog.ts`
+ * không có fact "Hình thức".
+ */
+const classSizeLabel = "10–15 học viên";
 
 const schemas: Record<string, unknown>[] = [
   ...breadcrumbNodes(crumbs, Astro.url.pathname, Astro.site),
@@ -125,7 +156,7 @@ const heroFacts = [
     icon: ICONS.users,
     label: "Sĩ số lớp",
     // Không dùng "Thời lượng" ở đây: đã có trong bảng lịch học và phần intro bên dưới.
-    value: "10–15 học viên",
+    value: classSizeLabel,
     tone: "bg-linear-to-br from-rose-500 to-red-600 shadow-red-500/30",
   },
   {
@@ -135,10 +166,29 @@ const heroFacts = [
     tone: "bg-linear-to-br from-sky-400 to-blue-600 shadow-blue-500/30",
   },
   {
-    icon: ICONS.target,
-    label: "Đầu vào",
-    value: entry ?? "Test trình độ miễn phí",
+    /*
+      Ô này trước là "Đầu vào", lấy từ fact cùng tên của `catalog.ts` — mà với HSK1–4 fact
+      đó là một CÂU DÀI về đối tượng phù hợp, nên thẻ hiện ra bị cắt cụt giữa chừng
+      ("…muốn học lại từ…"). Danh sách đối tượng đã có hẳn một khối riêng bên dưới
+      ("Đối tượng phù hợp"), nên nhắc lại ở hàng thẻ ngắn này vừa thừa vừa vỡ layout.
+      Thay bằng cam kết học lại — một câu ngắn, đúng độ dài của thẻ, và giống nhau ở mọi
+      khoá nên không phụ thuộc dữ liệu nào.
+    */
+    icon: ICONS.shield,
+    label: "Cam kết",
+    value: "Học lại miễn phí",
     tone: "bg-linear-to-br from-emerald-400 to-green-600 shadow-emerald-500/30",
+  },
+  {
+    icon: ICONS.star,
+    label: "Mục tiêu",
+    // `goal` (biến ở trên) đã LÀ giá trị lùi về template khi khoá chưa nhập, cho 5
+    // khoá catalog.ts có sẵn fact "Mục tiêu" — không viết fallback tay ở đây như
+    // "Đầu vào"/"Hình thức" phía trên vì template đã nằm sẵn trong facts, không phải
+    // literal. Chỉ khoá KHÔNG có fact này (HSK1–4) mới còn undefined, và `.filter`
+    // bên dưới bỏ hẳn mục khỏi hàng đúng cho nhóm đó, không hiện dòng rỗng.
+    value: goal,
+    tone: "bg-linear-to-br from-amber-400 to-orange-600 shadow-amber-500/30",
   },
 ].filter((f) => f.value);
 
@@ -215,9 +265,16 @@ const sectionTitle =
                   <div
                     class:list={[
                       "flex items-center gap-3",
-                      // Vạch ngăn dọc giữa các mục, chỉ hiện khi đã xếp cùng hàng.
-                      i > 0 && "sm:border-l sm:border-border sm:pl-7",
-                      i === 2 && "sm:border-l-0 sm:pl-0 xl:border-l xl:pl-7",
+                      // Vạch ngăn dọc giữa các mục, chỉ hiện khi đã xếp cùng hàng — công
+                      // thức theo modulo số cột (sm: 2, xl: 3) thay vì hardcode "i === 2"
+                      // như bản cũ, vì heroFacts giờ có thể dài 2–4 mục tuỳ khoá có nhập
+                      // `entry`/`goal` hay không (T7, DELTA 2026-08-18: thêm "Mục tiêu").
+                      i % 2 !== 0
+                        ? "sm:border-l sm:border-border sm:pl-7"
+                        : "sm:border-l-0 sm:pl-0",
+                      i % 3 !== 0
+                        ? "xl:border-l xl:border-border xl:pl-7"
+                        : "xl:border-l-0 xl:pl-0",
                     ]}
                   >
                     <span
@@ -270,13 +327,40 @@ const sectionTitle =
             )
           }
 
+          <!-- Đối tượng phù hợp -->
+          {
+            audience.length > 0 && (
+              <section>
+                <h2 class={sectionTitle}>Đối tượng phù hợp</h2>
+                <ul class="mt-7 grid gap-3 sm:grid-cols-2">
+                  {audience.map((a) => (
+                    <li class="flex items-start gap-3 rounded-2xl border border-border bg-background px-5 py-4 text-sm leading-relaxed text-brand-ink-800 md:text-base">
+                      <span
+                        aria-hidden="true"
+                        class="mt-0.5 shrink-0 text-brand-ink-400 [&>svg]:size-4"
+                        set:html={ICONS.plus}
+                      />
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
           <!-- Chương trình học -->
           {
             (curriculum.length > 0 || content.length > 0 || topics) && (
               <section>
-                <h2 class={sectionTitle}>
-                  {months ? `Chương trình học ${months}` : "Chương trình học"}
-                </h2>
+                {/*
+                  Chỉ còn tiêu đề — không ghép số tháng/tổng buổi nữa (T13, DELTA 2,
+                  2026-08-18: `months`/`totalSessions` đã bỏ khỏi API, không còn nguồn
+                  nào ở tầng khoá cho con số này). Thời lượng giờ là một Mục bình
+                  thường do giáo vụ tự soạn trong `curriculum` khi họ muốn hiện nó
+                  (tiêu đề "Thời lượng", các dòng "Học trong 2,5 tháng"/"24 tiết"…), chứ
+                  không phải thứ trang này tự suy ra.
+                */}
+                <h2 class={sectionTitle}>Chương trình học</h2>
 
                 {/* Mục soạn từ trang quản trị — thay hai panel sinh từ repo bên dưới. */}
                 {curriculum.length > 0 && (
@@ -396,6 +480,14 @@ const sectionTitle =
           <div
             class="overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
           >
+            <!--
+              "100% / Cam kết đầu ra" và, dưới kia, "Không đạt, học lại miễn phí" viết
+              cứng cho MỌI trang dùng CatalogDetail (courses, trial, practice/*,
+              programs). Từng có một đường ghi đè động qua `courses.commitment` cho
+              riêng khối EnrollCta bên dưới (T3 N11) — cột đó đã bỏ khỏi API (T13,
+              DELTA 2, 2026-08-18), nên EnrollCta giờ luôn dùng đúng dòng mặc định của
+              chính nó, không còn nhánh ghi đè nào nữa.
+            -->
             <div class="relative grid h-40 place-items-center bg-brand-red-600 text-white">
               <span
                 aria-hidden="true"
@@ -457,7 +549,9 @@ const sectionTitle =
     </div>
 
     <div class="mt-16 flex flex-col gap-16 lg:mt-24 lg:gap-24">
-      {cta === "enroll" && <EnrollCta href={registerHref(registerContext)} />}
+      {
+        cta === "enroll" && <EnrollCta href={registerHref(registerContext)} />
+      }
       <RegisterSection course={registerCourse} note={registerNoteText} />
       {cta === "default" && <CtaSection primaryHref={registerHref(registerContext)} />}
     </div>

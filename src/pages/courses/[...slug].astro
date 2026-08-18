@@ -75,6 +75,9 @@ const seoTitle =
           `${item.title} | SaigonHSK`,
         );
 
+// "10–15 học viên" viết cứng, khớp hằng số cùng nội dung ở CatalogDetail (hero fact
+// "Sĩ số lớp") — `courses.class_size` đã bỏ khỏi API (T13, DELTA 2, 2026-08-18), không
+// còn cột nào để đọc con số này nữa.
 const seoDescription = clampDescription(
   `${item.intro} Học tại TP.HCM hoặc online, lớp 10–15 học viên. Gọi hotline để nhận học phí và lịch khai giảng.`,
 );
@@ -102,6 +105,7 @@ const keywords = keywordsFor(
   content={item.content}
   contentTitle="Nội dung khoá học"
   outcomes={item.outcomes}
+  audience={item.audience}
   topics={item.topics}
   curriculum={curriculum}
   registerCourse={item.slug}

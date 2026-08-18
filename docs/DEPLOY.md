@@ -4,7 +4,7 @@
 `127.0.0.1:4321`, nginx proxy `/` vào đó.
 
 Bối cảnh chung của cả 3 source (server Go, landing, console) ở
-[../DEPLOY.md](../DEPLOY.md). File này chỉ nói phần landing.
+[../../docs/DEPLOY.md](../../docs/DEPLOY.md). File này chỉ nói phần landing.
 
 > **Đọc trước:** site đã đổi từ **static** sang **SSR** (`output: "server"` +
 > `@astrojs/node` standalone trong [astro.config.mjs](astro.config.mjs)). `yarn build`
@@ -213,7 +213,7 @@ File dùng chung với console: `/var/www/ecosystem.config.cjs`. Phần của la
 }
 ```
 
-Bản đầy đủ (có cả console) ở [../DEPLOY.md](../DEPLOY.md) mục 5.1.
+Bản đầy đủ (có cả console) ở [../../docs/DEPLOY.md](../../docs/DEPLOY.md) mục 5.1.
 
 ```sh
 pm2 start /var/www/ecosystem.config.cjs --only hoavan-landing

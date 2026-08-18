@@ -13,12 +13,11 @@ import { ICONS } from "@/lib/icons";
  *
  * **Submit ghi một LEAD** — `POST /api/v1/leads` — với tên lớp trong ghi chú.
  *
- * Trước đây nó ghi vào danh sách chờ của đúng lớp đó (`class_registrations`), vì một thẻ
- * trên tờ lịch CHÍNH LÀ một hàng trong bảng `classes`. Không còn thế nữa: thẻ này là chữ
- * giáo vụ gõ, không có lớp thật nào ở đầu kia để ghi vào. Giáo vụ đọc lead, gọi lại, rồi
- * tự tạo học viên và xếp vào lớp mà họ tự mở — xem `data/scheduleApi.ts`.
+ * Thẻ trên tờ lịch là chữ giáo vụ gõ, không có lớp thật nào ở đầu kia để ghi vào. Giáo vụ
+ * đọc lead, gọi lại, rồi tự tạo học viên và xếp vào lớp mà họ tự mở — xem
+ * `data/scheduleApi.ts`.
  *
- * Một hộp thư thay vì hai: mọi người quan tâm khoá học đều nằm trong CRM. Đổi lại, người
+ * Một hộp thư duy nhất: mọi người quan tâm khoá học đều nằm trong CRM. Đổi lại, người
  * đã vào lớp vẫn là một lead "Mới" cho tới khi giáo vụ chuyển trạng thái — nên lọc nhóm
  * gửi ưu đãi tuyển sinh phải lọc theo trạng thái, không gửi cho cả bảng.
  *

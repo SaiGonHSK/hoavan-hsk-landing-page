@@ -33,9 +33,11 @@ const metaOf = (c: CatalogItem) =>
   Khoá học lấy từ trang quản trị: khoá nào không "Đang mở" thì không hiện ở đây và trang
   chi tiết của nó cũng 404. Khoá chưa được đưa vào menu cũng không hiện — nó chưa có
   đường dẫn nào để dẫn tới.
-  Gom theo **khoá tra** (`c.slug`, tức `catalogKey`) chứ không theo `track`: `track`
-  không sửa được trong console nữa, còn ba nhóm dưới đây phân biệt được bằng dạng khoá
-  tra (`hsk-N`, `luyen-thi-hsk-N`, còn lại).
+  Gom theo **khoá tra** (`c.slug`, suy từ `catalogKey` khi có, hoặc `code`/`hskLevel`
+  làm đường lùi — xem `deriveCatalogSlug` ở `coursesApi.ts`; `catalogKey` VẪN có trong
+  API, đây không phải chuyện nó bị bỏ) chứ không theo `track`: `track` không sửa được
+  trong console nữa, còn ba nhóm dưới đây phân biệt được bằng dạng khoá tra (`hsk-N`,
+  `luyen-thi-hsk-N`, còn lại).
 */
 const courses = visibleCourses();
 const hskLevelCourses = courses.filter((c) => /^hsk-[1-6]$/.test(c.slug));
